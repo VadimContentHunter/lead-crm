@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use Psr\Log\NullLogger;
+use crm\src\services\LoggerFactory;
 use crm\src\controllers\HomeController;
 use crm\src\controllers\UserController;
 use crm\src\controllers\ErrorController;
@@ -8,8 +10,12 @@ use crm\src\controllers\NotFoundController;
 use crm\src\components\RouteHandler\RouteHandler;
 use crm\src\components\RouteHandler\entities\Route;
 
-require_once __DIR__ . '/libs/autoload.php';
+define('PROJECT_ROOT', __DIR__);
 
+require_once PROJECT_ROOT . '/libs/autoload.php';
+
+// $logger = LoggerFactory::createLogger(baseLogDir:PROJECT_ROOT . '/logs');
+$logger = new NullLogger();
 
 // Создаём маршруты:
 $route1 = new Route(
@@ -42,6 +48,8 @@ $routeHandler = new RouteHandler(
     routes: [$route1, $route2],
     currentUrl: $_SERVER['REQUEST_URI'],
     defaultRoute: $rout404,
+    errorRoute: $routError,
+    logger: $logger
 );
 
 // Запускаем поиск маршрута и вызов контроллера:

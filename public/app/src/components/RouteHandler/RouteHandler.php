@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace crm\src\components\RouteHandler;
 
+use Psr\Log\NullLogger;
+use Psr\Log\LoggerInterface;
 use crm\src\components\RouteHandler\common\interfaces\IRoute;
 
 class RouteHandler
@@ -15,7 +17,8 @@ class RouteHandler
         private array $routes = [],
         private bool $autoProcessUrl = true,
         private ?IRoute $defaultRoute = null,
-        private ?IRoute $errorRoute = null
+        private ?IRoute $errorRoute = null,
+        private ?LoggerInterface $logger = new NullLogger()
     ) {}
 
     /**
@@ -43,15 +46,14 @@ class RouteHandler
      * Выполняет сравнение URL с паттернами маршрутов и вызывает соответствующий обработчик.
      *
      * Паттерн — регулярное выражение без разделителей (//, ## и т.п.) и без флагов.
+     * 
+     * @todo Можно добавить работу с буфером Не забывать про ob_get_level();
      *
      * @throws \RuntimeException если маршрут не найден или класс/метод отсутствуют
      */
     public function dispatch(): void
     {
-        // $initialBufferLevel = ob_get_level();
-        // if ($initialBufferLevel === 0) {
-        //     ob_start();
-        // }
+        $this->logger->info("Dispatch started", ['url' => $this->currentUrl]);
 
         try {
             $urlToMatch = $this->autoProcessUrl
@@ -60,56 +62,36 @@ class RouteHandler
 
             foreach ($this->routes as $route) {
                 if (preg_match('#' . $route->getPattern() . '#', $urlToMatch, $matches)) {
+                    $this->logger->info("Route matched", ['pattern' => $route->getPattern(), 'url' => $urlToMatch]);
                     $this->invokeRoute($route, $matches);
                     return;
                 }
             }
 
             if ($this->defaultRoute !== null) {
+                $this->logger->info("Default route invoked", ['url' => $urlToMatch]);
                 $this->invokeRoute($this->defaultRoute, []);
                 return;
             }
 
             throw new \RuntimeException('Маршрут не найден для URL: ' . $this->currentUrl);
         } catch (\Throwable $e) {
+            $this->logger->error("Dispatch error", ['exception' => $e]);
             $this->handleDispatchError($e);
         } finally {
-            // Закрываем буфер, если мы его открывали
-            // while (ob_get_level() > $initialBufferLevel) {
-            //     ob_end_flush();
-            // }
         }
     }
 
     /**
-     * @todo Реализовать обработку ошибок
+     * @todo Можно добавить работу с буфер
      */
     private function handleDispatchError(\Throwable $e): void
     {
-        throw new \LogicException('Метод handleDispatchError пока не реализован.');
-
         $isWarning = $e instanceof \ErrorException
             && in_array($e->getSeverity(), [E_WARNING, E_USER_WARNING]);
 
         if ($this->errorRoute !== null) {
-            // Получаем и очищаем текущий буфер
-            // $previousOutput = '';
-            // if (ob_get_level() > 0) {
-            //     $previousOutput = ob_get_clean();
-            // }
-
-            // Выводим ошибку/варнинг (будет первым)
             $this->invokeRoute($this->errorRoute, [0, $e, ['warning' => $isWarning]]);
-
-            // Снова выводим ранее сохраненный вывод
-            // echo $previousOutput;
-
-            // if (!$isWarning) {
-                // Если это ошибка — завершить выполнение,
-                // чтобы не продолжать скрипт после fatal
-                // exit;
-            // }
-            // Для варнинга можно продолжить выполнение, буфер уже восстановлен
         } else {
             throw $e;
         }

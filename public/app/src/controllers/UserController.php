@@ -22,6 +22,9 @@ class UserController
         // $obj = null;
         // $obj->someMethod();  // Fatal error: Call to a member function on null
 
+        // $obj2 = null;
+        // $obj2->someMethod();  // Fatal error: Call to a member function on null
+
         // Выводим GET-параметры после ?
         if (!empty($_GET)) {
             echo "<h2>GET-параметры:</h2>";

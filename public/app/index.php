@@ -1,22 +1,42 @@
 <?php
-// Получаем название хоста
-$host = $_SERVER['HTTP_HOST'] ?? 'неизвестно';
+declare(strict_types=1);
 
-// Получаем путь (URI без параметров)
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+use crm\src\controllers\HomeController;
+use crm\src\controllers\UserController;
+use crm\src\controllers\NotFoundController;
+use crm\src\components\RouteHandler\RouteHandler;
+use crm\src\components\RouteHandler\entities\Route;
 
-echo "<h3>Информация о запросе:</h3>";
-echo "<p><strong>Хост:</strong> " . htmlspecialchars($host) . "</p>";
-echo "<p><strong>Путь:</strong> " . htmlspecialchars($uri) . "</p>";
+require_once __DIR__ . '/libs/autoload.php';
 
-if (!empty($_GET)) {
-    echo "<h3>GET параметры:</h3><ul>";
-    foreach ($_GET as $key => $value) {
-        echo "<li><strong>" . htmlspecialchars($key) . "</strong>: " . htmlspecialchars($value) . "</li>";
-    }
-    echo "</ul>";
-} else {
-    echo "<p>GET параметры отсутствуют.</p>";
-}
 
-// phpinfo();
+// Создаём маршруты:
+$route1 = new Route(
+    url: '#^/user/(\d+)$#',
+    className: UserController::class,
+    methodName: 'view',
+    extraData: ['admin'] // extraData передастся как второй аргумент
+);
+
+$route2 = new Route(
+    url: '#^/$#',
+    className: HomeController::class,
+    methodName: null,
+    extraData: ['Добро пожаловать!'] // передаётся в конструктор
+);
+
+$rout404 = new Route(
+    url: '#.*#',
+    className: NotFoundController::class,
+    methodName: 'show404',
+);
+
+// Создаём обработчик маршрутов, передаём список маршрутов и URL для обработки:
+$routeHandler = new RouteHandler(
+    routes: [$route1, $route2],
+    currentUrl: $_SERVER['REQUEST_URI'],
+    defaultRoute: $rout404
+);
+
+// Запускаем поиск маршрута и вызов контроллера:
+$routeHandler->dispatch(); 

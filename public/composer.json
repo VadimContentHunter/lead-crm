@@ -1,7 +1,6 @@
 {
-    "name": "vadimcontenthunter/crm",
+    "name": "crm/project",
     "description": "crm",
-    "license": "GPL-3.0-only",
     "authors": [
         {
             "name": "Vadim",
@@ -22,12 +21,12 @@
     },
     "autoload": {
         "psr-4": {
-            "vadimcontenthunter\\crm\\": "app/"
+            "crm\\": "app/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "vadimcontenthunter\\crm\\tests\\": "tests/"
+            "crm\\tests\\": "tests/"
         }
     },
     "scripts": {

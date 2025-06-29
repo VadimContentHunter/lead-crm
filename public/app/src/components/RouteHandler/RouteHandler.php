@@ -47,36 +47,73 @@ class RouteHandler
      * @throws \RuntimeException если маршрут не найден или класс/метод отсутствуют
      */
     public function dispatch(): void
-{
-    $urlToMatch = $this->autoProcessUrl
-        ? $this->processUrl($this->currentUrl)
-        : $this->currentUrl;
+    {
+        // $initialBufferLevel = ob_get_level();
+        // if ($initialBufferLevel === 0) {
+        //     ob_start();
+        // }
 
-    try {
-        foreach ($this->routes as $route) {
-            if (preg_match('#' . $route->getPattern() . '#', $urlToMatch, $matches)) {
-                $this->invokeRoute($route, $matches);
+        try {
+            $urlToMatch = $this->autoProcessUrl
+                ? $this->processUrl($this->currentUrl)
+                : $this->currentUrl;
+
+            foreach ($this->routes as $route) {
+                if (preg_match('#' . $route->getPattern() . '#', $urlToMatch, $matches)) {
+                    $this->invokeRoute($route, $matches);
+                    return;
+                }
+            }
+
+            if ($this->defaultRoute !== null) {
+                $this->invokeRoute($this->defaultRoute, []);
                 return;
             }
+
+            throw new \RuntimeException('Маршрут не найден для URL: ' . $this->currentUrl);
+        } catch (\Throwable $e) {
+            $this->handleDispatchError($e);
+        } finally {
+            // Закрываем буфер, если мы его открывали
+            // while (ob_get_level() > $initialBufferLevel) {
+            //     ob_end_flush();
+            // }
         }
+    }
 
-        if ($this->defaultRoute !== null) {
-            $this->invokeRoute($this->defaultRoute, []);
-            return;
-        }
+    /**
+     * @todo Реализовать обработку ошибок
+     */
+    private function handleDispatchError(\Throwable $e): void
+    {
+        throw new \LogicException('Метод handleDispatchError пока не реализован.');
 
-        throw new \RuntimeException('Маршрут не найден для URL: ' . $this->currentUrl);
+        $isWarning = $e instanceof \ErrorException
+            && in_array($e->getSeverity(), [E_WARNING, E_USER_WARNING]);
 
-    } catch (\Throwable $e) {
         if ($this->errorRoute !== null) {
-            // Передаём исключение в маршрут для ошибок
-            $this->invokeRoute($this->errorRoute, [0, $e]);
+            // Получаем и очищаем текущий буфер
+            // $previousOutput = '';
+            // if (ob_get_level() > 0) {
+            //     $previousOutput = ob_get_clean();
+            // }
+
+            // Выводим ошибку/варнинг (будет первым)
+            $this->invokeRoute($this->errorRoute, [0, $e, ['warning' => $isWarning]]);
+
+            // Снова выводим ранее сохраненный вывод
+            // echo $previousOutput;
+
+            // if (!$isWarning) {
+                // Если это ошибка — завершить выполнение,
+                // чтобы не продолжать скрипт после fatal
+                // exit;
+            // }
+            // Для варнинга можно продолжить выполнение, буфер уже восстановлен
         } else {
             throw $e;
         }
     }
-}
-
 
     /**
      * Вспомогательный метод для вызова контроллера по маршруту

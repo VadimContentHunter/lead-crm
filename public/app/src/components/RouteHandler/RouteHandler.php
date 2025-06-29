@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace crm\src\components\RouteHandler;
@@ -19,7 +20,8 @@ class RouteHandler
         private ?IRoute $defaultRoute = null,
         private ?IRoute $errorRoute = null,
         private ?LoggerInterface $logger = new NullLogger()
-    ) {}
+    ) {
+    }
 
     /**
      * @return IRoute[]
@@ -46,7 +48,7 @@ class RouteHandler
      * Выполняет сравнение URL с паттернами маршрутов и вызывает соответствующий обработчик.
      *
      * Паттерн — регулярное выражение без разделителей (//, ## и т.п.) и без флагов.
-     * 
+     *
      * @todo Можно добавить работу с буфером Не забывать про ob_get_level();
      *
      * @throws \RuntimeException если маршрут не найден или класс/метод отсутствуют
@@ -99,10 +101,10 @@ class RouteHandler
 
     /**
      * Вспомогательный метод для вызова контроллера по маршруту
-     * 
+     *
      * @param IRoute $route
      * @param array<int|string,mixed> $matches
-     * 
+     *
      * @throws \RuntimeException
      */
     private function invokeRoute(IRoute $route, array $matches): void
@@ -142,7 +144,7 @@ class RouteHandler
 
     /**
      * Объединяет параметры из URL и extraData в один индексированный массив.
-     * 
+     *
      * @param array<int|string,mixed> $routeParams
      */
     private function mergeParams(array $routeParams, $extraData): array

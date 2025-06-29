@@ -9,9 +9,9 @@
         "ruleset.xml"
     ],
     "phpsab.autoRulesetSearch": true,
-    "phpsab.executablePathCS": "./public/vendor/bin/phpcs.bat",
-    "phpsab.executablePathCBF": "./public/vendor/bin/phpcbf.bat",
-    "phpsab.standard": "./public/phpcs.xml.dist",
+    "phpsab.executablePathCS": "D:/MyProjects/new-obmenka-crm/public/app/libs/bin/phpcs.bat",
+    "phpsab.executablePathCBF": "D:/MyProjects/new-obmenka-crm/public/app/libs/bin/phpcbf.bat",
+    "phpsab.standard": "D:/MyProjects/new-obmenka-crm/public/phpcs.xml.dist",
     "phpsab.fixerEnable": true,
     "phpsab.fixerArguments": [
         "-n",

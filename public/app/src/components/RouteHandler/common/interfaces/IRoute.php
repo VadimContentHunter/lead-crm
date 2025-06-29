@@ -5,9 +5,9 @@ namespace crm\src\components\RouteHandler\common\interfaces;
 
 interface IRoute
 {
-    public function setUrl(string $url): void;
+    public function setPattern(string $pattern): void;
 
-    public function getUrl(): string;
+    public function getPattern(): string;
 
     public function setClassName(string $className): void;
 
@@ -18,7 +18,7 @@ interface IRoute
     public function getMethodName(): ?string;
 
     /**
-     * @param array<string,mixed>
+     * @param array<string,mixed> $data
      */
     public function setExtraData(array $data): void;
 

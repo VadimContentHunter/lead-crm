@@ -7,21 +7,28 @@ use crm\src\components\RouteHandler\common\interfaces\IRoute;
 
 class Route implements IRoute
 {
+    /**
+     * @param string $pattern Паттерн URL в виде регулярного выражения (без разделителей // и флагов)
+     *                        Пример: ^user/(?P<id>\d+)$ — паттерн для URL с параметром "id"
+     * @param string $className Имя класса контроллера
+     * @param string|null $methodName Метод контроллера (опционально)
+     * @param array<string,mixed> $extraData Дополнительные данные маршрута
+     */
     public function __construct(
-        private string $url,
+        private string $pattern,
         private string $className,
         private ?string $methodName = null,
         private array $extraData = []
     ) {}
 
-    public function setUrl(string $url): void
+    public function setPattern(string $pattern): void
     {
-        $this->url = $url;
+        $this->pattern = $pattern;
     }
 
-    public function getUrl(): string
+    public function getPattern(): string
     {
-        return $this->url;
+        return $this->pattern;
     }
 
     public function setClassName(string $className): void
@@ -45,7 +52,7 @@ class Route implements IRoute
     }
 
     /**
-     * @param array<string,mixed>
+     * @param array<string,mixed> $data
      */
     public function setExtraData(array $data): void
     {

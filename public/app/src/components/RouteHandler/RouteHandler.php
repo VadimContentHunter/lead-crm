@@ -14,7 +14,8 @@ class RouteHandler
         public readonly string $currentUrl = '',
         private array $routes = [],
         private bool $autoProcessUrl = true,
-        private ?IRoute $defaultRoute = null
+        private ?IRoute $defaultRoute = null,
+        private ?IRoute $errorRoute = null
     ) {}
 
     /**
@@ -39,39 +40,50 @@ class RouteHandler
     }
 
     /**
-     * Выполняет сравнение и вызывает соответствующий обработчик.
+     * Выполняет сравнение URL с паттернами маршрутов и вызывает соответствующий обработчик.
      *
-     * @return void
+     * Паттерн — регулярное выражение без разделителей (//, ## и т.п.) и без флагов.
+     *
      * @throws \RuntimeException если маршрут не найден или класс/метод отсутствуют
      */
     public function dispatch(): void
-    {
-        $urlToMatch = $this->autoProcessUrl
-            ? $this->processUrl($this->currentUrl)
-            : $this->currentUrl;
+{
+    $urlToMatch = $this->autoProcessUrl
+        ? $this->processUrl($this->currentUrl)
+        : $this->currentUrl;
 
+    try {
         foreach ($this->routes as $route) {
-            if (preg_match($route->getUrl(), $urlToMatch, $matches)) {
+            if (preg_match('#' . $route->getPattern() . '#', $urlToMatch, $matches)) {
                 $this->invokeRoute($route, $matches);
                 return;
             }
         }
 
-        // Если маршрут не найден, пробуем маршрут по умолчанию
         if ($this->defaultRoute !== null) {
             $this->invokeRoute($this->defaultRoute, []);
             return;
         }
 
         throw new \RuntimeException('Маршрут не найден для URL: ' . $this->currentUrl);
+
+    } catch (\Throwable $e) {
+        if ($this->errorRoute !== null) {
+            // Передаём исключение в маршрут для ошибок
+            $this->invokeRoute($this->errorRoute, [0, $e]);
+        } else {
+            throw $e;
+        }
     }
+}
+
 
     /**
      * Вспомогательный метод для вызова контроллера по маршруту
      * 
      * @param IRoute $route
-     * @param array $matches
-     * @return void
+     * @param array<int|string,mixed> $matches
+     * 
      * @throws \RuntimeException
      */
     private function invokeRoute(IRoute $route, array $matches): void
@@ -111,6 +123,8 @@ class RouteHandler
 
     /**
      * Объединяет параметры из URL и extraData в один индексированный массив.
+     * 
+     * @param array<int|string,mixed> $routeParams
      */
     private function mergeParams(array $routeParams, $extraData): array
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\components\Repositories\common\interfaces;
+namespace crm\src\components\Repositories\DbRepository\common\interfaces;
 
 /**
  * Интерфейс для объекта, представляющего структуру запроса.

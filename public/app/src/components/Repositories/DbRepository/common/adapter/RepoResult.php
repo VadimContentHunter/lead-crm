@@ -1,9 +1,9 @@
 <?php
 
-namespace crm\src\components\Repositories\common\adapter;
+namespace crm\src\components\Repositories\DbRepository\common\adapter;
 
 use Throwable;
-use crm\src\components\Repositories\common\interfaces\IRepoResult;
+use crm\src\components\Repositories\DbRepository\common\interfaces\IRepoResult;
 
 class RepoResult implements IRepoResult
 {

@@ -7,10 +7,10 @@ use PDOException;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
 use InvalidArgumentException;
-use crm\src\components\Repositories\common\adapter\RepoResult;
-use crm\src\components\Repositories\common\interfaces\IRepoResult;
-use crm\src\components\Repositories\common\interfaces\IRepository;
-use crm\src\components\Repositories\common\interfaces\IQueryStructure;
+use crm\src\components\Repositories\DbRepository\common\adapter\RepoResult;
+use crm\src\components\Repositories\DbRepository\common\interfaces\IRepoResult;
+use crm\src\components\Repositories\DbRepository\common\interfaces\IRepository;
+use crm\src\components\Repositories\DbRepository\common\interfaces\IQueryStructure;
 
 class DbRepository implements IRepository
 {

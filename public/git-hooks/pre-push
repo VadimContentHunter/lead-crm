@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+echo "Running pre-push checks..."
+echo "🔍 Activated Git hook: running PHP checks..."
+
+cd public || exit 1
+
+# PHP_CodeSniffer
+echo "Running phpcs..."
+composer run phpcs
+if [ $? -ne 0 ]; then
+  echo "❌ phpcs failed. Please fix code style issues before committing."
+  exit 1
+fi
+
+# PHPStan
+echo "Running phpstan..."
+composer run phpstan
+if [ $? -ne 0 ]; then
+  echo "❌ phpstan static analysis failed. Please fix issues before committing."
+  exit 1
+fi
+
+# PHPUnit
+echo "Running phpunit..."
+composer run phpunit
+if [ $? -ne 0 ]; then
+  echo "❌ phpunit tests failed. Please fix tests before committing."
+  exit 1
+fi
+
+echo "✅ All checks passed!"
+exit 0
+

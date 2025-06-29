@@ -1,0 +1,46 @@
+{
+    "name": "vadimcontenthunter/crm",
+    "description": "crm",
+    "license": "GPL-3.0-only",
+    "authors": [
+        {
+            "name": "Vadim",
+            "email": "project.k.vadim@gmail.com"
+        }
+    ],
+    "config": {
+        "vendor-dir": "./app/libs"
+    },
+    "require": {
+        "psr/log": "^3.0",
+        "monolog/monolog": "^3.9"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.3",
+        "phpstan/phpstan": "^1.10",
+        "squizlabs/php_codesniffer": "^3.13"
+    },
+    "autoload": {
+        "psr-4": {
+            "vadimcontenthunter\\crm\\": "app/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "vadimcontenthunter\\crm\\tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "phpcs": [
+            "./vendor/bin/phpcs"
+        ],
+        "phpunit": [
+            "./vendor/bin/phpunit"
+        ],
+        "phpstan": [
+            "php -d memory_limit=1536M ./vendor/bin/phpstan analyse"
+        ],
+        "phpcbf": "./vendor/bin/phpcbf app/ tests/",
+        "updateHooks": "node scripts/updateBashHooks.js"
+    }
+}

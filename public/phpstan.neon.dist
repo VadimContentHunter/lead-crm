@@ -1,0 +1,9 @@
+parameters:
+    level: 8
+    paths:
+        - app/services
+        - tests
+    excludePaths:
+        analyseAndScan:
+            - tests/DbTest.php
+            - app/libs/*

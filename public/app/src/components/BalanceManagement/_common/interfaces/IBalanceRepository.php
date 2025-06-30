@@ -11,12 +11,12 @@ use crm\src\components\BalanceManagement\_entities\Balance;
 interface IBalanceRepository extends IRepository
 {
     /**
-     * @return int|null Возвращает id удаленного источника по названию
+     * @return int|null Возвращает id удалённого баланса по leadId
      */
     public function deleteByLeadId(int $leadId): ?int;
 
     /**
      * @return Balance|null
      */
-    public function getLeadId(int $leadId): ?Balance;
+    public function getByLeadId(int $leadId): ?Balance;
 }

@@ -38,13 +38,13 @@ use InvalidArgumentException;
  * });
  *
  * // Объект для валидации (например, DTO)
- * $userDto = new class {
+ * $UserInputDto = new class {
  *     public string $login = 'john';
  *     public string $plainPassword = 'secret123';
  * };
  *
  * try {
- *     $validator->validate($userDto);
+ *     $validator->validate($UserInputDto);
  *     echo "Валидация прошла успешно";
  * } catch (InvalidArgumentException $e) {
  *     echo "Ошибка валидации: " . $e->getMessage();

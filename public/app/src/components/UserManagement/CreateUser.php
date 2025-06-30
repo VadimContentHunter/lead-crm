@@ -4,7 +4,7 @@ namespace crm\src\components\UserManagement;
 
 use InvalidArgumentException;
 use crm\src\components\UserManagement\entities\User;
-use crm\src\components\UserManagement\common\DTOs\UserDto;
+use crm\src\components\UserManagement\common\DTOs\UserInputDto;
 use crm\src\components\UserManagement\common\adapters\UserResult;
 use crm\src\components\UserManagement\common\interfaces\IUserResult;
 use crm\src\components\UserManagement\common\interfaces\IUserRepository;
@@ -25,13 +25,13 @@ class CreateUser
      * Проводит валидацию данных, хеширует пароль, сохраняет пользователя в репозиторий
      * и возвращает результат операции с объектом пользователя или ошибкой.
      *
-     * @param  UserDto $dto DTO с данными нового пользователя (содержит plainPassword).
+     * @param  UserInputDto $dto DTO с данными нового пользователя (содержит plainPassword).
      * @return IUserResult Результат операции: успешный с User или неуспешный с ошибкой.
      *
      * @throws UserManagementException Если валидация не пройдена или пользователь не сохранён.
      * @throws \Throwable В случае неожиданных ошибок при сохранении пользователя.
      */
-    public function execute(UserDto $dto): IUserResult
+    public function execute(UserInputDto $dto): IUserResult
     {
         $validationResult = $this->validator->validate($dto);
 

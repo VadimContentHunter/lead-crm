@@ -2,7 +2,7 @@
 
 namespace crm\src\components\UserManagement;
 
-use crm\src\components\UserManagement\common\DTOs\UserDto;
+use crm\src\components\UserManagement\common\DTOs\UserInputDto;
 use crm\src\components\UserManagement\common\interfaces\IUserRepository;
 use crm\src\components\UserManagement\common\interfaces\IUserValidation;
 use crm\src\components\UserManagement\common\interfaces\IUserResult;
@@ -66,10 +66,10 @@ class GetUser
     /**
      * Получает пользователя по DTO, где указан ID или логин.
      *
-     * @param  UserDto $dto
+     * @param  UserInputDto $dto
      * @return IUserResult
      */
-    public function executeByDto(UserDto $dto): IUserResult
+    public function executeByDto(UserInputDto $dto): IUserResult
     {
         $validationResult = $this->validator->validate($dto);
 

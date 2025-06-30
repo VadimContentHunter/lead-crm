@@ -1,7 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
-namespace crm\src\components\RouteHandler\common\interfaces;
+namespace  crm\src\services\RouteHandler\common\interfaces;
 
 interface IRoute
 {

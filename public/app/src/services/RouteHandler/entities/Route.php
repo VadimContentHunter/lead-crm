@@ -1,25 +1,31 @@
 <?php
+
 declare(strict_types=1);
 
-namespace crm\src\components\RouteHandler\entities;
+namespace  crm\src\services\RouteHandler\entities;
 
-use crm\src\components\RouteHandler\common\interfaces\IRoute;
+use  crm\src\services\RouteHandler\common\interfaces\IRoute;
 
 class Route implements IRoute
 {
     /**
-     * @param string $pattern Паттерн URL в виде регулярного выражения (без разделителей // и флагов)
-     *                        Пример: ^user/(?P<id>\d+)$ — паттерн для URL с параметром "id"
-     * @param string $className Имя класса контроллера
+     * @param string $pattern    Паттерн URL в виде регулярного
+     *                           выражения (без разделителей // и флагов)
+     *                           Пример: ^user/(?P<id>\d+)$ — паттерн для URL с
+     *                           параметром "id"
+     * @param string $className  Имя класса
+     *                           контроллера
      * @param string|null $methodName Метод контроллера (опционально)
-     * @param array<string,mixed> $extraData Дополнительные данные маршрута
+     * @param array<string,mixed> $extraData  Дополнительные
+     *                                        данные маршрута
      */
     public function __construct(
         private string $pattern,
         private string $className,
         private ?string $methodName = null,
         private array $extraData = []
-    ) {}
+    ) {
+    }
 
     public function setPattern(string $pattern): void
     {

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use Psr\Log\NullLogger;
@@ -7,8 +8,8 @@ use crm\src\controllers\HomeController;
 use crm\src\controllers\UserController;
 use crm\src\controllers\ErrorController;
 use crm\src\controllers\NotFoundController;
-use crm\src\components\RouteHandler\RouteHandler;
-use crm\src\components\RouteHandler\entities\Route;
+use  crm\src\services\RouteHandler\RouteHandler;
+use  crm\src\services\RouteHandler\entities\Route;
 
 define('PROJECT_ROOT', __DIR__);
 
@@ -53,4 +54,4 @@ $routeHandler = new RouteHandler(
 );
 
 // Запускаем поиск маршрута и вызов контроллера:
-$routeHandler->dispatch(); 
+$routeHandler->dispatch();

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace crm\src\components\RouteHandler;
+namespace crm\src\services\RouteHandler;
 
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
-use crm\src\components\RouteHandler\common\interfaces\IRoute;
+use  crm\src\services\RouteHandler\common\interfaces\IRoute;
 
 class RouteHandler
 {

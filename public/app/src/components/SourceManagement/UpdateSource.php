@@ -1,14 +1,14 @@
 <?php
 
-namespace crm\src\components\SourcesManagement;
+namespace crm\src\components\SourceManagement;
 
 use Throwable;
 use crm\src\_common\interfaces\IValidation;
-use crm\src\components\SourcesManagement\_entities\Source;
-use crm\src\components\SourcesManagement\_common\adapters\SourceResult;
-use crm\src\components\SourcesManagement\_common\interfaces\ISourceResult;
-use crm\src\components\SourcesManagement\_common\interfaces\ISourceRepository;
-use crm\src\components\SourcesManagement\_exceptions\SourcesManagementException;
+use crm\src\components\SourceManagement\_entities\Source;
+use crm\src\components\SourceManagement\_common\adapters\SourceResult;
+use crm\src\components\SourceManagement\_common\interfaces\ISourceResult;
+use crm\src\components\SourceManagement\_common\interfaces\ISourceRepository;
+use crm\src\components\SourceManagement\_exceptions\SourceManagementException;
 
 class UpdateSource
 {
@@ -30,7 +30,7 @@ class UpdateSource
 
         if (!$validationResult->isValid()) {
             return SourceResult::failure(
-                new SourcesManagementException('Ошибка валидации: ' . implode('; ', $validationResult->getErrors()))
+                new SourceManagementException('Ошибка валидации: ' . implode('; ', $validationResult->getErrors()))
             );
         }
 
@@ -39,7 +39,7 @@ class UpdateSource
 
             if ($updatedId === null || $updatedId <= 0) {
                 return SourceResult::failure(
-                    new SourcesManagementException('Не удалось обновить источник')
+                    new SourceManagementException('Не удалось обновить источник')
                 );
             }
 

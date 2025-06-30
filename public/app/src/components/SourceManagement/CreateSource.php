@@ -1,13 +1,13 @@
 <?php
 
-namespace crm\src\components\SourcesManagement;
+namespace crm\src\components\SourceManagement;
 
 use crm\src\_common\interfaces\IValidation;
-use crm\src\components\SourcesManagement\_entities\Source;
-use crm\src\components\SourcesManagement\_common\adapters\SourceResult;
-use crm\src\components\SourcesManagement\_common\interfaces\ISourceResult;
-use crm\src\components\SourcesManagement\_common\interfaces\ISourceRepository;
-use crm\src\components\SourcesManagement\_exceptions\SourcesManagementException;
+use crm\src\components\SourceManagement\_entities\Source;
+use crm\src\components\SourceManagement\_common\adapters\SourceResult;
+use crm\src\components\SourceManagement\_common\interfaces\ISourceResult;
+use crm\src\components\SourceManagement\_common\interfaces\ISourceRepository;
+use crm\src\components\SourceManagement\_exceptions\SourceManagementException;
 
 class CreateSource
 {
@@ -26,7 +26,7 @@ class CreateSource
      * @param  string $title Название источника
      * @return ISourceResult Результат операции: успешный с Source или неуспешный с ошибкой.
      *
-     * @throws SourcesManagementException Если валидация не пройдена или источник не сохранён.
+     * @throws SourceManagementException Если валидация не пройдена или источник не сохранён.
      * @throws \Throwable В случае неожиданных ошибок при сохранении источника.
      */
     public function execute(string $title): ISourceResult
@@ -36,7 +36,7 @@ class CreateSource
 
         if (!$validationResult->isValid()) {
             return SourceResult::failure(
-                new SourcesManagementException(implode('; ', $validationResult->getErrors()))
+                new SourceManagementException(implode('; ', $validationResult->getErrors()))
             );
         }
 
@@ -45,7 +45,7 @@ class CreateSource
         try {
             $sourceId = $this->sourceRepository->save($source);
             if (!is_int($sourceId) || $sourceId <= 0) {
-                throw new SourcesManagementException('Источник не сохранён');
+                throw new SourceManagementException('Источник не сохранён');
             }
             $source->id = $sourceId;
             return SourceResult::success($source);

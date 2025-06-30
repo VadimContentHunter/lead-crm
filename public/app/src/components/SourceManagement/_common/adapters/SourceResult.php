@@ -1,10 +1,10 @@
 <?php
 
-namespace crm\src\components\SourcesManagement\_common\adapters;
+namespace crm\src\components\SourceManagement\_common\adapters;
 
 use Throwable;
-use crm\src\components\SourcesManagement\_entities\Source;
-use crm\src\components\SourcesManagement\_common\interfaces\ISourceResult;
+use crm\src\components\SourceManagement\_entities\Source;
+use crm\src\components\SourceManagement\_common\interfaces\ISourceResult;
 
 class SourceResult implements ISourceResult
 {

@@ -1,14 +1,14 @@
 <?php
 
-namespace crm\src\components\SourcesManagement;
+namespace crm\src\components\SourceManagement;
 
 use Throwable;
 use crm\src\_common\interfaces\IValidation;
-use crm\src\components\SourcesManagement\_entities\Source;
-use crm\src\components\SourcesManagement\_common\adapters\SourceResult;
-use crm\src\components\SourcesManagement\_common\interfaces\ISourceResult;
-use crm\src\components\SourcesManagement\_common\interfaces\ISourceRepository;
-use crm\src\components\SourcesManagement\_exceptions\SourcesManagementException;
+use crm\src\components\SourceManagement\_entities\Source;
+use crm\src\components\SourceManagement\_common\adapters\SourceResult;
+use crm\src\components\SourceManagement\_common\interfaces\ISourceResult;
+use crm\src\components\SourceManagement\_common\interfaces\ISourceRepository;
+use crm\src\components\SourceManagement\_exceptions\SourceManagementException;
 
 class DeleteSource
 {
@@ -30,7 +30,7 @@ class DeleteSource
 
         if (!$validationResult->isValid()) {
             return SourceResult::failure(
-                new SourcesManagementException('Ошибка валидации: ' . implode('; ', $validationResult->getErrors()))
+                new SourceManagementException('Ошибка валидации: ' . implode('; ', $validationResult->getErrors()))
             );
         }
 
@@ -39,7 +39,7 @@ class DeleteSource
 
             if ($deletedId === null) {
                 return SourceResult::failure(
-                    new SourcesManagementException("Источник с ID {$id} не найден или не удалён")
+                    new SourceManagementException("Источник с ID {$id} не найден или не удалён")
                 );
             }
 
@@ -61,7 +61,7 @@ class DeleteSource
 
         if (!$validationResult->isValid()) {
             return SourceResult::failure(
-                new SourcesManagementException('Ошибка валидации: ' . implode('; ', $validationResult->getErrors()))
+                new SourceManagementException('Ошибка валидации: ' . implode('; ', $validationResult->getErrors()))
             );
         }
 
@@ -70,7 +70,7 @@ class DeleteSource
 
             if ($deletedId === null) {
                 return SourceResult::failure(
-                    new SourcesManagementException("Источник с названием '{$title}' не найден или не удалён")
+                    new SourceManagementException("Источник с названием '{$title}' не найден или не удалён")
                 );
             }
 
@@ -95,7 +95,7 @@ class DeleteSource
 
         if (!$validationResult->isValid()) {
             return SourceResult::failure(
-                new SourcesManagementException('Ошибка валидации: ' . implode('; ', $validationResult->getErrors()))
+                new SourceManagementException('Ошибка валидации: ' . implode('; ', $validationResult->getErrors()))
             );
         }
 

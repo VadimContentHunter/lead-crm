@@ -5,8 +5,11 @@ namespace crm\src\components\UserManagement;
 use InvalidArgumentException;
 use crm\src\components\UserManagement\entities\User;
 use crm\src\components\UserManagement\common\DTOs\UserDto;
+use crm\src\components\UserManagement\common\adapters\UserResult;
+use crm\src\components\UserManagement\common\interfaces\IUserResult;
 use crm\src\components\UserManagement\common\interfaces\IUserRepository;
 use crm\src\components\UserManagement\common\interfaces\IUserValidation;
+use crm\src\components\UserManagement\common\exceptions\UserManagementException;
 
 class CreateUser
 {
@@ -17,25 +20,41 @@ class CreateUser
     }
 
     /**
-     * Создаёт пользователя.
+     * Создаёт нового пользователя на основе DTO.
      *
-     * @param  UserDto $dto Данные нового пользователя с plain паролем.
-     * @return int|null Возвращает ID созданного пользователя или null при ошибке.
+     * Проводит валидацию данных, хеширует пароль, сохраняет пользователя в репозиторий
+     * и возвращает результат операции с объектом пользователя или ошибкой.
      *
-     * @throws InvalidArgumentException При ошибках валидации.
+     * @param  UserDto $dto DTO с данными нового пользователя (содержит plainPassword).
+     * @return IUserResult Результат операции: успешный с User или неуспешный с ошибкой.
+     *
+     * @throws UserManagementException Если валидация не пройдена или пользователь не сохранён.
+     * @throws \Throwable В случае неожиданных ошибок при сохранении пользователя.
      */
-    public function execute(UserDto $dto): ?int
+    public function execute(UserDto $dto): IUserResult
     {
-        // Валидируем DTO
-        $this->validator->validate($dto);
+        $validationResult = $this->validator->validate($dto);
 
-        // Создаём доменную сущность User с хешированным паролем
+        if (!$validationResult->isValid()) {
+            return UserResult::failure(
+                new UserManagementException(implode('; ', $validationResult->getErrors()))
+            );
+        }
+
         $user = new User(
             login: $dto->login,
             passwordHash: password_hash($dto->plainPassword, PASSWORD_DEFAULT),
         );
 
-        // Сохраняем пользователя через репозиторий и возвращаем ID
-        return $this->userRepository->save($user);
+        try {
+            $userId = $this->userRepository->save($user);
+            if (!is_int($userId) || $userId <= 0) {
+                throw new UserManagementException('Пользователь не сохранён');
+            }
+            $user->id = $userId;
+            return UserResult::success($user);
+        } catch (\Throwable $e) {
+            return UserResult::failure($e);
+        }
     }
 }

@@ -7,6 +7,7 @@ class User
     public function __construct(
         public string $login,
         public string $passwordHash,
+        public ?int $id = null,
     ) {
     }
 }

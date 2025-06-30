@@ -5,7 +5,15 @@ echo "🔍 Activated Git hook: running PHP checks..."
 
 cd public || exit 1
 
-# PHP_CodeSniffer
+# PHP_CodeSniffer phpcbf
+echo "Running phpcbf..."
+composer run phpcbf
+if [ $? -ne 0 ]; then
+  echo "❌ phpcbf failed. Please fix code style issues before committing."
+  exit 1
+fi
+
+# PHP_CodeSniffer phpcs
 echo "Running phpcs..."
 composer run phpcs
 if [ $? -ne 0 ]; then

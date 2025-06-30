@@ -8,7 +8,7 @@ use crm\src\components\LeadManagement\_common\adapters\LeadResult;
 use crm\src\components\LeadManagement\_common\interfaces\ILeadResult;
 use crm\src\components\LeadManagement\_exceptions\LeadManagementException;
 
-class DeleteLeadByAccountManagerId
+class DeleteLead
 {
     public function __construct(
         private ILeadRepository $repository,

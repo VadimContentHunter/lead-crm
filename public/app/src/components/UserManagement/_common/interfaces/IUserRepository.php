@@ -1,9 +1,9 @@
 <?php
 
-namespace crm\src\components\UserManagement\common\interfaces;
+namespace crm\src\components\UserManagement\_common\interfaces;
 
 use crm\src\_common\interfaces\IRepository;
-use crm\src\components\UserManagement\entities\User;
+use crm\src\components\UserManagement\_entities\User;
 
 /**
  * @extends IRepository<User>

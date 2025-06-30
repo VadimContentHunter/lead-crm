@@ -10,7 +10,6 @@ use DateTime;
 class Lead
 {
     public function __construct(
-        public ?int $id = null,
         public string $fullName,
         public string $contact,
         public string $address = '',
@@ -18,6 +17,7 @@ class Lead
         public ?StatusDto $status = null,
         public ?AccountManagerDto $accountManager = null,
         public ?DateTime $createdAt = null,
+        public ?int $id = null,
     ) {
     }
 }

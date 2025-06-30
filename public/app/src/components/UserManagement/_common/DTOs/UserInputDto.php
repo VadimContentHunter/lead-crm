@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\components\UserManagement\common\DTOs;
+namespace crm\src\components\UserManagement\_common\DTOs;
 
 class UserInputDto
 {

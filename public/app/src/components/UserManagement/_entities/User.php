@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\components\UserManagement\entities;
+namespace crm\src\components\UserManagement\_entities;
 
 class User
 {

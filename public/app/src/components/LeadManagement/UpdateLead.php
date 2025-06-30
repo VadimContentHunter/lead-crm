@@ -37,7 +37,7 @@ class UpdateLead
 
         try {
             // Получаем существующий лид для проверки
-            $existingLead = $this->repository->getById($dto->id);
+            $existingLead = $this->repository->getById($dto->id ?? 0);
             if ($existingLead === null) {
                 return LeadResult::failure(new LeadManagementException('Лид не найден'));
             }

@@ -8,4 +8,8 @@ use crm\src\components\SourceManagement\_entities\Source;
 interface ISourceResult extends IResult
 {
     public function getSource(): ?Source;
+
+    public function getId(): ?int;
+
+    public function getTitle(): ?string;
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\components\UserManagement\common\exceptions;
+namespace crm\src\components\UserManagement\_exceptions;
 
 use RuntimeException;
 

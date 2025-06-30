@@ -3,11 +3,11 @@
 namespace crm\src\components\UserManagement;
 
 use crm\src\_common\interfaces\IValidation;
-use crm\src\components\UserManagement\common\DTOs\UserInputDto;
-use crm\src\components\UserManagement\common\adapters\UserResult;
-use crm\src\components\UserManagement\common\interfaces\IUserResult;
-use crm\src\components\UserManagement\common\interfaces\IUserRepository;
-use crm\src\components\UserManagement\common\exceptions\UserManagementException;
+use crm\src\components\UserManagement\_common\DTOs\UserInputDto;
+use crm\src\components\UserManagement\_common\adapters\UserResult;
+use crm\src\components\UserManagement\_common\interfaces\IUserResult;
+use crm\src\components\UserManagement\_common\interfaces\IUserRepository;
+use crm\src\components\UserManagement\_exceptions\UserManagementException;
 
 class GetUser
 {

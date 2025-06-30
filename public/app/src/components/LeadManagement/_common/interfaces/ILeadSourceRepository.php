@@ -6,7 +6,7 @@ use crm\src\_common\interfaces\IRepository;
 use crm\src\components\LeadManagement\_common\DTOs\SourceDto;
 
 /**
- * @extends IRepository<Source>
+ * @extends IRepository<SourceDto>
  */
 interface ILeadSourceRepository extends IRepository
 {
@@ -14,7 +14,7 @@ interface ILeadSourceRepository extends IRepository
      * Получить источник по названию.
      *
      * @param  string $title
-     * @return Source|null
+     * @return SourceDto|null
      */
     public function getByTitle(string $title): ?SourceDto;
 

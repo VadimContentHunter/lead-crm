@@ -33,14 +33,4 @@ class DepositResult extends AResult implements IDepositResult
     {
         return $this->getDeposit()?->createdAt;
     }
-
-    public static function success(mixed $data = null): static
-    {
-        return new static($data, null);
-    }
-
-    public static function failure(Throwable $error): static
-    {
-        return new static(null, $error);
-    }
 }

@@ -6,7 +6,7 @@ use crm\src\_common\interfaces\IRepository;
 use crm\src\components\DepositManagement\_entities\Deposit;
 
 /**
- * @extends IRepository<Balance>
+ * @extends IRepository<Deposit>
  */
 interface IDepositRepository extends IRepository
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\components\SourcesManagement\entities;
+namespace crm\src\components\SourcesManagement\_entities;
 
 class Source
 {

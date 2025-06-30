@@ -1,8 +1,8 @@
 <?php
 
-namespace crm\src\components\SourcesManagement\common\interfaces;
+namespace crm\src\components\SourcesManagement\_common\interfaces;
 
-use crm\src\components\SourcesManagement\entities\Source;
+use crm\src\components\SourcesManagement\_entities\Source;
 
 interface ISourceRepository
 {

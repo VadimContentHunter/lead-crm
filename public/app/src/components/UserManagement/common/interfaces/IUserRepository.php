@@ -17,6 +17,11 @@ interface IUserRepository
     public function deleteByLogin(string $login): ?int;
 
     /**
+     * @return int|null Возвращает id удаленного пользователя
+     */
+    public function deleteById(int $id): ?int;
+
+    /**
      * @return int|null Возвращает id обновленного пользователя
      */
     public function update(User $user): ?int;

@@ -11,5 +11,13 @@ interface IUserResult
 
     public function getUser(): ?User;
 
+    public function getInt(): ?int;
+
+    public function getBool(): ?bool;
+
+    public function getData(): mixed;
+
+    public function hasNull(): bool;
+
     public function getError(): ?Throwable;
 }

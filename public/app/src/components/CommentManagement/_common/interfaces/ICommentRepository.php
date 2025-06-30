@@ -11,7 +11,7 @@ use crm\src\components\CommentManagement\_entities\Comment;
 interface ICommentRepository extends IRepository
 {
     /**
-     * Получить комментарии по ID лида
+     * Возвращает комментарии по leadId.
      *
      * @param  int $leadId
      * @return Comment[]
@@ -19,8 +19,7 @@ interface ICommentRepository extends IRepository
     public function getByLeadId(int $leadId): array;
 
     /**
-     * Получить комментарии по ID пользователя.
-     * Если передать null, вернуть комментарии с user_id IS NULL.
+     * Возвращает комментарии по userId или null (для поиска с user_id IS NULL).
      *
      * @param  int|null $userId
      * @return Comment[]
@@ -28,11 +27,34 @@ interface ICommentRepository extends IRepository
     public function getByUserId(?int $userId): array;
 
     /**
-     * Получить комментарии по ID депозита.
-     * Если передать null, вернуть комментарии с deposit_id IS NULL.
+     * Возвращает комментарии по depositId или null (для поиска с deposit_id IS NULL).
      *
      * @param  int|null $depositId
      * @return Comment[]
      */
     public function getByDepositId(?int $depositId): array;
+
+    /**
+     * Удаляет комментарии по leadId.
+     *
+     * @param  int $leadId
+     * @return int|null ID удалённых записей или null при ошибке
+     */
+    public function deleteByLeadId(int $leadId): ?int;
+
+    /**
+     * Удаляет комментарии по userId или null (удаляет комментарии с user_id IS NULL).
+     *
+     * @param  int|null $userId
+     * @return int|null ID удалённых записей или null при ошибке
+     */
+    public function deleteByUserId(?int $userId): ?int;
+
+    /**
+     * Удаляет комментарии по depositId или null (удаляет комментарии с deposit_id IS NULL).
+     *
+     * @param  int|null $depositId
+     * @return int|null ID удалённых записей или null при ошибке
+     */
+    public function deleteByDepositId(?int $depositId): ?int;
 }

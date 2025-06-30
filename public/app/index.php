@@ -11,9 +11,9 @@ use crm\src\controllers\NotFoundController;
 use  crm\src\services\RouteHandler\RouteHandler;
 use  crm\src\services\RouteHandler\entities\Route;
 
-define('PROJECT_ROOT', __DIR__);
+// define('PROJECT_ROOT', __DIR__);
 
-require_once PROJECT_ROOT . '/libs/autoload.php';
+require_once __DIR__ . '/libs/autoload.php';
 
 // $logger = LoggerFactory::createLogger(baseLogDir:PROJECT_ROOT . '/logs');
 $logger = new NullLogger();

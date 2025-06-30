@@ -3,7 +3,7 @@
 namespace crm\src\components\Repositories\QueryBuilder;
 
 use crm\src\components\Repositories\QueryBuilder\interfaces\IQueryModifiers;
-use crm\src\components\Repositories\DbRepository\common\interfaces\IQueryStructure;
+use crm\src\services\Repositories\DbRepository\common\interfaces\IQueryStructure;
 
 class QueryModifiers implements IQueryModifiers
 {

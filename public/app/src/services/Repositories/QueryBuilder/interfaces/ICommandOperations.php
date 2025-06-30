@@ -2,7 +2,7 @@
 
 namespace crm\src\components\Repositories\QueryBuilder\interfaces;
 
-use crm\src\components\Repositories\DbRepository\common\interfaces\IQueryStructure;
+use crm\src\services\Repositories\DbRepository\common\interfaces\IQueryStructure;
 
 /**
  * Интерфейс для выполнения CRUD-операций с данными.

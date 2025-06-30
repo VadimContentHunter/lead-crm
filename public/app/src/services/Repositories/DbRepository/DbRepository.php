@@ -1,16 +1,16 @@
 <?php
 
-namespace crm\src\components\Repositories\DbRepository;
+namespace crm\src\services\Repositories\DbRepository;
 
 use PDO;
 use PDOException;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
 use InvalidArgumentException;
-use crm\src\components\Repositories\DbRepository\common\adapter\RepoResult;
-use crm\src\components\Repositories\DbRepository\common\interfaces\IRepoResult;
-use crm\src\components\Repositories\DbRepository\common\interfaces\IRepository;
-use crm\src\components\Repositories\DbRepository\common\interfaces\IQueryStructure;
+use crm\src\services\Repositories\DbRepository\common\adapter\RepoResult;
+use crm\src\services\Repositories\DbRepository\common\interfaces\IRepoResult;
+use crm\src\services\Repositories\DbRepository\common\interfaces\IRepository;
+use crm\src\services\Repositories\DbRepository\common\interfaces\IQueryStructure;
 
 class DbRepository implements IRepository
 {

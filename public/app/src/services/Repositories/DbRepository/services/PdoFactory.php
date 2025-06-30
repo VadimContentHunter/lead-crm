@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\components\Repositories\DbRepository\services;
+namespace crm\src\services\Repositories\DbRepository\services;
 
 use PDO;
 use PDOException;

@@ -6,7 +6,7 @@ use crm\src\components\Repositories\QueryBuilder\QueryModifiers;
 use crm\src\components\Repositories\QueryBuilder\CommandOperations;
 use crm\src\components\Repositories\QueryBuilder\interfaces\IQueryModifiers;
 use crm\src\components\Repositories\QueryBuilder\interfaces\ICommandOperations;
-use crm\src\components\Repositories\DbRepository\common\interfaces\IQueryStructure;
+use crm\src\services\Repositories\DbRepository\common\interfaces\IQueryStructure;
 
 class QueryFacade implements IQueryModifiers, ICommandOperations
 {

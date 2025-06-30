@@ -63,7 +63,7 @@ class DeleteUser
         }
     }
 
-    public function executeByObject(UserDto $dto): IUserResult
+    public function executeByDto(UserDto $dto): IUserResult
     {
         $validationResult = $this->validator->validate($dto);
 

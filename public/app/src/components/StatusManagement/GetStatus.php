@@ -24,10 +24,14 @@ class GetStatus
     public function getById(int $id): IStatusResult
     {
         try {
-            $Status = $this->repository->getById($id);
-            return $Status
-                ? StatusResult::success($Status)
-                : StatusResult::success(null); // можно вернуть failure, если нужно строго
+            $status = $this->repository->getById($id);
+            if ($status === null) {
+                return StatusResult::failure(
+                    new StatusManagementException("Статус с ID {$id} не найден")
+                );
+            }
+
+            return StatusResult::success($status);
         } catch (Throwable $e) {
             return StatusResult::failure($e);
         }
@@ -39,10 +43,14 @@ class GetStatus
     public function getByTitle(string $title): IStatusResult
     {
         try {
-            $Status = $this->repository->getByTitle($title);
-            return $Status
-                ? StatusResult::success($Status)
-                : StatusResult::success(null);
+            $status = $this->repository->getByTitle($title);
+            if ($status === null) {
+                return StatusResult::failure(
+                    new StatusManagementException("Статус с названием {$title} не найден")
+                );
+            }
+
+            return StatusResult::success($status);
         } catch (Throwable $e) {
             return StatusResult::failure($e);
         }
@@ -54,8 +62,7 @@ class GetStatus
     public function getAll(): IStatusResult
     {
         try {
-            $Statuss = $this->repository->getAll();
-            return StatusResult::success($Statuss);
+            return StatusResult::success($this->repository->getAll());
         } catch (Throwable $e) {
             return StatusResult::failure($e);
         }
@@ -67,7 +74,6 @@ class GetStatus
     public function getByStatus(Status $Status): IStatusResult
     {
         $validationResult = $this->validator->validate($Status);
-
         if (!$validationResult->isValid()) {
             return StatusResult::failure(
                 new StatusManagementException('Ошибка валидации: ' . implode('; ', $validationResult->getErrors()))

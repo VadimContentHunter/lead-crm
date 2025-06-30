@@ -26,9 +26,13 @@ class GetSource
     {
         try {
             $source = $this->repository->getById($id);
-            return $source
-                ? SourceResult::success($source)
-                : SourceResult::success(null); // можно вернуть failure, если нужно строго
+            if ($source === null) {
+                return SourceResult::failure(
+                    new SourceManagementException("Источник с ID {$id} не найден")
+                );
+            }
+
+            return SourceResult::success($source);
         } catch (Throwable $e) {
             return SourceResult::failure($e);
         }
@@ -41,9 +45,14 @@ class GetSource
     {
         try {
             $source = $this->repository->getByTitle($title);
-            return $source
-                ? SourceResult::success($source)
-                : SourceResult::success(null);
+
+            if ($source === null) {
+                return SourceResult::failure(
+                    new SourceManagementException("Источник с названием {$title} не найден")
+                );
+            }
+
+            return SourceResult::success($source);
         } catch (Throwable $e) {
             return SourceResult::failure($e);
         }

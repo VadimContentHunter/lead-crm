@@ -1,9 +1,9 @@
 <?php
 
-namespace crm\src\components\StatusesManagement\_common\interfaces;
+namespace crm\src\components\StatusManagement\_common\interfaces;
 
 use crm\src\_common\interfaces\IResult;
-use crm\src\components\StatusesManagement\_entities\Status;
+use crm\src\components\StatusManagement\_entities\Status;
 
 interface IStatusResult extends IResult
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\components\StatusesManagement\_entities;
+namespace crm\src\components\StatusManagement\_entities;
 
 class Status
 {

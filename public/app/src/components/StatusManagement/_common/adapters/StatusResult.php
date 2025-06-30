@@ -1,10 +1,10 @@
 <?php
 
-namespace crm\src\components\StatusesManagement\_common\adapters;
+namespace crm\src\components\StatusManagement\_common\adapters;
 
 use Throwable;
-use crm\src\components\StatusesManagement\_entities\Status;
-use crm\src\components\StatusesManagement\_common\interfaces\IStatusResult;
+use crm\src\components\StatusManagement\_entities\Status;
+use crm\src\components\StatusManagement\_common\interfaces\IStatusResult;
 
 class StatusResult implements IStatusResult
 {

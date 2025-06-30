@@ -1,10 +1,10 @@
 <?php
 
-namespace crm\src\components\StatusesManagement\_exceptions;
+namespace crm\src\components\StatusManagement\_exceptions;
 
 use RuntimeException;
 
-class StatusesManagementException extends RuntimeException
+class StatusManagementException extends RuntimeException
 {
     // Здесь можно добавить общее логирование, коды ошибок, и т.д., если потребуется
 }

@@ -1,13 +1,13 @@
 <?php
 
-namespace crm\src\components\StatusesManagement;
+namespace crm\src\components\StatusManagement;
 
 use crm\src\_common\interfaces\IValidation;
-use crm\src\components\StatusesManagement\_entities\Status;
-use crm\src\components\StatusesManagement\_common\adapters\StatusResult;
-use crm\src\components\StatusesManagement\_common\interfaces\IStatusResult;
-use crm\src\components\StatusesManagement\_common\interfaces\IStatusRepository;
-use crm\src\components\StatusesManagement\_exceptions\StatusesManagementException;
+use crm\src\components\StatusManagement\_entities\Status;
+use crm\src\components\StatusManagement\_common\adapters\StatusResult;
+use crm\src\components\StatusManagement\_common\interfaces\IStatusResult;
+use crm\src\components\StatusManagement\_common\interfaces\IStatusRepository;
+use crm\src\components\StatusManagement\_exceptions\StatusManagementException;
 
 class CreateStatus
 {
@@ -26,7 +26,7 @@ class CreateStatus
      * @param  string $title Название источника
      * @return IStatusResult Результат операции: успешный с Status или неуспешный с ошибкой.
      *
-     * @throws StatusesManagementException Если валидация не пройдена или источник не сохранён.
+     * @throws StatusManagementException Если валидация не пройдена или источник не сохранён.
      * @throws \Throwable В случае неожиданных ошибок при сохранении источника.
      */
     public function execute(string $title): IStatusResult
@@ -36,7 +36,7 @@ class CreateStatus
 
         if (!$validationResult->isValid()) {
             return StatusResult::failure(
-                new StatusesManagementException(implode('; ', $validationResult->getErrors()))
+                new StatusManagementException(implode('; ', $validationResult->getErrors()))
             );
         }
 
@@ -45,7 +45,7 @@ class CreateStatus
         try {
             $StatusId = $this->StatusRepository->save($Status);
             if (!is_int($StatusId) || $StatusId <= 0) {
-                throw new StatusesManagementException('Источник не сохранён');
+                throw new StatusManagementException('Источник не сохранён');
             }
             $Status->id = $StatusId;
             return StatusResult::success($Status);

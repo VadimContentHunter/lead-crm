@@ -1,14 +1,14 @@
 <?php
 
-namespace crm\src\components\StatusesManagement\_usecases;
+namespace crm\src\components\StatusManagement\_usecases;
 
 use Throwable;
 use crm\src\_common\interfaces\IValidation;
-use crm\src\components\StatusesManagement\_entities\Status;
-use crm\src\components\StatusesManagement\_common\adapters\StatusResult;
-use crm\src\components\StatusesManagement\_common\interfaces\IStatusResult;
-use crm\src\components\StatusesManagement\_common\interfaces\IStatusRepository;
-use crm\src\components\StatusesManagement\_exceptions\StatusesManagementException;
+use crm\src\components\StatusManagement\_entities\Status;
+use crm\src\components\StatusManagement\_common\adapters\StatusResult;
+use crm\src\components\StatusManagement\_common\interfaces\IStatusResult;
+use crm\src\components\StatusManagement\_common\interfaces\IStatusRepository;
+use crm\src\components\StatusManagement\_exceptions\StatusManagementException;
 
 class GetStatus
 {
@@ -70,7 +70,7 @@ class GetStatus
 
         if (!$validationResult->isValid()) {
             return StatusResult::failure(
-                new StatusesManagementException('Ошибка валидации: ' . implode('; ', $validationResult->getErrors()))
+                new StatusManagementException('Ошибка валидации: ' . implode('; ', $validationResult->getErrors()))
             );
         }
 

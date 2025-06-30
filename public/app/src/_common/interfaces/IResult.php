@@ -19,10 +19,10 @@ interface IResult
     public function getError(): ?Throwable;
 
     /**
-     * Применить маппер к текущим данным и вернуть новые данные
+     * Применить callable (например, маппер) к текущим данным и вернуть результат.
      *
-     * @param  IMapper $mapper
-     * @return object|null
+     * @param  callable $mapper Функция или метод для преобразования данных
+     * @return mixed Результат преобразования, или null если данных нет
      */
-    public function mapData(IMapper $mapper): ?object;
+    public function mapData(callable $mapper): mixed;
 }

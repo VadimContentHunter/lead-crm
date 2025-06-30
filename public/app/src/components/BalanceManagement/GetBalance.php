@@ -24,9 +24,10 @@ class GetBalance
     {
         try {
             $balance = $this->repository->getById($id);
-            return $balance
-                ? BalanceResult::success($balance)
-                : BalanceResult::success(null); // Или failure, если нужно строгое поведение
+            if ($balance === null) {
+                return BalanceResult::failure(new \Exception("Balance not found by id: $id"));
+            }
+            return BalanceResult::success($balance);
         } catch (Throwable $e) {
             return BalanceResult::failure($e);
         }
@@ -42,9 +43,10 @@ class GetBalance
     {
         try {
             $balance = $this->repository->getByLeadId($leadId);
-            return $balance
-                ? BalanceResult::success($balance)
-                : BalanceResult::success(null);
+            if ($balance === null) {
+                return BalanceResult::failure(new \Exception("Balance not found by leadId: $leadId"));
+            }
+            return BalanceResult::success($balance);
         } catch (Throwable $e) {
             return BalanceResult::failure($e);
         }

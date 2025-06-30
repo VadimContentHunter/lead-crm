@@ -58,8 +58,7 @@ class LeadManagement
     public function delete(): DeleteLead
     {
         return $this->delete ??= new DeleteLead(
-            $this->leadRepository,
-            $this->validator
+            $this->leadRepository
         );
     }
 }

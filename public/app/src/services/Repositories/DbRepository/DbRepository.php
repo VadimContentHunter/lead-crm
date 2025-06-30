@@ -36,6 +36,8 @@ class DbRepository implements IRepository
      *
      * @param string $sql    SQL-запрос с плейсхолдерами (:param)
      * @param array<string,mixed>  $params Параметры для привязки к запросу
+     *
+     * @return IRepoResult
      */
     public function executeSql(string $sql, array $params = []): IRepoResult
     {
@@ -65,7 +67,6 @@ class DbRepository implements IRepository
             $wheres = $query->getWheres();
             $orderBy = $query->getOrderBy();
             $limit = $query->getLimit();
-            $bindings = $query->getBindings();
 
             if (!$table || !$action) {
                 $message = "Не указана таблица или действие.";
@@ -75,9 +76,9 @@ class DbRepository implements IRepository
 
             return match ($action) {
                 'insert' => RepoResult::success($this->executeInsert($table, $payload)),
-                'update' => RepoResult::success($this->executeUpdate($table, $payload, $wheres, $bindings)),
-                'delete' => RepoResult::success($this->executeDelete($table, $wheres, $bindings)),
-                'select' => RepoResult::success($this->executeSelect($table, $wheres, $orderBy, $limit, $bindings)),
+                'update' => RepoResult::success($this->executeUpdate($table, $payload, $wheres)),
+                'delete' => RepoResult::success($this->executeDelete($table, $wheres, $payload)),
+                'select' => RepoResult::success($this->executeSelect($table, $wheres, $orderBy, $limit, $payload)),
                 default   => RepoResult::failure(new InvalidArgumentException("Неизвестное действие: $action")),
             };
         } catch (PDOException $e) {
@@ -153,6 +154,7 @@ class DbRepository implements IRepository
     /**
      * @param string[] $conditions условия с плейсхолдерами
      * @param array<string,mixed> $data       параметры для условий
+     * @param array<string,string> $orderBy    сортировка, например ["column" => "id", "direction" => "asc"]
      *
      * @return mixed[]
      */

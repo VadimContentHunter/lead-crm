@@ -7,6 +7,9 @@ namespace crm\src\services\Repositories\DbRepository\services;
  */
 abstract class ASchemaProvider
 {
+    /**
+     * @return array<string,string>
+     */
     abstract protected static function schemas(): array;
 
     public static function get(string $table): ?string

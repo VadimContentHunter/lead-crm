@@ -1,9 +1,10 @@
 <?php
+
 namespace crm\src\controllers;
 
 class UserController
 {
-    public function view(int $id, string $role)
+    public function view(int $id, string $role): void
     {
         // Выводим основные параметры, пришедшие из маршрутизации
         echo "<h1>UserController::view вызван</h1>";

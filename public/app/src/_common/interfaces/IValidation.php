@@ -8,5 +8,8 @@ interface IValidation
 {
     public function validate(object $dataObj): IValidationResult;
 
+    /**
+     * @param array<string,mixed> $dataArray
+     */
     public function validateArray(array $dataArray): IValidationResult;
 }

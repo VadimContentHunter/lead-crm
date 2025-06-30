@@ -3,6 +3,7 @@
 namespace crm\src\services\Repositories\DbRepository\common\adapter;
 
 use Throwable;
+use RuntimeException;
 use crm\src\services\Repositories\DbRepository\common\interfaces\IRepoResult;
 
 class RepoResult implements IRepoResult
@@ -43,7 +44,6 @@ class RepoResult implements IRepoResult
      *
      * @param  callable $handler
      * @return mixed
-     * @throws Throwable
      */
     public function getProcessed(callable $handler): mixed
     {
@@ -51,8 +51,13 @@ class RepoResult implements IRepoResult
             return $handler($this->data);
         }
 
-        throw $this->error;
+        if ($this->error instanceof Throwable) {
+            throw $this->error;
+        }
+
+        throw new RuntimeException('Неизвестная ошибка');
     }
+
 
     /**
      * @return mixed[]|null
@@ -63,9 +68,9 @@ class RepoResult implements IRepoResult
     }
 
     /**
-     * @template T
+     * @template T of object
      * @param    class-string<T> $className Класс, к которому должен принадлежать объект
-     * @return   T|null                     Объект этого класса или null
+     * @return   T|null Объект этого класса или null
      */
     public function getObjectOrNull(string $className): ?object
     {

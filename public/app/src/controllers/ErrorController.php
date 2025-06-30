@@ -6,6 +6,9 @@ use Throwable;
 
 class ErrorController
 {
+    /**
+     * @param array<string,mixed> $params
+     */
     public function __construct(Throwable $exception, array $params)
     {
         $isWarning = $params['warning'] ?? false;

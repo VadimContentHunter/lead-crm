@@ -4,9 +4,6 @@ namespace crm\src\services\Repositories\DbRepository\common\interfaces;
 
 use Throwable;
 
-/**
- * @template T
- */
 interface IRepoResult
 {
     public function isSuccess(): bool;
@@ -18,9 +15,9 @@ interface IRepoResult
     /**
      * Обработать успешный результат через callback
      *
-     * @param callable(T): mixed $handler
-     *
-     * @throws Throwable
+     * @template T
+     * @param    callable(T): mixed $handler
+     * @return   mixed
      */
     public function getProcessed(callable $handler): mixed;
 
@@ -30,9 +27,11 @@ interface IRepoResult
     public function getArrayOrNull(): ?array;
 
     /**
-     * @template U
-     * @param    class-string<U> $className
-     * @return   U|null
+     * Преобразовать результат в объект указанного класса.
+     *
+     * @template T of object
+     * @param    class-string<T> $className
+     * @return   T|null
      */
     public function getObjectOrNull(string $className): ?object;
 }

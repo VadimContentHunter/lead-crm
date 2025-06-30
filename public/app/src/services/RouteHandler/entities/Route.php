@@ -16,8 +16,8 @@ class Route implements IRoute
      * @param string $className  Имя класса
      *                           контроллера
      * @param string|null $methodName Метод контроллера (опционально)
-     * @param array<string,mixed> $extraData  Дополнительные
-     *                                        данные маршрута
+     * @param array<string|int,mixed> $extraData  Дополнительные
+     *                                            данные маршрута
      */
     public function __construct(
         private string $pattern,
@@ -58,7 +58,7 @@ class Route implements IRoute
     }
 
     /**
-     * @param array<string,mixed> $data
+     * @param array<string|int,mixed> $data
      */
     public function setExtraData(array $data): void
     {
@@ -66,7 +66,7 @@ class Route implements IRoute
     }
 
     /**
-     * @return array<string,mixed>
+     * @return array<string|int,mixed>
      */
     public function getExtraData(): array
     {

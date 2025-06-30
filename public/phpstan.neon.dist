@@ -1,7 +1,7 @@
 parameters:
     level: 8
     paths:
-        - app/services
+        - app
         - tests
     excludePaths:
         analyseAndScan:

@@ -19,7 +19,7 @@ class RouteHandler
         private bool $autoProcessUrl = true,
         private ?IRoute $defaultRoute = null,
         private ?IRoute $errorRoute = null,
-        private ?LoggerInterface $logger = new NullLogger()
+        private LoggerInterface $logger = new NullLogger()
     ) {
     }
 
@@ -127,12 +127,14 @@ class RouteHandler
                 throw new \RuntimeException("Метод {$methodName} не найден в классе {$className}.");
             }
 
-            call_user_func_array([$controller, $methodName], $mergedParams);
+            // Вызываем метод напрямую с распаковкой аргументов — PHPStan это понимает
+            $controller->{$methodName}(...$mergedParams);
         } else {
             $reflection = new \ReflectionClass($className);
             $reflection->newInstanceArgs($mergedParams);
         }
     }
+
 
     /**
      * Обрабатывает URL, отрезая GET-параметры (всё после ?).
@@ -146,6 +148,9 @@ class RouteHandler
      * Объединяет параметры из URL и extraData в один индексированный массив.
      *
      * @param array<int|string,mixed> $routeParams
+     * @param array<int|string,mixed> $extraData
+     *
+     * @return array<int|string,mixed>
      */
     private function mergeParams(array $routeParams, $extraData): array
     {

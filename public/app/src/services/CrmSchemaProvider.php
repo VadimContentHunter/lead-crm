@@ -4,6 +4,9 @@ namespace crm\src\services\Repositories\DbRepository\services;
 
 class CrmSchemaProvider extends ASchemaProvider
 {
+    /**
+     * @return array<string,string>
+     */
     protected static function schemas(): array
     {
         return [

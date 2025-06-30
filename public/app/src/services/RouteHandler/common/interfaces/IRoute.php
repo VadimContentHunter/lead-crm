@@ -19,12 +19,12 @@ interface IRoute
     public function getMethodName(): ?string;
 
     /**
-     * @param array<string,mixed> $data
+     * @param array<string|int,mixed> $data
      */
     public function setExtraData(array $data): void;
 
     /**
-     * @return array<string,mixed>
+     * @return array<string|int,mixed>
      */
     public function getExtraData(): array;
 

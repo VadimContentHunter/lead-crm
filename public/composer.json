@@ -31,15 +31,15 @@
     },
     "scripts": {
         "phpcs": [
-            "./vendor/bin/phpcs"
+            "./app/libs/bin/phpcs"
         ],
         "phpunit": [
-            "./vendor/bin/phpunit"
+            "./app/libs/bin/phpunit"
         ],
         "phpstan": [
-            "php -d memory_limit=1536M ./vendor/bin/phpstan analyse"
+            "php -d memory_limit=1536M ./app/libs/bin/phpstan analyse"
         ],
-        "phpcbf": "./vendor/bin/phpcbf app/ tests/",
+        "phpcbf": "./app/libs/bin/phpcbf app/ tests/",
         "updateHooks": "node scripts/updateBashHooks.js"
     }
 }

@@ -94,22 +94,4 @@ class Query implements IQueryStructure
     {
         return $this->payload;
     }
-
-    /**
-     * @param array<string,mixed> $bindings
-     */
-    public function setBindings(array $bindings): IQueryStructure
-    {
-        $this->bindings = $bindings;
-
-        return $this;
-    }
-
-    /**
-     * @return array<string,mixed>
-     */
-    public function getBindings(): array
-    {
-        return $this->bindings;
-    }
 }

@@ -15,11 +15,17 @@ abstract class AResult implements IResult
 
     public static function success(mixed $data = null): static
     {
+        /**
+         * @phpstan-ignore-next-line
+         */
         return new static($data, null);
     }
 
     public static function failure(Throwable $error): static
     {
+        /**
+         * @phpstan-ignore-next-line
+         */
         return new static(null, $error);
     }
 

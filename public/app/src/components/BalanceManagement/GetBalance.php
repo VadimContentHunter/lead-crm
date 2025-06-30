@@ -3,18 +3,14 @@
 namespace crm\src\components\BalanceManagement\_usecases;
 
 use Throwable;
-use crm\src\_common\interfaces\IValidation;
-use crm\src\components\BalanceManagement\_entities\Balance;
 use crm\src\components\BalanceManagement\_common\adapters\BalanceResult;
 use crm\src\components\BalanceManagement\_common\interfaces\IBalanceResult;
 use crm\src\components\BalanceManagement\_common\interfaces\IBalanceRepository;
-use crm\src\components\BalanceManagement\_exceptions\BalanceManagementException;
 
 class GetBalance
 {
     public function __construct(
         private IBalanceRepository $repository,
-        private IValidation $validator,
     ) {
     }
 

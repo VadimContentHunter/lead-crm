@@ -5,7 +5,7 @@ namespace crm\src\_common\interfaces;
 /**
  * Универсальный интерфейс для базовых CRUD-операций над сущностями.
  *
- * @template TEntity
+ * @template TEntity of object
  */
 interface IRepository
 {

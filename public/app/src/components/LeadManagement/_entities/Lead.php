@@ -4,7 +4,7 @@ namespace crm\src\components\LeadManagement\_entities;
 
 use crm\src\components\LeadManagement\_common\DTOs\SourceDto;
 use crm\src\components\LeadManagement\_common\DTOs\StatusDto;
-use crm\src\components\LeadManagement\_common\DTOs\UserDto;
+use crm\src\components\LeadManagement\_common\DTOs\AccountManagerDto;
 use DateTime;
 
 class Lead
@@ -16,7 +16,7 @@ class Lead
         public string $address = '',
         public ?SourceDto $source = null,
         public ?StatusDto $status = null,
-        public ?UserDto $accountManager = null,
+        public ?AccountManagerDto $accountManager = null,
         public ?DateTime $createdAt = null,
     ) {
     }

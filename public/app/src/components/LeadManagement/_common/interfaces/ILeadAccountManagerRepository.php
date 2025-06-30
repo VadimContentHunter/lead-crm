@@ -3,12 +3,12 @@
 namespace crm\src\components\LeadManagement\_common\interfaces;
 
 use crm\src\_common\interfaces\IRepository;
-use crm\src\components\LeadManagement\_common\DTOs\UserDto;
+use crm\src\components\LeadManagement\_common\DTOs\AccountManagerDto;
 
 /**
- * @extends IRepository<UserDto>
+ * @extends IRepository<AccountManagerDto>
  */
-interface ILeadUserRepository extends IRepository
+interface ILeadAccountManagerRepository extends IRepository
 {
     /**
      * Удаляет пользователя по логину.
@@ -22,7 +22,7 @@ interface ILeadUserRepository extends IRepository
      * Получает пользователя по логину.
      *
      * @param  string $login
-     * @return UserDto|null
+     * @return AccountManagerDto|null
      */
-    public function getByLogin(string $login): ?UserDto;
+    public function getByLogin(string $login): ?AccountManagerDto;
 }

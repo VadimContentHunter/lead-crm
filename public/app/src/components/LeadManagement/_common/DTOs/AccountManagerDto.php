@@ -2,7 +2,7 @@
 
 namespace crm\src\components\LeadManagement\_common\DTOs;
 
-class UserDto
+class AccountManagerDto
 {
     public function __construct(
         public ?int $id = null,

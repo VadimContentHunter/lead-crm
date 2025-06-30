@@ -12,6 +12,13 @@ use crm\src\components\LeadManagement\_common\DTOs\LeadFilterDto;
 interface ILeadRepository extends IRepository
 {
     /**
+     * Удаляет лидов по accountManagerId
+     *
+     * @return int|null - число удалённых записей или null при ошибке
+     */
+    public function deleteByAccountManagerId(int $accountManagerId): ?int;
+
+    /**
      * Получить лиды, закреплённые за менеджером по его ID.
      *
      * @param  int $managerId

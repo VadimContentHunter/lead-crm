@@ -9,7 +9,7 @@ use crm\src\components\LeadManagement\_common\DTOs\LeadInputDto;
 use crm\src\components\LeadManagement\_common\adapters\LeadResult;
 use crm\src\components\LeadManagement\_common\interfaces\ILeadResult;
 use crm\src\components\LeadManagement\_common\interfaces\ILeadRepository;
-use crm\src\components\LeadManagement\_common\interfaces\ILeadUserRepository;
+use crm\src\components\LeadManagement\_common\interfaces\ILeadAccountManagerRepository;
 use crm\src\components\LeadManagement\_common\interfaces\ILeadSourceRepository;
 use crm\src\components\LeadManagement\_common\interfaces\ILeadStatusRepository;
 use crm\src\components\LeadManagement\_exceptions\LeadManagementException;
@@ -20,7 +20,7 @@ class CreateLead
         private ILeadRepository $repository,
         private ILeadSourceRepository $sourceRepository,
         private ILeadStatusRepository $statusRepository,
-        private ILeadUserRepository $userRepository,
+        private ILeadAccountManagerRepository $accManagerRepository,
         private IValidation $validator,
     ) {
     }
@@ -43,7 +43,7 @@ class CreateLead
             : null;
 
         $accountManager = $dto->accountManagerId !== null
-            ? $this->userRepository->getById($dto->accountManagerId)
+            ? $this->accManagerRepository->getById($dto->accountManagerId)
             : null;
 
         $lead = new Lead(

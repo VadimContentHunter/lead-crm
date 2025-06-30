@@ -8,7 +8,7 @@ use crm\src\components\LeadManagement\_entities\Lead;
 use crm\src\components\LeadManagement\_common\interfaces\ILeadResult;
 use crm\src\components\LeadManagement\_common\DTOs\SourceDto;
 use crm\src\components\LeadManagement\_common\DTOs\StatusDto;
-use crm\src\components\LeadManagement\_common\DTOs\UserDto;
+use crm\src\components\LeadManagement\_common\DTOs\AccountManagerDto;
 
 class LeadResult extends AResult implements ILeadResult
 {
@@ -67,7 +67,7 @@ class LeadResult extends AResult implements ILeadResult
         return $this->getStatus()?->id;
     }
 
-    public function getAccountManager(): ?UserDto
+    public function getAccountManager(): ?AccountManagerDto
     {
         return $this->getLead()?->accountManager;
     }

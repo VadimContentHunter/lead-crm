@@ -5,7 +5,7 @@ namespace crm\src\components\LeadManagement\_common\interfaces;
 use crm\src\_common\interfaces\IResult;
 use crm\src\components\LeadManagement\_common\DTOs\SourceDto;
 use crm\src\components\LeadManagement\_common\DTOs\StatusDto;
-use crm\src\components\LeadManagement\_common\DTOs\UserDto;
+use crm\src\components\LeadManagement\_common\DTOs\AccountManagerDto;
 use crm\src\components\LeadManagement\_entities\Lead;
 
 interface ILeadResult extends IResult
@@ -41,9 +41,9 @@ interface ILeadResult extends IResult
     // === Методы для User (Account Manager) ===
 
     /**
-     * @return UserDto|null
+     * @return AccountManagerDto|null
      */
-    public function getAccountManager(): ?UserDto;
+    public function getAccountManager(): ?AccountManagerDto;
     public function getAccountManagerLogin(): ?string;
     public function getAccountManagerId(): ?int;
 

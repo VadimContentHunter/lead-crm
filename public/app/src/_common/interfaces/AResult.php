@@ -58,4 +58,18 @@ abstract class AResult implements IResult
     {
         return $this->data === null;
     }
+
+    /**
+     * Применить маппер к текущим данным и вернуть новые данные
+     *
+     * @param  IMapper $mapper
+     * @return object|null
+     */
+    public function mapData(IMapper $mapper): ?object
+    {
+        if ($this->data === null) {
+            return null;
+        }
+        return $mapper->map($this->data);
+    }
 }

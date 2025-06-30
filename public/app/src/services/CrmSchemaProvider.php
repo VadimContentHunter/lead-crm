@@ -56,7 +56,6 @@ class CrmSchemaProvider extends ASchemaProvider
                     status_id INT NULL DEFAULT NULL,
                     account_manager_id INT NULL DEFAULT NULL,
                     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    visible BOOLEAN NOT NULL DEFAULT TRUE,
 
                     CONSTRAINT fk_lead_source FOREIGN KEY (source_id) REFERENCES sources(id) ON DELETE SET NULL,
                     CONSTRAINT fk_lead_status FOREIGN KEY (status_id) REFERENCES statuses(id) ON DELETE SET NULL,

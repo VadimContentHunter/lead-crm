@@ -2,18 +2,18 @@
 
 namespace crm\src\components\UserManagement;
 
+use crm\src\_common\interfaces\IValidation;
 use crm\src\components\UserManagement\common\DTOs\UserInputDto;
-use crm\src\components\UserManagement\common\interfaces\IUserRepository;
-use crm\src\components\UserManagement\common\interfaces\IUserValidation;
-use crm\src\components\UserManagement\common\interfaces\IUserResult;
 use crm\src\components\UserManagement\common\adapters\UserResult;
+use crm\src\components\UserManagement\common\interfaces\IUserResult;
+use crm\src\components\UserManagement\common\interfaces\IUserRepository;
 use crm\src\components\UserManagement\common\exceptions\UserManagementException;
 
 class GetUser
 {
     public function __construct(
         private IUserRepository $userRepository,
-        private IUserValidation $validator,
+        private IValidation $validator,
     ) {
     }
 

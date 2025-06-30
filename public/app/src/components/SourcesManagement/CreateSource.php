@@ -7,7 +7,7 @@ use crm\src\components\SourcesManagement\_entities\Source;
 use crm\src\components\SourcesManagement\_common\adapters\SourceResult;
 use crm\src\components\SourcesManagement\_common\interfaces\ISourceResult;
 use crm\src\components\SourcesManagement\_common\interfaces\ISourceRepository;
-use crm\src\components\SourcesManagement\common\exceptions\SourcesManagementException;
+use crm\src\components\SourcesManagement\_exceptions\SourcesManagementException;
 
 class CreateSource
 {

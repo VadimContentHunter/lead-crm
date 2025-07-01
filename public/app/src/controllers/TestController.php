@@ -29,7 +29,11 @@ class TestController
         try {
             $layout = (new TemplateBundle(
                 templatePath: 'layout.tpl.php',
-                variables: [],
+                variables: [
+                    'body_js' => [
+                        '/assets/js/app.js'
+                    ]
+                ],
                 partialsContainer: 'content'
             ))
             ->addPartial((new TemplateBundle(
@@ -43,8 +47,8 @@ class TestController
                         'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css'
                     ],
                     'js' => [
-                        '/assets/js/app.js',
-                        '/assets/js/analytics.js'
+                        '/assets/js/JsonRpcResponseHandler.js',
+                        '/assets/js/JsonRpcClient.js'
                     ]
                 ],
                 partialsContainer: 'head'

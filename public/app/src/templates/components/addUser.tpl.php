@@ -5,7 +5,7 @@
 <section class="component-wrapper-line">
 
     <section class="component component--medium">
-        <form class="base-form">
+        <form class="base-form" id="add-user-form">
             <div class="form-messages-container">
                 <div class="form-message error">
                     <p>Ошибка: неверный логин или пароль.</p>

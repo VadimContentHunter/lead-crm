@@ -5,7 +5,26 @@
     width: 100%;
     max-width: 250px;
 
-    .navbar {}
+    .header {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+
+        color: green;
+
+        .icon-main {
+            font-size: 44px;
+            // color: green;
+        }
+
+        p {
+            font-size: 28px;
+            font-weight: bold;
+        }
+    }
 
     .top-menu {}
 

@@ -11,34 +11,40 @@ $content = $content ?? '';
     <?= $head ?>
 </head>
 <body>
-    <!-- Панель навигации -->
-    <header class="navbar">
-        <div class="user-info">
-            Имя пользователя
-        </div>
-        <div class="actions">
-            <button>Настройки</button>
-            <button>Выход</button>
-        </div>
-    </header>
-
     <!-- Основная страница -->
     <div class="page-container">
-        <div class="content-area">
+
+        <!-- Основное меню -->
+        <aside class="main-menu">
+            <!-- Панель навигации -->
+            <header class="navbar">
+                <div></div>
+            </header>
+            <nav class="top-menu">
+
+            </nav>
+            <nav class="bottom-menu">
+
+            </nav>
+        </aside>
+
+
+        <div class="content-container">
             <!-- Меню внутри контента -->
-            <aside class="content-menu">
-                <button>Добавить пользователя</button>
-                <button>Создать лид</button>
+            <aside class="header-content">
+                <nav class="menu-content">
+
+                </nav>
             </aside>
 
             <!-- Основной контент -->
             <main class="main-content">
-                <?= $content ?? '' ?>
-
-                <footer class="footer">
-                    &copy; <?= date('Y') ?> CRM Обменка
-                </footer>
+                <div></div>
             </main>
+
+            <footer class="footer-content">
+                    &copy; <?= date('Y') ?> CRM Обменка
+            </footer>
         </div>
     </div>
 </body>

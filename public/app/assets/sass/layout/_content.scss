@@ -1,0 +1,21 @@
+.content-container {
+    flex: 1;
+    background-color: burlywood;
+    width: 100%;
+    max-width: 1200px;
+    overflow-y: auto;
+
+    display: flex;
+    flex-direction: column;
+    // border-radius: var(--border-radius-base) var(--border-radius-base) 0px 0px;
+
+    display: flex;
+    flex-direction: row;
+
+    .header-content {}
+
+    .menu-content {}
+
+    .main-content {}
+
+}

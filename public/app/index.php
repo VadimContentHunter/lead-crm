@@ -8,6 +8,7 @@ use crm\src\controllers\HomeController;
 use crm\src\controllers\TestController;
 use crm\src\controllers\UserController;
 use crm\src\controllers\ErrorController;
+use crm\src\controllers\LoginController;
 use crm\src\controllers\NotFoundController;
 use  crm\src\services\RouteHandler\RouteHandler;
 use  crm\src\services\RouteHandler\entities\Route;
@@ -20,6 +21,12 @@ require_once __DIR__ . '/libs/autoload.php';
 $logger = new NullLogger();
 
 // Создаём маршруты:
+
+$routeLogin = new Route(
+    pattern: '^/login',
+    className: LoginController::class,
+    extraData: [__DIR__]
+);
 
 $routeTEST = new Route(
     pattern: '^/test',
@@ -54,7 +61,7 @@ $routError = new Route(
 
 // Создаём обработчик маршрутов, передаём список маршрутов и URL для обработки:
 $routeHandler = new RouteHandler(
-    routes: [$route1, $route2, $routeTEST],
+    routes: [$route1, $route2, $routeTEST, $routeLogin ],
     currentUrl: $_SERVER['REQUEST_URI'],
     defaultRoute: $rout404,
     errorRoute: $routError,

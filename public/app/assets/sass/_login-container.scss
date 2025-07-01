@@ -1,0 +1,32 @@
+@use './var';
+
+.login-container {
+    height: 100vh;
+    width: 100%;
+    background-color: #f5f5f5;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    form.base-form {
+        background-color: #fff;
+        padding: 32px;
+        border-radius: var(--border-radius-base);
+        box-shadow: var(--shadow-soft);
+        width: 100%;
+        max-width: 480px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .form-message {
+        background-color: #ffe0e0;
+        color: #a10000;
+        border: 1px solid #ffaaaa;
+        border-radius: var(--border-radius-base);
+        padding: 12px 16px;
+        font-size: var(--font-size-base);
+    }
+}

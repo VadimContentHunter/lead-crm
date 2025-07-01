@@ -1,11 +1,7 @@
 <?php
 
-$title = $title ?? 'Без названия';
 $head = $head ?? '';
-$content = $content ?? '';
-
-$main_menu = $main_menu ?? '';
-$content_container = $content_container ?? '';
+$main_container = $main_container ?? '';
 ?>
 
 <!DOCTYPE html>
@@ -14,14 +10,7 @@ $content_container = $content_container ?? '';
     <?= $head ?>
 </head>
 <body>
-    <!-- Основная страница -->
-    <div class="page-container">
-
-        <?= $main_menu ?>
-
-        <?= $content_container ?>
-        
-    </div>
+    <?= $main_container ?>
 </body>
 
 

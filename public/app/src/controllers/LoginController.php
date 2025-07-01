@@ -7,7 +7,7 @@ use crm\src\services\TemplateRenderer\HeaderManager;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 
-class TestController
+class LoginController
 {
     private TemplateRenderer $renderer;
     private HeaderManager $headers;
@@ -49,41 +49,10 @@ class TestController
                 ],
                 partialsContainer: 'head'
             )))
-            ->addPartial(
-                (new TemplateBundle(
-                    templatePath: 'containers/page-container.tpl.php',
-                    partialsContainer: 'main_container'
-                ))->addPartial((new TemplateBundle(
-                    templatePath: 'partials/main-menu.tpl.php',
-                    partialsContainer: 'main_menu'
-                )))
-                ->addPartial((new TemplateBundle(
-                    templatePath: 'partials/content.tpl.php',
-                    variables: [
-                    'components' => [
-                        (new TemplateBundle(templatePath: 'components/baseForm.tpl.php')),
-                        (new TemplateBundle(
-                            templatePath: 'components/baseTable.tpl.php',
-                            variables: [
-                                'columns' => ['Название', 'Тип', 'Значение', 'Опции'],
-                                'rows' => [
-                                    ['Имя', 'text', ['type' => 'text', 'name' => 'username', 'value' => ''], 'Опция 1'],
-                                    ['Возраст', 'number', ['type' => 'number', 'name' => 'age', 'value' => 25], 'Опция 2'],
-                                    ['Пароль', 'password', ['type' => 'password', 'name' => 'pass'], ''],
-                                    ['Статус', 'select', [
-                                        'type' => 'select',
-                                        'name' => 'status',
-                                        'value' => 'active',
-                                        'options' => ['active' => 'Активен', 'blocked' => 'Заблокирован']
-                                    ], ''],
-                                ]
-                            ]
-                        )),
-                    ]
-                    ],
-                    partialsContainer: 'content_container'
-                )))
-            );
+            ->addPartial((new TemplateBundle(
+                templatePath: 'containers/login-container.tpl.php',
+                partialsContainer: 'main_container'
+            )));
 
             // Успешный ответ
             $this->headers->setResponseCode(200);

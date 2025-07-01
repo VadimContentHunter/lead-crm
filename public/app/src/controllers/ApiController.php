@@ -20,18 +20,17 @@ class ApiController
                     $rpc->replyData([
                         ['type' => 'error', 'message' => 'Пароли не совпадают.']
                     ]);
+                } else {
+                    $rpc->replyData([
+                        ['type' => 'success', 'message' => 'Пользователь добавлен']
+                    ]);
                 }
-
-            // успех
-                $rpc->replyData([
-                    ['type' => 'success', 'message' => 'Пользователь добавлен']
-                ]);
-                break;
+                // break;
 
             case 'page.update':
             // вернуть новый контент
                 $rpc->replyContentUpdate('main.main-content', '<p>Обновлено</p>');
-                break;
+                // break;
 
             default:
                 $rpc->replyError(-32601, 'Метод не найден');

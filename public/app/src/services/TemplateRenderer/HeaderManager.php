@@ -4,6 +4,9 @@ namespace crm\src\services\TemplateRenderer;
 
 class HeaderManager
 {
+    /**
+     * @var mixed[]
+     */
     private array $headers = [];
     private ?int $code = null;
 
@@ -21,6 +24,9 @@ class HeaderManager
         }
     }
 
+    /**
+     * @return mixed[]
+     */
     public function getAll(): array
     {
         return $this->headers;

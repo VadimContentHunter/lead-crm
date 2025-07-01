@@ -20,7 +20,7 @@ class JsonRpcServerFacade
                 $e->getMessage(),
                 null
             ));
-            exit;
+            // exit;
         }
     }
 
@@ -29,6 +29,9 @@ class JsonRpcServerFacade
         return $this->decoder->getMethod();
     }
 
+    /**
+     * @return mixed[]
+     */
     public function getParams(): array
     {
         return $this->decoder->getParams();
@@ -39,6 +42,9 @@ class JsonRpcServerFacade
         return $this->decoder->getId();
     }
 
+    /**
+     * @param mixed[] $response
+     */
     public function send(array $response): never
     {
         header('Content-Type: application/json');
@@ -46,6 +52,9 @@ class JsonRpcServerFacade
         exit;
     }
 
+    /**
+     * @param mixed[] $messages
+     */
     public function replyData(array $messages): never
     {
         $this->send(JsonRpcResponseBuilder::data($messages, $this->getId()));

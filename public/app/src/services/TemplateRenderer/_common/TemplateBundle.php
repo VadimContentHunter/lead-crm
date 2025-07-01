@@ -6,10 +6,16 @@ use crm\src\services\TemplateRenderer\_common\interfaces\ITemplateBundle;
 
 class TemplateBundle implements ITemplateBundle
 {
+    /**
+     * @var ITemplateBundle[]
+     */
     private array $partials = [];
 
     public function __construct(
         private string $templatePath,
+        /**
+         * @var mixed[]
+         */
         private array $variables = [],
         private ?string $partialsContainer = null
     ) {
@@ -30,6 +36,9 @@ class TemplateBundle implements ITemplateBundle
         return $this->partialsContainer;
     }
 
+    /**
+     * @return ITemplateBundle[]
+     */
     public function getPartials(): array
     {
         return $this->partials;

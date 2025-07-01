@@ -50,6 +50,9 @@ class TemplateRenderer
         return $output;
     }
 
+    /**
+     * @param mixed[] $variables
+     */
     private function render(string $relativePath, array $variables): string
     {
         $fullPath = rtrim($this->baseTemplateDir, '/') . '/' . ltrim($relativePath, '/');
@@ -62,11 +65,15 @@ class TemplateRenderer
         extract($variables);
         ob_start();
         include $fullPath;
-        return ob_get_clean();
+        return ob_get_clean() ?: '';
     }
 
     /**
      * Рекурсивно обрабатывает переменные, заменяя TemplateBundle-объекты на отрендеренные строки.
+     *
+     * @param mixed[] $vars
+     *
+     * @return mixed[]
      */
     private function resolveVariables(array $vars): array
     {

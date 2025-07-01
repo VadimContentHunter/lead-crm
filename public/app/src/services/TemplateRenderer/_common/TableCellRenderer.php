@@ -4,17 +4,25 @@ namespace crm\src\services\TemplateRenderer\_common;
 
 class TableCellRenderer
 {
+    /**
+     * @param mixed[]|string $cell
+     */
     public static function isInput(array|string $cell): bool
     {
         return is_array($cell) && isset($cell['type'], $cell['name']);
     }
 
+    /**
+     * @param mixed[]|string $cell
+     */
     public static function render(array|string $cell): string
     {
         if (!self::isInput($cell)) {
+            $cell = is_array($cell) ? $cell['type'] : $cell;
             return htmlspecialchars((string) $cell);
         }
 
+        $cell = is_array($cell) ? $cell : ['type' => $cell];
         return match ($cell['type']) {
             'text', 'number', 'password' => self::renderInput($cell),
             'select' => self::renderSelect($cell),
@@ -22,6 +30,9 @@ class TableCellRenderer
         };
     }
 
+    /**
+     * @param mixed[] $cell
+     */
     private static function renderInput(array $cell): string
     {
         $type = htmlspecialchars($cell['type']);
@@ -31,6 +42,9 @@ class TableCellRenderer
         return "<input type=\"$type\" name=\"$name\" value=\"$value\">";
     }
 
+    /**
+     * @param mixed[] $cell
+     */
     private static function renderSelect(array $cell): string
     {
         $name = htmlspecialchars($cell['name']);

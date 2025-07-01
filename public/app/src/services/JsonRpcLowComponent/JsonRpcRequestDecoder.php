@@ -7,9 +7,15 @@ use InvalidArgumentException;
 
 class JsonRpcRequestDecoder
 {
+    /**
+     * @var mixed[]
+     */
     private array $data;
     private ?string $raw = null;
 
+    /**
+     * @param string|mixed[]|null $source
+     */
     public function __construct(string|array|null $source = null)
     {
         if ($source === null) {
@@ -38,6 +44,9 @@ class JsonRpcRequestDecoder
         return $this->raw;
     }
 
+    /**
+     * @return mixed[]
+     */
     public function getData(): array
     {
         return $this->data;
@@ -48,6 +57,9 @@ class JsonRpcRequestDecoder
         return $this->data['method'];
     }
 
+    /**
+     * @return mixed[]
+     */
     public function getParams(): array
     {
         return is_array($this->data['params'] ?? null) ? $this->data['params'] : [];

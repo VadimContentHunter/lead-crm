@@ -20,17 +20,17 @@
 
             <div class="form-group">
                 <label for="text-input">Логин</label>
-                <input type="text" id="text-input" name="text">
+                <input type="text" name="text">
             </div>
 
             <div class="form-group">
                 <label for="password-input">Пароль</label>
-                <input type="password" id="password-input" name="password">
+                <input type="password" name="password">
             </div>
 
             <div class="form-group">
                 <label for="password-input">Повторите пароль</label>
-                <input type="password" id="password-input" name="password">
+                <input type="password" name="password">
             </div>
 
             <div class="form-actions">
@@ -40,3 +40,15 @@
         </form>
     </section>
 </section>
+
+<script type="module">
+  import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
+
+  window.addEventListener('DOMContentLoaded', () => {
+    ComponentFunctions.attachJsonRpcInputTrigger({
+      triggerSelector: '#add-user-form .form-actions .form-button.submit',
+      containerSelector: '#add-user-form',
+      method: 'user.add'
+    });
+  });
+</script>

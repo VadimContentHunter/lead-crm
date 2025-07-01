@@ -106,4 +106,43 @@ export class JsonRpcTransport {
             }
         }
     }
+
+    /**
+     * Отправляет данные, собранные из всех <input>, <select>, <textarea> внутри указанного контейнера
+     * @param {string|HTMLElement} selectorOrElement
+     */
+    sendFromSelectorInputs(selectorOrElement) {
+        try {
+            const request = this.formatter.fromSelectorInputs(selectorOrElement).params;
+            this.send(request);
+        } catch (e) {
+            const err = { code: -2, message: e.message };
+            if (typeof this.onError === 'function') {
+                this.onError(err, null);
+            } else {
+                console.error('[Transport Error]', err);
+            }
+        }
+    }
+
+    /**
+     * Отправляет данные, собранные из HTML <form>
+     * @param {HTMLFormElement} form
+     */
+    sendFromForm(form) {
+        if (!(form instanceof HTMLFormElement)) {
+            const err = { code: -2, message: 'sendFromForm: Ожидается элемент <form>' };
+            if (typeof this.onError === 'function') {
+                this.onError(err, null);
+            } else {
+                console.error('[Transport Error]', err);
+            }
+            return;
+        }
+
+        const request = this.formatter.fromForm(form).params;
+        this.send(request);
+    }
+
+
 }

@@ -47,8 +47,8 @@ class TestController
                         'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css'
                     ],
                     'js' => [
-                        '/assets/js/JsonRpcResponseHandler.js',
-                        '/assets/js/JsonRpcClient.js'
+                        // '/assets/js/JsonRpcResponseHandler.js',
+                        // '/assets/js/JsonRpcClient.js'
                     ]
                 ],
                 partialsContainer: 'head'

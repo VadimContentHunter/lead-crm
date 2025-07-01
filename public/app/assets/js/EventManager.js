@@ -24,7 +24,7 @@
 export class EventManager {
     constructor() {
         /**
-         * @type {Map<HTMLElement, Record<string, Set<Function>>>}
+         * @type {Map<HTMLElement, Record<string, Set<Function>}
          */
         this.registry = new Map(); // элемент → { событие → Set<функций> }
     }

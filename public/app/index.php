@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Psr\Log\NullLogger;
 use crm\src\services\LoggerFactory;
 use crm\src\controllers\HomeController;
+use crm\src\controllers\TestController;
 use crm\src\controllers\UserController;
 use crm\src\controllers\ErrorController;
 use crm\src\controllers\NotFoundController;
@@ -19,6 +20,13 @@ require_once __DIR__ . '/libs/autoload.php';
 $logger = new NullLogger();
 
 // Создаём маршруты:
+
+$routeTEST = new Route(
+    pattern: '^/test',
+    className: TestController::class,
+    extraData: [__DIR__]
+);
+
 $route1 = new Route(
     pattern: '^/user/(\d+)$',
     className: UserController::class,
@@ -46,7 +54,7 @@ $routError = new Route(
 
 // Создаём обработчик маршрутов, передаём список маршрутов и URL для обработки:
 $routeHandler = new RouteHandler(
-    routes: [$route1, $route2],
+    routes: [$route1, $route2, $routeTEST],
     currentUrl: $_SERVER['REQUEST_URI'],
     defaultRoute: $rout404,
     errorRoute: $routError,

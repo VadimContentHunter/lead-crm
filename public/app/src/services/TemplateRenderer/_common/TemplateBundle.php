@@ -35,8 +35,10 @@ class TemplateBundle implements ITemplateBundle
         return $this->partials;
     }
 
-    public function addPartial(ITemplateBundle $partial): void
+    public function addPartial(ITemplateBundle $partial): self
     {
         $this->partials[] = $partial;
+
+        return $this;
     }
 }

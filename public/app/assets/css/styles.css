@@ -1,0 +1,96 @@
+/* === Base Reset === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: sans-serif;
+    background-color: #f5f5f5;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* === Панель навигации (вверху) === */
+.navbar {
+    background-color: #222;
+    color: #fff;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar .user-info {
+    font-weight: bold;
+}
+
+.navbar .actions button {
+    margin-left: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.navbar .actions button:hover {
+    background-color: #666;
+}
+
+/* === Контейнер страницы === */
+.page-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+}
+
+/* === Контентная зона с меню === */
+.content-area {
+    display: flex;
+    flex: 1;
+}
+
+/* Меню слева внутри контента */
+.content-menu {
+    width: 220px;
+    background-color: #eaeaea;
+    padding: 1rem;
+}
+
+.content-menu button {
+    display: block;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    border: none;
+    background-color: #ddd;
+    cursor: pointer;
+    text-align: left;
+}
+
+.content-menu button:hover {
+    background-color: #ccc;
+}
+
+/* Основной контент справа */
+.main-content {
+    flex: 1;
+    background-color: #fff;
+    margin-left: 1.5rem;
+    padding: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* === Футер === */
+.footer {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #ddd;
+    color: #888;
+    font-size: 0.9rem;
+}

@@ -8,5 +8,5 @@ interface ITemplateBundle
     public function getVariables(): array;
     public function getPartialsContainerName(): ?string;
     public function getPartials(): array;
-    public function addPartial(ITemplateBundle $partial): void;
+    public function addPartial(ITemplateBundle $partial): self;
 }

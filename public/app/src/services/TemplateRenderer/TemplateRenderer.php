@@ -4,6 +4,9 @@ namespace crm\src\services\TemplateRenderer;
 
 use crm\src\services\TemplateRenderer\_common\interfaces\ITemplateBundle;
 
+/**
+ * @todo Некачественный быстро созданный класс - переделать
+ */
 class TemplateRenderer
 {
     private ?HeaderManager $headers = null;
@@ -23,14 +26,16 @@ class TemplateRenderer
         $partialsRendered = [];
 
         foreach ($bundle->getPartials() as $partial) {
-            $partialsRendered[] = $this->renderBundle($partial);
+            $rendered = $this->renderBundle($partial);
+            $container = $partial->getPartialsContainerName();
+
+            if ($container) {
+                $partialsRendered[$container] = $rendered;
+            }
         }
 
-        $mainVars = $bundle->getVariables();
-
-        if ($container = $bundle->getPartialsContainerName()) {
-            $mainVars[$container] = $partialsRendered;
-        }
+        // Основные переменные + рендеренные partial'ы
+        $mainVars = array_merge($bundle->getVariables(), $partialsRendered);
 
         $output = $this->render($bundle->getTemplatePath(), $mainVars);
 

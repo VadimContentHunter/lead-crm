@@ -1,0 +1,65 @@
+/* Сброс стилей для всех элементов */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+/* Сброс стилей для ссылок */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Сброс стилей для списков */
+ul,
+ol {
+    list-style: none;
+}
+
+/* Сброс стилей для таблиц */
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* Сброс стилей для форм */
+input,
+textarea,
+button {
+    background: none;
+    border: none;
+    outline: none;
+}
+
+/* Сброс стилей для изображений */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Сброс стилей для блоков */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
+/* Пример установки базовых стилей для текста */
+body {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+}
+
+/* input:not([type="image" i], [type="range" i], [type="checkbox" i], [type="radio" i]) {}
+
+input[type="email" i] {}
+
+input:not([type="file" i], [type="image" i], [type="checkbox" i], [type="radio" i]) {} */

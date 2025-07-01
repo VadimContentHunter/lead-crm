@@ -50,20 +50,33 @@ class TestController
             )))
             ->addPartial((new TemplateBundle(
                 templatePath: 'partials/main-menu.tpl.php',
+                partialsContainer: 'main_menu'
+            )))
+            ->addPartial((new TemplateBundle(
+                templatePath: 'partials/content.tpl.php',
                 variables: [
-                    'title' => 'Тестовая страница',
-                    'css' => [
-                        '/assets/css/reset.css',
-                        '/assets/css/fonts.css',
-                        '/assets/css/styles.css',
-                        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css'
-                    ],
-                    'js' => [
-                        '/assets/js/app.js',
-                        '/assets/js/analytics.js'
+                    'components' => [
+                        (new TemplateBundle(templatePath: 'components/baseForm.tpl.php')),
+                        (new TemplateBundle(
+                            templatePath: 'components/baseTable.tpl.php',
+                            variables: [
+                                'columns' => ['Название', 'Тип', 'Значение', 'Опции'],
+                                'rows' => [
+                                    ['Имя', 'text', ['type' => 'text', 'name' => 'username', 'value' => ''], 'Опция 1'],
+                                    ['Возраст', 'number', ['type' => 'number', 'name' => 'age', 'value' => 25], 'Опция 2'],
+                                    ['Пароль', 'password', ['type' => 'password', 'name' => 'pass'], ''],
+                                    ['Статус', 'select', [
+                                        'type' => 'select',
+                                        'name' => 'status',
+                                        'value' => 'active',
+                                        'options' => ['active' => 'Активен', 'blocked' => 'Заблокирован']
+                                    ], ''],
+                                ]
+                            ]
+                        )),
                     ]
                 ],
-                partialsContainer: 'main_menu'
+                partialsContainer: 'content_container'
             )));
 
             // Успешный ответ

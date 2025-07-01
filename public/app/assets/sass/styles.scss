@@ -1,8 +1,11 @@
 @use './var';
+@use './base-form';
+@use './base-table.scss';
 @use './layout/page';
 @use './layout/menu';
 @use './layout/content';
 @use './layout/footer';
+@use './components/base_components';
 
 body {
     font-family: 'Inter', sans-serif;

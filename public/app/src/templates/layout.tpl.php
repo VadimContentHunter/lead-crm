@@ -5,6 +5,7 @@ $head = $head ?? '';
 $content = $content ?? '';
 
 $main_menu = $main_menu ?? '';
+$content_container = $content_container ?? '';
 ?>
 
 <!DOCTYPE html>
@@ -18,25 +19,8 @@ $main_menu = $main_menu ?? '';
 
         <?= $main_menu ?>
 
-
-        <div class="content-container">
-            <!-- Меню внутри контента -->
-            <aside class="header-content">
-                <nav class="menu-content main-wrapper-horizontal">
-                    <button type="button" class="default-btn">Сохранить</button>
-                    <button type="button" class="default-btn">Удалить</button>
-                </nav>
-            </aside>
-
-            <!-- Основной контент -->
-            <main class="main-content">
-                <div></div>
-            </main>
-
-            <footer class="footer-content">
-                    &copy; <?= date('Y') ?> CRM Обменка
-            </footer>
-        </div>
+        <?= $content_container ?>
+        
     </div>
 </body>
 

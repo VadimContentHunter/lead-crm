@@ -1,0 +1,42 @@
+.base-table {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    .table-header,
+    .table-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 8px;
+        padding: 8px 0;
+
+        &.table-header {
+            font-weight: 600;
+            border-bottom: 1px solid #ccc;
+        }
+    }
+
+    .table-cell {
+        padding: 6px 8px;
+        background: #f9f9f9;
+        border-radius: var(--border-radius-base);
+
+        input,
+        select {
+            width: 100%;
+            padding: 6px 8px;
+            font-size: var(--font-size-base, 16px);
+            border: 1px solid #ccc;
+            border-radius: var(--border-radius-base);
+            background-color: #fff;
+            appearance: none;
+        }
+
+        select {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg fill='%23333' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 7l3-3 3 3m0 6l-3 3-3-3'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 1em;
+        }
+    }
+}

@@ -4,9 +4,6 @@ namespace crm\src\services\TemplateRenderer;
 
 use crm\src\services\TemplateRenderer\_common\interfaces\ITemplateBundle;
 
-/**
- * @todo Некачественный быстро созданный класс - переделать
- */
 class TemplateRenderer
 {
     private ?HeaderManager $headers = null;
@@ -34,8 +31,9 @@ class TemplateRenderer
             }
         }
 
-        // Основные переменные + рендеренные partial'ы
-        $mainVars = array_merge($bundle->getVariables(), $partialsRendered);
+        // Объединяем переменные и отрендеренные partial'ы
+        $resolvedVars = $this->resolveVariables($bundle->getVariables());
+        $mainVars = array_merge($resolvedVars, $partialsRendered);
 
         $output = $this->render($bundle->getTemplatePath(), $mainVars);
 
@@ -65,5 +63,27 @@ class TemplateRenderer
         ob_start();
         include $fullPath;
         return ob_get_clean();
+    }
+
+    /**
+     * Рекурсивно обрабатывает переменные, заменяя TemplateBundle-объекты на отрендеренные строки.
+     */
+    private function resolveVariables(array $vars): array
+    {
+        return array_map(function ($value) {
+            if ($value instanceof ITemplateBundle) {
+                return $this->renderBundle($value);
+            }
+
+            if (is_array($value)) {
+                return array_map(function ($item) {
+                    return $item instanceof ITemplateBundle
+                        ? $this->renderBundle($item)
+                        : $item;
+                }, $value);
+            }
+
+            return $value;
+        }, $vars);
     }
 }

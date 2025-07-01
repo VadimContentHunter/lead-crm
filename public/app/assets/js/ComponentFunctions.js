@@ -24,7 +24,7 @@ export const ComponentFunctions = {
      *
      * @param {{
      *   triggerSelector: string,
-     *   formSelector: string,
+     *   formSelector: string,  
      *   method: string,
      *   endpoint?: string
      * }} config
@@ -122,6 +122,67 @@ export const ComponentFunctions = {
         trigger.addEventListener('click', (e) => {
             e.preventDefault();
             transport.sendFromSelectorInputs(container);
+        });
+    },
+
+    /**
+      * Навешивает обработчик JSON-RPC по пользовательским атрибутам
+      *
+      * @param {{
+      *   triggerSelector: string,
+      *   endpoint?: string,
+      *   methodAttr?: string,
+      *   dataAttr?: string,
+      *   onData?: Function,
+      *   onError?: Function
+      * }} options
+      */
+    attachJsonRpcTriggerFromAttributes({
+        triggerSelector,
+        endpoint = '/api',
+        methodAttr = 'data-rpc-method',
+        dataAttr = 'data-rpc-data',
+        onData = (payload) => console.log('[JsonRpc] Ответ:', payload),
+        onError = (err) => console.error('[JsonRpc] Ошибка:', err),
+        onContentUpdate = () => {}
+    }) {
+        const trigger = document.querySelector(triggerSelector);
+        if (!trigger) {
+            console.warn('[ComponentFunctions] Триггер не найден:', triggerSelector);
+            return;
+        }
+
+        trigger.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const method = trigger.getAttribute(methodAttr);
+            if (!method) {
+                console.warn(`[ComponentFunctions] Не найден атрибут ${methodAttr}`);
+                return;
+            }
+
+            let data = {};
+            const raw = trigger.getAttribute(dataAttr);
+            if (raw) {
+                try {
+                    data = JSON.parse(raw);
+                } catch {
+                    if (window[raw]) {
+                        data = window[raw];
+                    } else {
+                        console.warn(`[ComponentFunctions] Не удалось разобрать ${dataAttr}:`, raw);
+                    }
+                }
+            }
+
+            const transport = new JsonRpcTransport(method, {
+                endpoint,
+                onData,
+                onError,
+                onContentUpdate
+            });
+
+            transport.send(data);
         });
     }
 };

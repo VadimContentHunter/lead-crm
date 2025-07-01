@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Psr\Log\NullLogger;
 use crm\src\services\LoggerFactory;
+use crm\src\controllers\ApiController;
 use crm\src\controllers\HomeController;
 use crm\src\controllers\TestController;
 use crm\src\controllers\UserController;
@@ -21,6 +22,12 @@ require_once __DIR__ . '/libs/autoload.php';
 $logger = new NullLogger();
 
 // Создаём маршруты:
+
+$routeApi = new Route(
+    pattern: '^/api',
+    className: ApiController::class,
+    extraData: []
+);
 
 $routeLogin = new Route(
     pattern: '^/login',
@@ -61,7 +68,7 @@ $routError = new Route(
 
 // Создаём обработчик маршрутов, передаём список маршрутов и URL для обработки:
 $routeHandler = new RouteHandler(
-    routes: [$route1, $route2, $routeTEST, $routeLogin ],
+    routes: [$route1, $route2, $routeTEST, $routeLogin, $routeApi ],
     currentUrl: $_SERVER['REQUEST_URI'],
     defaultRoute: $rout404,
     errorRoute: $routError,

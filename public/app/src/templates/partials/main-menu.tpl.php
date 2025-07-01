@@ -21,7 +21,7 @@
     </section>
 
     <nav class="list-main-menu top-menu">
-        <div class="item-main-menu">
+        <div class="item-main-menu" data-rpc-method="page.update" >
             <div class="icon-wrapper">
                 <i class="fa-solid fa-house"></i>
             </div>
@@ -45,3 +45,16 @@
         </div>
     </nav>
 </aside>
+
+<!-- Инициализация обработчика кликов -->
+<script type="module">
+    import { createContentUpdateHandler } from '/assets/js/CreateContentUpdateHandler.js';
+    import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
+
+    window.addEventListener('DOMContentLoaded', () => {
+        ComponentFunctions.attachJsonRpcTriggerFromAttributes({
+            triggerSelector: '[data-rpc-method]',
+            onContentUpdate: createContentUpdateHandler()
+        });
+    });
+</script>

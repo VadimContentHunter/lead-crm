@@ -1,1 +1,9 @@
-.footer-content {}
+@use '../var';
+
+.footer-content {
+    padding: 20px 0px;
+    display: flex;
+    justify-content: center;
+
+    // @extend %line-top;
+}

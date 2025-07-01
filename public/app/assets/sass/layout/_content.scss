@@ -1,21 +1,41 @@
+@use '../var';
+
 .content-container {
     flex: 1;
-    background-color: burlywood;
+    // background-color: burlywood;
     width: 100%;
-    max-width: 1200px;
+    // max-width: 1200px;
     overflow-y: auto;
 
     display: flex;
     flex-direction: column;
     // border-radius: var(--border-radius-base) var(--border-radius-base) 0px 0px;
 
-    display: flex;
-    flex-direction: row;
+    .header-content {
+        padding: 12px 0px;
+        // height: 84px;
+        // background-color: #ffffff;
+        width: 100%;
 
-    .header-content {}
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
 
-    .menu-content {}
+        @extend %line-bottom;
 
-    .main-content {}
+        .menu-content {
+            flex: 0;
+            width: 100%;
+
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 12px;
+        }
+    }
+}
+
+.main-content {
+    flex: 1;
 
 }

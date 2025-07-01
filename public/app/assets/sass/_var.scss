@@ -5,6 +5,13 @@ $font-size-base: 16px; // Обычный текст (тело, меню)
 $font-size-heading: 24px; // Главный заголовок
 $font-size-subheading: 18px; // Вторичный заголовок или подзаголовок
 
+%line-bottom {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+%line-top {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 :root {
     --font-size-base: #{$font-size-base};
     --font-size-heading: #{$font-size-heading};
@@ -20,4 +27,19 @@ $font-size-subheading: 18px; // Вторичный заголовок или п�
     justify-content: center;
     align-items: center;
     // color: green;
+}
+
+.default-btn {
+    padding: 8px 16px;
+    background-color: #ededed;
+    border-radius: var(--border-radius-base);
+
+    &:hover {
+        cursor: pointer;
+        background-color: lightgreen;
+    }
+}
+
+.main-wrapper-horizontal {
+    padding: 0px 20px;
 }

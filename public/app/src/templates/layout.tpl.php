@@ -22,8 +22,9 @@ $main_menu = $main_menu ?? '';
         <div class="content-container">
             <!-- Меню внутри контента -->
             <aside class="header-content">
-                <nav class="menu-content">
-
+                <nav class="menu-content main-wrapper-horizontal">
+                    <button type="button" class="default-btn">Сохранить</button>
+                    <button type="button" class="default-btn">Удалить</button>
                 </nav>
             </aside>
 

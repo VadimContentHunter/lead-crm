@@ -1,11 +1,19 @@
 .main-menu {
-    background-color: aqua;
+    // background-color: aqua;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
 
     flex: 1;
     width: 100%;
     max-width: 250px;
 
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
     .header {
+        /* border-bottom: 1px solid rgba(0, 0, 0, 0.1); */
+        padding-bottom: 20px;
+
         width: 100%;
         display: flex;
         flex-direction: row;
@@ -17,7 +25,11 @@
 
         .icon-main {
             font-size: 44px;
-            // color: green;
+            height: 44px;
+            width: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         p {
@@ -26,8 +38,45 @@
         }
     }
 
-    .top-menu {}
+    .list-main-menu {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+    }
 
-    .bottom-menu {}
+    .top-menu {
+        flex: 1;
+    }
+
+    .bottom-menu {
+        padding-top: 20px;
+    }
+
+    .item-main-menu {
+        width: 100%;
+        padding: 8px 24px;
+        overflow: hidden;
+
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+
+        p {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            box-sizing: border-box;
+
+            font-size: var(--font-size-base);
+            // font-weight: bold;
+        }
+
+        &:hover {
+            cursor: pointer;
+            background-color: lightgreen;
+        }
+    }
 
 }

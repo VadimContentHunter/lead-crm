@@ -1,11 +1,23 @@
 $border-radius-base: 16px;
 
+// Размеры текста
+$font-size-base: 16px; // Обычный текст (тело, меню)
+$font-size-heading: 24px; // Главный заголовок
+$font-size-subheading: 18px; // Вторичный заголовок или подзаголовок
+
 :root {
+    --font-size-base: #{$font-size-base};
+    --font-size-heading: #{$font-size-heading};
+    --font-size-subheading: #{$font-size-subheading};
     --border-radius-base: #{$border-radius-base};
 }
 
 .icon-wrapper {
     font-size: 24px;
-    padding: 4px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     // color: green;
 }

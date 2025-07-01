@@ -37,6 +37,7 @@ class TestController
                     'title' => 'Тестовая страница',
                     'css' => [
                         '/assets/css/reset.css',
+                        '/assets/css/fonts.css',
                         '/assets/css/styles.css',
                         'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css'
                     ],
@@ -46,6 +47,23 @@ class TestController
                     ]
                 ],
                 partialsContainer: 'head'
+            )))
+            ->addPartial((new TemplateBundle(
+                templatePath: 'partials/main-menu.tpl.php',
+                variables: [
+                    'title' => 'Тестовая страница',
+                    'css' => [
+                        '/assets/css/reset.css',
+                        '/assets/css/fonts.css',
+                        '/assets/css/styles.css',
+                        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css'
+                    ],
+                    'js' => [
+                        '/assets/js/app.js',
+                        '/assets/js/analytics.js'
+                    ]
+                ],
+                partialsContainer: 'main_menu'
             )));
 
             // Успешный ответ

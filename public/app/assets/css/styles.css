@@ -1,10 +1,17 @@
 :root {
+  --font-size-base: 16px;
+  --font-size-heading: 24px;
+  --font-size-subheading: 18px;
   --border-radius-base: 16px;
 }
 
 .icon-wrapper {
   font-size: 24px;
-  padding: 4px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .page-container {
@@ -16,14 +23,22 @@
   flex-direction: row;
   gap: 16px;
 }
+.page-container > * {
+  padding: 20px 0px;
+}
 
 .main-menu {
-  background-color: aqua;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
   flex: 1;
   width: 100%;
   max-width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 .main-menu .header {
+  /* border-bottom: 1px solid rgba(0, 0, 0, 0.1); */
+  padding-bottom: 20px;
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -34,11 +49,49 @@
 }
 .main-menu .header .icon-main {
   font-size: 44px;
+  height: 44px;
+  width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .main-menu .header p {
   font-size: 28px;
   font-weight: bold;
 }
+.main-menu .list-main-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.main-menu .top-menu {
+  flex: 1;
+}
+.main-menu .bottom-menu {
+  padding-top: 20px;
+}
+.main-menu .item-main-menu {
+  width: 100%;
+  padding: 8px 24px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+.main-menu .item-main-menu p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+  font-size: var(--font-size-base);
+}
+.main-menu .item-main-menu:hover {
+  cursor: pointer;
+  background-color: lightgreen;
+}
+
 .content-container {
   flex: 1;
   background-color: burlywood;
@@ -49,6 +102,9 @@
   flex-direction: column;
   display: flex;
   flex-direction: row;
+}
+body {
+  font-family: "Inter", sans-serif;
 }
 
 /*# sourceMappingURL=styles.css.map */

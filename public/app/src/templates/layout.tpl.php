@@ -3,6 +3,8 @@
 $title = $title ?? 'Без названия';
 $head = $head ?? '';
 $content = $content ?? '';
+
+$main_menu = $main_menu ?? '';
 ?>
 
 <!DOCTYPE html>
@@ -14,22 +16,7 @@ $content = $content ?? '';
     <!-- Основная страница -->
     <div class="page-container">
 
-        <!-- Основное меню -->
-        <aside class="main-menu">
-            <!-- Панель навигации -->
-            <header class="header">
-                <div class="icon-wrapper icon-main">
-                    <i class="fas fa-leaf"></i>
-                </div>
-                <p>CRM</p>
-            </header>
-            <nav class="top-menu">
-
-            </nav>
-            <nav class="bottom-menu">
-
-            </nav>
-        </aside>
+        <?= $main_menu ?>
 
 
         <div class="content-container">

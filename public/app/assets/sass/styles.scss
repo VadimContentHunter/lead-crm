@@ -1,5 +1,9 @@
-@use "./_var";
+@use './var';
 @use './layout/page';
 @use './layout/menu';
 @use './layout/content';
 @use './layout/footer';
+
+body {
+    font-family: 'Inter', sans-serif;
+}

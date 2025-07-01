@@ -61,6 +61,7 @@ class TestController
                     templatePath: 'partials/content.tpl.php',
                     variables: [
                     'components' => [
+                        (new TemplateBundle(templatePath: 'components/addUser.tpl.php')),
                         (new TemplateBundle(templatePath: 'components/baseForm.tpl.php')),
                         (new TemplateBundle(
                             templatePath: 'components/baseTable.tpl.php',

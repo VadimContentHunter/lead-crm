@@ -1,5 +1,14 @@
 @use '../var';
 
+%component {
+    // max-width: 450px;
+    overflow: hidden;
+    padding: 24px;
+    background-color: #fff;
+    border-radius: var(--border-radius-base);
+    box-shadow: var(--shadow-soft);
+}
+
 .content-area {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
@@ -9,13 +18,15 @@
 
 }
 
+.component-wrapper-line {
+    grid-column: 1 / -1;
+
+    display: flex;
+    justify-content: center;
+}
+
 .component {
-    // max-width: 450px;
-    overflow: hidden;
-    padding: 24px;
-    background-color: #fff;
-    border-radius: var(--border-radius-base);
-    box-shadow: var(--shadow-soft);
+    @extend %component;
 
     &--min {
         grid-column: span 2;
@@ -29,5 +40,6 @@
 
     &--full {
         grid-column: 1 / -1;
+        width: 100%;
     }
 }

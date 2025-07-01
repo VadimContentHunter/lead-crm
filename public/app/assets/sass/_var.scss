@@ -4,6 +4,8 @@ $border-radius-base: 16px;
 $font-size-base: 16px; // Обычный текст (тело, меню)
 $font-size-heading: 24px; // Главный заголовок
 $font-size-subheading: 18px; // Вторичный заголовок или подзаголовок
+// $shadow-soft: 0 0 12px rgba(0, 0, 0, 0.1);
+$shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.08);
 
 %line-bottom {
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -17,6 +19,7 @@ $font-size-subheading: 18px; // Вторичный заголовок или п�
     --font-size-heading: #{$font-size-heading};
     --font-size-subheading: #{$font-size-subheading};
     --border-radius-base: #{$border-radius-base};
+    --shadow-soft: #{$shadow-soft};
 }
 
 .icon-wrapper {

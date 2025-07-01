@@ -1,6 +1,6 @@
 .main-menu {
     // background-color: aqua;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-soft);
     border-radius: var(--border-radius-base);
 
     flex: 1;
@@ -36,6 +36,32 @@
         p {
             font-size: 28px;
             font-weight: bold;
+        }
+    }
+
+    .user-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .user-data {
+            border-radius: var(--border-radius-base);
+            padding: 12px 32px;
+
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            background-color: #f9f9f9;
+
+            &>p {
+                font-size: var(--font-size-base);
+                font-weight: 400;
+                color: #757575;
+
+                &>span {
+                    font-weight: bold;
+                }
+            }
         }
     }
 

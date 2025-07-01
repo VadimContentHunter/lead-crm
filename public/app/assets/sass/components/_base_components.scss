@@ -5,6 +5,8 @@
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     align-items: start;
     gap: 20px;
+    row-gap: 44px;
+
 }
 
 .component {
@@ -13,7 +15,7 @@
     padding: 24px;
     background-color: #fff;
     border-radius: var(--border-radius-base);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-soft);
 
     &--min {
         grid-column: span 2;

@@ -12,6 +12,14 @@
         <p>CRM</p>
     </header>
 
+    <section class="user-info">
+        <div class="user-data">
+            <p>Логин: <span>admin</span></p>
+            <p>Данные 1: <span>Тест</span></p>
+        </div>
+        
+    </section>
+
     <nav class="list-main-menu top-menu">
         <div class="item-main-menu">
             <div class="icon-wrapper">

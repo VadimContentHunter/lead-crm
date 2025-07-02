@@ -129,4 +129,33 @@ class RepoResult implements IRepoResult
 
         return $result;
     }
+
+    /**
+     * Применяет маппер к каждому элементу результата и возвращает только не-null результаты.
+     *
+     * @template T
+     * @param    callable(array<string, mixed>): ?T $mapper
+     * @return   T[]
+     */
+    public function getValidMappedList(callable $mapper): array
+    {
+        if (!is_array($this->data)) {
+            return [];
+        }
+
+        $result = [];
+
+        foreach ($this->data as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+
+            $mapped = $mapper($row);
+            if ($mapped !== null) {
+                $result[] = $mapped;
+            }
+        }
+
+        return $result;
+    }
 }

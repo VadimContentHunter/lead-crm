@@ -51,4 +51,13 @@ interface IRepoResult
      * @throws   \RuntimeException
      */
     public function getObjectListOrFail(string $className, callable $hydrator): array;
+
+    /**
+     * Применяет маппер к каждому элементу результата и возвращает только не-null результаты.
+     *
+     * @template T
+     * @param    callable(array<string, mixed>): ?T $mapper
+     * @return   T[]
+     */
+    public function getValidMappedList(callable $mapper): array;
 }

@@ -11,17 +11,30 @@ use crm\src\controllers\UserController;
 use crm\src\controllers\ErrorController;
 use crm\src\controllers\LoginController;
 use crm\src\controllers\NotFoundController;
+use crm\src\controllers\BootstrapController;
 use  crm\src\services\RouteHandler\RouteHandler;
 use  crm\src\services\RouteHandler\entities\Route;
+use crm\src\services\Repositories\DbRepository\services\PdoFactory;
 
 // define('PROJECT_ROOT', __DIR__);
 
 require_once __DIR__ . '/libs/autoload.php';
 
-// $logger = LoggerFactory::createLogger(baseLogDir:PROJECT_ROOT . '/logs');
+// $logger = LoggerFactory::createLogger(baseLogDir:__DIR__ . '/logs');
 $logger = new NullLogger();
+$pdo = PdoFactory::create([
+    'host' => 'host.docker.internal',
+    'db'   => 'crm_db',
+    'user' => 'root',
+    'pass' => 'root',
+]);
 
 // Создаём маршруты:
+$routeBootstrap = new Route(
+    pattern: '^/bootstrap-key-A7F9X2M3Q8L1$',
+    className: BootstrapController::class,
+    extraData: [$pdo, $logger]
+);
 
 $routeApi = new Route(
     pattern: '^/api',
@@ -68,7 +81,7 @@ $routError = new Route(
 
 // Создаём обработчик маршрутов, передаём список маршрутов и URL для обработки:
 $routeHandler = new RouteHandler(
-    routes: [$route1, $route2, $routeTEST, $routeLogin, $routeApi ],
+    routes: [$route1, $route2, $routeTEST, $routeLogin, $routeApi, $routeBootstrap ],
     currentUrl: $_SERVER['REQUEST_URI'],
     defaultRoute: $rout404,
     errorRoute: $routError,

@@ -1,6 +1,8 @@
 <?php
 
-namespace crm\src\services\Repositories\DbRepository\services;
+namespace crm\src\services;
+
+use crm\src\services\Repositories\DbRepository\services\ASchemaProvider;
 
 class CrmSchemaProvider extends ASchemaProvider
 {
@@ -25,7 +27,7 @@ class CrmSchemaProvider extends ASchemaProvider
                 CREATE TABLE users (
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     login VARCHAR(64) NOT NULL UNIQUE,
-                    password_hash VARCHAR(256) NOT NULL,
+                    password_hash VARCHAR(256) NOT NULL
                 );
             SQL,
 

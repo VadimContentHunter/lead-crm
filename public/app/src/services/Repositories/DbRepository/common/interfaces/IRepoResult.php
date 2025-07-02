@@ -40,4 +40,15 @@ interface IRepoResult
      * @return   T|null
      */
     public function getObjectOrNull(string $className): ?object;
+
+    /**
+     * Преобразовать результат в массив объектов через кастомный гидратор.
+     *
+     * @template T of object
+     * @param    class-string<T> $className
+     * @param    callable(array): T $hydrator
+     * @return   T[]
+     * @throws   \RuntimeException
+     */
+    public function getObjectListOrFail(string $className, callable $hydrator): array;
 }

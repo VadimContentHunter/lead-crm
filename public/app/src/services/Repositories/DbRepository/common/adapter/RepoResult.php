@@ -93,4 +93,40 @@ class RepoResult implements IRepoResult
             ? $this->data
             : null;
     }
+
+    /**
+     * Преобразовать результат в массив объектов через кастомный гидратор.
+     *
+     * @template T of object
+     * @param    class-string<T> $className
+     * @param    callable(array): T $hydrator
+     * @return   T[]
+     * @throws   \RuntimeException
+     */
+    public function getObjectListOrFail(string $className, callable $hydrator): array
+    {
+        $data = $this->getData();
+
+        if (!is_array($data)) {
+            throw new \RuntimeException('Expected array for object list conversion, got ' . gettype($data));
+        }
+
+        $result = [];
+
+        foreach ($data as $index => $item) {
+            if (!is_array($item)) {
+                throw new \RuntimeException("Expected array at index {$index} to hydrate {$className}, got " . gettype($item));
+            }
+
+            $object = $hydrator($item);
+
+            if (!is_object($object) || !$object instanceof $className) {
+                throw new \RuntimeException("Hydrator did not return instance of {$className} at index {$index}");
+            }
+
+            $result[] = $object;
+        }
+
+        return $result;
+    }
 }

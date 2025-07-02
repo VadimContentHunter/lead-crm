@@ -2,54 +2,90 @@
 
 namespace crm\src\_common\repositories;
 
+use PDO;
+use Psr\Log\NullLogger;
+use Psr\Log\LoggerInterface;
 use crm\src\components\UserManagement\_entities\User;
+use crm\src\services\Repositories\DbRepository\DbRepository;
+use crm\src\components\Repositories\QueryBuilder\QueryBuilder;
+use crm\src\components\UserManagement\_common\mappers\UserMapper;
 use crm\src\components\UserManagement\_common\interfaces\IUserRepository;
 
 class UserRepository implements IUserRepository
 {
-    public function __construct()
-    {
+    private DbRepository $repository;
+
+    public function __construct(
+        PDO $pdo,
+        private LoggerInterface $logger = new NullLogger()
+    ) {
+        $this->repository = new DbRepository($pdo);
     }
 
     public function deleteByLogin(string $login): ?int
     {
-        // TODO: implement deletion by login
-        return null;
+        return $this->repository->executeQuery((new QueryBuilder())
+                ->table('users')
+                ->where('login = :login')
+                ->delete(['login' => $login]))
+                    ->getInt();
     }
 
     public function getByLogin(string $login): ?User
     {
-        // TODO: implement getting by login
-        return null;
+        return $this->repository->executeQuery((new QueryBuilder())
+                ->table('users')
+                ->where('login = :login')
+                ->select(['login']))
+                    ->getObjectOrNull(User::class);
     }
 
-    public function save(object $entity): ?int
+    /**
+     * @param User $user
+     */
+    public function save(object $user): ?int
     {
-        // TODO: implement saving a user
-        return null;
+        return $this->repository->executeQuery((new QueryBuilder())
+                ->table('users')
+                ->insert(['login' => $user->login, 'password_hash' => $user->passwordHash]))
+                    ->getInt();
     }
 
+    /**
+     * @param User $entity
+     */
     public function update(object $entity): ?int
     {
-        // TODO: implement updating a user
-        return null;
+        return $this->repository->executeQuery((new QueryBuilder())
+                ->table('users')
+                ->where('login = :login')
+                ->update(['login' => $entity->login, 'password_hash' => $entity->passwordHash]))
+                    ->getInt();
     }
 
     public function deleteById(int $id): ?int
     {
-        // TODO: implement deletion by id
-        return null;
+        return $this->repository->executeQuery((new QueryBuilder())
+                ->table('users')
+                ->where('id = :id')
+                ->delete(['id' => $id]))
+                    ->getInt();
     }
 
     public function getById(int $id): ?User
     {
-        // TODO: implement getting by id
-        return null;
+        return $this->repository->executeQuery((new QueryBuilder())
+                ->table('users')
+                ->where('id = :id')
+                ->select(['id', 'login', 'password_hash']))
+                    ->getObjectOrNull(User::class);
     }
 
     public function getAll(): array
     {
-        // TODO: implement getting all users
-        return [];
+        return $this->repository->executeQuery((new QueryBuilder())
+                ->table('users')
+                ->select(['id', 'login', 'password_hash']))
+                    ->getValidMappedList([UserMapper::class, 'fromArray']);
     }
 }

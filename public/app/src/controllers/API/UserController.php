@@ -3,12 +3,16 @@
 namespace crm\src\controllers\API;
 
 use PDO;
+use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
 use crm\src\_common\repositories\UserRepository;
 use crm\src\_common\adapters\UserValidatorAdapter;
+use crm\src\services\TemplateRenderer\HeaderManager;
 use crm\src\components\UserManagement\UserManagement;
+use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
+use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 use crm\src\components\UserManagement\_common\mappers\UserInputMapper;
 
 class UserController
@@ -18,6 +22,7 @@ class UserController
     private JsonRpcServerFacade $rpc;
 
     public function __construct(
+        private string $projectPath,
         PDO $pdo,
         private LoggerInterface $logger = new NullLogger()
     ) {
@@ -30,11 +35,10 @@ class UserController
         switch ($this->rpc->getMethod()) {
             case 'user.add':
                 $this->createUser($this->rpc->getParams());
-                // break;
+            // break;
 
-            case 'page.update':
-            // вернуть новый контент
-                $this->rpc->replyContentUpdate('main.main-content', '<p>Обновлено</p>');
+            case 'user.get.add_page':
+                $this->showAddUserPage();
             // break;
 
             default:
@@ -42,11 +46,32 @@ class UserController
         }
     }
 
+    public function showAddUserPage(): void
+    {
+        $renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
+        $layout = (new TemplateBundle(templatePath: 'components/addUser.tpl.php'));
+        try {
+            $this->rpc->replyContentUpdate('main.main-content', $renderer->renderBundle($layout));
+        } catch (Throwable $e) {
+            $this->rpc->replyError(-32601, 'Не удалось сгенерировать страницу для добавления пользователя');
+            // header('Content-Type: text/plain; charset=utf-8');
+            // echo "Произошла ошибка: " . $e->getMessage();
+            throw $e;
+        }
+    }
+
     /**
-     * Undocumented function
-     *
-     * @param  array $params
-     * @return void
+     * @return TemplateBundle[]
+     */
+    public function getComponentsForPage(): array
+    {
+        return [
+            (new TemplateBundle(templatePath: 'components/addUser.tpl.php')),
+        ];
+    }
+
+    /**
+     * @param array<string,mixed> $params
      */
     public function createUser(array $params): void
     {

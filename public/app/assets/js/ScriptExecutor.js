@@ -47,7 +47,8 @@ export class ScriptExecutor {
         const scripts = wrapper.querySelectorAll('script');
 
         scripts.forEach(script => {
-            if (script.type && script.type !== 'text/javascript' && script.type !== '') return;
+            const allowedTypes = ['', 'text/javascript', 'application/javascript', 'module'];
+            if (script.type && !allowedTypes.includes(script.type)) return;
 
             const code = script.textContent.trim();
             const hash = this.hashScript(code);
@@ -57,6 +58,29 @@ export class ScriptExecutor {
             this.injectScript(code);
         });
     }
+
+    /**
+      * Выполняет все inline <script> в переданном HTML или DOM-фрагменте без учёта хешей.
+      * Используется, когда требуется повторное исполнение всех скриптов.
+      *
+      * В отличие от `runFromHtml`, не проверяет, выполнялся ли скрипт ранее.
+      *
+      * @param {string | HTMLElement | DocumentFragment} htmlOrElement - HTML-строка, элемент или фрагмент
+      */
+    runAllScriptsFromHtml(htmlOrElement) {
+        const wrapper = this._toFragment(htmlOrElement);
+        const scripts = wrapper.querySelectorAll('script');
+
+        scripts.forEach(script => {
+            const allowedTypes = ['', 'text/javascript', 'application/javascript', 'module'];
+            if (script.type && !allowedTypes.includes(script.type)) return;
+
+            const code = script.textContent.trim();
+            this.injectScript(code, script.type);
+        });
+    }
+
+
 
     /**
      * Извлекает только содержимое без <script>-тегов
@@ -102,9 +126,10 @@ export class ScriptExecutor {
      */
     injectScript(code) {
         const script = document.createElement('script');
+        script.type = 'module';
         script.textContent = code;
         document.body.appendChild(script);
-        script.remove();
+        // script.remove();
     }
 
     /**

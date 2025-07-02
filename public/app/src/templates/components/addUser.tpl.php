@@ -34,7 +34,7 @@
             </div>
 
             <div class="form-actions">
-                <button class="form-button submit">Добавить</button>
+                <button type="button" class="form-button submit">Добавить</button>
                 <button type="reset" class="form-button">Сбросить</button>
             </div>
         </form>
@@ -43,13 +43,13 @@
 
 <script type="module">
   import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
-
-  window.addEventListener('DOMContentLoaded', () => {
+  
+//   window.addEventListener('DOMContentLoaded', () => {
     ComponentFunctions.attachJsonRpcInputTrigger({
       triggerSelector: '#add-user-form .form-actions .form-button.submit',
       containerSelector: '#add-user-form',
       method: 'user.add',
       endpoint: '/api/users'
     });
-  });
+//   });
 </script>

@@ -35,5 +35,6 @@ export function createContentUpdateHandler() {
 
         // Выполнить скрипты отдельно
         executor.runFromHtml(content);
+        // executor.runAllScriptsFromHtml(content);
     };
 }

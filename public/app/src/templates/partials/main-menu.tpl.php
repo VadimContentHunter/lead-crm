@@ -28,11 +28,11 @@
             <p>Главная</p>
         </div>
 
-        <div class="item-main-menu">
+        <div class="item-main-menu" data-rpc-method="user.get.add_page" data-rpc-endpoint="/api/users" id="add-user-button">
             <div class="icon-wrapper">
                 <i class="fa-solid fa-house"></i>
             </div>
-            <p>Пункт 2</p>
+            <p>Добавить пользователя</p>
         </div>
     </nav>
 
@@ -51,10 +51,11 @@
     import { createContentUpdateHandler } from '/assets/js/CreateContentUpdateHandler.js';
     import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
 
-    window.addEventListener('DOMContentLoaded', () => {
+    // window.addEventListener('DOMContentLoaded', () => {
         ComponentFunctions.attachJsonRpcTriggerFromAttributes({
-            triggerSelector: '[data-rpc-method]',
+            triggerSelector: '#add-user-button[data-rpc-method]',
+            endpointAttr: 'data-rpc-endpoint',
             onContentUpdate: createContentUpdateHandler()
         });
-    });
+    // });
 </script>

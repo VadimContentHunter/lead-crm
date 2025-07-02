@@ -133,8 +133,10 @@ export const ComponentFunctions = {
       *   endpoint?: string,
       *   methodAttr?: string,
       *   dataAttr?: string,
+      *   endpointAttr?: string,
       *   onData?: Function,
-      *   onError?: Function
+      *   onError?: Function,
+      *   onContentUpdate?: Function
       * }} options
       */
     attachJsonRpcTriggerFromAttributes({
@@ -142,9 +144,10 @@ export const ComponentFunctions = {
         endpoint = '/api',
         methodAttr = 'data-rpc-method',
         dataAttr = 'data-rpc-data',
+        endpointAttr = 'data-rpc-endpoint',
         onData = (payload) => console.log('[JsonRpc] Ответ:', payload),
         onError = (err) => console.error('[JsonRpc] Ошибка:', err),
-        onContentUpdate = () => {}
+        onContentUpdate = () => { }
     }) {
         const trigger = document.querySelector(triggerSelector);
         if (!trigger) {
@@ -175,8 +178,11 @@ export const ComponentFunctions = {
                 }
             }
 
+            const endpointFromAttr = trigger.getAttribute(endpointAttr);
+            const finalEndpoint = endpointFromAttr || endpoint;
+
             const transport = new JsonRpcTransport(method, {
-                endpoint,
+                endpoint: finalEndpoint,
                 onData,
                 onError,
                 onContentUpdate
@@ -185,4 +191,5 @@ export const ComponentFunctions = {
             transport.send(data);
         });
     }
+
 };

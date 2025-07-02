@@ -39,7 +39,7 @@ $routeBootstrap = new Route(
 $routeApiUser = new Route(
     pattern: '^/api/users$',
     className: UserController::class,
-    extraData: [$pdo, $logger]
+    extraData: [__DIR__, $pdo, $logger]
 );
 
 

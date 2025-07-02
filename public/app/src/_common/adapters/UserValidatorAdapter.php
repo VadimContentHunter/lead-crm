@@ -28,6 +28,9 @@ class UserValidatorAdapter extends AValidatorAdapter
             if (!is_string($value)) {
                 return 'Пароль должен быть строкой';
             }
+            if ($value === '') {
+                return 'Пароль не может быть пустым';
+            }
             if ($value !== '' && strlen($value) < 6) {
                 return 'Пароль должен быть не менее 6 символов';
             }

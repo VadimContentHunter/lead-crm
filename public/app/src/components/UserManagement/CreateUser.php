@@ -53,7 +53,9 @@ class CreateUser
             $user->id = $userId;
             return UserResult::success($user);
         } catch (\Throwable $e) {
-            return UserResult::failure($e);
+            return UserResult::failure(
+                new UserManagementException("Произошла внутренняя ошибка")
+            );
         }
     }
 }

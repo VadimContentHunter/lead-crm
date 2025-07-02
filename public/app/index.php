@@ -7,9 +7,9 @@ use crm\src\services\LoggerFactory;
 use crm\src\controllers\ApiController;
 use crm\src\controllers\HomeController;
 use crm\src\controllers\TestController;
-use crm\src\controllers\UserController;
 use crm\src\controllers\ErrorController;
 use crm\src\controllers\LoginController;
+use crm\src\controllers\API\UserController;
 use crm\src\controllers\NotFoundController;
 use crm\src\controllers\BootstrapController;
 use  crm\src\services\RouteHandler\RouteHandler;
@@ -36,8 +36,15 @@ $routeBootstrap = new Route(
     extraData: [$pdo, $logger]
 );
 
+$routeApiUser = new Route(
+    pattern: '^/api/users$',
+    className: UserController::class,
+    extraData: [$pdo, $logger]
+);
+
+
 $routeApi = new Route(
-    pattern: '^/api',
+    pattern: '^/api$',
     className: ApiController::class,
     extraData: []
 );
@@ -81,7 +88,7 @@ $routError = new Route(
 
 // Создаём обработчик маршрутов, передаём список маршрутов и URL для обработки:
 $routeHandler = new RouteHandler(
-    routes: [$route1, $route2, $routeTEST, $routeLogin, $routeApi, $routeBootstrap ],
+    routes: [ $route1, $route2, $routeTEST, $routeLogin, $routeApi, $routeBootstrap, $routeApiUser ],
     currentUrl: $_SERVER['REQUEST_URI'],
     defaultRoute: $rout404,
     errorRoute: $routError,

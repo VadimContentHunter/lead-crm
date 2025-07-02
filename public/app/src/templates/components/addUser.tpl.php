@@ -19,18 +19,18 @@
             </div>
 
             <div class="form-group">
-                <label for="text-input">Логин</label>
-                <input type="text" name="text">
+                <label for="login">Логин</label>
+                <input type="text" name="login">
             </div>
 
             <div class="form-group">
-                <label for="password-input">Пароль</label>
+                <label for="password">Пароль</label>
                 <input type="password" name="password">
             </div>
 
             <div class="form-group">
                 <label for="password-input">Повторите пароль</label>
-                <input type="password" name="password">
+                <input type="password" name="password_confirm">
             </div>
 
             <div class="form-actions">
@@ -48,7 +48,8 @@
     ComponentFunctions.attachJsonRpcInputTrigger({
       triggerSelector: '#add-user-form .form-actions .form-button.submit',
       containerSelector: '#add-user-form',
-      method: 'user.add'
+      method: 'user.add',
+      endpoint: '/api/users'
     });
   });
 </script>

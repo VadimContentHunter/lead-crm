@@ -11,7 +11,10 @@ class CommandOperations implements ICommandOperations
     {
     }
 
-    public function select(array $data): IQueryStructure
+    /**
+     * @param array<string,mixed> $data
+     */
+    public function select(array $data = []): IQueryStructure
     {
         $this->query->setAction('select');
         $this->query->setPayload($data);
@@ -38,7 +41,10 @@ class CommandOperations implements ICommandOperations
         return $this->query;
     }
 
-    public function delete(array $data): IQueryStructure
+    /**
+     * @param array<string,mixed> $data
+     */
+    public function delete(array $data = []): IQueryStructure
     {
         $this->query->setAction('delete');
         $this->query->setPayload($data);

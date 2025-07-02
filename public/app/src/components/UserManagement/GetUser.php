@@ -83,4 +83,84 @@ class GetUser
             ? $this->executeById($dto->id)
             : $this->executeByLogin($dto->login);
     }
+
+    /**
+     * Получает всех пользователей.
+     *
+     * @return IUserResult
+     */
+    public function executeAll(): IUserResult
+    {
+        try {
+            $users = $this->userRepository->getAll();
+
+            return UserResult::success($users);
+        } catch (\Throwable $e) {
+            return UserResult::failure($e);
+        }
+    }
+
+    /**
+     * Возвращает названия столбцов таблицы пользователей.
+     *
+     * @param  array<string, string> $renameMap Ключ — оригинальное имя, значение — новое имя
+     * @return IUserResult
+     */
+    public function executeColumnNames(array $renameMap = []): IUserResult
+    {
+        try {
+            $columns = $this->userRepository->getColumnNames();
+
+            if (!empty($renameMap)) {
+                $columns = array_map(
+                    fn($name) => $renameMap[$name] ?? $name,
+                    $columns
+                );
+            }
+
+            return UserResult::success($columns);
+        } catch (\Throwable $e) {
+            return UserResult::failure($e);
+        }
+    }
+
+    /**
+     * Возвращает всех пользователей в виде таблицы (массив строк).
+     *
+     * @param  bool $includeHeader Включать ли заголовок в первую строку
+     * @param  array<string, string> $renameMap     Переименование колонок:
+     *                                              ['db_column' => 'Заголовок']
+     * @return IUserResult
+     */
+    public function executeAsTable(bool $includeHeader = true, array $renameMap = []): IUserResult
+    {
+        try {
+            $users = $this->userRepository->getAll(); // array<User>
+            $columns = $this->userRepository->getColumnNames();
+
+            // Заголовок
+            $header = array_map(
+                fn($col) => $renameMap[$col] ?? $col,
+                $columns
+            );
+
+            // Преобразуем объекты пользователей в строки
+            $rows = [];
+            foreach ($users as $user) {
+                $row = [];
+                foreach ($columns as $col) {
+                    $row[] = $user->{$col} ?? null;
+                }
+                $rows[] = $row;
+            }
+
+            if ($includeHeader) {
+                array_unshift($rows, $header);
+            }
+
+            return UserResult::success($rows);
+        } catch (\Throwable $e) {
+            return UserResult::failure($e);
+        }
+    }
 }

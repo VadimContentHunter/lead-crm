@@ -28,11 +28,24 @@
             <p>Главная</p>
         </div>
 
-        <div class="item-main-menu" data-rpc-method="user.get.add_page" data-rpc-endpoint="/api/users" id="add-user-button">
+        <div class="item-main-menu"
+            data-rpc-method="user.show.add_page"
+            data-rpc-endpoint="/api/users"
+            id="add-user-button">
             <div class="icon-wrapper">
                 <i class="fa-solid fa-house"></i>
             </div>
             <p>Добавить пользователя</p>
+        </div>
+
+        <div class="item-main-menu"
+            data-rpc-method="user.show.all_page"
+            data-rpc-endpoint="/api/users"
+            id="all-user-button">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-house"></i>
+            </div>
+            <p>Все пользователя</p>
         </div>
     </nav>
 
@@ -51,10 +64,17 @@
     import { createContentUpdateHandler } from '/assets/js/CreateContentUpdateHandler.js';
     import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
 
+    const endpointAttr = 'data-rpc-endpoint';
     // window.addEventListener('DOMContentLoaded', () => {
         ComponentFunctions.attachJsonRpcTriggerFromAttributes({
             triggerSelector: '#add-user-button[data-rpc-method]',
-            endpointAttr: 'data-rpc-endpoint',
+            endpointAttr,
+            onContentUpdate: createContentUpdateHandler()
+        });
+
+        ComponentFunctions.attachJsonRpcTriggerFromAttributes({
+            triggerSelector: '#all-user-button[data-rpc-method]',
+            endpointAttr,
             onContentUpdate: createContentUpdateHandler()
         });
     // });

@@ -113,6 +113,10 @@
   font-weight: 600;
   border-bottom: 1px solid #ccc;
 }
+.base-table .table-header:hover,
+.base-table .table-row:hover {
+  background-color: #83c1ff;
+}
 .base-table .table-cell {
   padding: 6px 8px;
   background: #f9f9f9;

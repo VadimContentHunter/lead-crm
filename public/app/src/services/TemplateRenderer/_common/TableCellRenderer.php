@@ -13,13 +13,13 @@ class TableCellRenderer
     }
 
     /**
-     * @param mixed[]|string $cell
+     * @param mixed[]|string|int $cell
      */
-    public static function render(array|string $cell): string
+    public static function render(array|string|int $cell): string
     {
         if (!self::isInput($cell)) {
             $cell = is_array($cell) ? $cell['type'] : $cell;
-            return htmlspecialchars((string) $cell);
+            return (string) $cell;
         }
 
         $cell = is_array($cell) ? $cell : ['type' => $cell];

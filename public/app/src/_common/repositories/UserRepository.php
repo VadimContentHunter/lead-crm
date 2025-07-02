@@ -81,11 +81,44 @@ class UserRepository implements IUserRepository
                     ->getObjectOrNull(User::class);
     }
 
+    /**
+     * @return User[]
+     */
     public function getAll(): array
     {
         return $this->repository->executeQuery((new QueryBuilder())
                 ->table('users')
-                ->select(['id', 'login', 'password_hash']))
+                ->select())
                     ->getValidMappedList([UserMapper::class, 'fromArray']);
+    }
+
+    /**
+     * Возвращает названия колонок из базы данных.
+     *
+     * @return string[]
+     */
+    public function getColumnNames(): array
+    {
+        $sql = "
+            SELECT COLUMN_NAME
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE()
+            AND TABLE_NAME = :table
+            ORDER BY ORDINAL_POSITION
+        ";
+
+        $result = $this->repository->executeSql($sql, ['table' => 'users']);
+        if (!$result->isSuccess()) {
+            $this->logger->warning("Не удалось получить столбцы таблицы 'users': " . $result->getError()?->getMessage());
+            return [];
+        }
+
+        $data = $result->getArrayOrNull();
+        if (empty($data)) {
+            $this->logger->warning("Таблица 'users' не содержит столбцов или не найдена");
+            return [];
+        }
+
+        return array_column($data, 'COLUMN_NAME');
     }
 }

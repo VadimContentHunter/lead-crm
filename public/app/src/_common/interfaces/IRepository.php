@@ -47,4 +47,11 @@ interface IRepository
      * @return TEntity[]
      */
     public function getAll(): array;
+
+    /**
+     * Возвращает названия колонок из базы данных.
+     *
+     * @return string[]
+     */
+    public function getColumnNames(): array;
 }

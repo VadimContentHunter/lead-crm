@@ -2,8 +2,8 @@
 
 use crm\src\services\TemplateRenderer\_common\TableCellRenderer;
 
-$columns = $data['columns'] ?? [];
-$rows = $data['rows'] ?? [];
+$columns = $columns ?? [];
+$rows = $rows ?? [];
 ?>
 
 <section class="component component--full">

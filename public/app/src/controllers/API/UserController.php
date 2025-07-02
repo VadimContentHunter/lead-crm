@@ -14,6 +14,8 @@ use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 use crm\src\components\UserManagement\_common\mappers\UserInputMapper;
+use crm\src\components\UserManagement\_common\decorators\UserTableDecorator;
+use crm\src\components\UserManagement\_common\transformers\UserTableTransformer;
 
 class UserController
 {
@@ -37,8 +39,12 @@ class UserController
                 $this->createUser($this->rpc->getParams());
             // break;
 
-            case 'user.get.add_page':
+            case 'user.show.add_page':
                 $this->showAddUserPage();
+            // break;
+
+            case 'user.show.all_page':
+                $this->showAllUserPage();
             // break;
 
             default:
@@ -50,6 +56,37 @@ class UserController
     {
         $renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
         $layout = (new TemplateBundle(templatePath: 'components/addUser.tpl.php'));
+        try {
+            $this->rpc->replyContentUpdate('main.main-content', $renderer->renderBundle($layout));
+        } catch (Throwable $e) {
+            $this->rpc->replyError(-32601, 'Не удалось сгенерировать страницу для добавления пользователя');
+            // header('Content-Type: text/plain; charset=utf-8');
+            // echo "Произошла ошибка: " . $e->getMessage();
+            throw $e;
+        }
+    }
+
+    public function showAllUserPage(): void
+    {
+        $rowsTable = $this->userManagement->get()->executeAsTable(true)->getData();
+        $headerTable = array_shift($rowsTable); // первая строка — заголовок
+
+        $transformer = new UserTableTransformer();
+        $decorator = new UserTableDecorator();
+
+        $transformedTable = $transformer->transform($headerTable, $rowsTable);
+        $tableWithActions = $decorator->decorateWithActions($headerTable, $transformedTable);
+
+        $renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
+        $layout = (new TemplateBundle(
+            templatePath: 'components/baseTable.tpl.php',
+            variables: [
+                // 'columns' => ['Название', 'Тип', 'Значение', 'Опции'],
+                'columns' => $tableWithActions['header'] ?? [],
+                'rows' => $tableWithActions['rows'] ?? [],
+            ]
+        ));
+
         try {
             $this->rpc->replyContentUpdate('main.main-content', $renderer->renderBundle($layout));
         } catch (Throwable $e) {

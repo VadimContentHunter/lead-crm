@@ -1,11 +1,11 @@
 <?php
 
-namespace crm\src\components\Repositories\QueryBuilder;
+namespace crm\src\services\Repositories\QueryBuilder;
 
-use crm\src\components\Repositories\QueryBuilder\QueryModifiers;
-use crm\src\components\Repositories\QueryBuilder\CommandOperations;
-use crm\src\components\Repositories\QueryBuilder\interfaces\IQueryModifiers;
-use crm\src\components\Repositories\QueryBuilder\interfaces\ICommandOperations;
+use crm\src\services\Repositories\QueryBuilder\QueryModifiers;
+use crm\src\services\Repositories\QueryBuilder\CommandOperations;
+use crm\src\services\Repositories\QueryBuilder\interfaces\IQueryModifiers;
+use crm\src\services\Repositories\QueryBuilder\interfaces\ICommandOperations;
 use crm\src\services\Repositories\DbRepository\common\interfaces\IQueryStructure;
 
 class QueryFacade implements IQueryModifiers, ICommandOperations
@@ -43,9 +43,9 @@ class QueryFacade implements IQueryModifiers, ICommandOperations
     /**
      * ======= ICommandOperations =======
      */
-    public function select(): IQueryStructure
+    public function select(array $data = []): IQueryStructure
     {
-        return $this->commands->select();
+        return $this->commands->select($data);
     }
 
     /**
@@ -64,8 +64,8 @@ class QueryFacade implements IQueryModifiers, ICommandOperations
         return $this->commands->update($data);
     }
 
-    public function delete(): IQueryStructure
+    public function delete(array $data = []): IQueryStructure
     {
-        return $this->commands->delete();
+        return $this->commands->delete($data);
     }
 }

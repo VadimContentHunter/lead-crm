@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\components\Repositories\QueryBuilder\interfaces;
+namespace crm\src\services\Repositories\QueryBuilder\interfaces;
 
 use crm\src\services\Repositories\DbRepository\common\interfaces\IQueryStructure;
 

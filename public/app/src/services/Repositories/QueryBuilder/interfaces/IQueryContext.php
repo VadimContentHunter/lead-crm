@@ -1,9 +1,9 @@
 <?php
 
-namespace crm\src\components\Repositories\QueryBuilder\interfaces;
+namespace crm\src\services\Repositories\QueryBuilder\interfaces;
 
-use crm\src\components\Repositories\QueryBuilder\interfaces\IQueryModifiers;
-use crm\src\components\Repositories\QueryBuilder\interfaces\ICommandOperations;
+use crm\src\services\Repositories\QueryBuilder\interfaces\IQueryModifiers;
+use crm\src\services\Repositories\QueryBuilder\interfaces\ICommandOperations;
 
 /**
  * Интерфейс для задания контекста запроса — источника данных (таблицы).

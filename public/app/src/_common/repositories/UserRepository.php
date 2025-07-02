@@ -7,7 +7,7 @@ use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
 use crm\src\components\UserManagement\_entities\User;
 use crm\src\services\Repositories\DbRepository\DbRepository;
-use crm\src\components\Repositories\QueryBuilder\QueryBuilder;
+use crm\src\services\Repositories\QueryBuilder\QueryBuilder;
 use crm\src\components\UserManagement\_common\mappers\UserMapper;
 use crm\src\components\UserManagement\_common\interfaces\IUserRepository;
 

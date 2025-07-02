@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\components\Repositories\QueryBuilder\interfaces;
+namespace crm\src\services\Repositories\QueryBuilder\interfaces;
 
 /**
  * Интерфейс для задания критериев и модификаторов запроса:

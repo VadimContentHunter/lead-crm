@@ -1,8 +1,8 @@
 <?php
 
-namespace crm\src\components\Repositories\QueryBuilder;
+namespace crm\src\services\Repositories\QueryBuilder;
 
-use crm\src\components\Repositories\QueryBuilder\interfaces\ICommandOperations;
+use crm\src\services\Repositories\QueryBuilder\interfaces\ICommandOperations;
 use crm\src\services\Repositories\DbRepository\common\interfaces\IQueryStructure;
 
 class CommandOperations implements ICommandOperations

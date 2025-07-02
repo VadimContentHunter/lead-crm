@@ -1,8 +1,8 @@
 <?php
 
-namespace crm\src\components\Repositories\QueryBuilder;
+namespace crm\src\services\Repositories\QueryBuilder;
 
-use crm\src\components\Repositories\QueryBuilder\interfaces\IQueryModifiers;
+use crm\src\services\Repositories\QueryBuilder\interfaces\IQueryModifiers;
 use crm\src\services\Repositories\DbRepository\common\interfaces\IQueryStructure;
 
 class QueryModifiers implements IQueryModifiers

@@ -39,6 +39,21 @@ class RepoResult implements IRepoResult
         return $this->error;
     }
 
+    public function getInt(): ?int
+    {
+        return is_int($this->data) ? $this->data : null;
+    }
+
+    public function getBool(): ?bool
+    {
+        return is_bool($this->data) ? $this->data : null;
+    }
+
+    public function hasNull(): bool
+    {
+        return $this->data === null;
+    }
+
     /**
      * Обрабатывает успешный результат через callback
      *

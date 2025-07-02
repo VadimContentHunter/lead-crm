@@ -12,6 +12,12 @@ interface IRepoResult
 
     public function getError(): ?Throwable;
 
+    public function getInt(): ?int;
+
+    public function getBool(): ?bool;
+
+    public function hasNull(): bool;
+
     /**
      * Обработать успешный результат через callback
      *

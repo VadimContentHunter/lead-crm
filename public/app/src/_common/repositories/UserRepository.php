@@ -30,8 +30,8 @@ class UserRepository extends ARepository implements IUserRepository
     protected function toArray(object $entity): array
     {
         /**
- * @var User $entity
-*/
+         * @var User $entity
+         */
         return UserMapper::toArray($entity);
     }
 

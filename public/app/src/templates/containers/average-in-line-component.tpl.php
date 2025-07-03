@@ -8,3 +8,7 @@
         <?= $component ?>
     </section>
 </section>
+
+<script>
+    
+</script>

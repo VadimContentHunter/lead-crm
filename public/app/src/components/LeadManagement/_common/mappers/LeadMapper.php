@@ -37,4 +37,24 @@ class LeadMapper
             id: isset($data['id']) ? (int)$data['id'] : null,
         );
     }
+
+    /**
+     * Преобразует сущность Lead в массив для БД.
+     *
+     * @param  Lead $lead
+     * @return array<string, mixed>
+     */
+    public static function toArray(Lead $lead): array
+    {
+        return [
+        'id' => $lead->id,
+        'full_name' => $lead->fullName,
+        'contact' => $lead->contact,
+        'address' => $lead->address,
+        'source_id' => $lead->source?->id,
+        'status_id' => $lead->status?->id,
+        'account_manager_id' => $lead->accountManager?->id,
+        'created_at' => $lead->createdAt?->format('Y-m-d H:i:s'),
+        ];
+    }
 }

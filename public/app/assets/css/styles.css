@@ -57,7 +57,8 @@
   color: #333;
 }
 .base-form .form-group input,
-.base-form .form-group select {
+.base-form .form-group select,
+.base-form .form-group textarea {
   padding: 10px 12px;
   border: 1px solid #ccc;
   border-radius: var(--border-radius-base);
@@ -66,9 +67,15 @@
   transition: border-color 0.2s;
 }
 .base-form .form-group input:focus,
-.base-form .form-group select:focus {
+.base-form .form-group select:focus,
+.base-form .form-group textarea:focus {
   border-color: #007bff;
   outline: none;
+}
+.base-form .form-group textarea {
+  resize: vertical;
+  max-height: 250px;
+  min-height: 140px;
 }
 .base-form .form-actions {
   display: flex;
@@ -345,17 +352,23 @@
 
 .component--min {
   grid-column: span 2;
-  max-width: 200px;
 }
 .component--medium {
   grid-column: span 3;
   max-width: 400px;
   min-width: 300px;
-  width: 400px;
 }
 .component--full {
   grid-column: 1/-1;
-  width: 100%;
+}
+
+.comments-list {
+  border-top: 1px solid #cccccc;
+  padding: 8px 0px;
+  margin: 20px 0px;
+  color: #797979;
+  max-height: 500px;
+  overflow-y: auto;
 }
 
 body {

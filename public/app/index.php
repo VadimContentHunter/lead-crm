@@ -120,7 +120,7 @@ $routes = [
         extraData: [__DIR__, $pdo, $logger]
     ),
 
-    // PAGES-SOURCE
+    // PAGES-LEAD
 
     new Route(
         pattern: '^/page/lead-add$',
@@ -129,12 +129,19 @@ $routes = [
         extraData: [__DIR__, $pdo, $logger]
     ),
 
-    // new Route(
-    //     pattern: '^/page/lead-all$',
-    //     className: SourcePage::class,
-    //     methodName: 'showAllSourcePage',
-    //     extraData: [__DIR__, $pdo, $logger]
-    // ),
+    new Route(
+        pattern: '^/page/lead-all$',
+        className: LeadPage::class,
+        methodName: 'showAllLeadPage',
+        extraData: [__DIR__, $pdo, $logger]
+    ),
+
+    new Route(
+        pattern: '^/page/lead-edit/(\d+)$',
+        className: LeadPage::class,
+        methodName: 'showEditLeadPage',
+        extraData: [__DIR__, $pdo, $logger]
+    ),
 
     // PAGES-OTHER
 

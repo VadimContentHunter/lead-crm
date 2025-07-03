@@ -2,10 +2,11 @@
 
 namespace crm\src\components\LeadManagement;
 
-use crm\src\components\LeadManagement\_common\interfaces\ILeadRepository;
+use Throwable;
 use crm\src\components\LeadManagement\_common\DTOs\LeadFilterDto;
-use crm\src\components\LeadManagement\_common\interfaces\ILeadResult;
 use crm\src\components\LeadManagement\_common\adapters\LeadResult;
+use crm\src\components\LeadManagement\_common\interfaces\ILeadResult;
+use crm\src\components\LeadManagement\_common\interfaces\ILeadRepository;
 use crm\src\components\LeadManagement\_exceptions\LeadManagementException;
 
 class GetLead
@@ -66,6 +67,63 @@ class GetLead
             return LeadResult::failure($e);
         }
     }
+
+    /**
+     * Возвращает названия столбцов таблицы пользователей.
+     *
+     * @param  array<string, string> $renameMap Ключ — оригинальное имя, значение — новое имя
+     * @return IUserResult
+     */
+    public function executeColumnNames(array $renameMap = []): ILeadResult
+    {
+        try {
+            $columns = $this->repository->getColumnNames();
+
+            if (!empty($renameMap)) {
+                $columns = array_map(
+                    fn($name) => $renameMap[$name] ?? $name,
+                    $columns
+                );
+            }
+
+            return LeadResult::success($columns);
+        } catch (\Throwable $e) {
+            return LeadResult::failure($e);
+        }
+    }
+
+    /**
+     * Получает все статусы с применением маппера к каждому элементу.
+     *
+     * @template T
+     * @param    callable(Status): T $mapper
+     * @return   ISourceResult
+     */
+    public function executeAllMapped(callable $mapper): ILeadResult
+    {
+        try {
+            $leads = $this->repository->getAll();
+            $mapped = array_map($mapper, $leads);
+
+            return LeadResult::success($mapped);
+        } catch (Throwable $e) {
+            return LeadResult::failure($e);
+        }
+    }
+
+    public function all(): ILeadResult
+    {
+        try {
+            $leads = $this->repository->getAll();
+            if (empty($leads)) {
+                return LeadResult::failure(new LeadManagementException("Лиды не найдены"));
+            }
+            return LeadResult::success($leads);
+        } catch (Throwable $e) {
+            return LeadResult::failure($e);
+        }
+    }
+
 
     public function filtered(LeadFilterDto $filter, string $sortBy = 'leads.id', string $sortDir = 'asc'): ILeadResult
     {

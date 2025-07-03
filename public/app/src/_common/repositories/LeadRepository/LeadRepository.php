@@ -37,7 +37,22 @@ class LeadRepository implements ILeadRepository
 
     public function getColumnNames(): array
     {
-        return [];
+        $sql = "
+            SELECT COLUMN_NAME
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE()
+              AND TABLE_NAME = :table
+            ORDER BY ORDINAL_POSITION
+        ";
+
+        $result = $this->repository->executeSql($sql, ['table' => $this->getTableName()]);
+        if (!$result->isSuccess()) {
+            $this->logger->warning("Не удалось получить столбцы таблицы '{$this->getTableName()}': " . $result->getError()?->getMessage());
+            return [];
+        }
+
+        $data = $result->getArrayOrNull() ?? [];
+        return array_column($data, 'COLUMN_NAME');
     }
 
     public function save(object $entity): ?int
@@ -94,9 +109,9 @@ class LeadRepository implements ILeadRepository
     public function getById(int $id): ?Lead
     {
         $query = (new QueryBuilder())
-        ->table($this->getTableName())
-        ->where('id = :id', ['id' => $id])
-        ->select();
+            ->table($this->getTableName())
+            ->where('id = :id')
+            ->select(['id' => $id]);
 
         $result = $this->repository->executeQuery($query);
         $data = $result->getArrayOrNull();

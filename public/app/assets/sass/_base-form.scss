@@ -23,7 +23,8 @@
         }
 
         input,
-        select {
+        select,
+        textarea {
             padding: 10px 12px;
             border: 1px solid #ccc;
             border-radius: var(--border-radius-base);
@@ -35,6 +36,12 @@
                 border-color: #007bff;
                 outline: none;
             }
+        }
+
+        textarea {
+            resize: vertical;
+            max-height: 250px;
+            min-height: 140px;
         }
     }
 

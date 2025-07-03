@@ -120,7 +120,8 @@ class RouteHandler
         }
 
         $routeParams = array_slice($matches, 1);
-        $constructorParams = array_merge($routeParams, array_values($extraData));
+        $constructorParams = array_merge(array_values($extraData), $routeParams);
+        $methodParams = array_merge(array_values($methodExtraData), $routeParams);
 
         // Создаём контроллер через Reflection
         $reflection = new \ReflectionClass($className);
@@ -132,12 +133,9 @@ class RouteHandler
             }
 
             // Вызываем метод
-            call_user_func_array([$controller, $methodName], array_values($methodExtraData));
+            call_user_func_array([$controller, $methodName], $methodParams);
         }
     }
-
-
-
 
     /**
      * Обрабатывает URL, отрезая GET-параметры (всё после ?).
@@ -145,18 +143,5 @@ class RouteHandler
     private function processUrl(string $url): string
     {
         return parse_url($url, PHP_URL_PATH) ?: $url;
-    }
-
-    /**
-     * Объединяет параметры из URL и extraData в один индексированный массив.
-     *
-     * @param array<int|string,mixed> $routeParams
-     * @param array<int|string,mixed> $extraData
-     *
-     * @return array<int|string,mixed>
-     */
-    private function mergeParams(array $routeParams, $extraData): array
-    {
-        return array_merge($routeParams, array_values($extraData));
     }
 }

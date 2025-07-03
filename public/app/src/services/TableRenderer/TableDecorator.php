@@ -47,7 +47,7 @@ class TableDecorator
     protected function buildActions(mixed $id): string
     {
         return <<<HTML
-            <button type="button" class="btn-edit" data-id="{$id}">✏️</button>
+            <a href="/page/lead-edit/{$id}" class="btn-table-action btn-edit" data-id="{$id}">✏️</a>
             <button type="button" class="btn-delete" data-id="{$id}">🗑️</button>
         HTML;
     }

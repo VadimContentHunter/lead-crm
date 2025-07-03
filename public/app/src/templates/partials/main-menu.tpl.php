@@ -21,20 +21,20 @@
     </section>
 
     <nav class="list-main-menu top-menu">
-        <div class="item-main-menu" data-rpc-method="page.update" >
+        <a href="/test" class="item-main-menu">
             <div class="icon-wrapper">
                 <i class="fa-solid fa-house"></i>
             </div>
             <p>Главная</p>
-        </div>
+        </a>
 
-        <a href="/page/user-add" class="item-main-menu" data-rpc-method="page.update" >
+        <a href="/page/user-add" class="item-main-menu">
             <div class="icon-wrapper">
                 <i class="fa-solid fa-house"></i>
             </div>
             <p>Добавить пользователя</p>
         </a>
-        <a href="/page/user-all" class="item-main-menu" data-rpc-method="page.update" >
+        <a href="/page/user-all" class="item-main-menu">
             <div class="icon-wrapper">
                 <i class="fa-solid fa-house"></i>
             </div>
@@ -83,6 +83,13 @@
                 <i class="fa-solid fa-house"></i>
             </div>
             <p>Добавить лида</p>
+        </a>
+
+        <a href="/page/lead-all" class="item-main-menu">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-house"></i>
+            </div>
+            <p>Все лиды</p>
         </a>
     </nav>
 

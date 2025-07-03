@@ -35,27 +35,39 @@ class LeadValidatorAdapter extends AValidatorAdapter
             return null;
         });
 
-        $validator->addRule('source', function ($value) {
-            if ($value !== null && !is_object($value)) {
+        $validator->addRule('sourceId', function ($value) {
+            if ($value !== null && !$this->isIntegerValue($value)) {
                 return 'Источник должен быть указан';
             }
             return null;
         });
 
-        $validator->addRule('status', function ($value) {
-            if ($value !== null && !is_object($value)) {
-                return 'Статус должен быть указан';
-            }
-            return null;
-        });
+        // $validator->addRule('source', function ($value) {
+        //     if ($value !== null && !is_object($value)) {
+        //         return 'Источник должен быть указан';
+        //     }
+        //     return null;
+        // });
 
-        $validator->addRule('accountManager', function ($value) {
-            if ($value !== null && !is_object($value)) {
-                return 'Менеджер должен быть указан';
-            }
-            return null;
-        });
+        // $validator->addRule('status', function ($value) {
+        //     if ($value !== null && !is_object($value)) {
+        //         return 'Статус должен быть указан';
+        //     }
+        //     return null;
+        // });
+
+        // $validator->addRule('accountManager', function ($value) {
+        //     if ($value !== null && !is_object($value)) {
+        //         return 'Менеджер должен быть указан';
+        //     }
+        //     return null;
+        // });
 
         return $validator;
+    }
+
+    public function isIntegerValue(mixed $value): bool
+    {
+        return filter_var($value, FILTER_VALIDATE_INT) !== false;
     }
 }

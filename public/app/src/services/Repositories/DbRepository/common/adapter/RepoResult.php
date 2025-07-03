@@ -89,9 +89,43 @@ class RepoResult implements IRepoResult
      */
     public function getObjectOrNull(string $className): ?object
     {
-        return is_object($this->data) && $this->data instanceof $className
-            ? $this->data
-            : null;
+        if (is_object($this->data) && $this->data instanceof $className) {
+            return $this->data;
+        }
+
+        if (is_array($this->data)) {
+            try {
+                return new $className(...$this->data);
+            } catch (\Throwable $e) {
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @template T of object
+     * @param    class-string<T> $className Класс, к которому должен принадлежать объект
+     * @param    (callable(array): T)|null $mapper    Кастомный маппер
+     *                                                массива в объект
+     * @return   T|null Объект этого класса или null
+     */
+    public function getObjectOrNullWithMapper(string $className, ?callable $mapper = null): ?object
+    {
+        if (is_object($this->data) && $this->data instanceof $className) {
+            return $this->data;
+        }
+
+        if (is_array($this->data) && $mapper !== null) {
+            try {
+                return $mapper($this->data);
+            } catch (\Throwable $e) {
+                return null;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -157,5 +191,20 @@ class RepoResult implements IRepoResult
         }
 
         return $result;
+    }
+
+    /**
+     * Если data — массив, извлекает из него первый элемент и сохраняет его в data.
+     * Возвращает self для цепочек вызовов.
+     *
+     * @return static
+     */
+    public function first(): static
+    {
+        if (is_array($this->data) && !empty($this->data)) {
+            $this->data = reset($this->data);
+        }
+
+        return $this;
     }
 }

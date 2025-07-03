@@ -12,11 +12,12 @@ use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\_common\repositories\LeadRepository\LeadRepository;
 use crm\src\_common\repositories\LeadRepository\LeadSourceRepository;
 use crm\src\_common\repositories\LeadRepository\LeadStatusRepository;
+use crm\src\components\LeadManagement\_common\mappers\LeadInputMapper;
 use crm\src\_common\repositories\LeadRepository\LeadAccountManagerRepository;
 
 class LeadController
 {
-    private LeadManagement $sourceManagement;
+    private LeadManagement $leadManagement;
 
     private JsonRpcServerFacade $rpc;
 
@@ -25,7 +26,7 @@ class LeadController
         PDO $pdo,
         private LoggerInterface $logger = new NullLogger()
     ) {
-        $this->sourceManagement = new LeadManagement(
+        $this->leadManagement = new LeadManagement(
             leadRepository: new LeadRepository($pdo, $logger),
             sourceRepository: new LeadSourceRepository($pdo, $logger),
             statusRepository: new LeadStatusRepository($pdo, $logger),
@@ -50,29 +51,42 @@ class LeadController
     public function createLead(array $params): void
     {
         if (
-            is_string($params['login'] ?? null)
-            && is_string($params['password'] ?? null)
-            && is_string($params['password_confirm'] ?? null)
+            is_string($params['fullName'] ?? null)
+            && is_string($params['contact'] ?? null)
         ) {
+            $executeResult = $this->leadManagement->create()->execute(LeadInputMapper::fromArray($params));
+
+            if ($executeResult->isSuccess()) {
+                $fullName = $executeResult->getFullName() ?? 'не указано имя';
+                $contact = $executeResult->getContact() ?? 'не указан контакт';
+                $address = $executeResult->getAddress() ?? 'не указан адрес';
+                $sourceTitle = $executeResult->getSourceTitle() ?? 'не указан источник';
+                $statusTitle = $executeResult->getStatusTitle() ?? 'не указан статус';
+                $accountManagerLogin = $executeResult->getAccountManagerLogin() ?? 'не указан менеджер';
+
+                $this->rpc->replyData([
+                    ['type' => 'success', 'message' => 'Лид успешно добавлен'],
+                    ['type' => 'info', 'message' => <<<HTML
+                            Добавленный Лид:
+                            <br> полное имя: <b>{$fullName}</b>
+                            <br> контакт: <b>{$contact}</b>
+                            <br> адрес: <b>{$address}</b>
+                            <br> источник: <b>{$sourceTitle}</b>
+                            <br> статус: <b>{$statusTitle}</b>
+                            <br> менеджер: <b>{$accountManagerLogin}</b>
+                        HTML
+                    ]
+                ]);
+            } else {
+                $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
+                $this->rpc->replyData([
+                    ['type' => 'error', 'message' => 'Лид не был добавлен. Причина: ' . $errorMsg]
+                ]);
+            }
+        } else {
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Данные источника некорректного формата.']
+            ]);
         }
-        // if (is_string($params['title'] ?? null)) {
-        //     $executeResult = $this->sourceManagement->create()->execute($params['title']);
-        //     $title =  $executeResult->getTitle() ?? 'неизвестный источник';
-        //     if ($executeResult->isSuccess()) {
-        //         $this->rpc->replyData([
-        //             ['type' => 'success', 'message' => 'Источник успешно добавлен'],
-        //             ['type' => 'info', 'message' => "Добавленный источник: <b>{$title}</b>"]
-        //         ]);
-        //     } else {
-        //         $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
-        //         $this->rpc->replyData([
-        //         ['type' => 'error', 'message' => 'Источник не добавлен. Причина: ' . $errorMsg]
-        //         ]);
-        //     }
-        // } else {
-        //     $this->rpc->replyData([
-        //         ['type' => 'error', 'message' => 'Данные источника некорректного формата.']
-        //     ]);
-        // }
     }
 }

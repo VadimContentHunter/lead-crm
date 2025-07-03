@@ -42,6 +42,15 @@ interface IRepoResult
     public function getObjectOrNull(string $className): ?object;
 
     /**
+     * @template T of object
+     * @param    class-string<T> $className Класс, к которому должен принадлежать объект
+     * @param    (callable(array): T)|null $mapper    Кастомный маппер
+     *                                                массива в объект
+     * @return   T|null Объект этого класса или null
+     */
+    public function getObjectOrNullWithMapper(string $className, ?callable $mapper = null): ?object;
+
+    /**
      * Преобразовать результат в массив объектов через кастомный гидратор.
      *
      * @template T of object
@@ -60,4 +69,12 @@ interface IRepoResult
      * @return   T[]
      */
     public function getValidMappedList(callable $mapper): array;
+
+     /**
+      * Если data — массив, извлекает из него первый элемент и сохраняет его в data.
+      * Возвращает self для цепочек вызовов.
+      *
+      * @return static
+      */
+    public function first(): static;
 }

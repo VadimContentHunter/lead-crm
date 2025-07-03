@@ -11,6 +11,7 @@ use crm\src\components\LeadManagement\_common\DTOs\SourceDto;
 use crm\src\components\LeadManagement\_common\DTOs\StatusDto;
 use crm\src\components\LeadManagement\_common\DTOs\LeadInputDto;
 use crm\src\components\LeadManagement\_common\DTOs\LeadFilterDto;
+use crm\src\components\LeadManagement\_common\mappers\LeadDbMapper;
 use crm\src\components\LeadManagement\_common\DTOs\AccountManagerDto;
 use crm\src\components\LeadManagement\_common\mappers\LeadInputMapper;
 use crm\src\components\LeadManagement\_common\interfaces\ILeadRepository;
@@ -46,12 +47,12 @@ class LeadRepository implements ILeadRepository
         }
 
         $dto = LeadInputMapper::fromEntity($entity);
-        $data = LeadInputMapper::toArray($dto);
+        // $data = LeadInputMapper::toArray($dto);
         // $data['created_at'] = date('Y-m-d H:i:s');
 
         $query = (new QueryBuilder())
             ->table($this->getTableName())
-            ->insert($data);
+            ->insert(LeadDbMapper::fromInputDtoToArray($dto));
 
         $result = $this->repository->executeQuery($query);
         return $result->isSuccess() ? $result->getInt() : null;

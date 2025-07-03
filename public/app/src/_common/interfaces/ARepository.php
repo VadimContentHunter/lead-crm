@@ -78,8 +78,9 @@ abstract class ARepository implements IRepository
         return $this->repository->executeQuery(
             (new QueryBuilder())->table($this->getTableName())
                 ->where('id = :id')
-                ->select()
-        )->getObjectOrNull($this->getEntityClass());
+                ->limit(1)
+                ->select(['id' => $id])
+        )->first()->getObjectOrNullWithMapper($this->getEntityClass(), $this->fromArray());
     }
 
     public function getAll(): array

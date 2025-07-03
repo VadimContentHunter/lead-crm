@@ -77,4 +77,19 @@ abstract class AResult implements IResult
         }
         return $mapper($this->data);
     }
+
+    /**
+     * Если data — массив, извлекает из него первый элемент и сохраняет его в data.
+     * Возвращает self для цепочек вызовов.
+     *
+     * @return static
+     */
+    public function first(): static
+    {
+        if (is_array($this->data) && !empty($this->data)) {
+            $this->data = reset($this->data);
+        }
+
+        return $this;
+    }
 }

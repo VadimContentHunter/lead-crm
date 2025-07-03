@@ -10,10 +10,9 @@
 ?>
 
 <section class="component component--medium">
-    <input type="text" name="leadId" value="<?= $leadId ?? '' ?>" hidden>
-
     <h2>Общие сведения лида</h2>
     <form class="base-form edit-lead-form" lead-form-id>
+        <input type="text" name="leadId" value="<?= $leadId ?? '' ?>" hidden>
         <div class="form-messages-container">
             <div class="form-message">
                 <p>Введите данные, что бы создать лида.</p>
@@ -44,7 +43,7 @@
                                 && (int)$selectedData['sourceId'] === (int)($source['id'] ?? 0)
                                 ) ? 'selected' : ''
                             ?>
-                    value="<?= htmlspecialchars($source['id'] ?? '0') ?>">
+                        value="<?= htmlspecialchars($source['id'] ?? '0') ?>">
                         <?= htmlspecialchars($source['title'] ?? 'error') ?>
                     </option>
                     <?php endforeach; ?>
@@ -56,9 +55,13 @@
                 <label>Выбор статусов</label>
                 <select name="statusId">
                     <option value="">Выберите...</option>
-                    <?php foreach ($statusesTitle as $source) : ?>
-                    <option value="<?= htmlspecialchars($source['id'] ?? '0') ?>">
-                        <?= htmlspecialchars($source['title'] ?? 'error') ?>
+                    <?php foreach ($statusesTitle as $status) : ?>
+                    <option <?= (isset($selectedData['statusId'])
+                                && (int)$selectedData['statusId'] === (int)($status['id'] ?? 0)
+                                ) ? 'selected' : ''
+                            ?>
+                        value="<?= htmlspecialchars($status['id'] ?? '0') ?>">
+                        <?= htmlspecialchars($status['title'] ?? 'error') ?>
                     </option>
                     <?php endforeach; ?>
                 </select>

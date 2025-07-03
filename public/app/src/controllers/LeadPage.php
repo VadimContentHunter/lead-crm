@@ -196,8 +196,6 @@ class LeadPage
             exit();
         }
 
-
-
         $sourcesTitle = $this->sourceManagement->get()->executeAllMapped(function (Source $source) {
             return SourceMapper::toArray($source);
         })->getArray();
@@ -238,6 +236,7 @@ class LeadPage
                 (new TemplateBundle(
                     templatePath: 'components/editLeadMainForm.tpl.php',
                     variables: [
+                        'leadId' => $leadId,
                         'sourcesTitle' => $sourcesTitle,
                         'statusesTitle' => $statusesTitle,
                         'selectedData' => $selectedData,

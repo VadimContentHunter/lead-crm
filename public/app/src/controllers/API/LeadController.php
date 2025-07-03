@@ -40,6 +40,10 @@ class LeadController
                 $this->createLead($this->rpc->getParams());
             // break;
 
+            case 'lead.edit':
+                $this->editLead($this->rpc->getParams());
+            // break;
+
             default:
                 $this->rpc->replyError(-32601, 'Метод не найден');
         }
@@ -81,6 +85,58 @@ class LeadController
                 $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
                 $this->rpc->replyData([
                     ['type' => 'error', 'message' => 'Лид не был добавлен. Причина: ' . $errorMsg]
+                ]);
+            }
+        } else {
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Данные источника некорректного формата.']
+            ]);
+        }
+    }
+
+    /**
+     * @param array<string,mixed> $params
+     */
+    public function editLead(array $params): void
+    {
+        $id = $params['leadId'] ?? $params['id'] ?? null;
+        if (!filter_var($id, FILTER_VALIDATE_INT)) {
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'ID Лида должен быть целым числом.']
+            ]);
+        }
+
+        $params['id'] = (int)$id;
+        if (
+            is_string($params['fullName'] ?? null)
+            && is_string($params['contact'] ?? null)
+        ) {
+            $executeResult = $this->leadManagement->update()->execute(LeadInputMapper::fromArray($params));
+            if ($executeResult->isSuccess()) {
+                $fullName = $executeResult->getFullName() ?? 'не указано имя';
+                $contact = $executeResult->getContact() ?? 'не указан контакт';
+                $address = $executeResult->getAddress() ?? 'не указан адрес';
+                $sourceTitle = $executeResult->getSourceTitle() ?? 'не указан источник';
+                $statusTitle = $executeResult->getStatusTitle() ?? 'не указан статус';
+                $accountManagerLogin = $executeResult->getAccountManagerLogin() ?? 'не указан менеджер';
+
+                $this->rpc->replyData([
+                   ['type' => 'success', 'message' => 'Лид успешно обновлен'],
+                   ['type' => 'info', 'message' => <<<HTML
+                            Добавленный Лид:
+                            <br> полное имя: <b>{$fullName}</b>
+                            <br> контакт: <b>{$contact}</b>
+                            <br> адрес: <b>{$address}</b>
+                            <br> источник: <b>{$sourceTitle}</b>
+                            <br> статус: <b>{$statusTitle}</b>
+                            <br> менеджер: <b>{$accountManagerLogin}</b>
+                        HTML
+                   ]
+                ]);
+            } else {
+                $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
+                $this->rpc->replyData([
+                    ['type' => 'error', 'message' => 'Лид не был обновлен. Причина: ' . $errorMsg]
                 ]);
             }
         } else {

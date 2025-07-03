@@ -129,10 +129,10 @@ class DbRepository implements IRepository
             array_keys($data)
         ));
 
+        $conditions = $this->cloneWhereParams($conditions, $data);
         $sql = "UPDATE $table SET $set " . $this->buildWhereClause($conditions);
 
         $stmt = $this->pdo->prepare($sql);
-
         return $stmt->execute($data);
     }
 
@@ -193,6 +193,45 @@ class DbRepository implements IRepository
         $clauses = array_map(fn($c) => "($c)", $conditions);
         return "WHERE " . implode(' AND ', $clauses);
     }
+
+    /**
+     * Клонирует пересекающиеся параметры из $data для условий.
+     *
+     * @param string[] $conditions - массив условий типа ["id = :id"]
+     * @param array<string, mixed> &$data      - данные, где ключи
+     *                                         соответствуют
+     *                                         параметрам
+     *
+     * @return string[] - обновлённый массив условий с переименованными параметрами
+     */
+    protected function cloneWhereParams(array $conditions, array &$data): array
+    {
+        $newConditions = [];
+
+        foreach ($conditions as $condition) {
+            // Ищем плейсхолдеры вида ":param"
+            if (!preg_match('/:(\w+)/', $condition, $matches)) {
+                $newConditions[] = $condition; // оставляем как есть
+                continue;
+            }
+
+            $paramName = $matches[1]; // например "id"
+
+            if (array_key_exists($paramName, $data)) {
+                // создаём новый параметр
+                $newParamName = $paramName . '_w';
+                $data[$newParamName] = $data[$paramName];
+
+                // Заменяем параметр в условии
+                $condition = str_replace(":$paramName", ":$newParamName", $condition);
+            }
+
+            $newConditions[] = $condition;
+        }
+
+        return $newConditions;
+    }
+
 
     protected function sanitizeIdentifier(string $identifier): string
     {

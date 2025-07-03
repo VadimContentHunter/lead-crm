@@ -79,28 +79,29 @@ class LeadRepository implements ILeadRepository
             return null;
         }
 
-        $dto = LeadInputMapper::fromEntity($entity);
-        if (!$dto->id) {
+        if (!$entity->id) {
             return null;
         }
 
-        $data = LeadInputMapper::toArray($dto);
+        $data = LeadDbMapper::fromEntityToArray($entity);
+        // unset($data['id']);
 
         $query = (new QueryBuilder())
-        ->table($this->getTableName())
-        ->where('id = :id', ['id' => $dto->id])
-        ->update($data);
+            ->table($this->getTableName())
+            ->where('id = :id')
+            ->update($data);
+
 
         $result = $this->repository->executeQuery($query);
-        return $result->isSuccess() ? $dto->id : null;
+        return $result->isSuccess() ? $entity->id : null;
     }
 
     public function deleteById(int $id): ?int
     {
         $query = (new QueryBuilder())
         ->table($this->getTableName())
-        ->where('id = :id', ['id' => $id])
-        ->delete();
+        ->where('id = :id')
+        ->delete(['id' => $id]);
 
         $result = $this->repository->executeQuery($query);
         return $result->isSuccess() ? $id : null;
@@ -135,8 +136,8 @@ class LeadRepository implements ILeadRepository
     {
         $query = (new QueryBuilder())
         ->table($this->getTableName())
-        ->where('account_manager_id = :id', ['id' => $accountManagerId])
-        ->delete();
+        ->where('account_manager_id = :id')
+        ->delete(['id' => $accountManagerId]);
 
         $result = $this->repository->executeQuery($query);
         return $result->isSuccess() ? $result->getInt() : null;

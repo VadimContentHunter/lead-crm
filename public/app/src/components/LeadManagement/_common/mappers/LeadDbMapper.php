@@ -2,6 +2,7 @@
 
 namespace crm\src\components\LeadManagement\_common\mappers;
 
+use crm\src\components\LeadManagement\_entities\Lead;
 use crm\src\components\LeadManagement\_common\DTOs\LeadDbDto;
 use crm\src\components\LeadManagement\_common\DTOs\LeadInputDto;
 
@@ -68,6 +69,26 @@ class LeadDbMapper
             'status_id' => $dto->statusId,
             'account_manager_id' => $dto->accountManagerId,
             // 'created_at' => null,
+        ];
+    }
+
+    /**
+     * Преобразует Lead в массив для сохранения в БД (формат колонок таблицы leads).
+     *
+     * @param  Lead $lead
+     * @return array<string, mixed>
+     */
+    public static function fromEntityToArray(Lead $lead): array
+    {
+        return [
+        'id' => $lead->id,
+        'full_name' => $lead->fullName,
+        'address' => $lead->address,
+        'contact' => $lead->contact,
+        'source_id' => $lead->source?->id,
+        'status_id' => $lead->status?->id,
+        'account_manager_id' => $lead->accountManager?->id,
+        'created_at' => $lead->createdAt?->format('Y-m-d H:i:s'),
         ];
     }
 }

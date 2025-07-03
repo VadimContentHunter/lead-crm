@@ -47,14 +47,14 @@ class LeadMapper
     public static function toArray(Lead $lead): array
     {
         return [
-        'id' => $lead->id,
-        'full_name' => $lead->fullName,
-        'contact' => $lead->contact,
-        'address' => $lead->address,
-        'source_id' => $lead->source?->id,
-        'status_id' => $lead->status?->id,
-        'account_manager_id' => $lead->accountManager?->id,
-        'created_at' => $lead->createdAt?->format('Y-m-d H:i:s'),
+            'id' => $lead->id,
+            'full_name' => $lead->fullName,
+            'contact' => $lead->contact,
+            'address' => $lead->address,
+            'source_id' => $lead->source?->id,
+            'status_id' => $lead->status?->id,
+            'account_manager_id' => $lead->accountManager?->id,
+            'created_at' => $lead->createdAt?->format('Y-m-d H:i:s'),
         ];
     }
 }

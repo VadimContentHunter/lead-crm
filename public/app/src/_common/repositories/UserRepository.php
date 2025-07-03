@@ -2,123 +2,56 @@
 
 namespace crm\src\_common\repositories;
 
-use PDO;
-use Psr\Log\NullLogger;
-use Psr\Log\LoggerInterface;
+use crm\src\_common\repositories\ARepository;
 use crm\src\components\UserManagement\_entities\User;
-use crm\src\services\Repositories\DbRepository\DbRepository;
-use crm\src\services\Repositories\QueryBuilder\QueryBuilder;
 use crm\src\components\UserManagement\_common\mappers\UserMapper;
 use crm\src\components\UserManagement\_common\interfaces\IUserRepository;
 
-class UserRepository implements IUserRepository
+/**
+ * @extends ARepository<User>
+ */
+class UserRepository extends ARepository implements IUserRepository
 {
-    private DbRepository $repository;
+    protected function getTableName(): string
+    {
+        return 'users';
+    }
 
-    public function __construct(
-        PDO $pdo,
-        private LoggerInterface $logger = new NullLogger()
-    ) {
-        $this->repository = new DbRepository($pdo);
+    protected function getEntityClass(): string
+    {
+        return User::class;
+    }
+
+    protected function fromArray(): callable
+    {
+        return [UserMapper::class, 'fromArray'];
+    }
+
+    protected function toArray(object $entity): array
+    {
+        /**
+ * @var User $entity
+*/
+        return UserMapper::toArray($entity);
     }
 
     public function deleteByLogin(string $login): ?int
     {
-        return $this->repository->executeQuery((new QueryBuilder())
-                ->table('users')
+        return $this->repository->executeQuery(
+            (new \crm\src\services\Repositories\QueryBuilder\QueryBuilder())
+                ->table($this->getTableName())
                 ->where('login = :login')
-                ->delete(['login' => $login]))
-                    ->getInt();
+                ->delete(['login' => $login])
+        )->getInt();
     }
 
     public function getByLogin(string $login): ?User
     {
-        return $this->repository->executeQuery((new QueryBuilder())
-                ->table('users')
+        return $this->repository->executeQuery(
+            (new \crm\src\services\Repositories\QueryBuilder\QueryBuilder())
+                ->table($this->getTableName())
                 ->where('login = :login')
-                ->select(['login']))
-                    ->getObjectOrNull(User::class);
-    }
-
-    /**
-     * @param User $user
-     */
-    public function save(object $user): ?int
-    {
-        return $this->repository->executeQuery((new QueryBuilder())
-                ->table('users')
-                ->insert(['login' => $user->login, 'password_hash' => $user->passwordHash]))
-                    ->getInt();
-    }
-
-    /**
-     * @param User $entity
-     */
-    public function update(object $entity): ?int
-    {
-        return $this->repository->executeQuery((new QueryBuilder())
-                ->table('users')
-                ->where('login = :login')
-                ->update(['login' => $entity->login, 'password_hash' => $entity->passwordHash]))
-                    ->getInt();
-    }
-
-    public function deleteById(int $id): ?int
-    {
-        return $this->repository->executeQuery((new QueryBuilder())
-                ->table('users')
-                ->where('id = :id')
-                ->delete(['id' => $id]))
-                    ->getInt();
-    }
-
-    public function getById(int $id): ?User
-    {
-        return $this->repository->executeQuery((new QueryBuilder())
-                ->table('users')
-                ->where('id = :id')
-                ->select(['id', 'login', 'password_hash']))
-                    ->getObjectOrNull(User::class);
-    }
-
-    /**
-     * @return User[]
-     */
-    public function getAll(): array
-    {
-        return $this->repository->executeQuery((new QueryBuilder())
-                ->table('users')
-                ->select())
-                    ->getValidMappedList([UserMapper::class, 'fromArray']);
-    }
-
-    /**
-     * Возвращает названия колонок из базы данных.
-     *
-     * @return string[]
-     */
-    public function getColumnNames(): array
-    {
-        $sql = "
-            SELECT COLUMN_NAME
-            FROM INFORMATION_SCHEMA.COLUMNS
-            WHERE TABLE_SCHEMA = DATABASE()
-            AND TABLE_NAME = :table
-            ORDER BY ORDINAL_POSITION
-        ";
-
-        $result = $this->repository->executeSql($sql, ['table' => 'users']);
-        if (!$result->isSuccess()) {
-            $this->logger->warning("Не удалось получить столбцы таблицы 'users': " . $result->getError()?->getMessage());
-            return [];
-        }
-
-        $data = $result->getArrayOrNull();
-        if (empty($data)) {
-            $this->logger->warning("Таблица 'users' не содержит столбцов или не найдена");
-            return [];
-        }
-
-        return array_column($data, 'COLUMN_NAME');
+                ->select()
+        )->getObjectOrNull($this->getEntityClass());
     }
 }

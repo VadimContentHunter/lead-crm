@@ -77,6 +77,13 @@
             </div>
             <p>Источники</p>
         </a>
+
+        <a href="/page/lead-add" class="item-main-menu">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-house"></i>
+            </div>
+            <p>Добавить лида</p>
+        </a>
     </nav>
 
     <nav class="list-main-menu bottom-menu">

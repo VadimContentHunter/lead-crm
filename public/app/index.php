@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Psr\Log\NullLogger;
+use crm\src\controllers\LeadPage;
 use crm\src\controllers\UserPage;
 use crm\src\controllers\SourcePage;
 use crm\src\controllers\StatusPage;
@@ -13,6 +14,7 @@ use crm\src\controllers\TestController;
 use crm\src\controllers\ErrorController;
 use crm\src\controllers\LoginController;
 use PHPUnit\TextUI\Configuration\Source;
+use crm\src\controllers\API\LeadController;
 use crm\src\controllers\API\UserController;
 use crm\src\controllers\NotFoundController;
 use crm\src\controllers\BootstrapController;
@@ -60,6 +62,12 @@ $routes = [
     new Route(
         pattern: '^/api/sources$',
         className: SourceController::class,
+        extraData: [__DIR__, $pdo, $logger]
+    ),
+
+    new Route(
+        pattern: '^/api/leads$',
+        className: LeadController::class,
         extraData: [__DIR__, $pdo, $logger]
     ),
 
@@ -111,6 +119,22 @@ $routes = [
         methodName: 'showAllSourcePage',
         extraData: [__DIR__, $pdo, $logger]
     ),
+
+    // PAGES-SOURCE
+
+    new Route(
+        pattern: '^/page/lead-add$',
+        className: LeadPage::class,
+        methodName: 'showAddLeadPage',
+        extraData: [__DIR__, $pdo, $logger]
+    ),
+
+    // new Route(
+    //     pattern: '^/page/lead-all$',
+    //     className: SourcePage::class,
+    //     methodName: 'showAllSourcePage',
+    //     extraData: [__DIR__, $pdo, $logger]
+    // ),
 
     // PAGES-OTHER
 

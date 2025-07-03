@@ -24,4 +24,13 @@ class UserMapper
             id: isset($data['id']) ? (int) $data['id'] : null
         );
     }
+
+    public static function toArray(User $user): array
+    {
+        return [
+            'id' => $user->id,
+            'login' => $user->login,
+            'password_hash' => $user->passwordHash,
+        ];
+    }
 }

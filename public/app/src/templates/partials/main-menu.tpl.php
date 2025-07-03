@@ -28,7 +28,13 @@
             <p>Главная</p>
         </div>
 
-        <div class="item-main-menu"
+        <a href="/page/user-add" class="item-main-menu" data-rpc-method="page.update" >
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-house"></i>
+            </div>
+            <p>Добавить пользователя</p>
+        </a>
+        <!-- <div class="item-main-menu"
             data-rpc-method="user.show.add_page"
             data-rpc-endpoint="/api/users"
             id="add-user-button">
@@ -36,7 +42,7 @@
                 <i class="fa-solid fa-house"></i>
             </div>
             <p>Добавить пользователя</p>
-        </div>
+        </div> -->
 
         <div class="item-main-menu"
             data-rpc-method="user.show.all_page"

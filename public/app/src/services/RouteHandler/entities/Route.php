@@ -2,28 +2,30 @@
 
 declare(strict_types=1);
 
-namespace  crm\src\services\RouteHandler\entities;
+namespace crm\src\services\RouteHandler\entities;
 
-use  crm\src\services\RouteHandler\common\interfaces\IRoute;
+use crm\src\services\RouteHandler\common\interfaces\IRoute;
 
 class Route implements IRoute
 {
     /**
-     * @param string $pattern    Паттерн URL в виде регулярного
-     *                           выражения (без разделителей // и флагов)
-     *                           Пример: ^user/(?P<id>\d+)$ — паттерн для URL с
-     *                           параметром "id"
-     * @param string $className  Имя класса
-     *                           контроллера
-     * @param string|null $methodName Метод контроллера (опционально)
-     * @param array<string|int,mixed> $extraData  Дополнительные
-     *                                            данные маршрута
+     * @param string $pattern         Паттерн URL в виде регулярного
+     *                                выражения (без // и флагов)
+     * @param string $className       Имя класса
+     *                                контроллера
+     * @param string|null $methodName      Имя метода
+     *                                     (опционально)
+     * @param array<string|int,mixed> $extraData       Данные
+     *                                                 для
+     *                                                 класса
+     * @param array<string|int,mixed> $methodExtraData Данные для метода
      */
     public function __construct(
         private string $pattern,
         private string $className,
         private ?string $methodName = null,
-        private array $extraData = []
+        private array $extraData = [],
+        private array $methodExtraData = []
     ) {
     }
 
@@ -57,17 +59,11 @@ class Route implements IRoute
         return $this->methodName;
     }
 
-    /**
-     * @param array<string|int,mixed> $data
-     */
     public function setExtraData(array $data): void
     {
         $this->extraData = $data;
     }
 
-    /**
-     * @return array<string|int,mixed>
-     */
     public function getExtraData(): array
     {
         return $this->extraData;
@@ -76,5 +72,20 @@ class Route implements IRoute
     public function addExtraData(string $key, mixed $value): void
     {
         $this->extraData[$key] = $value;
+    }
+
+    public function setMethodExtraData(array $data): void
+    {
+        $this->methodExtraData = $data;
+    }
+
+    public function getMethodExtraData(): array
+    {
+        return $this->methodExtraData;
+    }
+
+    public function addMethodExtraData(string $key, mixed $value): void
+    {
+        $this->methodExtraData[$key] = $value;
     }
 }

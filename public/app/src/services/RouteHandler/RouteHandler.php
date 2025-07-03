@@ -111,29 +111,32 @@ class RouteHandler
     {
         $className = $route->getClassName();
         $methodName = $route->getMethodName();
-        $extraData = $route->getExtraData();
+
+        $extraData = $route->getExtraData();             // Данные для конструктора
+        $methodExtraData = $route->getMethodExtraData(); // Данные для метода
 
         if (!class_exists($className)) {
             throw new \RuntimeException("Класс {$className} не найден.");
         }
 
         $routeParams = array_slice($matches, 1);
-        $mergedParams = $this->mergeParams($routeParams, $extraData);
+        $constructorParams = array_merge($routeParams, array_values($extraData));
+
+        // Создаём контроллер через Reflection
+        $reflection = new \ReflectionClass($className);
+        $controller = $reflection->newInstanceArgs($constructorParams);
 
         if ($methodName !== null) {
-            $controller = new $className();
-
             if (!method_exists($controller, $methodName)) {
                 throw new \RuntimeException("Метод {$methodName} не найден в классе {$className}.");
             }
 
-            // Вызываем метод напрямую с распаковкой аргументов — PHPStan это понимает
-            $controller->{$methodName}(...$mergedParams);
-        } else {
-            $reflection = new \ReflectionClass($className);
-            $reflection->newInstanceArgs($mergedParams);
+            // Вызываем метод
+            call_user_func_array([$controller, $methodName], array_values($methodExtraData));
         }
     }
+
+
 
 
     /**

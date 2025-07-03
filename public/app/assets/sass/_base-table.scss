@@ -1,3 +1,60 @@
+// .base-table {
+//     width: 100%;
+//     border-collapse: collapse;
+//     background-color: #fff;
+//     font-size: 14px;
+//     color: #333;
+
+//     th,
+//     td {
+//         border: 1px solid #ccc;
+//         padding: 8px 12px;
+//         text-align: left;
+//     }
+
+//     thead {
+//         background-color: #f5f5f5;
+
+//         th {
+//             font-weight: bold;
+//         }
+//     }
+
+//     tbody tr:nth-child(even) {
+//         background-color: #fafafa;
+//     }
+
+//     input[type="text"] {
+//         width: 100%;
+//         padding: 4px 6px;
+//         border: 1px solid #bbb;
+//         border-radius: 4px;
+//         background-color: #fff;
+//         color: #333;
+//     }
+
+//     .btn-edit,
+//     .btn-delete {
+//         cursor: pointer;
+//         padding: 4px 8px;
+//         margin-right: 4px;
+//         font-size: 16px;
+//         border-radius: 4px;
+//         background-color: #eee;
+//         transition: background-color 0.2s;
+
+//         &:hover {
+//             background-color: #ddd;
+//         }
+//     }
+
+//     .btn-delete {
+//         color: #c00;
+//     }
+// }
+
+
+
 .base-table {
     display: flex;
     flex-direction: column;

@@ -42,8 +42,8 @@ class UserController
                 $this->createUser($this->rpc->getParams());
             // break;
 
-            case 'user.show.add_page':
-                $this->showAddUserPage();
+            // case 'user.show.add_page':
+            //     $this->showAddUserPage();
             // break;
 
             case 'user.show.all_page':
@@ -52,20 +52,6 @@ class UserController
 
             default:
                 $this->rpc->replyError(-32601, 'Метод не найден');
-        }
-    }
-
-    public function showAddUserPage(): void
-    {
-        $renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
-        $layout = (new TemplateBundle(templatePath: 'components/addUser.tpl.php'));
-        try {
-            $this->rpc->replyContentUpdate('main.main-content', $renderer->renderBundle($layout));
-        } catch (Throwable $e) {
-            $this->rpc->replyError(-32601, 'Не удалось сгенерировать страницу для добавления пользователя');
-            // header('Content-Type: text/plain; charset=utf-8');
-            // echo "Произошла ошибка: " . $e->getMessage();
-            throw $e;
         }
     }
 

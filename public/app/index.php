@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Psr\Log\NullLogger;
+use crm\src\controllers\UserPage;
 use crm\src\services\LoggerFactory;
 use crm\src\controllers\ApiController;
 use crm\src\controllers\HomeController;
@@ -42,11 +43,11 @@ $routeApiUser = new Route(
     extraData: [__DIR__, $pdo, $logger]
 );
 
-
-$routeApi = new Route(
-    pattern: '^/api$',
-    className: ApiController::class,
-    extraData: []
+$routeUserAddPage = new Route(
+    pattern: '^/page/user-add$',
+    className: UserPage::class,
+    methodName: 'showAddUserPage',
+    extraData: [__DIR__]
 );
 
 $routeLogin = new Route(
@@ -59,13 +60,6 @@ $routeTEST = new Route(
     pattern: '^/test',
     className: TestController::class,
     extraData: [__DIR__]
-);
-
-$route1 = new Route(
-    pattern: '^/user/(\d+)$',
-    className: UserController::class,
-    methodName: 'view',
-    extraData: ['admin'] // extraData передастся как второй аргумент
 );
 
 $route2 = new Route(
@@ -88,7 +82,7 @@ $routError = new Route(
 
 // Создаём обработчик маршрутов, передаём список маршрутов и URL для обработки:
 $routeHandler = new RouteHandler(
-    routes: [ $route1, $route2, $routeTEST, $routeLogin, $routeApi, $routeBootstrap, $routeApiUser ],
+    routes: [ $route2, $routeTEST, $routeLogin, $routeBootstrap, $routeApiUser, $routeUserAddPage ],
     currentUrl: $_SERVER['REQUEST_URI'],
     defaultRoute: $rout404,
     errorRoute: $routError,

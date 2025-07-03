@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\components\StatusManagement\_usecases;
+namespace crm\src\components\StatusManagement;
 
 use Throwable;
 use crm\src\_common\interfaces\IValidation;
@@ -83,5 +83,48 @@ class GetStatus
          return  isset($Status->id) && $Status->id > 0
             ? $this->getById($Status->id)
             : $this->getByTitle($Status->title);
+    }
+
+        /**
+         * Возвращает названия столбцов таблицы статусов.
+         *
+         * @param  array<string, string> $renameMap Ключ — оригинальное имя, значение — новое имя
+         * @return IStatusResult
+         */
+    public function executeColumnNames(array $renameMap = []): IStatusResult
+    {
+        try {
+            $columns = $this->repository->getColumnNames();
+
+            if (!empty($renameMap)) {
+                $columns = array_map(
+                    fn($name) => $renameMap[$name] ?? $name,
+                    $columns
+                );
+            }
+
+            return StatusResult::success($columns);
+        } catch (Throwable $e) {
+            return StatusResult::failure($e);
+        }
+    }
+
+    /**
+     * Получает все статусы с применением маппера к каждому элементу.
+     *
+     * @template T
+     * @param    callable(Status): T $mapper
+     * @return   IStatusResult
+     */
+    public function executeAllMapped(callable $mapper): IStatusResult
+    {
+        try {
+            $statuses = $this->repository->getAll();
+            $mapped = array_map($mapper, $statuses);
+
+            return StatusResult::success($mapped);
+        } catch (Throwable $e) {
+            return StatusResult::failure($e);
+        }
     }
 }

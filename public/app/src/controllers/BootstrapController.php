@@ -31,6 +31,7 @@ class BootstrapController
             $logger->error($resultUsers->getError()?->getMessage() ?? 'Неизвестная ошибка');
         }
 
+        echo "<br>";
         $this->repository = new DbRepository($pdo);
         $resultStatuses = $this->repository->executeSql(CrmSchemaProvider::get('statuses'));
         if ($resultStatuses->isSuccess()) {

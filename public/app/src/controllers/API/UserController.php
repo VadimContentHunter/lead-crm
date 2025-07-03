@@ -42,74 +42,8 @@ class UserController
                 $this->createUser($this->rpc->getParams());
             // break;
 
-            // case 'user.show.add_page':
-            //     $this->showAddUserPage();
-            // break;
-
-            case 'user.show.all_page':
-                $this->showAllUserPage();
-            // break;
-
             default:
                 $this->rpc->replyError(-32601, 'Метод не найден');
-        }
-    }
-
-    public function showAllUserPage(): void
-    {
-        // $rowsTable = $this->userManagement->get()->executeAsTable(true)->getData();
-        // $headerTable = array_shift($rowsTable); // первая строка — заголовок
-
-        // $transformer = new UserTableTransformer();
-        // $decorator = new UserTableDecorator();
-
-        // $transformedTable = $transformer->transform($headerTable, $rowsTable);
-        // $tableWithActions = $decorator->decorateWithActions($headerTable, $transformedTable);
-
-        // $renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
-        // $layout = (new TemplateBundle(
-        //     templatePath: 'components/baseTable.tpl.php',
-        //     variables: [
-        //         // 'columns' => ['Название', 'Тип', 'Значение', 'Опции'],
-        //         'columns' => $tableWithActions['header'] ?? [],
-        //         'rows' => $tableWithActions['rows'] ?? [],
-        //     ]
-        // ));
-
-        $headers = $this->userManagement->get()->executeColumnNames()->getArray();
-        $rows = $this->userManagement->get()->executeAllMapped(function (User $user) {
-            return [
-                'id' => $user->id,
-                'login' => $user->login,
-                'password_hash' => '',
-            ];
-        })->getArray();
-
-        $input = new TableRenderInput(
-            header: $headers,
-            rows: $rows,
-            attributes: ['id' => 'user-table-1', 'data-module' => 'users'],
-            classes: ['base-table']
-        );
-
-        $tableFacade = new TableFacade(new TableTransformer(),  new TableDecorator());
-        $resultTable = $tableFacade->renderTable($input);
-
-        $renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
-        $layout = (new TemplateBundle(
-            templatePath: 'containers/average-in-line-component.tpl.php',
-            variables: [
-                'component' => $resultTable->asHtml()
-            ]
-        ));
-
-        try {
-            $this->rpc->replyContentUpdate('main.main-content', $renderer->renderBundle($layout));
-        } catch (Throwable $e) {
-            $this->rpc->replyError(-32601, 'Не удалось сгенерировать страницу для добавления пользователя');
-            // header('Content-Type: text/plain; charset=utf-8');
-            // echo "Произошла ошибка: " . $e->getMessage();
-            throw $e;
         }
     }
 

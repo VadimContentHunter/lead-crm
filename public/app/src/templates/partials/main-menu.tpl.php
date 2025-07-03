@@ -50,7 +50,17 @@
             <p>Добавить пользователя</p>
         </div> -->
 
-        <div class="item-main-menu"
+        <a href="/page/status-add" class="item-main-menu"
+            data-rpc-method="stt_src.show.full_page"
+            data-rpc-endpoint="/api/statuses-sources"
+            id="statuses-sources-button">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-house"></i>
+            </div>
+            <p>Добавить статус</p>
+        </a>
+
+        <a href="/page/status-all" class="item-main-menu"
             data-rpc-method="stt_src.show.full_page"
             data-rpc-endpoint="/api/statuses-sources"
             id="statuses-sources-button">
@@ -58,7 +68,8 @@
                 <i class="fa-solid fa-house"></i>
             </div>
             <p>Статусы</p>
-        </div>
+        </a>
+        
 
         <div class="item-main-menu"
             data-rpc-method="stt_src.show.full_page"

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Psr\Log\NullLogger;
 use crm\src\controllers\UserPage;
+use crm\src\controllers\StatusPage;
 use crm\src\services\LoggerFactory;
 use crm\src\controllers\ApiController;
 use crm\src\controllers\HomeController;
@@ -13,6 +14,7 @@ use crm\src\controllers\LoginController;
 use crm\src\controllers\API\UserController;
 use crm\src\controllers\NotFoundController;
 use crm\src\controllers\BootstrapController;
+use crm\src\controllers\API\StatusController;
 use  crm\src\services\RouteHandler\RouteHandler;
 use  crm\src\services\RouteHandler\entities\Route;
 use crm\src\services\Repositories\DbRepository\services\PdoFactory;
@@ -31,50 +33,79 @@ $pdo = PdoFactory::create([
 ]);
 
 // Создаём маршруты:
-$routeBootstrap = new Route(
-    pattern: '^/bootstrap-key-A7F9X2M3Q8L1$',
-    className: BootstrapController::class,
-    extraData: [$pdo, $logger]
-);
+$routes = [
+    new Route(
+        pattern: '^/bootstrap-key-A7F9X2M3Q8L1$',
+        className: BootstrapController::class,
+        extraData: [$pdo, $logger]
+    ),
 
-$routeApiUser = new Route(
-    pattern: '^/api/users$',
-    className: UserController::class,
-    extraData: [__DIR__, $pdo, $logger]
-);
+    // API
 
-$routeUserAddPage = new Route(
-    pattern: '^/page/user-add$',
-    className: UserPage::class,
-    methodName: 'showAddUserPage',
-    extraData: [__DIR__, $pdo, $logger]
-);
+    new Route(
+        pattern: '^/api/users$',
+        className: UserController::class,
+        extraData: [__DIR__, $pdo, $logger]
+    ),
 
-$routeUserAllPage = new Route(
-    pattern: '^/page/user-all$',
-    className: UserPage::class,
-    methodName: 'showAllUserPage',
-    extraData: [__DIR__, $pdo, $logger]
-);
+    new Route(
+        pattern: '^/api/statuses$',
+        className: StatusController::class,
+        extraData: [__DIR__, $pdo, $logger]
+    ),
 
-$routeLogin = new Route(
-    pattern: '^/login',
-    className: LoginController::class,
-    extraData: [__DIR__]
-);
+    // PAGES
+    // PAGES-USER
 
-$routeTEST = new Route(
-    pattern: '^/test',
-    className: TestController::class,
-    extraData: [__DIR__]
-);
+    new Route(
+        pattern: '^/page/user-add$',
+        className: UserPage::class,
+        methodName: 'showAddUserPage',
+        extraData: [__DIR__, $pdo, $logger]
+    ),
 
-$route2 = new Route(
-    pattern: '^/$',
-    className: HomeController::class,
-    methodName: null,
-    extraData: ['Добро пожаловать!'] // передаётся в конструктор
-);
+    new Route(
+        pattern: '^/page/user-all$',
+        className: UserPage::class,
+        methodName: 'showAllUserPage',
+        extraData: [__DIR__, $pdo, $logger]
+    ),
+
+    // PAGES-STATUS
+
+    new Route(
+        pattern: '^/page/status-add$',
+        className: StatusPage::class,
+        methodName: 'showAddStatusPage',
+        extraData: [__DIR__, $pdo, $logger]
+    ),
+
+    new Route(
+        pattern: '^/page/status-all$',
+        className: StatusPage::class,
+        methodName: 'showAllStatusPage',
+        extraData: [__DIR__, $pdo, $logger]
+    ),
+
+    new Route(
+        pattern: '^/login',
+        className: LoginController::class,
+        extraData: [__DIR__]
+    ),
+
+    new Route(
+        pattern: '^/test',
+        className: TestController::class,
+        extraData: [__DIR__]
+    ),
+
+    new Route(
+        pattern: '^/$',
+        className: HomeController::class,
+        methodName: null,
+        extraData: ['Добро пожаловать!']
+    ),
+];
 
 $rout404 = new Route(
     pattern: '.*',
@@ -89,7 +120,7 @@ $routError = new Route(
 
 // Создаём обработчик маршрутов, передаём список маршрутов и URL для обработки:
 $routeHandler = new RouteHandler(
-    routes: [ $route2, $routeTEST, $routeLogin, $routeBootstrap, $routeApiUser, $routeUserAddPage, $routeUserAllPage ],
+    routes: $routes,
     currentUrl: $_SERVER['REQUEST_URI'],
     defaultRoute: $rout404,
     errorRoute: $routError,

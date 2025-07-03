@@ -45,7 +45,7 @@ class CreateStatus
         try {
             $StatusId = $this->StatusRepository->save($Status);
             if (!is_int($StatusId) || $StatusId <= 0) {
-                throw new StatusManagementException('Источник не сохранён');
+                throw new StatusManagementException('Статус не сохранён');
             }
             $Status->id = $StatusId;
             return StatusResult::success($Status);

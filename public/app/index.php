@@ -47,7 +47,14 @@ $routeUserAddPage = new Route(
     pattern: '^/page/user-add$',
     className: UserPage::class,
     methodName: 'showAddUserPage',
-    extraData: [__DIR__]
+    extraData: [__DIR__, $pdo, $logger]
+);
+
+$routeUserAllPage = new Route(
+    pattern: '^/page/user-all$',
+    className: UserPage::class,
+    methodName: 'showAllUserPage',
+    extraData: [__DIR__, $pdo, $logger]
 );
 
 $routeLogin = new Route(
@@ -82,7 +89,7 @@ $routError = new Route(
 
 // Создаём обработчик маршрутов, передаём список маршрутов и URL для обработки:
 $routeHandler = new RouteHandler(
-    routes: [ $route2, $routeTEST, $routeLogin, $routeBootstrap, $routeApiUser, $routeUserAddPage ],
+    routes: [ $route2, $routeTEST, $routeLogin, $routeBootstrap, $routeApiUser, $routeUserAddPage, $routeUserAllPage ],
     currentUrl: $_SERVER['REQUEST_URI'],
     defaultRoute: $rout404,
     errorRoute: $routError,

@@ -114,16 +114,6 @@ class UserController
     }
 
     /**
-     * @return TemplateBundle[]
-     */
-    public function getComponentsForPage(): array
-    {
-        return [
-            (new TemplateBundle(templatePath: 'components/addUser.tpl.php')),
-        ];
-    }
-
-    /**
      * @param array<string,mixed> $params
      */
     public function createUser(array $params): void

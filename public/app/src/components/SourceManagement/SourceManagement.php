@@ -3,7 +3,7 @@
 namespace crm\src\components\SourceManagement;
 
 use crm\src\_common\interfaces\IValidation;
-use crm\src\components\SourceManagement\_usecases\GetSource;
+use crm\src\components\SourceManagement\GetSource;
 use crm\src\components\SourceManagement\_common\interfaces\ISourceRepository;
 
 class SourceManagement

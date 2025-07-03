@@ -50,36 +50,33 @@
             <p>Добавить пользователя</p>
         </div> -->
 
-        <a href="/page/status-add" class="item-main-menu"
-            data-rpc-method="stt_src.show.full_page"
-            data-rpc-endpoint="/api/statuses-sources"
-            id="statuses-sources-button">
+        <a href="/page/status-add" class="item-main-menu">
             <div class="icon-wrapper">
                 <i class="fa-solid fa-house"></i>
             </div>
             <p>Добавить статус</p>
         </a>
 
-        <a href="/page/status-all" class="item-main-menu"
-            data-rpc-method="stt_src.show.full_page"
-            data-rpc-endpoint="/api/statuses-sources"
-            id="statuses-sources-button">
+        <a href="/page/status-all" class="item-main-menu">
             <div class="icon-wrapper">
                 <i class="fa-solid fa-house"></i>
             </div>
             <p>Статусы</p>
         </a>
         
+        <a href="/page/source-add" class="item-main-menu">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-house"></i>
+            </div>
+            <p>Добавить источник</p>
+        </a>
 
-        <div class="item-main-menu"
-            data-rpc-method="stt_src.show.full_page"
-            data-rpc-endpoint="/api/statuses-sources"
-            id="statuses-sources-button">
+        <a href="/page/source-all" class="item-main-menu">
             <div class="icon-wrapper">
                 <i class="fa-solid fa-house"></i>
             </div>
             <p>Источники</p>
-        </div>
+        </a>
     </nav>
 
     <nav class="list-main-menu bottom-menu">

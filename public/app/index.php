@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Psr\Log\NullLogger;
 use crm\src\controllers\UserPage;
+use crm\src\controllers\SourcePage;
 use crm\src\controllers\StatusPage;
 use crm\src\services\LoggerFactory;
 use crm\src\controllers\ApiController;
@@ -11,9 +12,11 @@ use crm\src\controllers\HomeController;
 use crm\src\controllers\TestController;
 use crm\src\controllers\ErrorController;
 use crm\src\controllers\LoginController;
+use PHPUnit\TextUI\Configuration\Source;
 use crm\src\controllers\API\UserController;
 use crm\src\controllers\NotFoundController;
 use crm\src\controllers\BootstrapController;
+use crm\src\controllers\API\SourceController;
 use crm\src\controllers\API\StatusController;
 use  crm\src\services\RouteHandler\RouteHandler;
 use  crm\src\services\RouteHandler\entities\Route;
@@ -54,6 +57,12 @@ $routes = [
         extraData: [__DIR__, $pdo, $logger]
     ),
 
+    new Route(
+        pattern: '^/api/sources$',
+        className: SourceController::class,
+        extraData: [__DIR__, $pdo, $logger]
+    ),
+
     // PAGES
     // PAGES-USER
 
@@ -86,6 +95,24 @@ $routes = [
         methodName: 'showAllStatusPage',
         extraData: [__DIR__, $pdo, $logger]
     ),
+
+    // PAGES-SOURCE
+
+    new Route(
+        pattern: '^/page/source-add$',
+        className: SourcePage::class,
+        methodName: 'showAddSourcePage',
+        extraData: [__DIR__, $pdo, $logger]
+    ),
+
+    new Route(
+        pattern: '^/page/source-all$',
+        className: SourcePage::class,
+        methodName: 'showAllSourcePage',
+        extraData: [__DIR__, $pdo, $logger]
+    ),
+
+    // PAGES-OTHER
 
     new Route(
         pattern: '^/login',

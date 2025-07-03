@@ -85,12 +85,12 @@ class GetStatus
             : $this->getByTitle($Status->title);
     }
 
-        /**
-         * Возвращает названия столбцов таблицы статусов.
-         *
-         * @param  array<string, string> $renameMap Ключ — оригинальное имя, значение — новое имя
-         * @return IStatusResult
-         */
+    /**
+     * Возвращает названия столбцов таблицы статусов.
+     *
+     * @param  array<string, string> $renameMap Ключ — оригинальное имя, значение — новое имя
+     * @return IStatusResult
+     */
     public function executeColumnNames(array $renameMap = []): IStatusResult
     {
         try {

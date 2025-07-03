@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\components\SourceManagement\_usecases;
+namespace crm\src\components\SourceManagement;
 
 use Throwable;
 use InvalidArgumentException;
@@ -87,5 +87,48 @@ class GetSource
          return  isset($source->id) && $source->id > 0
             ? $this->getById($source->id)
             : $this->getByTitle($source->title);
+    }
+
+    /**
+     * Возвращает названия столбцов таблицы статусов.
+     *
+     * @param  array<string, string> $renameMap Ключ — оригинальное имя, значение — новое имя
+     * @return ISourceResult
+     */
+    public function executeColumnNames(array $renameMap = []): ISourceResult
+    {
+        try {
+            $columns = $this->repository->getColumnNames();
+
+            if (!empty($renameMap)) {
+                $columns = array_map(
+                    fn($name) => $renameMap[$name] ?? $name,
+                    $columns
+                );
+            }
+
+            return SourceResult::success($columns);
+        } catch (Throwable $e) {
+            return SourceResult::failure($e);
+        }
+    }
+
+    /**
+     * Получает все статусы с применением маппера к каждому элементу.
+     *
+     * @template T
+     * @param    callable(Status): T $mapper
+     * @return   ISourceResult
+     */
+    public function executeAllMapped(callable $mapper): ISourceResult
+    {
+        try {
+            $sources = $this->repository->getAll();
+            $mapped = array_map($mapper, $sources);
+
+            return SourceResult::success($mapped);
+        } catch (Throwable $e) {
+            return SourceResult::failure($e);
+        }
     }
 }

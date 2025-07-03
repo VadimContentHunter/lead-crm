@@ -2,6 +2,7 @@
 
     $sourcesTitle = $sourcesTitle ?? [];
     $statusesTitle = $statusesTitle ?? [];
+    $managersLogin = $managersLogin ?? [];
 ?>
 
 <section class="component-wrapper-line">
@@ -56,8 +57,11 @@
                     <label>Выбор менеджера</label>
                     <select name="accountManagerId">
                         <option value="">Выберите...</option>
-                        <option value="1">Вариант 1</option>
-                        <option value="2">Вариант 2</option>
+                        <?php foreach ($managersLogin as $manager) : ?>
+                            <option value="<?= htmlspecialchars($manager['id'] ?? '0') ?>">
+                                <?= htmlspecialchars($manager['login'] ?? 'error') ?>
+                            </option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
 

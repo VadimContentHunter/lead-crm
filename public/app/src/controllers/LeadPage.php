@@ -20,8 +20,9 @@ use crm\src\services\TableRenderer\TableRenderInput;
 use crm\src\services\TableRenderer\TableTransformer;
 use crm\src\services\TemplateRenderer\HeaderManager;
 use crm\src\components\LeadManagement\_entities\Lead;
-use crm\src\components\LeadManagement\_entities\User;
 use crm\src\components\LeadManagement\LeadManagement;
+use crm\src\components\UserManagement\_entities\User;
+use crm\src\components\UserManagement\UserManagement;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\components\SourceManagement\_entities\Source;
 use crm\src\components\SourceManagement\SourceManagement;
@@ -31,6 +32,7 @@ use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 use crm\src\_common\repositories\LeadRepository\LeadRepository;
 use crm\src\components\LeadManagement\_common\mappers\LeadMapper;
+use crm\src\components\UserManagement\_common\mappers\UserMapper;
 use crm\src\_common\repositories\LeadRepository\LeadSourceRepository;
 use crm\src\_common\repositories\LeadRepository\LeadStatusRepository;
 use crm\src\components\SourceManagement\_common\mappers\SourceMapper;
@@ -44,6 +46,8 @@ class LeadPage
     private SourceManagement $sourceManagement;
 
     private StatusManagement $statusManagement;
+
+    private UserManagement $userManagement;
 
     private TemplateRenderer $renderer;
     public function __construct(
@@ -68,6 +72,11 @@ class LeadPage
         $this->statusManagement = new StatusManagement(
             new StatusRepository($pdo, $logger),
             new StatusValidatorAdapter()
+        );
+
+        $this->userManagement = new UserManagement(
+            new UserRepository($pdo, $logger),
+            new UserValidatorAdapter()
         );
     }
 
@@ -143,12 +152,17 @@ class LeadPage
             return StatusMapper::toArray($status);
         })->getArray();
 
+        $managersLogin = $this->userManagement->get()->executeAllMapped(function (User $user) {
+            return UserMapper::toArray($user);
+        })->getArray();
+
         $this->showPage([
             'components' => [(new TemplateBundle(
                 templatePath: 'components/addLead.tpl.php',
                 variables: [
                     'sourcesTitle' => $sourcesTitle,
-                    'statusesTitle' => $statusesTitle
+                    'statusesTitle' => $statusesTitle,
+                    'managersLogin' => $managersLogin
                 ]
             ))]
         ]);
@@ -204,6 +218,10 @@ class LeadPage
             return StatusMapper::toArray($status);
         })->getArray();
 
+        $managersLogin = $this->userManagement->get()->executeAllMapped(function (User $user) {
+            return UserMapper::toArray($user);
+        })->getArray();
+
         $selectedData = [
           'sourceId' => $leadResult->getSourceId(),
           'statusId' => $leadResult->getStatusId(),
@@ -239,6 +257,7 @@ class LeadPage
                         'leadId' => $leadId,
                         'sourcesTitle' => $sourcesTitle,
                         'statusesTitle' => $statusesTitle,
+                        'managersLogin' => $managersLogin,
                         'selectedData' => $selectedData,
                         'fullName' => $leadResult->getFullName(),
                         'contact' => $leadResult->getContact(),

@@ -30,5 +30,25 @@ class BootstrapController
             echo $resultUsers->getError()?->getMessage() ?? 'Неизвестная ошибка' . "<br>";
             $logger->error($resultUsers->getError()?->getMessage() ?? 'Неизвестная ошибка');
         }
+
+        $this->repository = new DbRepository($pdo);
+        $resultStatuses = $this->repository->executeSql(CrmSchemaProvider::get('statuses'));
+        if ($resultStatuses->isSuccess()) {
+            echo "Statuses table created<br>";
+            $logger->info('Statuses table created');
+        } else {
+            echo $resultStatuses->getError()?->getMessage() ?? 'Неизвестная ошибка' . "<br>";
+            $logger->error($resultStatuses->getError()?->getMessage() ?? 'Неизвестная ошибка');
+        }
+
+        $this->repository = new DbRepository($pdo);
+        $resultSources = $this->repository->executeSql(CrmSchemaProvider::get('sources'));
+        if ($resultSources->isSuccess()) {
+            echo "Sources table created<br>";
+            $logger->info('Sources table created');
+        } else {
+            echo $resultSources->getError()?->getMessage() ?? 'Неизвестная ошибка' . "<br>";
+            $logger->error($resultSources->getError()?->getMessage() ?? 'Неизвестная ошибка');
+        }
     }
 }

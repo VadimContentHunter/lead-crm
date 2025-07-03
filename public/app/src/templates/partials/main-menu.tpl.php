@@ -47,6 +47,26 @@
             </div>
             <p>Все пользователя</p>
         </div>
+
+        <div class="item-main-menu"
+            data-rpc-method="stt_src.show.full_page"
+            data-rpc-endpoint="/api/statuses-sources"
+            id="statuses-sources-button">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-house"></i>
+            </div>
+            <p>Статусы</p>
+        </div>
+
+        <div class="item-main-menu"
+            data-rpc-method="stt_src.show.full_page"
+            data-rpc-endpoint="/api/statuses-sources"
+            id="statuses-sources-button">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-house"></i>
+            </div>
+            <p>Источники</p>
+        </div>
     </nav>
 
     <nav class="list-main-menu bottom-menu">
@@ -77,5 +97,12 @@
             endpointAttr,
             onContentUpdate: createContentUpdateHandler()
         });
+
+        ComponentFunctions.attachJsonRpcTriggerFromAttributes({
+            triggerSelector: '#statuses-sources-button[data-rpc-method]',
+            endpointAttr,
+            onContentUpdate: createContentUpdateHandler()
+        });
+        
     // });
 </script>

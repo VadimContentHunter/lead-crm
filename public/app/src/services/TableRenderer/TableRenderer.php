@@ -44,26 +44,6 @@ class TableRenderer
     }
 
     /**
-     * Оборачивает таблицу в HTML-тег.
-     */
-    public static function renderWrappedTable(
-        array $header,
-        array $rows,
-        array $attributes,
-        array $classes,
-        string $wrapperTag,
-        array $wrapperAttributes = [],
-        array $wrapperClasses = []
-    ): string {
-        $tableHtml = self::render($header, $rows, $attributes, $classes);
-
-        $wrapperAttr = self::buildHtmlAttributes($wrapperAttributes);
-        $wrapperClass = empty($wrapperClasses) ? '' : ' class="' . htmlspecialchars(implode(' ', $wrapperClasses)) . '"';
-
-        return sprintf('<%1$s%2$s%3$s>%4$s</%1$s>', $wrapperTag, $wrapperClass, $wrapperAttr, $tableHtml);
-    }
-
-    /**
      * Преобразует массив атрибутов в строку.
      */
     private static function buildHtmlAttributes(array $attributes): string

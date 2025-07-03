@@ -32,20 +32,4 @@ class TableRenderResult implements ITableRenderResult
     {
         return TableRenderer::render($this->header, $this->rows, $this->attributes, $this->classes);
     }
-
-    public function asWrappedHtml(
-        string $wrapperTag,
-        array $wrapperAttributes = [],
-        array $wrapperClasses = []
-    ): string {
-        return TableRenderer::renderWrappedTable(
-            $this->header,
-            $this->rows,
-            $this->attributes,
-            $this->classes,
-            $wrapperTag,
-            $wrapperAttributes,
-            $wrapperClasses
-        );
-    }
 }

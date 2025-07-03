@@ -24,7 +24,7 @@ class TableTransformer implements ITableTransformer
             $transformedRow = [];
 
             foreach ($header as $i => $columnName) {
-                $value = $row[$i] ?? '';
+                $value = $row[$columnName] ?? '';
                 $transformedRow[] = $this->transformCell($columnName, $value);
             }
 
@@ -52,6 +52,7 @@ class TableTransformer implements ITableTransformer
                 'value' => $value,
                 'options' => ['active' => 'Активен', 'blocked' => 'Заблокирован']
             ],
+            'pass', 'password', 'password_hash' => '**********',
             default => $value,
         };
     }

@@ -6,16 +6,19 @@ use PDO;
 use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
+use crm\src\services\TableRenderer\TableFacade;
 use crm\src\_common\repositories\UserRepository;
 use crm\src\_common\adapters\UserValidatorAdapter;
+use crm\src\services\TableRenderer\TableDecorator;
+use crm\src\services\TableRenderer\TableRenderInput;
+use crm\src\services\TableRenderer\TableTransformer;
 use crm\src\services\TemplateRenderer\HeaderManager;
+use crm\src\components\UserManagement\_entities\User;
 use crm\src\components\UserManagement\UserManagement;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 use crm\src\components\UserManagement\_common\mappers\UserInputMapper;
-use crm\src\components\UserManagement\_common\decorators\UserTableDecorator;
-use crm\src\components\UserManagement\_common\transformers\UserTableTransformer;
 
 class UserController
 {
@@ -68,22 +71,49 @@ class UserController
 
     public function showAllUserPage(): void
     {
-        $rowsTable = $this->userManagement->get()->executeAsTable(true)->getData();
-        $headerTable = array_shift($rowsTable); // первая строка — заголовок
+        // $rowsTable = $this->userManagement->get()->executeAsTable(true)->getData();
+        // $headerTable = array_shift($rowsTable); // первая строка — заголовок
 
-        $transformer = new UserTableTransformer();
-        $decorator = new UserTableDecorator();
+        // $transformer = new UserTableTransformer();
+        // $decorator = new UserTableDecorator();
 
-        $transformedTable = $transformer->transform($headerTable, $rowsTable);
-        $tableWithActions = $decorator->decorateWithActions($headerTable, $transformedTable);
+        // $transformedTable = $transformer->transform($headerTable, $rowsTable);
+        // $tableWithActions = $decorator->decorateWithActions($headerTable, $transformedTable);
+
+        // $renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
+        // $layout = (new TemplateBundle(
+        //     templatePath: 'components/baseTable.tpl.php',
+        //     variables: [
+        //         // 'columns' => ['Название', 'Тип', 'Значение', 'Опции'],
+        //         'columns' => $tableWithActions['header'] ?? [],
+        //         'rows' => $tableWithActions['rows'] ?? [],
+        //     ]
+        // ));
+
+        $headers = $this->userManagement->get()->executeColumnNames()->getArray();
+        $rows = $this->userManagement->get()->executeAllMapped(function (User $user) {
+            return [
+                'id' => $user->id,
+                'login' => $user->login,
+                'password_hash' => '',
+            ];
+        })->getArray();
+
+        $input = new TableRenderInput(
+            header: $headers,
+            rows: $rows,
+            attributes: ['id' => 'user-table-1', 'data-module' => 'users'],
+            classes: ['base-table']
+        );
+
+        $tableFacade = new TableFacade(new TableTransformer(),  new TableDecorator());
+        $resultTable = $tableFacade->renderTable($input);
 
         $renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
         $layout = (new TemplateBundle(
-            templatePath: 'components/baseTable.tpl.php',
+            templatePath: 'containers/average-in-line-component.tpl.php',
             variables: [
-                // 'columns' => ['Название', 'Тип', 'Значение', 'Опции'],
-                'columns' => $tableWithActions['header'] ?? [],
-                'rows' => $tableWithActions['rows'] ?? [],
+                'component' => $resultTable->asHtml()
             ]
         ));
 

@@ -44,6 +44,11 @@ abstract class AResult implements IResult
         return $this->data;
     }
 
+    public function getArray(): array
+    {
+        return is_array($this->data) ? $this->data : [];
+    }
+
     public function getInt(): ?int
     {
         return is_int($this->data) ? $this->data : null;

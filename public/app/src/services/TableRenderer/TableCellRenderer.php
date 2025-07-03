@@ -25,13 +25,13 @@ class TableCellRenderer
     public static function render(array|string|int $cell): string
     {
         if (!self::isInput($cell)) {
-            return htmlspecialchars((string) $cell);
+            return (string) $cell;
         }
 
         return match ($cell['type']) {
             'text', 'number', 'password' => self::renderInput($cell),
             'select' => self::renderSelect($cell),
-            default => htmlspecialchars((string) ($cell['value'] ?? '')),
+            default => (string) ($cell['value'] ?? ''),
         };
     }
 

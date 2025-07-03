@@ -21,16 +21,4 @@ interface ITableRenderResult
      * @return string Rendered HTML <table>
      */
     public function asHtml(): string;
-
-    /**
-     * @param  string $wrapperTag
-     * @param  array<string, string> $wrapperAttributes
-     * @param  string[] $wrapperClasses
-     * @return string Rendered table wrapped in a custom HTML element
-     */
-    public function asWrappedHtml(
-        string $wrapperTag,
-        array $wrapperAttributes = [],
-        array $wrapperClasses = []
-    ): string;
 }

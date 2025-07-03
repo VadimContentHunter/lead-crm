@@ -2,7 +2,7 @@
 
 namespace crm\src\_common\repositories;
 
-use crm\src\_common\repositories\ARepository;
+use crm\src\_common\interfaces\ARepository;
 use crm\src\components\UserManagement\_entities\User;
 use crm\src\components\UserManagement\_common\mappers\UserMapper;
 use crm\src\components\UserManagement\_common\interfaces\IUserRepository;

@@ -2,8 +2,8 @@
 
 namespace crm\src\_common\repositories;
 
+use crm\src\_common\interfaces\ARepository;
 use crm\src\components\StatusManagement\_entities\Status;
-use crm\src\services\Repositories\DbRepository\DbRepository;
 use crm\src\services\Repositories\QueryBuilder\QueryBuilder;
 use crm\src\components\StatusManagement\_common\mappers\StatusMapper;
 use crm\src\components\StatusManagement\_common\interfaces\IStatusRepository;

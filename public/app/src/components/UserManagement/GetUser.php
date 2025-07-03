@@ -125,40 +125,19 @@ class GetUser
     }
 
     /**
-     * Возвращает всех пользователей в виде таблицы (массив строк).
+     * Получает всех пользователей с применением маппера к каждому элементу.
      *
-     * @param  bool $includeHeader Включать ли заголовок в первую строку
-     * @param  array<string, string> $renameMap     Переименование колонок:
-     *                                              ['db_column' => 'Заголовок']
-     * @return IUserResult
+     * @template T
+     * @param    callable(User): T $mapper
+     * @return   IUserResult
      */
-    public function executeAsTable(bool $includeHeader = true, array $renameMap = []): IUserResult
+    public function executeAllMapped(callable $mapper): IUserResult
     {
         try {
-            $users = $this->userRepository->getAll(); // array<User>
-            $columns = $this->userRepository->getColumnNames();
+            $users = $this->userRepository->getAll();
+            $mapped = array_map($mapper, $users);
 
-            // Заголовок
-            $header = array_map(
-                fn($col) => $renameMap[$col] ?? $col,
-                $columns
-            );
-
-            // Преобразуем объекты пользователей в строки
-            $rows = [];
-            foreach ($users as $user) {
-                $row = [];
-                foreach ($columns as $col) {
-                    $row[] = $user->{$col} ?? null;
-                }
-                $rows[] = $row;
-            }
-
-            if ($includeHeader) {
-                array_unshift($rows, $header);
-            }
-
-            return UserResult::success($rows);
+            return UserResult::success($mapped);
         } catch (\Throwable $e) {
             return UserResult::failure($e);
         }

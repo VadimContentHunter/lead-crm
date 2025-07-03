@@ -14,6 +14,8 @@ interface IResult
 
     public function getData(): mixed;
 
+    public function getArray(): array;
+
     public function hasNull(): bool;
 
     public function getError(): ?Throwable;

@@ -1,0 +1,40 @@
+<?php
+
+namespace crm\src\components\LeadManagement\_common\mappers;
+
+use crm\src\components\LeadManagement\_entities\Lead;
+use crm\src\components\LeadManagement\_common\DTOs\SourceDto;
+use crm\src\components\LeadManagement\_common\DTOs\StatusDto;
+use crm\src\components\LeadManagement\_common\DTOs\AccountManagerDto;
+use DateTime;
+
+class LeadMapper
+{
+    /**
+     * Преобразует массив данных из БД в сущность Lead.
+     *
+     * @param  array<string, mixed> $data
+     * @return Lead
+     */
+    public static function fromArray(array $data): Lead
+    {
+        return new Lead(
+            fullName: (string)($data['full_name'] ?? ''),
+            contact: (string)($data['contact'] ?? ''),
+            address: (string)($data['address'] ?? ''),
+            source: isset($data['source_id'])
+                ? new SourceDto((int)$data['source_id'], '') // Можно заменить на SourceDtoMapper::fromArray() позже
+                : null,
+            status: isset($data['status_id'])
+                ? new StatusDto((int)$data['status_id'], '')
+                : null,
+            accountManager: isset($data['account_manager_id'])
+                ? new AccountManagerDto((int)$data['account_manager_id'], '')
+                : null,
+            createdAt: isset($data['created_at'])
+                ? new DateTime($data['created_at'])
+                : null,
+            id: isset($data['id']) ? (int)$data['id'] : null,
+        );
+    }
+}

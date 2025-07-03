@@ -2,6 +2,7 @@
 
 namespace crm\src\components\LeadManagement\_common\mappers;
 
+use crm\src\components\LeadManagement\_entities\Lead;
 use crm\src\components\LeadManagement\_common\DTOs\LeadInputDto;
 
 class LeadInputMapper
@@ -46,5 +47,24 @@ class LeadInputMapper
             'statusId' => $dto->statusId,
             'accountManagerId' => $dto->accountManagerId,
         ];
+    }
+
+     /**
+      * Преобразует сущность Lead в LeadInputDto.
+      *
+      * @param  Lead $lead
+      * @return LeadInputDto
+      */
+    public static function fromEntity(Lead $lead): LeadInputDto
+    {
+        return new LeadInputDto(
+            id: $lead->id,
+            fullName: $lead->fullName,
+            address: $lead->address,
+            contact: $lead->contact,
+            sourceId: $lead->source?->id,
+            statusId: $lead->status?->id,
+            accountManagerId: $lead->accountManager?->id,
+        );
     }
 }

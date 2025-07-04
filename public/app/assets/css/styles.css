@@ -103,6 +103,73 @@
   background-color: #5a6268;
 }
 
+table.base-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: inherit;
+  font-size: 14px;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow-x: auto;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+table.base-table tbody tr:first-child {
+  background-color: #f6f7f9;
+  font-weight: 600;
+  color: #333;
+}
+table.base-table tbody tr td {
+  padding: 10px 16px;
+  border-bottom: 1px solid #eee;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+table.base-table tbody tr td:first-child {
+  text-align: center;
+  width: 50px;
+  min-width: 50px;
+}
+table.base-table tbody tr td:nth-child(2) {
+  min-width: 150px;
+}
+table.base-table tbody tr td:nth-child(3), table.base-table tbody tr td:nth-child(4) {
+  min-width: 120px;
+}
+table.base-table tbody tr td:nth-child(5), table.base-table tbody tr td:nth-child(6), table.base-table tbody tr td:nth-child(7) {
+  width: 80px;
+  text-align: center;
+}
+table.base-table tbody tr td:nth-child(8) {
+  min-width: 140px;
+}
+table.base-table tbody tr td:last-child {
+  width: 120px;
+  text-align: center;
+}
+table.base-table tbody tr:not(:first-child):hover {
+  background-color: #fafafa;
+}
+table.base-table .btn-table-action,
+table.base-table .btn-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 6px;
+  margin-right: 4px;
+  transition: transform 0.15s;
+}
+table.base-table .btn-table-action:hover,
+table.base-table .btn-delete:hover {
+  transform: scale(1.2);
+}
+table.base-table .btn-table-action {
+  color: #007bff;
+}
+table.base-table .btn-delete {
+  color: #dc3545;
+}
+
 .base-table {
   display: flex;
   flex-direction: column;
@@ -146,6 +213,13 @@
   background-size: 1em;
 }
 
+.lead-filter {
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: row !important;
+  gap: 16px;
+  flex-wrap: wrap;
+}
 .login-container {
   height: 100vh;
   width: 100%;

@@ -5,12 +5,19 @@ namespace crm\src\services\TableRenderer;
 use crm\src\services\TableRenderer\TableCellRenderer;
 
 /**
- * Строит HTML таблицу и обёртки вокруг неё.
+ * Строит HTML таблицу с заголовками в первой строке тела.
  */
 class TableRenderer
 {
     /**
      * Генерирует HTML таблицы.
+     *
+     * @param array $header     Заголовки колонок (первая строка tbody)
+     * @param array $rows       Массив строк таблицы
+     * @param array $attributes Атрибуты для <table>
+     * @param array $classes    CSS-классы таблицы
+     *
+     * @return string
      */
     public static function render(
         array $header,
@@ -21,15 +28,16 @@ class TableRenderer
         $attrHtml = self::buildHtmlAttributes($attributes);
         $classHtml = empty($classes) ? '' : ' class="' . htmlspecialchars(implode(' ', $classes)) . '"';
 
-        $html = "<table{$classHtml}{$attrHtml}>";
-        $html .= "<thead><tr>";
+        $html = "<table{$classHtml}{$attrHtml}><tbody>";
 
+        // Первая строка — заголовки (как <td>)
+        $html .= '<tr>';
         foreach ($header as $head) {
-            $html .= '<th>' . htmlspecialchars($head) . '</th>';
+            $html .= '<td><strong>' . htmlspecialchars($head) . '</strong></td>';
         }
+        $html .= '</tr>';
 
-        $html .= '</tr></thead><tbody>';
-
+        // Остальные строки — данные
         foreach ($rows as $row) {
             $html .= '<tr>';
             foreach ($row as $cell) {

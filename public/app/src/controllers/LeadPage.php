@@ -226,7 +226,8 @@ class LeadPage
                 (new TemplateBundle(
                     templatePath: 'containers/average-in-line-component.tpl.php',
                     variables: [
-                    'component' => $tableFacade->renderTable($input)->asHtml()
+                        'component' => $tableFacade->renderTable($input)->asHtml(),
+                        'filterPanel' => (new TemplateBundle(templatePath: 'partials/filtersLead.tpl.php'))
                     ]
                 ))
             ]

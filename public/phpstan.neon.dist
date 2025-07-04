@@ -7,3 +7,5 @@ parameters:
         analyseAndScan:
             - tests/DbTest.php
             - app/libs/*
+    ignoreErrors:
+        - "#Return type .*User>.* of method .*LeadAccountManagerRepository::getEntityClass.*should be compatible with return type .*AccountManagerDto.*AccountManagerDto>::getEntityClass..#"

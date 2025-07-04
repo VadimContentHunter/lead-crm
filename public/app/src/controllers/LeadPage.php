@@ -16,6 +16,7 @@ use crm\src\_common\repositories\SourceRepository;
 use crm\src\_common\repositories\StatusRepository;
 use crm\src\services\TableRenderer\TableDecorator;
 use crm\src\_common\repositories\BalanceRepository;
+use crm\src\_common\repositories\CommentRepository;
 use crm\src\_common\repositories\DepositRepository;
 use crm\src\_common\adapters\SourceValidatorAdapter;
 use crm\src\_common\adapters\StatusValidatorAdapter;
@@ -23,6 +24,7 @@ use crm\src\services\TableRenderer\TableRenderInput;
 use crm\src\services\TableRenderer\TableTransformer;
 use crm\src\services\TemplateRenderer\HeaderManager;
 use crm\src\_common\adapters\BalanceValidatorAdapter;
+use crm\src\_common\adapters\CommentValidatorAdapter;
 use crm\src\_common\adapters\DepositValidatorAdapter;
 use crm\src\components\LeadManagement\_entities\Lead;
 use crm\src\components\LeadManagement\LeadManagement;
@@ -34,6 +36,8 @@ use crm\src\components\SourceManagement\SourceManagement;
 use crm\src\components\StatusManagement\_entities\Status;
 use crm\src\components\StatusManagement\StatusManagement;
 use crm\src\components\BalanceManagement\BalanceManagement;
+use crm\src\components\CommentManagement\_entities\Comment;
+use crm\src\components\CommentManagement\CommentManagement;
 use crm\src\components\DepositManagement\DepositManagement;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
@@ -62,12 +66,19 @@ class LeadPage
 
     private DepositManagement $depositManagement;
 
+    private CommentManagement $commentManagement;
+
     public function __construct(
         private string $projectPath,
         PDO $pdo,
         private LoggerInterface $logger = new NullLogger()
     ) {
         $this->renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
+
+        $this->commentManagement = new CommentManagement(
+            new CommentRepository($pdo, $logger),
+            new CommentValidatorAdapter()
+        );
 
         $leadRepository = new LeadRepository($pdo, $logger);
         $this->leadManagement = new LeadManagement(
@@ -247,6 +258,10 @@ class LeadPage
             return UserMapper::toArray($user);
         })->getArray();
 
+        $commentsResult = $this->commentManagement->get()->executeAllMapped(function (Comment $comment) {
+            return $comment->comment;
+        })->getArray();
+
         $selectedData = [
           'sourceId' => $leadResult->getSourceId(),
           'statusId' => $leadResult->getStatusId(),
@@ -255,28 +270,15 @@ class LeadPage
 
         $balanceResult = $this->balanceManagement->get()->getByLeadId($leadId);
         $depositResult = $this->depositManagement->get()->getByLeadId($leadId);
+        // $commentsResult = $this->commentManagement->get()->getByLeadId($leadId);
 
         $this->showPage([
             'components' => [
                 (new TemplateBundle(
                     templatePath: 'components/editLeadComentsForm.tpl.php',
                     variables: [
-                        'comments' => [
-                            '[2025-07-02 12:00:00] [INFO] Lead created',
-                            '[2025-07-02 12:05:00] [COMMENT] Связался с клиентом',
-                            '[2025-07-02 12:10:00] [STATUS] Status changed to In Progress',
-                            '[2025-07-02 12:15:00] [COMMENT] Добавлены детали сделки',
-                            '[2025-07-02 12:20:00] [INFO] Lead updated',
-                            '[2025-07-02 12:25:00] [COMMENT] Назначена встреча',
-                            '[2025-07-02 12:30:00] [STATUS] Status changed to Completed',
-                            '[2025-07-02 12:35:00] [COMMENT] Отправлено коммерческое предложение',
-                            '[2025-07-02 12:40:00] [INFO] Lead closed',
-                            '[2025-07-02 12:45:00] [COMMENT] Клиент подтвердил сделку',
-                            '[2025-07-02 12:00:00] [INFO] Lead created',
-                            '[2025-07-02 12:05:00] [COMMENT] Связался с клиентом',
-                            '[2025-07-02 12:10:00] [STATUS] Status changed to In Progress',
-                        ],
-
+                        'comments' => $commentsResult,
+                        'leadId' => $leadId ?? 0,
                     ]
                 )),
                 (new TemplateBundle(

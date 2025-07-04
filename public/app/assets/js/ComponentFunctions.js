@@ -79,10 +79,19 @@ export const ComponentFunctions = {
      *   triggerSelector: string,
      *   containerSelector: string,
      *   method: string,
-     *   endpoint?: string
+     *   endpoint?: string,
+     *   callbackOnData?: function(any): void,
+     *   callbackOnError?: function(Error): void
      * }} config
      */
-    attachJsonRpcInputTrigger({ triggerSelector, containerSelector, method, endpoint = '/api' }) {
+    attachJsonRpcInputTrigger({
+        triggerSelector,
+        containerSelector,
+        method,
+        endpoint = '/api',
+        callbackOnData = null,
+        callbackOnError = null
+    }) {
         const trigger = document.querySelector(triggerSelector);
         const container = document.querySelector(containerSelector);
 
@@ -95,6 +104,11 @@ export const ComponentFunctions = {
             endpoint,
             onContentUpdate: () => { }, // заглушка
             onData: (payload) => {
+                if (typeof callbackOnData === 'function') {
+                    callbackOnData(payload);
+                    return;
+                }
+
                 const messages = Array.isArray(payload) ? payload : [];
 
                 let messageBox =
@@ -115,7 +129,11 @@ export const ComponentFunctions = {
                 }
             },
             onError: (error) => {
-                console.error('[JsonRpcTransport] Ошибка:', error.message);
+                if (typeof callbackOnError === 'function') {
+                    callbackOnError(error);
+                } else {
+                    console.error('[JsonRpcTransport] Ошибка:', error.message);
+                }
             }
         });
 

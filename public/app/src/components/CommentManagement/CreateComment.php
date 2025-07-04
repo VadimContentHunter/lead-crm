@@ -36,6 +36,7 @@ class CreateComment
         }
 
         try {
+            $comment->createdAt = new \DateTime();
             $commentId = $this->commentRepository->save($comment);
 
             if ($commentId === null || $commentId <= 0) {

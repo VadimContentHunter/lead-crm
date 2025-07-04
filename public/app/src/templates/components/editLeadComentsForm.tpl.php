@@ -1,5 +1,6 @@
 <?php
 $comments = is_array($comments ?? []) ? $comments : [];
+$leadId = is_numeric($leadId ?? 0) ? (int)$leadId : 0;
 ?>
 <section class="component-wrapper-line">
 
@@ -23,6 +24,7 @@ $comments = is_array($comments ?? []) ? $comments : [];
 
         <!-- Форма для добавления нового комментария -->
         <form class="base-form comment-form" comment-form-id>
+            <input type="text" name="lead_id" value="<?= $leadId ?? '' ?>" hidden>
             <div class="form-group">
                 <label>Оставить комментарий</label>
                 <textarea name="comment" rows="4" placeholder="Введите текст комментария..."></textarea>
@@ -44,15 +46,45 @@ $comments = is_array($comments ?? []) ? $comments : [];
     ComponentFunctions.attachJsonRpcInputTrigger({
         triggerSelector: '.comment-form[comment-form-id] .form-actions .submit',
         containerSelector: '.comment-form[comment-form-id]',
-        method: 'comment.edit',
+        method: 'comment.add',
         endpoint: '/api/comments'
     });
 
     ComponentFunctions.attachJsonRpcInputTrigger({
         triggerSelector: '.comment-form[comment-form-id] .form-actions .update',
         containerSelector: '.comment-form[comment-form-id]',
-        method: 'comment.update',
-        endpoint: '/api/comments'
+        method: 'comment.get.all',
+        endpoint: '/api/comments',
+        callbackOnData: (response) => {
+            const commentsBlock = document.querySelector('.comments-list');
+
+            if (!commentsBlock) {
+                console.warn('[Comment] Блок .comments-list не найден');
+                return;
+            }
+
+            // Очищаем текущее содержимое
+            commentsBlock.innerHTML = '';
+
+            // Ищем первый элемент с type: success и comments: [...]
+            const successBlock = Array.isArray(response)
+                ? response.find(item => item.type === 'success' && Array.isArray(item.comments))
+                : null;
+
+            const comments = successBlock ? successBlock.comments : [];
+
+            if (comments.length === 0) {
+                commentsBlock.innerHTML = '<p class="comment-placeholder">Комментариев пока нет.</p>';
+                return;
+            }
+
+            for (const commentText of comments) {
+                const item = document.createElement('div');
+                item.className = 'comment-item';
+                item.innerHTML = `<p class="comment-text">${commentText}</p>`;
+                commentsBlock.appendChild(item);
+            }
+        }
     });
 
 </script>

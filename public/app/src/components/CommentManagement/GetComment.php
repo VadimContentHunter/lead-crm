@@ -99,4 +99,21 @@ class GetComment
             return CommentResult::failure($e);
         }
     }
+
+    /**
+     * @template T
+     * @param    callable(User): T $mapper
+     * @return   IUserResult
+     */
+    public function executeAllMapped(callable $mapper): IResult
+    {
+        try {
+            $users = $this->repository->getAll();
+            $mapped = array_map($mapper, $users);
+
+            return CommentResult::success($mapped);
+        } catch (\Throwable $e) {
+            return CommentResult::failure($e);
+        }
+    }
 }

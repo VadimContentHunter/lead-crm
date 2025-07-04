@@ -15,7 +15,7 @@ class TableDecorator
      * @param  string $actionLabel
      * @return array{header: string[], rows: array<array<mixed>>}
      */
-    public function decorateWithActions(array $header, array $rows, string $actionLabel = 'Actions'): array
+    public function decorateWithActions(array $header, array $rows, string $actionLabel = ''): array
     {
         $newHeader = [...$header, $actionLabel];
         $newRows = [];

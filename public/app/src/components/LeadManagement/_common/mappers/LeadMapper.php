@@ -59,6 +59,33 @@ class LeadMapper
     }
 
     /**
+     * Преобразует сущность Lead в полный массив со всеми вложенными структурами.
+     *
+     * @param  Lead $lead
+     * @return array<string, mixed>
+     */
+    public static function toFullArray(Lead $lead): array
+    {
+        return [
+            'id' => $lead->id,
+            'full_name' => $lead->fullName,
+            'contact' => $lead->contact,
+            'address' => $lead->address,
+            'source' => $lead->source instanceof SourceDto
+                ? SourceDtoMapper::toArray($lead->source)
+                : null,
+            'status' => $lead->status instanceof StatusDto
+                ? StatusDtoMapper::toArray($lead->status)
+                : null,
+            'account_manager' => $lead->accountManager instanceof AccountManagerDto
+                ? AccountManagerMapper::toArray($lead->accountManager)
+                : null,
+            'created_at' => $lead->createdAt?->format('Y-m-d H:i:s'),
+        ];
+    }
+
+
+    /**
      * Извлекает только указанные поля из Lead или массива.
      *
      * @param  Lead|array<string, mixed> $lead

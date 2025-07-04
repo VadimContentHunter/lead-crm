@@ -158,6 +158,7 @@ class GetLead
             if (empty($leads)) {
                 return LeadResult::failure(new LeadManagementException("Лиды по фильтру не найдены"));
             }
+            $leads = array_map([LeadMapper::class, 'fromArray'], $leads);
             return LeadResult::success($this->hydrateLeads($leads));
         } catch (\Throwable $e) {
             return LeadResult::failure($e);
@@ -167,7 +168,7 @@ class GetLead
     /**
      * Наполняет сущности Lead связными данными (source, status, accountManager).
      *
-     * @param  mixed[] $leads
+     * @param  Lead[] $leads
      * @return Lead[]
      */
     public function hydrateLeads(array $leads): array

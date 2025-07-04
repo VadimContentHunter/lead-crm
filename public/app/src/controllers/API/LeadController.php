@@ -209,7 +209,6 @@ class LeadController
         $executeResult = $this->leadManagement->get()->filteredWithHydrate(LeadFilterMapper::fromArray($params));
         if ($executeResult->isSuccess()) {
             $leadBalanceItems = $executeResult->mapEach(function (Lead|array $lead) {
-                $lead = is_array($lead) ? LeadMapper::fromArray($lead) : $lead;
                 $lead = LeadMapper::toFlatViewArray($lead);
                 $balance = $this->balanceManagement
                     ->get()
@@ -217,7 +216,7 @@ class LeadController
                     ->first()
                     ->mapData([BalanceMapper::class, 'toArray']);
 
-                return array_merge($lead, $balance ?? []);
+                return array_merge(LeadMapper::toFlatViewArray($lead), $balance ?? []);
             });
 
             $headers = array_merge(

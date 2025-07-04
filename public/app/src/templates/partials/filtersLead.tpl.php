@@ -93,12 +93,12 @@ $search = $selectedData['search'] ?? '';
     </div>
 
     <div class="form-group">
-        <label>Balance min</label>
+        <label>Текущий min</label>
         <input type="number" name="balanceMin" step="0.01" placeholder="Минимум">
     </div>
 
     <div class="form-group">
-        <label>Drain min</label>
+        <label>Потери min</label>
         <input type="number" name="drainMin" step="0.01" placeholder="Минимум">
     </div>
 

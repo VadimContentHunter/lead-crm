@@ -43,12 +43,7 @@ interface ILeadRepository extends IRepository
     public function getLeadsByStatusId(int $statusId): array;
 
     /**
-     * Получить лиды с фильтрацией по различным параметрам.
-     *
-     * @param  LeadFilterDto $filter
-     * @param  string $sortBy
-     * @param  string $sortDir
-     * @return Lead[]
+     * @return mixed[]
      */
-    public function getFilteredLeads(LeadFilterDto $filter, string $sortBy = 'leads.id', string $sortDir = 'asc'): array;
+    public function getFilteredLeads(LeadFilterDto $filter): array;
 }

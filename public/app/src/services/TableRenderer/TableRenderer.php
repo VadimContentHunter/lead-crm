@@ -48,6 +48,8 @@ class TableRenderer
 
         $html .= '</tbody></table>';
 
+        $html = '<div class="table-wrapper">' . $html . '</div>';
+
         return $html;
     }
 

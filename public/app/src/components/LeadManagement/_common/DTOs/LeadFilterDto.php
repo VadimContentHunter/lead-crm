@@ -12,6 +12,8 @@ class LeadFilterDto
         public ?float $potentialMin = null,
         public ?float $balanceMin = null,
         public ?float $drainMin = null,
+        public ?string $sort = null,
+        public ?string $sortDir = null
     ) {
     }
 }

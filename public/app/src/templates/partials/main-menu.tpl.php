@@ -89,7 +89,14 @@
             <div class="icon-wrapper">
                 <i class="fa-solid fa-house"></i>
             </div>
-            <p>Все лиды</p>
+            <p>Все лиды P2P</p>
+        </a>
+
+        <a href="/page/lead-all" class="item-main-menu">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-house"></i>
+            </div>
+            <p>Все лиды (Инвестка)</p>
         </a>
     </nav>
 

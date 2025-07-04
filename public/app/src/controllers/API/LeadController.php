@@ -6,18 +6,31 @@ use PDO;
 use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
+use crm\src\services\TableRenderer\TableFacade;
 use crm\src\_common\adapters\LeadValidatorAdapter;
+use crm\src\services\TableRenderer\TableDecorator;
+use crm\src\_common\repositories\BalanceRepository;
+use crm\src\services\TableRenderer\TableRenderInput;
+use crm\src\services\TableRenderer\TableTransformer;
+use crm\src\_common\adapters\BalanceValidatorAdapter;
+use crm\src\components\LeadManagement\_entities\Lead;
 use crm\src\components\LeadManagement\LeadManagement;
+use crm\src\components\BalanceManagement\BalanceManagement;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\_common\repositories\LeadRepository\LeadRepository;
+use crm\src\components\LeadManagement\_common\mappers\LeadMapper;
 use crm\src\_common\repositories\LeadRepository\LeadSourceRepository;
 use crm\src\_common\repositories\LeadRepository\LeadStatusRepository;
 use crm\src\components\LeadManagement\_common\mappers\LeadInputMapper;
+use crm\src\components\BalanceManagement\_common\mappers\BalanceMapper;
+use crm\src\components\LeadManagement\_common\mappers\LeadFilterMapper;
 use crm\src\_common\repositories\LeadRepository\LeadAccountManagerRepository;
 
 class LeadController
 {
     private LeadManagement $leadManagement;
+
+    private BalanceManagement $balanceManagement;
 
     private JsonRpcServerFacade $rpc;
 
@@ -26,12 +39,19 @@ class LeadController
         PDO $pdo,
         private LoggerInterface $logger = new NullLogger()
     ) {
+        $leadRepository = new LeadRepository($pdo, $logger);
         $this->leadManagement = new LeadManagement(
-            leadRepository: new LeadRepository($pdo, $logger),
+            leadRepository:  $leadRepository,
             sourceRepository: new LeadSourceRepository($pdo, $logger),
             statusRepository: new LeadStatusRepository($pdo, $logger),
             accountManagerRepository: new LeadAccountManagerRepository($pdo, $logger),
             validator: new LeadValidatorAdapter()
+        );
+
+        $this->balanceManagement = new BalanceManagement(
+            new BalanceRepository($pdo, $logger),
+            new BalanceValidatorAdapter(),
+            $leadRepository
         );
 
         $this->rpc = new JsonRpcServerFacade();
@@ -42,6 +62,18 @@ class LeadController
 
             case 'lead.edit':
                 $this->editLead($this->rpc->getParams());
+            // break;
+
+            case 'lead.filter':
+                $this->filterLeads($this->rpc->getParams());
+            // break;
+
+            case 'lead.filter.table':
+                $this->filterLeadsFormatTable($this->rpc->getParams());
+            // break;
+
+            case 'lead.filter.table.clear':
+                $this->filterLeadsFormatTable([]);
             // break;
 
             default:
@@ -142,6 +174,102 @@ class LeadController
         } else {
             $this->rpc->replyData([
                 ['type' => 'error', 'message' => 'Данные источника некорректного формата.']
+            ]);
+        }
+    }
+
+    public function filterLeads(array $params): void
+    {
+        $executeResult = $this->leadManagement->get()->filtered(LeadFilterMapper::fromArray($params));
+        if ($executeResult->isSuccess()) {
+            // $balance = $this->balanceManagement->get()->getByLeadId($executeResult->getArray()[0]['id']);
+            $leadBalanceItem = $executeResult->getValidMappedList(function (array $lead) {
+                $balance = $this->balanceManagement
+                    ->get()
+                    ->getByLeadId($lead['id'] ?? 0)
+                    ->first()
+                    ->mapData([BalanceMapper::class, 'toArray']);
+
+                return array_merge($lead, $balance ?? []);
+            });
+
+            $this->rpc->replyData([
+                ['type' => 'success', 'leads' => $leadBalanceItem->getArray()]
+            ]);
+        } else {
+            $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Ошибка при фильтрации. Причина: ' . $errorMsg]
+            ]);
+        }
+    }
+
+    public function filterLeadsFormatTable(array $params): void
+    {
+        $executeResult = $this->leadManagement->get()->filteredWithHydrate(LeadFilterMapper::fromArray($params));
+        if ($executeResult->isSuccess()) {
+            $leadBalanceItems = $executeResult->mapEach(function (Lead|array $lead) {
+                $lead = is_array($lead) ? LeadMapper::fromArray($lead) : $lead;
+                $lead = LeadMapper::toFlatViewArray($lead);
+                $balance = $this->balanceManagement
+                    ->get()
+                    ->getByLeadId($lead['id'] ?? 0)
+                    ->first()
+                    ->mapData([BalanceMapper::class, 'toArray']);
+
+                return array_merge($lead, $balance ?? []);
+            });
+
+            $headers = array_merge(
+                array_keys(LeadMapper::toFlatViewArray(
+                    $this->leadManagement->get()->executeColumnNames()->getArray()
+                )),
+                $this->balanceManagement->get()->executeColumnNames()->getArray()
+            );
+            // $headers = array_values(array_unique(array_merge(
+            //     $this->leadManagement->get()->executeColumnNames()->getArray(),
+            //     $this->balanceManagement->get()->executeColumnNames()->getArray()
+            // )));
+
+            $input = new TableRenderInput(
+                header: $headers,
+                rows: $leadBalanceItems->getArray(),
+                attributes: ['id' => 'lead-table-1', 'data-module' => 'leads'],
+                classes: ['base-table'],
+                allowedColumns: [
+                    'id',
+                    'contact',
+                    'full_name',
+                    'account_manager',
+                    'address',
+                    'source',
+                    'status',
+                    'current',
+                    'drain',
+                    'potential',
+                ],
+                renameMap: [
+                    'full_name' => 'Полное имя',
+                    'account_manager' => 'Менеджер',
+                    'contact' => 'Контакт',
+                    'address' => 'Адрес',
+                    'source' => 'Источник',
+                    'status' => 'Статус',
+                    'current' => 'Текущие',
+                    'drain' => 'Потери',
+                    'potential' => 'Потенциал',
+                ]
+            );
+
+            $tableFacade = new TableFacade(new TableTransformer(),  new TableDecorator());
+            $this->rpc->replyData([
+                'type' => 'success',
+                'table' => $tableFacade->renderFilteredTable($input)->asHtml()
+            ]);
+        } else {
+            $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Ошибка при фильтрации. Причина: ' . $errorMsg]
             ]);
         }
     }

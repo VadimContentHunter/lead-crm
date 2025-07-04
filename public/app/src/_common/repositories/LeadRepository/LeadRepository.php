@@ -191,8 +191,88 @@ class LeadRepository implements ILeadRepository
         );
     }
 
-    public function getFilteredLeads(LeadFilterDto $filter, string $sortBy = 'leads.id', string $sortDir = 'asc'): array
+    /**
+     * @return mixed[]
+     */
+    public function getFilteredLeads(LeadFilterDto $filter): array
     {
-        return [];
+        $params = [];
+
+        $isPotentialSet = is_numeric($filter->potentialMin) && $filter->potentialMin > 0;
+        $isBalanceSet = is_numeric($filter->balanceMin) && $filter->balanceMin > 0;
+        $isDrainSet = is_numeric($filter->drainMin) && $filter->drainMin > 0;
+
+        // Баланс нужен только если хотя бы один параметр > 0
+        $joinBalances = $isPotentialSet || $isBalanceSet || $isDrainSet;
+
+        $sql = <<<SQL
+            SELECT leads.*
+            FROM leads
+            LEFT JOIN statuses ON statuses.id = leads.status_id
+            LEFT JOIN sources ON sources.id = leads.source_id
+            LEFT JOIN users ON users.id = leads.account_manager_id
+        SQL;
+
+        if ($joinBalances) {
+            $sql .= ' LEFT JOIN balances ON balances.lead_id = leads.id';
+        }
+
+        $sql .= ' WHERE 1 = 1';
+
+        // Баланс-фильтры
+        if ($joinBalances) {
+            if ($isPotentialSet) {
+                $sql .= " AND balances.potential >= :potential_min";
+                $params['potential_min'] = $filter->potentialMin;
+            }
+
+            if ($isBalanceSet) {
+                $sql .= " AND balances.current >= :balance_min";
+                $params['balance_min'] = $filter->balanceMin;
+            }
+
+            if ($isDrainSet) {
+                $sql .= " AND balances.drain >= :drain_min";
+                $params['drain_min'] = $filter->drainMin;
+            }
+        }
+
+        // Фильтры
+        if (!empty($filter->search)) {
+            $sql .= " AND (leads.full_name LIKE :searchFullName OR leads.contact LIKE :searchContact)";
+            $params['searchFullName'] = '%' . $filter->search . '%';
+            $params['searchContact'] = '%' . $filter->search . '%';
+        }
+
+        if (!empty($filter->manager)) {
+            $sql .= " AND users.id = :manager";
+            $params['manager'] = $filter->manager;
+        }
+
+        if (!empty($filter->status)) {
+            $sql .= " AND statuses.id = :status";
+            $params['status'] = $filter->status;
+        }
+
+        if (!empty($filter->source)) {
+            $sql .= " AND sources.id = :source";
+            $params['source'] = $filter->source;
+        }
+
+        // Сортировка
+        $allowedSortFields = [
+            'leads.id', 'leads.full_name', 'leads.address',
+            'statuses.title', 'sources.title', 'users.login',
+            'balances.current', 'balances.drain', 'balances.potential'
+        ];
+
+        $sortBy = in_array($filter->sort, $allowedSortFields, true) ? $filter->sort : 'leads.id';
+        $sortDir = strtolower($filter->sortDir ?? '') === 'desc' ? 'DESC' : 'ASC';
+        $sql .= " ORDER BY $sortBy $sortDir";
+
+        // Выполнение
+        $result = $this->repository->executeSql($sql, $params);
+
+        return $result->getArrayOrNull() ?? [];
     }
 }

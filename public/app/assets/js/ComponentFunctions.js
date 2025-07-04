@@ -73,16 +73,27 @@ export const ComponentFunctions = {
     },
 
     /**
-     * Назначает обработку любого input-контейнера через JSON-RPC по клику на кнопку
+     * Назначает обработку любого input-контейнера через JSON-RPC по клику на кнопку.
      *
-     * @param {{
-     *   triggerSelector: string,
-     *   containerSelector: string,
-     *   method: string,
-     *   endpoint?: string,
-     *   callbackOnData?: function(any): void,
-     *   callbackOnError?: function(Error): void
-     * }} config
+     * После клика собирает данные из input, select и textarea внутри указанного контейнера
+     * и отправляет их через JSON-RPC.
+     *
+     * @param {Object} config - Конфигурация вызова
+     * @param {string} config.triggerSelector - CSS-селектор для кнопки-триггера (например, '.btn-submit')
+     * @param {string} config.containerSelector - CSS-селектор контейнера, из которого будут собираться данные
+     * @param {string} config.method - Название метода JSON-RPC
+     * @param {string} [config.endpoint='/api'] - Адрес отправки запроса
+     * @param {function(any):void} [config.callbackOnData=null] - Коллбек для обработки успешного ответа (если не передан, будут показаны сообщения в messageBox)
+     * @param {function(Error):void} [config.callbackOnError=null] - Коллбек для обработки ошибок (если не передан, ошибка выводится в консоль)
+     *
+     * @example
+     * ComponentFunctions.attachJsonRpcInputTrigger({
+     *   triggerSelector: '.btn-submit',
+     *   containerSelector: '#form-container',
+     *   method: 'lead.filter',
+     *   endpoint: '/api/leads',
+     *   callbackOnData: (data) => console.log(data),
+     * });
      */
     attachJsonRpcInputTrigger({
         triggerSelector,
@@ -90,7 +101,7 @@ export const ComponentFunctions = {
         method,
         endpoint = '/api',
         callbackOnData = null,
-        callbackOnError = null
+        callbackOnError = null,
     }) {
         const trigger = document.querySelector(triggerSelector);
         const container = document.querySelector(containerSelector);
@@ -102,7 +113,7 @@ export const ComponentFunctions = {
 
         const transport = new JsonRpcTransport(method, {
             endpoint,
-            onContentUpdate: () => { }, // заглушка
+            onContentUpdate: () => { },
             onData: (payload) => {
                 if (typeof callbackOnData === 'function') {
                     callbackOnData(payload);
@@ -110,7 +121,6 @@ export const ComponentFunctions = {
                 }
 
                 const messages = Array.isArray(payload) ? payload : [];
-
                 let messageBox =
                     container.querySelector('.form-messages-container') ||
                     document.getElementById('global-messages-container');
@@ -142,6 +152,7 @@ export const ComponentFunctions = {
             transport.sendFromSelectorInputs(container);
         });
     },
+
 
     /**
       * Навешивает обработчик JSON-RPC по пользовательским атрибутам
@@ -271,4 +282,28 @@ export const ComponentFunctions = {
             }
         }
     },
+
+    /**
+     * Заменяет таблицу из ответа или выводит сообщение об отсутствии данных.
+     *
+     * @param {any} response Ответ от сервера с полем table (строкой HTML)
+     * @param {string} tableWrapperSelector CSS-селектор обёртки
+     */
+    replaceLeadTable(response, tableWrapperSelector = '.table-wrapper') {
+        const wrapper = document.querySelector(tableWrapperSelector);
+        if (!wrapper) {
+            console.warn('[ComponentFunctions] Обёртка таблицы не найдена:', tableWrapperSelector);
+            return;
+        }
+
+        if (response && typeof response.table === 'string') {
+            wrapper.innerHTML = response.table;
+        } else {
+            wrapper.innerHTML = `<p class="no-data-message">Данные не найдены или произошла ошибка при загрузке.</p>`;
+        }
+    }
+
+
+
+
 };

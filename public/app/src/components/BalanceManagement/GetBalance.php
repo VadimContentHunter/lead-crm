@@ -76,4 +76,28 @@ class GetBalance
             return BalanceResult::failure($e);
         }
     }
+
+    /**
+     * Возвращает названия столбцов таблицы пользователей.
+     *
+     * @param  array<string, string> $renameMap Ключ — оригинальное имя, значение — новое имя
+     * @return IUserResult
+     */
+    public function executeColumnNames(array $renameMap = []): IBalanceResult
+    {
+        try {
+            $columns = $this->repository->getColumnNames();
+
+            if (!empty($renameMap)) {
+                $columns = array_map(
+                    fn($name) => $renameMap[$name] ?? $name,
+                    $columns
+                );
+            }
+
+            return BalanceResult::success($columns);
+        } catch (\Throwable $e) {
+            return BalanceResult::failure($e);
+        }
+    }
 }

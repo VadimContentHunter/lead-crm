@@ -4,16 +4,15 @@ namespace crm\src\services\TableRenderer;
 
 use crm\src\services\TableRenderer\interfaces\ITableRenderInput;
 
-/**
- * Реализация входных параметров для рендера таблицы.
- */
 class TableRenderInput implements ITableRenderInput
 {
     public function __construct(
         private array $header,
         private array $rows,
         private array $attributes = [],
-        private array $classes = []
+        private array $classes = [],
+        private array $allowedColumns = [],
+        private array $renameMap = []
     ) {
     }
 
@@ -35,5 +34,15 @@ class TableRenderInput implements ITableRenderInput
     public function getClasses(): array
     {
         return $this->classes;
+    }
+
+    public function getAllowedColumns(): array
+    {
+        return $this->allowedColumns;
+    }
+
+    public function getRenameMap(): array
+    {
+        return $this->renameMap;
     }
 }

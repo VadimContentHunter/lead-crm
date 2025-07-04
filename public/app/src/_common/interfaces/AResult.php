@@ -92,4 +92,62 @@ abstract class AResult implements IResult
 
         return $this;
     }
+
+    /**
+     * Применяет маппер к каждому элементу результата и возвращает новый Result с массивом не-null результатов.
+     *
+     * @template T
+     * @param    callable(array<string, mixed>): ?T $mapper
+     * @return   static
+     */
+    public function getValidMappedList(callable $mapper): static
+    {
+        if (!is_array($this->data)) {
+            return static::success([]);
+        }
+
+        $result = [];
+
+        foreach ($this->data as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+
+            $mapped = $mapper($row);
+            if ($mapped !== null) {
+                $result[] = $mapped;
+            }
+        }
+
+        return static::success($result);
+    }
+
+    /**
+     * Применяет маппер ко всем элементам массива (любого типа) и возвращает новый Result с результатами.
+     *
+     * @template T
+     * @param    callable(mixed): T|null $mapper
+     * @param    bool $removeNulls Если true — удаляет все элементы, преобразованные в null
+     * @return   static
+     */
+    public function mapEach(callable $mapper, bool $removeNulls = true): static
+    {
+        if (!is_array($this->data)) {
+            return static::success([]);
+        }
+
+        $result = [];
+
+        foreach ($this->data as $element) {
+            $mapped = $mapper($element);
+
+            if ($mapped === null && $removeNulls) {
+                continue;
+            }
+
+            $result[] = $mapped;
+        }
+
+        return static::success($result);
+    }
 }

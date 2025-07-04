@@ -20,6 +20,8 @@ interface IResult
 
     public function getError(): ?Throwable;
 
+    public function first(): static;
+
     /**
      * Применить callable (например, маппер) к текущим данным и вернуть результат.
      *
@@ -27,4 +29,23 @@ interface IResult
      * @return mixed Результат преобразования, или null если данных нет
      */
     public function mapData(callable $mapper): mixed;
+
+    /**
+     * Применяет маппер к каждому элементу результата и возвращает новый Result с массивом не-null результатов.
+     *
+     * @template T
+     * @param    callable(array<string, mixed>): ?T $mapper
+     * @return   static
+     */
+    public function getValidMappedList(callable $mapper): static;
+
+    /**
+     * Применяет маппер ко всем элементам массива (любого типа) и возвращает новый Result с результатами.
+     *
+     * @template T
+     * @param    callable(mixed): T|null $mapper
+     * @param    bool $removeNulls Если true — удаляет все элементы, преобразованные в null
+     * @return   static
+     */
+    public function mapEach(callable $mapper, bool $removeNulls = true): static;
 }

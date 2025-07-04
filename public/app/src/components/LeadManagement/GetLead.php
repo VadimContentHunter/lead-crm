@@ -3,6 +3,7 @@
 namespace crm\src\components\LeadManagement;
 
 use Throwable;
+use crm\src\components\LeadManagement\_entities\Lead;
 use crm\src\components\LeadManagement\_common\DTOs\LeadFilterDto;
 use crm\src\components\LeadManagement\_common\adapters\LeadResult;
 use crm\src\components\LeadManagement\_common\interfaces\ILeadResult;
@@ -11,6 +12,7 @@ use crm\src\components\LeadManagement\_exceptions\LeadManagementException;
 use crm\src\components\LeadManagement\_common\interfaces\ILeadSourceRepository;
 use crm\src\components\LeadManagement\_common\interfaces\ILeadStatusRepository;
 use crm\src\components\LeadManagement\_common\interfaces\ILeadAccountManagerRepository;
+use crm\src\components\LeadManagement\_common\mappers\LeadMapper;
 
 class GetLead
 {
@@ -136,10 +138,10 @@ class GetLead
 
 
 
-    public function filtered(LeadFilterDto $filter, string $sortBy = 'leads.id', string $sortDir = 'asc'): ILeadResult
+    public function filtered(LeadFilterDto $filter): ILeadResult
     {
         try {
-            $leads = $this->repository->getFilteredLeads($filter, $sortBy, $sortDir);
+            $leads = $this->repository->getFilteredLeads($filter);
             if (empty($leads)) {
                 return LeadResult::failure(new LeadManagementException("Лиды по фильтру не найдены"));
             }
@@ -149,15 +151,29 @@ class GetLead
         }
     }
 
+    public function filteredWithHydrate(LeadFilterDto $filter): ILeadResult
+    {
+        try {
+            $leads = $this->repository->getFilteredLeads($filter);
+            if (empty($leads)) {
+                return LeadResult::failure(new LeadManagementException("Лиды по фильтру не найдены"));
+            }
+            return LeadResult::success($this->hydrateLeads($leads));
+        } catch (\Throwable $e) {
+            return LeadResult::failure($e);
+        }
+    }
+
     /**
      * Наполняет сущности Lead связными данными (source, status, accountManager).
      *
-     * @param  Lead[] $leads
+     * @param  mixed[] $leads
      * @return Lead[]
      */
     public function hydrateLeads(array $leads): array
     {
         foreach ($leads as $lead) {
+            $lead = is_array($lead) ? LeadMapper::fromArray($lead) : $lead;
             if ($lead->source?->id) {
                 $lead->source = $this->sourceRepository->getById($lead->source->id);
             }
@@ -172,5 +188,28 @@ class GetLead
         }
 
         return $leads;
+    }
+
+    /**
+     * Наполняет один Lead связными данными (source, status, accountManager).
+     *
+     * @param  Lead $lead
+     * @return Lead
+     */
+    public function hydrateLead(Lead $lead): Lead
+    {
+        if ($lead->source?->id) {
+            $lead->source = $this->sourceRepository->getById($lead->source->id);
+        }
+
+        if ($lead->status?->id) {
+            $lead->status = $this->statusRepository->getById($lead->status->id);
+        }
+
+        if ($lead->accountManager?->id) {
+            $lead->accountManager = $this->accManagerRepository->getById($lead->accountManager->id);
+        }
+
+        return $lead;
     }
 }

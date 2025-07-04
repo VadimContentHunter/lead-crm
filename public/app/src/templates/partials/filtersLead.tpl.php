@@ -32,7 +32,8 @@ $search = $selectedData['search'] ?? '';
 <th>Edit</th>
 <th>Drain</th> -->
 
-<form class="base-form lead-filter" id="lead-filter-form">
+
+<form class="base-form lead-filter" lead-filter-id>
     <div class="form-group">
         <label>Поиск</label>
         <input type="text" name="search" placeholder="Поиск по имени или контакту">
@@ -127,7 +128,32 @@ $search = $selectedData['search'] ?? '';
     </div>
 
     <div class="form-actions">
-        <button type="submit" class="form-button submit">Применить</button>
+        <button type="button" class="form-button submit">Применить</button>
         <button type="reset" class="form-button reset">Сбросить</button>
     </div>
 </form>
+
+<script type="module">
+    import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
+                        
+    ComponentFunctions.attachJsonRpcInputTrigger({
+        triggerSelector: '.lead-filter[lead-filter-id] .form-actions .submit',
+        containerSelector: '.lead-filter[lead-filter-id]',
+        method: 'lead.filter.table',
+        endpoint: '/api/leads',
+        callbackOnData: (response) => {
+            ComponentFunctions.replaceLeadTable(response, '.table-wrapper');
+        }
+    });
+
+    ComponentFunctions.attachJsonRpcInputTrigger({
+        triggerSelector: '.lead-filter[lead-filter-id] .form-actions .reset',
+        containerSelector: '.lead-filter[lead-filter-id]',
+        method: 'lead.filter.table.clear',
+        endpoint: '/api/leads',
+        callbackOnData: (response) => {
+            ComponentFunctions.replaceLeadTable(response, '.table-wrapper');
+        },
+    });
+
+</script>

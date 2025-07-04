@@ -26,4 +26,14 @@ interface ITableRenderInput
      * @return string[] CSS classes for <table>
      */
     public function getClasses(): array;
+
+    /**
+     * @return string[] Разрешённые колонки
+     */
+    public function getAllowedColumns(): array;
+
+    /**
+     * @return array<string, string> Карта переименования заголовков
+     */
+    public function getRenameMap(): array;
 }

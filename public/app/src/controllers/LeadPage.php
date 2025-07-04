@@ -48,6 +48,7 @@ use crm\src\_common\repositories\LeadRepository\LeadSourceRepository;
 use crm\src\_common\repositories\LeadRepository\LeadStatusRepository;
 use crm\src\components\SourceManagement\_common\mappers\SourceMapper;
 use crm\src\components\StatusManagement\_common\mappers\StatusMapper;
+use crm\src\components\BalanceManagement\_common\mappers\BalanceMapper;
 use crm\src\_common\repositories\LeadRepository\LeadAccountManagerRepository;
 
 class LeadPage
@@ -224,18 +225,67 @@ class LeadPage
         //   'accountManagerId' => $leadResult->getAccountManagerId()
         // ];
 
-
-        $headers = $this->leadManagement->get()->executeColumnNames()->getArray();
+        // $headers = $this->leadManagement->get()->executeColumnNames()->getArray();
         // $all = $this->leadManagement->get()->all()->getArray();
-        $rows = $this->leadManagement->get()->executeAllMapped(function (Lead $lead) {
-            return LeadMapper::toArray($lead);
-        })->getArray();
+        // $allB = $this->leadManagement->get()->all()->getArray();
+        // $rows = $this->leadManagement->get()->executeAllMapped(function (Lead $lead) {
+        //     return LeadMapper::toArray($lead);
+        // })->getArray();
+
+        $leadBalanceItems = $this->leadManagement->get()->all()->mapEach(function (Lead|array $lead) {
+            $lead = is_array($lead) ? LeadMapper::fromArray($lead) : $lead;
+            $lead = LeadMapper::toFlatViewArray($lead);
+            $balance = $this->balanceManagement
+                ->get()
+                ->getByLeadId($lead['id'] ?? 0)
+                ->first()
+                ->mapData([BalanceMapper::class, 'toArray']);
+            return array_merge(LeadMapper::toFlatViewArray($lead), $balance ?? []);
+        });
+
+        // Берём ключи ассоциативного массива + элементы индексного массива
+        $headers = array_merge(
+            array_keys(LeadMapper::toFlatViewArray(
+                $this->leadManagement->get()->executeColumnNames()->getArray()
+            )),
+            $this->balanceManagement->get()->executeColumnNames()->getArray()
+        );
+
+        // Убираем возможные дубликаты
+        // $headers = array_values(array_unique(array_merge(
+        //     LeadMapper::toFlatViewArray($this->leadManagement->get()->executeColumnNames()->getArray()),
+        //     // $this->leadManagement->get()->executeColumnNames()->getArray(),
+        //     $this->balanceManagement->get()->executeColumnNames()->getArray()
+        // )));
 
         $input = new TableRenderInput(
             header: $headers,
-            rows: $rows,
+            rows: $leadBalanceItems->getArray(),
             attributes: ['id' => 'lead-table-1', 'data-module' => 'leads'],
-            classes: ['base-table']
+            classes: ['base-table'],
+            allowedColumns: [
+                'id',
+                'contact',
+                'full_name',
+                'account_manager',
+                'address',
+                'source',
+                'status',
+                'current',
+                'drain',
+                'potential',
+            ],
+            renameMap: [
+                'full_name' => 'Полное имя',
+                'account_manager' => 'Менеджер',
+                'contact' => 'Контакт',
+                'address' => 'Адрес',
+                'source' => 'Источник',
+                'status' => 'Статус',
+                'current' => 'Текущие',
+                'drain' => 'Потери',
+                'potential' => 'Потенциал',
+            ]
         );
 
         $tableFacade = new TableFacade(new TableTransformer(),  new TableDecorator());
@@ -245,7 +295,7 @@ class LeadPage
                 (new TemplateBundle(
                     templatePath: 'containers/average-in-line-component.tpl.php',
                     variables: [
-                        'component' => $tableFacade->renderTable($input)->asHtml(),
+                        'component' => $tableFacade->renderFilteredTable($input)->asHtml(),
                         'filterPanel' => (new TemplateBundle(
                             templatePath: 'partials/filtersLead.tpl.php',
                             variables: [

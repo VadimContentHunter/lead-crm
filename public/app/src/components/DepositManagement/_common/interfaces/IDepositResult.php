@@ -15,5 +15,7 @@ interface IDepositResult extends IResult
 
     public function getSum(): ?float;
 
+    public function getTxId(): ?string;
+
     public function getCreatedAt(): ?\DateTime;
 }

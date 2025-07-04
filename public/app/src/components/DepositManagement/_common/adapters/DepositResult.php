@@ -29,6 +29,11 @@ class DepositResult extends AResult implements IDepositResult
         return $this->getDeposit()?->sum;
     }
 
+    public function getTxId(): ?string
+    {
+        return $this->getDeposit()?->txId;
+    }
+
     public function getCreatedAt(): ?\DateTime
     {
         return $this->getDeposit()?->createdAt;

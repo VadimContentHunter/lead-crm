@@ -8,6 +8,7 @@ class Deposit
         public int $leadId,
         public float $sum = 0.00,
         public ?int $id = null,
+        public string $txId = '',
         public ?\DateTime $createdAt = null,
     ) {
     }

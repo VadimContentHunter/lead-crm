@@ -48,4 +48,38 @@ class UpdateDeposit
             return DepositResult::failure($e);
         }
     }
+
+    /**
+     * Обновляет депозит по leadId.
+     */
+    public function executeByLeadId(Deposit $deposit): IDepositResult
+    {
+        $validationResult = $this->validator->validate($deposit);
+
+        if (!$validationResult->isValid()) {
+            return DepositResult::failure(
+                new DepositManagementException('Ошибка валидации: ' . implode('; ', $validationResult->getErrors()))
+            );
+        }
+
+        if (empty($deposit->leadId) || $deposit->leadId <= 0) {
+            return DepositResult::failure(
+                new DepositManagementException('Параметр leadId обязателен для обновления депозита')
+            );
+        }
+
+        try {
+            $updated = $this->repository->updateByLeadId($deposit);
+
+            if (!$updated) {
+                return DepositResult::failure(
+                    new DepositManagementException('Не удалось обновить депозит по leadId')
+                );
+            }
+
+            return DepositResult::success($deposit);
+        } catch (Throwable $e) {
+            return DepositResult::failure($e);
+        }
+    }
 }

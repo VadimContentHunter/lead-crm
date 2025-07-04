@@ -7,6 +7,7 @@ use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
 use crm\src\controllers\NotFoundController;
+use crm\src\controllers\API\DepositController;
 use crm\src\services\TableRenderer\TableFacade;
 use crm\src\_common\repositories\UserRepository;
 use crm\src\_common\adapters\LeadValidatorAdapter;
@@ -15,12 +16,14 @@ use crm\src\_common\repositories\SourceRepository;
 use crm\src\_common\repositories\StatusRepository;
 use crm\src\services\TableRenderer\TableDecorator;
 use crm\src\_common\repositories\BalanceRepository;
+use crm\src\_common\repositories\DepositRepository;
 use crm\src\_common\adapters\SourceValidatorAdapter;
 use crm\src\_common\adapters\StatusValidatorAdapter;
 use crm\src\services\TableRenderer\TableRenderInput;
 use crm\src\services\TableRenderer\TableTransformer;
 use crm\src\services\TemplateRenderer\HeaderManager;
 use crm\src\_common\adapters\BalanceValidatorAdapter;
+use crm\src\_common\adapters\DepositValidatorAdapter;
 use crm\src\components\LeadManagement\_entities\Lead;
 use crm\src\components\LeadManagement\LeadManagement;
 use crm\src\components\UserManagement\_entities\User;
@@ -31,6 +34,7 @@ use crm\src\components\SourceManagement\SourceManagement;
 use crm\src\components\StatusManagement\_entities\Status;
 use crm\src\components\StatusManagement\StatusManagement;
 use crm\src\components\BalanceManagement\BalanceManagement;
+use crm\src\components\DepositManagement\DepositManagement;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 use crm\src\_common\repositories\LeadRepository\LeadRepository;
@@ -55,6 +59,9 @@ class LeadPage
     private BalanceManagement $balanceManagement;
 
     private TemplateRenderer $renderer;
+
+    private DepositManagement $depositManagement;
+
     public function __construct(
         private string $projectPath,
         PDO $pdo,
@@ -90,6 +97,11 @@ class LeadPage
             new BalanceRepository($pdo, $logger),
             new BalanceValidatorAdapter(),
             $leadRepository
+        );
+
+        $this->depositManagement = new DepositManagement(
+            new DepositRepository($pdo, $logger),
+            new DepositValidatorAdapter()
         );
     }
 
@@ -242,6 +254,7 @@ class LeadPage
         ];
 
         $balanceResult = $this->balanceManagement->get()->getByLeadId($leadId);
+        $depositResult = $this->depositManagement->get()->getByLeadId($leadId);
 
         $this->showPage([
             'components' => [
@@ -292,8 +305,9 @@ class LeadPage
                 (new TemplateBundle(
                     templatePath: 'components/editLeadDepositForm.tpl.php',
                     variables: [
-                        'drain' => 0,
-                        'txid' => '',
+                        'sum' =>  $depositResult->getSum() ?? 0,
+                        'txid' =>  $depositResult->getTxId() ?? '',
+                        'leadId' => $depositResult->getLeadId() ?? $leadId ?? 0,
                     ]
                 )),
             ]

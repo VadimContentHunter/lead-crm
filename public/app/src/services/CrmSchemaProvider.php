@@ -88,6 +88,7 @@ class CrmSchemaProvider extends ASchemaProvider
                 CREATE TABLE deposits (
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     lead_id INT NOT NULL UNIQUE,
+                    tx_id VARCHAR(256) NOT NULL DEFAULT '',
                     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     sum DOUBLE(10,2) NOT NULL DEFAULT 0.00,
 

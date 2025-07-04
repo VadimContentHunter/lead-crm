@@ -13,4 +13,6 @@ interface IDepositRepository extends IRepository
     public function deleteByLeadId(int $leadId): ?int;
 
     public function getByLeadId(int $leadId): ?Deposit;
+
+    public function updateByLeadId(Deposit $deposit): bool;
 }

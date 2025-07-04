@@ -1,12 +1,14 @@
 <?php
 
-    $drain = is_int($drain ?? 0) ? $drain : 0;
+    $sum = is_numeric($sum ?? 0) ? $sum : 0;
     $txid = $txid ?? '';
+    $leadId = is_numeric($leadId ?? 0) ? (int)$leadId : 0;
 ?>
 
 <section class="component component--medium">
     <h2>Общие сведения Deposit</h2>
     <form class="base-form edit-deposit-form" deposit-form-id>
+        <input type="text" name="leadId" value="<?= $leadId ?? '' ?>" hidden>
         <div class="form-messages-container">
             <!-- <div class="form-message">
                 <p>Введите данные, что бы создать лида.</p>
@@ -14,13 +16,13 @@
         </div>
         <form class="base-form">
             <div class="form-group">
-                <label for="number-input">Drain Amount</label>
-                <input type="number" id="number-input" name="drain" step="0.01" value="<?= $drain; ?>">
+                <label>Drain Amount</label>
+                <input type="number" name="sum" step="0.01" value="<?= $sum; ?>">
             </div>
 
             <div class="form-group">
-                <label for="number-input">TxID</label>
-                <input type="text" name="txid" value="<?= $fullName ?? '' ?>">
+                <label>TxID</label>
+                <input type="text" name="tx_id" value="<?= $txid ?? '' ?>">
             </div>
 
             <div class="form-actions">
@@ -36,7 +38,7 @@
     ComponentFunctions.attachJsonRpcInputTrigger({
         triggerSelector: '.edit-deposit-form[deposit-form-id] .form-actions .submit',
         containerSelector: '.edit-deposit-form[deposit-form-id]',
-        method: 'deposit.edit',
+        method: 'deposit.create.edit',
         endpoint: '/api/deposits'
     });
 

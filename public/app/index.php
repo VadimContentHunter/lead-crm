@@ -21,8 +21,10 @@ use crm\src\controllers\BootstrapController;
 use crm\src\controllers\API\SourceController;
 use crm\src\controllers\API\StatusController;
 use crm\src\controllers\API\BalanceController;
+use crm\src\controllers\API\DepositController;
 use  crm\src\services\RouteHandler\RouteHandler;
 use  crm\src\services\RouteHandler\entities\Route;
+use crm\src\components\DepositManagement\_entities\Deposit;
 use crm\src\services\Repositories\DbRepository\services\PdoFactory;
 
 // define('PROJECT_ROOT', __DIR__);
@@ -75,6 +77,12 @@ $routes = [
     new Route(
         pattern: '^/api/balances$',
         className: BalanceController::class,
+        extraData: [__DIR__, $pdo, $logger]
+    ),
+
+    new Route(
+        pattern: '^/api/deposits$',
+        className: DepositController::class,
         extraData: [__DIR__, $pdo, $logger]
     ),
 

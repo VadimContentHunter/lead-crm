@@ -25,6 +25,11 @@ class UserMapper
         );
     }
 
+    /**
+     * Преобразует объект User в массив данных.
+     *
+     * @return array<string, mixed>
+     */
     public static function toArray(User $user): array
     {
         return [

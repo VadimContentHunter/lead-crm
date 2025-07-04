@@ -29,6 +29,7 @@ class UserPage
         PDO $pdo,
         private LoggerInterface $logger = new NullLogger()
     ) {
+        $this->logger->info('UserPage initialized');
         $this->renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
         $this->userManagement = new UserManagement(
             new UserRepository($pdo, $logger),
@@ -36,6 +37,9 @@ class UserPage
         );
     }
 
+    /**
+     * @param array<string, mixed> $components
+     */
     public function showPage(array $components): void
     {
         // $renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');

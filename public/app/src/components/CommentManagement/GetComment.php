@@ -3,11 +3,12 @@
 namespace crm\src\components\CommentManagement;
 
 use Throwable;
-use crm\src\components\CommentManagement\_common\interfaces\ICommentResult;
+use crm\src\_common\interfaces\IResult;
+use crm\src\components\CommentManagement\_entities\Comment;
 use crm\src\components\CommentManagement\_common\adapters\CommentResult;
+use crm\src\components\CommentManagement\_common\interfaces\ICommentResult;
 use crm\src\components\CommentManagement\_common\interfaces\ICommentRepository;
 use crm\src\components\CommentManagement\_exceptions\CommentManagementException;
-use crm\src\_common\interfaces\IResult;
 
 class GetComment
 {
@@ -102,8 +103,8 @@ class GetComment
 
     /**
      * @template T
-     * @param    callable(User): T $mapper
-     * @return   IUserResult
+     * @param    callable(Comment): T $mapper
+     * @return   IResult
      */
     public function executeAllMapped(callable $mapper): IResult
     {

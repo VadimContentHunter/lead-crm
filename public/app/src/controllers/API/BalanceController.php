@@ -24,6 +24,7 @@ class BalanceController
         PDO $pdo,
         private LoggerInterface $logger = new NullLogger()
     ) {
+        $this->logger->info('BalanceController initialized for project ' . $this->projectPath);
         $leadRepository = new LeadRepository($pdo, $logger);
         $this->balanceManagement = new BalanceManagement(
             new BalanceRepository($pdo, $logger),
@@ -71,7 +72,13 @@ class BalanceController
             ]);
         }
 
-        $executeResult = $this->balanceManagement->create()->execute(BalanceMapper::fromArray($params));
+        $balanceDto = BalanceMapper::fromArray($params);
+        if ($balanceDto === null) {
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Некорректные данные для создания Баланса.']
+            ]);
+        }
+        $executeResult = $this->balanceManagement->create()->execute($balanceDto);
         if ($executeResult->isSuccess()) {
             $current = $executeResult->getCurrent() ?? 0;
             $drain = $executeResult->getDrain() ?? 0;
@@ -118,8 +125,14 @@ class BalanceController
             ]);
         }
 
-            $params['lead_id'] = (int)$leadId;
-            $executeResult = $this->balanceManagement->update()->executeByLeadId(BalanceMapper::fromArray($params));
+        $params['lead_id'] = (int)$leadId;
+        $balanceDto = BalanceMapper::fromArray($params);
+        if ($balanceDto === null) {
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Некорректные данные для создания Баланса.']
+            ]);
+        }
+        $executeResult = $this->balanceManagement->update()->executeByLeadId($balanceDto);
         if ($executeResult->isSuccess()) {
             $current = $executeResult->getCurrent() ?? 0;
             $drain = $executeResult->getDrain() ?? 0;
@@ -145,6 +158,9 @@ class BalanceController
         }
     }
 
+    /**
+     * @param array<string,mixed> $params
+     */
     public function createOrEditBalance(array $params): void
     {
         $leadId = $params['leadId'] ?? $params['lead_id'] ?? null;

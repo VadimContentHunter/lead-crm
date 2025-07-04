@@ -79,8 +79,8 @@ class GetLead
     /**
      * Возвращает названия столбцов таблицы пользователей.
      *
-     * @param  array<string, string> $renameMap Ключ — оригинальное имя, значение — новое имя
-     * @return IUserResult
+     * @param  array<string,string> $renameMap Ключ — оригинальное имя, значение — новое имя
+     * @return ILeadResult
      */
     public function executeColumnNames(array $renameMap = []): ILeadResult
     {
@@ -104,8 +104,8 @@ class GetLead
      * Получает все статусы с применением маппера к каждому элементу.
      *
      * @template T
-     * @param    callable(Status): T $mapper
-     * @return   ISourceResult
+     * @param    callable(Lead): T $mapper
+     * @return   ILeadResult
      */
     public function executeAllMapped(callable $mapper): ILeadResult
     {
@@ -174,7 +174,6 @@ class GetLead
     public function hydrateLeads(array $leads): array
     {
         foreach ($leads as $lead) {
-            $lead = is_array($lead) ? LeadMapper::fromArray($lead) : $lead;
             if ($lead->source?->id) {
                 $lead->source = $this->sourceRepository->getById($lead->source->id);
             }

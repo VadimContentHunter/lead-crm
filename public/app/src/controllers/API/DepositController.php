@@ -28,6 +28,7 @@ class DepositController
         PDO $pdo,
         private LoggerInterface $logger = new NullLogger()
     ) {
+        $this->logger->info('DepositController initialized for project ' . $this->projectPath);
         $this->depositManagement = new DepositManagement(
             new DepositRepository($pdo, $logger),
             new DepositValidatorAdapter()
@@ -72,7 +73,13 @@ class DepositController
             ]);
         }
 
-        $executeResult = $this->depositManagement->create()->execute(DepositMapper::fromArray($params));
+        $depositDto = DepositMapper::fromArray($params);
+        if ($depositDto === null) {
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Некорректные данные для создания Депозита.']
+            ]);
+        }
+        $executeResult = $this->depositManagement->create()->execute($depositDto);
         if ($executeResult->isSuccess()) {
             $sum = $executeResult->getSum() ?? 0;
             $txId = $executeResult->getTxId() ?? 0;
@@ -116,8 +123,15 @@ class DepositController
             ]);
         }
 
-            $params['lead_id'] = (int)$leadId;
-            $executeResult = $this->depositManagement->update()->executeByLeadId(DepositMapper::fromArray($params));
+        $params['lead_id'] = (int)$leadId;
+        $depositDto = DepositMapper::fromArray($params);
+        if ($depositDto === null) {
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Некорректные данные для создания Депозита.']
+            ]);
+        }
+
+        $executeResult = $this->depositManagement->update()->executeByLeadId($depositDto);
         if ($executeResult->isSuccess()) {
             $sum = $executeResult->getSum() ?? 0;
             $txId = $executeResult->getTxId() ?? 0;
@@ -141,6 +155,9 @@ class DepositController
         }
     }
 
+    /**
+     * @param array<string,mixed> $params
+     */
     public function createOrEditDeposit(array $params): void
     {
         $leadId = $params['leadId'] ?? $params['lead_id'] ?? null;

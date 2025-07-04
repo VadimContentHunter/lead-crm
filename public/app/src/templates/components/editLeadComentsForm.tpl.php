@@ -1,6 +1,6 @@
 <?php
-$comments = is_array($comments ?? []) ? $comments : [];
-$leadId = is_numeric($leadId ?? 0) ? (int)$leadId : 0;
+$comments = isset($comments) && is_array($comments) ? $comments : [];
+$leadId = isset($leadId) && is_numeric($leadId) ? (int)$leadId : 0;
 ?>
 <section class="component-wrapper-line">
 
@@ -24,7 +24,7 @@ $leadId = is_numeric($leadId ?? 0) ? (int)$leadId : 0;
 
         <!-- Форма для добавления нового комментария -->
         <form class="base-form comment-form" comment-form-id>
-            <input type="text" name="lead_id" value="<?= $leadId ?? '' ?>" hidden>
+            <input type="text" name="lead_id" value="<?= $leadId ?>" hidden>
             <div class="form-group">
                 <label>Оставить комментарий</label>
                 <textarea name="comment" rows="4" placeholder="Введите текст комментария..."></textarea>

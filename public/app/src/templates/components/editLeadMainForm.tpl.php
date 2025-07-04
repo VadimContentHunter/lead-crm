@@ -13,7 +13,7 @@
 <section class="component component--medium">
     <h2>Общие сведения лида</h2>
     <form class="base-form edit-lead-form" lead-form-id>
-        <input type="text" name="leadId" value="<?= $leadId ?? '' ?>" hidden>
+        <input type="text" name="leadId" value="<?= $leadId ?>" hidden>
         <div class="form-messages-container">
             <div class="form-message">
                 <p>Введите данные, что бы создать лида.</p>
@@ -22,17 +22,17 @@
         <form class="base-form">
             <div class="form-group">
                 <label>Полное имя *</label>
-                <input type="text" name="fullName" value="<?= $fullName ?? '' ?>">
+                <input type="text" name="fullName" value="<?= $fullName ?>">
             </div>
 
             <div class="form-group">
                 <label>Контакты *</label>
-                <input type="text" name="contact" value="<?= $contact ?? '' ?>">
+                <input type="text" name="contact" value="<?= $contact ?>">
             </div>
 
             <div class="form-group">
                 <label>Адрес</label>
-                <input type="text" name="address" value="<?= $address ?? '' ?>">
+                <input type="text" name="address" value="<?= $address ?>">
             </div>
 
             <div class="form-group">

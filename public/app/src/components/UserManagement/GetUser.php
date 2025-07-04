@@ -3,6 +3,7 @@
 namespace crm\src\components\UserManagement;
 
 use crm\src\_common\interfaces\IValidation;
+use crm\src\components\UserManagement\_entities\User;
 use crm\src\components\UserManagement\_common\DTOs\UserInputDto;
 use crm\src\components\UserManagement\_common\adapters\UserResult;
 use crm\src\components\UserManagement\_common\interfaces\IUserResult;

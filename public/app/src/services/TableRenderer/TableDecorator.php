@@ -35,6 +35,8 @@ class TableDecorator
 
     /**
      * Извлекает ID из первой колонки.
+     *
+     * @param array<int,mixed> $row
      */
     protected function extractId(array $row): mixed
     {

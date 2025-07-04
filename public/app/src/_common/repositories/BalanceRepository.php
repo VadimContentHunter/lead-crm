@@ -18,6 +18,9 @@ class BalanceRepository extends ARepository implements IBalanceRepository
         return 'balances';
     }
 
+    /**
+     * @return class-string<Balance>
+     */
     protected function getEntityClass(): string
     {
         return Balance::class;
@@ -48,13 +51,17 @@ class BalanceRepository extends ARepository implements IBalanceRepository
 
     public function getByLeadId(int $leadId): ?Balance
     {
+        /**
+         * @var callable(array<string, mixed>): Balance $mapper
+         */
+        $mapper = [BalanceMapper::class, 'fromArray'];
         return $this->repository->executeQuery(
             (new QueryBuilder())
                 ->table($this->getTableName())
                 ->where('lead_id = :lead_id')
                 ->limit(1)
                 ->select(['lead_id' => $leadId])
-        )->first()->getObjectOrNullWithMapper($this->getEntityClass(), [BalanceMapper::class, 'fromArray']);
+        )->first()->getObjectOrNullWithMapper($this->getEntityClass(), $mapper);
     }
 
     public function updateByLeadId(Balance $balance): bool
@@ -66,6 +73,6 @@ class BalanceRepository extends ARepository implements IBalanceRepository
                 ->table($this->getTableName())
                 ->where('lead_id = :lead_id')
                 ->update($data)
-        )->getBool();
+        )->getBool() ?? false;
     }
 }

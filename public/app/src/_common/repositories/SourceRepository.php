@@ -18,6 +18,9 @@ class SourceRepository extends ARepository implements ISourceRepository
         return 'sources';
     }
 
+    /**
+     * @return class-string<Source>
+     */
     protected function getEntityClass(): string
     {
         return Source::class;

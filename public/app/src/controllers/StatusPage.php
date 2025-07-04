@@ -29,6 +29,7 @@ class StatusPage
         PDO $pdo,
         private LoggerInterface $logger = new NullLogger()
     ) {
+        $this->logger->info('StatusPage initialized');
         $this->renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
         $this->statusManagement = new StatusManagement(
             new StatusRepository($pdo, $logger),
@@ -36,6 +37,9 @@ class StatusPage
         );
     }
 
+    /**
+     * @param array<string, mixed> $components
+     */
     public function showPage(array $components): void
     {
         // $renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');

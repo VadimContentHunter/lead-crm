@@ -71,7 +71,7 @@ class UpdateBalance
         try {
             $updatedId = $this->balanceRepository->updateByLeadId($balance);
 
-            if ($updatedId === null || $updatedId <= 0) {
+            if (!$updatedId) {
                 return BalanceResult::failure(
                     new BalanceManagementException('Не удалось обновить баланс по leadId')
                 );

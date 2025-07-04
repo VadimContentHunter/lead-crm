@@ -39,6 +39,7 @@ class LeadController
         PDO $pdo,
         private LoggerInterface $logger = new NullLogger()
     ) {
+        $this->logger->info('LeadController initialized for project ' . $this->projectPath);
         $leadRepository = new LeadRepository($pdo, $logger);
         $this->leadManagement = new LeadManagement(
             leadRepository:  $leadRepository,
@@ -90,8 +91,14 @@ class LeadController
             is_string($params['fullName'] ?? null)
             && is_string($params['contact'] ?? null)
         ) {
-            $executeResult = $this->leadManagement->create()->execute(LeadInputMapper::fromArray($params));
+            $leadInputDto = LeadInputMapper::fromArray($params);
+            if ($leadInputDto === null) {
+                $this->rpc->replyData([
+                    ['type' => 'error', 'message' => 'Некорректные данные для создания лида.']
+                ]);
+            }
 
+            $executeResult = $this->leadManagement->create()->execute($leadInputDto);
             if ($executeResult->isSuccess()) {
                 $fullName = $executeResult->getFullName() ?? 'не указано имя';
                 $contact = $executeResult->getContact() ?? 'не указан контакт';
@@ -143,7 +150,13 @@ class LeadController
             is_string($params['fullName'] ?? null)
             && is_string($params['contact'] ?? null)
         ) {
-            $executeResult = $this->leadManagement->update()->execute(LeadInputMapper::fromArray($params));
+            $leadInputDto = LeadInputMapper::fromArray($params);
+            if ($leadInputDto === null) {
+                $this->rpc->replyData([
+                    ['type' => 'error', 'message' => 'Некорректные данные для создания лида.']
+                ]);
+            }
+            $executeResult = $this->leadManagement->update()->execute($leadInputDto);
             if ($executeResult->isSuccess()) {
                 $fullName = $executeResult->getFullName() ?? 'не указано имя';
                 $contact = $executeResult->getContact() ?? 'не указан контакт';
@@ -178,6 +191,9 @@ class LeadController
         }
     }
 
+    /**
+     * @param array<string, mixed> $params
+     */
     public function filterLeads(array $params): void
     {
         $executeResult = $this->leadManagement->get()->filtered(LeadFilterMapper::fromArray($params));
@@ -204,6 +220,9 @@ class LeadController
         }
     }
 
+    /**
+     * @param array<string,mixed> $params
+     */
     public function filterLeadsFormatTable(array $params): void
     {
         $executeResult = $this->leadManagement->get()->filteredWithHydrate(LeadFilterMapper::fromArray($params));

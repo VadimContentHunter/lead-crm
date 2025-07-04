@@ -7,7 +7,7 @@ class TableCellRenderer
     /**
      * @param mixed[]|string $cell
      */
-    public static function isInput(array|string $cell): bool
+    public static function isInput(array|string|int $cell): bool
     {
         return is_array($cell) && isset($cell['type'], $cell['name']);
     }

@@ -10,6 +10,12 @@ use crm\src\services\TableRenderer\interfaces\ITableRenderResult;
  */
 class TableRenderResult implements ITableRenderResult
 {
+    /**
+     * @param array<int, string> $header
+     * @param array<int, array<int, mixed>|string|int> $rows
+     * @param array<string, string> $attributes
+     * @param array<int, string> $classes
+     */
     public function __construct(
         private array $header,
         private array $rows,
@@ -18,11 +24,17 @@ class TableRenderResult implements ITableRenderResult
     ) {
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function getHeader(): array
     {
         return $this->header;
     }
 
+    /**
+     * @return array<int, array<int, mixed>|string|int>
+     */
     public function getRows(): array
     {
         return $this->rows;

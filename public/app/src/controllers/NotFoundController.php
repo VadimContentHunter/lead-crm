@@ -8,7 +8,7 @@ class NotFoundController
     {
         // Отправляем HTTP заголовок с кодом 404
         http_response_code(404);
-        header('Content-Type', 'text/html; charset=utf-8');
+        header('Content-Type: text/html; charset=utf-8');
 
         // Выводим стильную страницу 404
         echo <<<HTML

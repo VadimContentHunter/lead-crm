@@ -12,10 +12,10 @@ class TableRenderer
     /**
      * Генерирует HTML таблицы.
      *
-     * @param array $header     Заголовки колонок (первая строка tbody)
-     * @param array $rows       Массив строк таблицы
-     * @param array $attributes Атрибуты для <table>
-     * @param array $classes    CSS-классы таблицы
+     * @param array<int,string> $header     Заголовки колонок (первая строка tbody)
+     * @param array<int,array<int, mixed>|string|int> $rows       Массив строк таблицы
+     * @param array<string,string> $attributes Атрибуты для <table>
+     * @param array<int,string> $classes    CSS-классы таблицы
      *
      * @return string
      */
@@ -40,9 +40,12 @@ class TableRenderer
         // Остальные строки — данные
         foreach ($rows as $row) {
             $html .= '<tr>';
-            foreach ($row as $cell) {
+
+            // Если $row не массив, оборачиваем в массив
+            foreach (is_iterable($row) ? $row : [$row] as $cell) {
                 $html .= '<td>' . TableCellRenderer::render($cell) . '</td>';
             }
+
             $html .= '</tr>';
         }
 
@@ -55,6 +58,8 @@ class TableRenderer
 
     /**
      * Преобразует массив атрибутов в строку.
+     *
+     * @param array<string,string> $attributes
      */
     private static function buildHtmlAttributes(array $attributes): string
     {

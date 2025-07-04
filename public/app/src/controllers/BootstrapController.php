@@ -18,83 +18,83 @@ class BootstrapController
     ) {
         echo "<br><br>Bootstrapping...<br>";
         echo "Создание таблиц:<br><br>";
-        $logger->info('Bootstrapping...');
-        $logger->info('Создание таблиц:');
+        $this->logger->info('Bootstrapping...');
+        $this->logger->info('Создание таблиц:');
 
         $this->repository = new DbRepository($pdo);
-        $resultUsers = $this->repository->executeSql(CrmSchemaProvider::get('users'));
+        $resultUsers = $this->repository->executeSql(CrmSchemaProvider::get('users') ?? '');
         if ($resultUsers->isSuccess()) {
             echo "Users table created<br>";
-            $logger->info('Users table created');
+            $this->logger->info('Users table created');
         } else {
             echo $resultUsers->getError()?->getMessage() ?? 'Неизвестная ошибка' . "<br>";
-            $logger->error($resultUsers->getError()?->getMessage() ?? 'Неизвестная ошибка');
+            $this->logger->error($resultUsers->getError()?->getMessage() ?? 'Неизвестная ошибка');
         }
 
         echo "<br>";
         $this->repository = new DbRepository($pdo);
-        $resultStatuses = $this->repository->executeSql(CrmSchemaProvider::get('statuses'));
+        $resultStatuses = $this->repository->executeSql(CrmSchemaProvider::get('statuses') ?? '');
         if ($resultStatuses->isSuccess()) {
             echo "Statuses table created<br>";
-            $logger->info('Statuses table created');
+            $this->logger->info('Statuses table created');
         } else {
             echo $resultStatuses->getError()?->getMessage() ?? 'Неизвестная ошибка' . "<br>";
-            $logger->error($resultStatuses->getError()?->getMessage() ?? 'Неизвестная ошибка');
+            $this->logger->error($resultStatuses->getError()?->getMessage() ?? 'Неизвестная ошибка');
         }
 
         echo "<br>";
         $this->repository = new DbRepository($pdo);
-        $resultSources = $this->repository->executeSql(CrmSchemaProvider::get('sources'));
+        $resultSources = $this->repository->executeSql(CrmSchemaProvider::get('sources') ?? '');
         if ($resultSources->isSuccess()) {
             echo "Sources table created<br>";
-            $logger->info('Sources table created');
+            $this->logger->info('Sources table created');
         } else {
             echo $resultSources->getError()?->getMessage() ?? 'Неизвестная ошибка' . "<br>";
-            $logger->error($resultSources->getError()?->getMessage() ?? 'Неизвестная ошибка');
+            $this->logger->error($resultSources->getError()?->getMessage() ?? 'Неизвестная ошибка');
         }
 
         echo "<br>";
         $this->repository = new DbRepository($pdo);
-        $resultLeads = $this->repository->executeSql(CrmSchemaProvider::get('leads'));
+        $resultLeads = $this->repository->executeSql(CrmSchemaProvider::get('leads') ?? '');
         if ($resultLeads->isSuccess()) {
             echo "Leads table created<br>";
-            $logger->info('Leads table created');
+            $this->logger->info('Leads table created');
         } else {
             echo $resultLeads->getError()?->getMessage() ?? 'Неизвестная ошибка' . "<br>";
-            $logger->error($resultLeads->getError()?->getMessage() ?? 'Неизвестная ошибка');
+            $this->logger->error($resultLeads->getError()?->getMessage() ?? 'Неизвестная ошибка');
         }
 
         echo "<br>";
         $this->repository = new DbRepository($pdo);
-        $resultBalances = $this->repository->executeSql(CrmSchemaProvider::get('balances'));
+        $resultBalances = $this->repository->executeSql(CrmSchemaProvider::get('balances') ?? '');
         if ($resultBalances->isSuccess()) {
             echo "Balances table created<br>";
-            $logger->info('Balances table created');
+            $this->logger->info('Balances table created');
         } else {
             echo $resultBalances->getError()?->getMessage() ?? 'Неизвестная ошибка' . "<br>";
-            $logger->error($resultBalances->getError()?->getMessage() ?? 'Неизвестная ошибка');
+            $this->logger->error($resultBalances->getError()?->getMessage() ?? 'Неизвестная ошибка');
         }
 
         echo "<br>";
         $this->repository = new DbRepository($pdo);
-        $resultDeposits = $this->repository->executeSql(CrmSchemaProvider::get('deposits'));
+        $resultDeposits = $this->repository->executeSql(CrmSchemaProvider::get('deposits') ?? '');
         if ($resultDeposits->isSuccess()) {
             echo "Deposits table created<br>";
-            $logger->info('Deposits table created');
+            $this->logger->info('Deposits table created');
         } else {
             echo $resultDeposits->getError()?->getMessage() ?? 'Неизвестная ошибка' . "<br>";
-            $logger->error($resultDeposits->getError()?->getMessage() ?? 'Неизвестная ошибка');
+            $this->logger->error($resultDeposits->getError()?->getMessage() ?? 'Неизвестная ошибка');
         }
 
         echo "<br>";
         $this->repository = new DbRepository($pdo);
-        $resultComments = $this->repository->executeSql(CrmSchemaProvider::get('comments'));
+        $resultComments = $this->repository->executeSql(CrmSchemaProvider::get('comments') ?? '');
         if ($resultComments->isSuccess()) {
             echo "Comments table created<br>";
-            $logger->info('Comments table created');
+            $this->logger->info('Comments table created');
         } else {
             echo $resultComments->getError()?->getMessage() ?? 'Неизвестная ошибка' . "<br>";
-            $logger->error($resultComments->getError()?->getMessage() ?? 'Неизвестная ошибка');
+            $this->logger->error($resultComments->getError()?->getMessage() ?? 'Неизвестная ошибка');
         }
     }
 }

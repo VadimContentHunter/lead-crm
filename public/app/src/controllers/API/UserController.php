@@ -31,6 +31,7 @@ class UserController
         PDO $pdo,
         private LoggerInterface $logger = new NullLogger()
     ) {
+        $this->logger->info('UserController initialized for project ' . $this->projectPath);
         $this->userManagement = new UserManagement(
             new UserRepository($pdo, $logger),
             new UserValidatorAdapter()

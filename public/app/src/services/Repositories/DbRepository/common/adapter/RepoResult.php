@@ -106,10 +106,9 @@ class RepoResult implements IRepoResult
 
     /**
      * @template T of object
-     * @param    class-string<T> $className Класс, к которому должен принадлежать объект
-     * @param    (callable(array): T)|null $mapper    Кастомный маппер
-     *                                                массива в объект
-     * @return   T|null Объект этого класса или null
+     * @param    class-string<T> $className
+     * @param    (callable(array<string, mixed>): T)|null $mapper
+     * @return   T|null
      */
     public function getObjectOrNullWithMapper(string $className, ?callable $mapper = null): ?object
     {
@@ -129,11 +128,9 @@ class RepoResult implements IRepoResult
     }
 
     /**
-     * Преобразовать результат в массив объектов через кастомный гидратор.
-     *
      * @template T of object
      * @param    class-string<T> $className
-     * @param    callable(array): T $hydrator
+     * @param    callable(array<string, mixed>): T $hydrator
      * @return   T[]
      * @throws   \RuntimeException
      */

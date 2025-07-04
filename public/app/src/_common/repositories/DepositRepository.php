@@ -18,6 +18,9 @@ class DepositRepository extends ARepository implements IDepositRepository
         return 'deposits';
     }
 
+    /**
+     * @return class-string<Deposit>
+     */
     protected function getEntityClass(): string
     {
         return Deposit::class;
@@ -59,26 +62,29 @@ class DepositRepository extends ARepository implements IDepositRepository
 
     public function getByLeadId(int $leadId): ?Deposit
     {
+        /**
+         * @var callable(array<string, mixed>): Deposit $mapper
+         */
+        $mapper = [DepositMapper::class, 'fromArray'];
         return $this->repository->executeQuery(
             (new QueryBuilder())
                 ->table($this->getTableName())
                 ->where('lead_id = :lead_id')
                 ->limit(1)
                 ->select(['lead_id' => $leadId])
-        )->first()->getObjectOrNullWithMapper($this->getEntityClass(), [DepositMapper::class, 'fromArray']);
+        )->first()->getObjectOrNullWithMapper($this->getEntityClass(), $mapper);
     }
 
     public function updateByLeadId(Deposit $deposit): bool
     {
         $data = DepositMapper::toArray($deposit);
-        unset($data['id']);
-        unset($data['created_at']);
+        unset($data['id'], $data['created_at']);
 
         return $this->repository->executeQuery(
             (new QueryBuilder())
                 ->table($this->getTableName())
                 ->where('lead_id = :lead_id')
                 ->update($data)
-        )->getBool();
+        )->getBool() ?? false;
     }
 }

@@ -19,6 +19,9 @@ class LeadAccountManagerRepository extends ARepository implements ILeadAccountMa
         return 'users';
     }
 
+    /**
+     * @return class-string<User>
+     */
     protected function getEntityClass(): string
     {
         return User::class;
@@ -31,14 +34,19 @@ class LeadAccountManagerRepository extends ARepository implements ILeadAccountMa
 
     protected function toArray(object $entity): array
     {
-        /**
-         * @var AccountManagerDto|User $entity
-         */
-        return AccountManagerMapper::toArray(
-            $entity instanceof User
-                ? AccountManagerMapper::fromData($entity)
-                : $entity
-        );
+        if ($entity instanceof User) {
+            $dto = AccountManagerMapper::fromData($entity);
+        } elseif ($entity instanceof AccountManagerDto) {
+            $dto = $entity;
+        } else {
+            return []; // или throw new InvalidArgumentException();
+        }
+
+        if ($dto === null) {
+            return [];
+        }
+
+        return AccountManagerMapper::toArray($dto);
     }
 
     public function deleteByLogin(string $login): ?int

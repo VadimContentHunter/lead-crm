@@ -29,6 +29,7 @@ class CommentController
         PDO $pdo,
         private LoggerInterface $logger = new NullLogger()
     ) {
+        $this->logger->info('CommentController initialized for project ' . $this->projectPath);
         $this->commentManagement = new CommentManagement(
             new CommentRepository($pdo, $logger),
             new CommentValidatorAdapter()
@@ -67,7 +68,14 @@ class CommentController
             ]);
         }
 
-        $executeResult = $this->commentManagement->create()->execute(CommentMapper::fromArray($params));
+        $commentDto = CommentMapper::fromArray($params);
+        if ($commentDto === null) {
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Некорректные данные для создания Депозита.']
+            ]);
+        }
+
+        $executeResult = $this->commentManagement->create()->execute($commentDto);
         if ($executeResult->isSuccess()) {
             $this->rpc->replyData([
                 ['type' => 'success', 'message' => 'Комментарий успешно добавлен'],

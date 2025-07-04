@@ -22,6 +22,7 @@ class SourceController
         PDO $pdo,
         private LoggerInterface $logger = new NullLogger()
     ) {
+        $this->logger->info('SourceController initialized for project ' . $this->projectPath);
         $this->sourceManagement = new SourceManagement(
             new SourceRepository($pdo, $logger),
             new SourceValidatorAdapter()

@@ -16,9 +16,6 @@ use crm\src\components\LeadManagement\_common\DTOs\AccountManagerDto;
 use crm\src\components\LeadManagement\_common\mappers\LeadInputMapper;
 use crm\src\components\LeadManagement\_common\interfaces\ILeadRepository;
 
-/**
- * @extends ARepository<LeadInputDto>
- */
 class LeadRepository implements ILeadRepository
 {
     protected DbRepository $repository;
@@ -143,30 +140,39 @@ class LeadRepository implements ILeadRepository
         return $result->isSuccess() ? $result->getInt() : null;
     }
 
+    /**
+     * @return array<int, Lead>
+     */
     public function getLeadsByManagerId(int $managerId): array
     {
         return $this->getLeadsByField('account_manager_id', $managerId);
     }
 
+    /**
+     * @return array<int, Lead>
+     */
     public function getLeadsBySourceId(int $sourceId): array
     {
         return $this->getLeadsByField('source_id', $sourceId);
     }
 
+    /**
+     * @return array<int, Lead>
+     */
     public function getLeadsByStatusId(int $statusId): array
     {
         return $this->getLeadsByField('status_id', $statusId);
     }
 
     /**
-     * Универсальный метод для выборки по полю.
+     * @return array<int, Lead>
      */
     protected function getLeadsByField(string $field, int $value): array
     {
         $query = (new QueryBuilder())
-        ->table($this->getTableName())
-        ->where("$field = :val", ['val' => $value])
-        ->select();
+            ->table($this->getTableName())
+            ->where("$field = :val")
+            ->select(['val' => $value]);
 
         $result = $this->repository->executeQuery($query);
         $rows = $result->getArrayOrNull() ?? [];
@@ -176,6 +182,8 @@ class LeadRepository implements ILeadRepository
 
     /**
      * Маппинг данных из БД в сущность Lead
+     *
+     * @param array<string,mixed> $data
      */
     protected function mapToLead(array $data): Lead
     {

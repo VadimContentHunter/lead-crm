@@ -44,28 +44,28 @@ interface IRepoResult
     /**
      * @template T of object
      * @param    class-string<T> $className Класс, к которому должен принадлежать объект
-     * @param    (callable(array): T)|null $mapper    Кастомный маппер
-     *                                                массива в объект
-     * @return   T|null Объект этого класса или null
+     * @param    (callable(array<string,mixed>): T)|null $mapper    Кастомный маппер
+     * @return   T|null
      */
     public function getObjectOrNullWithMapper(string $className, ?callable $mapper = null): ?object;
 
+
+
     /**
-     * Преобразовать результат в массив объектов через кастомный гидратор.
-     *
      * @template T of object
      * @param    class-string<T> $className
-     * @param    callable(array): T $hydrator
+     * @param    callable(array<string,mixed>): T $hydrator
      * @return   T[]
      * @throws   \RuntimeException
      */
     public function getObjectListOrFail(string $className, callable $hydrator): array;
 
+
     /**
      * Применяет маппер к каждому элементу результата и возвращает только не-null результаты.
      *
      * @template T
-     * @param    callable(array<string, mixed>): ?T $mapper
+     * @param    callable(array<string,mixed>): ?T $mapper
      * @return   T[]
      */
     public function getValidMappedList(callable $mapper): array;

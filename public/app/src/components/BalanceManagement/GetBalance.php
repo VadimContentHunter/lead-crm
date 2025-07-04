@@ -51,7 +51,7 @@ class GetBalance
             }
 
             $balance = $this->repository->getByLeadId($leadId);
-            if ($balance === null || !$balance) {
+            if (!$balance) {
                 return BalanceResult::failure(new BalanceManagementException("Баланс не найден по leadId: $leadId"));
             }
 
@@ -81,7 +81,7 @@ class GetBalance
      * Возвращает названия столбцов таблицы пользователей.
      *
      * @param  array<string, string> $renameMap Ключ — оригинальное имя, значение — новое имя
-     * @return IUserResult
+     * @return IBalanceResult
      */
     public function executeColumnNames(array $renameMap = []): IBalanceResult
     {

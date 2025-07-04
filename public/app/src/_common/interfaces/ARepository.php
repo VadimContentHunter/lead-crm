@@ -7,7 +7,6 @@ use Psr\Log\LoggerInterface;
 use crm\src\_common\interfaces\IRepository;
 use crm\src\services\Repositories\DbRepository\DbRepository;
 use crm\src\services\Repositories\QueryBuilder\QueryBuilder;
-use crm\src\components\UserManagement\_common\mappers\UserMapper;
 
 /**
  * @template   TEntity of object
@@ -31,6 +30,8 @@ abstract class ARepository implements IRepository
 
     /**
      * Абстрактное имя класса сущности
+     *
+     * @return class-string<TEntity>
      */
     abstract protected function getEntityClass(): string;
 
@@ -42,6 +43,8 @@ abstract class ARepository implements IRepository
 
     /**
      * Абстрактный преобразователь сущности в массив для сохранения
+     *
+     * @return mixed[]
      */
     abstract protected function toArray(object $entity): array;
 
@@ -73,6 +76,9 @@ abstract class ARepository implements IRepository
         )->getInt();
     }
 
+    /**
+     * @return TEntity|null
+     */
     public function getById(int $id): ?object
     {
         return $this->repository->executeQuery(

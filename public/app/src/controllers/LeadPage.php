@@ -74,6 +74,7 @@ class LeadPage
         PDO $pdo,
         private LoggerInterface $logger = new NullLogger()
     ) {
+        $this->logger->info('LeadPage initialized');
         $this->renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
 
         $this->commentManagement = new CommentManagement(
@@ -117,6 +118,9 @@ class LeadPage
         );
     }
 
+    /**
+     * @param array<string, mixed> $components
+     */
     public function showPage(array $components): void
     {
         // $renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
@@ -319,7 +323,7 @@ class LeadPage
             exit();
         }
 
-        $leadResult = $this->leadManagement->get()->byId($leadId);
+        $leadResult = $this->leadManagement->get()->byId((int)$leadId);
         if (!$leadResult->isSuccess()) {
             (new NotFoundController())->show404();
             exit();
@@ -347,8 +351,8 @@ class LeadPage
           'accountManagerId' => $leadResult->getAccountManagerId()
         ];
 
-        $balanceResult = $this->balanceManagement->get()->getByLeadId($leadId);
-        $depositResult = $this->depositManagement->get()->getByLeadId($leadId);
+        $balanceResult = $this->balanceManagement->get()->getByLeadId((int)$leadId);
+        $depositResult = $this->depositManagement->get()->getByLeadId((int)$leadId);
         // $commentsResult = $this->commentManagement->get()->getByLeadId($leadId);
 
         $this->showPage([
@@ -357,7 +361,7 @@ class LeadPage
                     templatePath: 'components/editLeadComentsForm.tpl.php',
                     variables: [
                         'comments' => $commentsResult,
-                        'leadId' => $leadId ?? 0,
+                        'leadId' => $leadId,
                     ]
                 )),
                 (new TemplateBundle(
@@ -379,7 +383,7 @@ class LeadPage
                         'current' => $balanceResult->getCurrent() ?? 0,
                         'drain' => $balanceResult->getDrain() ?? 0,
                         'potential' => $balanceResult->getPotential() ?? 0,
-                        'leadId' => $balanceResult->getLeadId() ?? $leadId ?? 0,
+                        'leadId' => $balanceResult->getLeadId() ?? $leadId,
                         'id' => $balanceResult->getId() ?? 0
                     ]
                 )),
@@ -388,7 +392,7 @@ class LeadPage
                     variables: [
                         'sum' =>  $depositResult->getSum() ?? 0,
                         'txid' =>  $depositResult->getTxId() ?? '',
-                        'leadId' => $depositResult->getLeadId() ?? $leadId ?? 0,
+                        'leadId' => $depositResult->getLeadId() ?? $leadId,
                     ]
                 )),
             ]

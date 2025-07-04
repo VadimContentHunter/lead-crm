@@ -114,10 +114,8 @@ class GetSource
     }
 
     /**
-     * Получает все статусы с применением маппера к каждому элементу.
-     *
      * @template T
-     * @param    callable(Status): T $mapper
+     * @param    callable(Source): T $mapper
      * @return   ISourceResult
      */
     public function executeAllMapped(callable $mapper): ISourceResult

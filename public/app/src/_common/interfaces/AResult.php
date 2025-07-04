@@ -126,9 +126,7 @@ abstract class AResult implements IResult
      * Применяет маппер ко всем элементам массива (любого типа) и возвращает новый Result с результатами.
      *
      * @template T
-     * @param    callable(mixed): T|null $mapper
-     * @param    bool $removeNulls Если true — удаляет все элементы, преобразованные в null
-     * @return   static
+     * @param    callable(mixed): (T|null) $mapper
      */
     public function mapEach(callable $mapper, bool $removeNulls = true): static
     {

@@ -18,6 +18,9 @@ class CommentRepository extends ARepository implements ICommentRepository
         return 'comments';
     }
 
+    /**
+     * @return class-string<Comment>
+     */
     protected function getEntityClass(): string
     {
         return Comment::class;
@@ -31,8 +34,8 @@ class CommentRepository extends ARepository implements ICommentRepository
     protected function toArray(object $entity): array
     {
         /**
- * @var Comment $entity
-*/
+         * @var Comment $entity
+        */
         return CommentMapper::toArray($entity);
     }
 
@@ -81,8 +84,8 @@ class CommentRepository extends ARepository implements ICommentRepository
         return $this->repository->executeQuery(
             (new QueryBuilder())
                 ->table($this->getTableName())
-                ->where($userId !== null ? 'user_id = :user_id' : 'user_id IS NULL', $userId !== null ? ['user_id' => $userId] : [])
-                ->delete()
+                ->where($userId !== null ? 'user_id = :user_id' : 'user_id IS NULL')
+                ->delete($userId !== null ? ['user_id' => $userId] : [])
         )->getInt();
     }
 
@@ -91,8 +94,8 @@ class CommentRepository extends ARepository implements ICommentRepository
         return $this->repository->executeQuery(
             (new QueryBuilder())
                 ->table($this->getTableName())
-                ->where($depositId !== null ? 'deposit_id = :deposit_id' : 'deposit_id IS NULL', $depositId !== null ? ['deposit_id' => $depositId] : [])
-                ->delete()
+                ->where($depositId !== null ? 'deposit_id = :deposit_id' : 'deposit_id IS NULL')
+                ->delete($depositId !== null ? ['deposit_id' => $depositId] : [])
         )->getInt();
     }
 }

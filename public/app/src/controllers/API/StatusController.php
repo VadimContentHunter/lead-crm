@@ -22,6 +22,7 @@ class StatusController
         PDO $pdo,
         private LoggerInterface $logger = new NullLogger()
     ) {
+        $this->logger->info('StatusController initialized for project ' . $this->projectPath);
         $this->statusManagement = new StatusManagement(
             new StatusRepository($pdo, $logger),
             new StatusValidatorAdapter()

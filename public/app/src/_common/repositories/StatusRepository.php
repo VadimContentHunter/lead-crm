@@ -18,6 +18,9 @@ class StatusRepository extends ARepository implements IStatusRepository
         return 'statuses';
     }
 
+    /**
+     * @return class-string<Status>
+     */
     protected function getEntityClass(): string
     {
         return Status::class;

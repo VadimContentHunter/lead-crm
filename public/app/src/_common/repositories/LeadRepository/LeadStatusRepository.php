@@ -18,6 +18,9 @@ class LeadStatusRepository extends ARepository implements ILeadStatusRepository
         return 'statuses';
     }
 
+    /**
+     * @return class-string<StatusDto>
+     */
     protected function getEntityClass(): string
     {
         return StatusDto::class;

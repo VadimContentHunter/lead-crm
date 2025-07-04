@@ -6,6 +6,9 @@ use crm\src\components\LeadManagement\_common\DTOs\SourceDto;
 
 class SourceDtoMapper
 {
+    /**
+     * @param array<string,mixed> $data
+     */
     public static function fromArray(array $data): ?SourceDto
     {
         if (!isset($data['title'])) {
@@ -18,6 +21,9 @@ class SourceDtoMapper
         );
     }
 
+    /**
+     * @return array<string,mixed>
+     */
     public static function toArray(SourceDto $dto): array
     {
         return [

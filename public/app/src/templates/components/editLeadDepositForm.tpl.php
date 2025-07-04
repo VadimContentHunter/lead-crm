@@ -1,14 +1,14 @@
 <?php
 
-    $sum = is_numeric($sum ?? 0) ? $sum : 0;
+    $sum = !empty($sum) && is_numeric($sum) ? $sum : 0;
     $txid = $txid ?? '';
-    $leadId = is_numeric($leadId ?? 0) ? (int)$leadId : 0;
+    $leadId = isset($leadId) && is_numeric($leadId) ? (int)$leadId : 0;
 ?>
 
 <section class="component component--medium">
     <h2>Общие сведения Deposit</h2>
     <form class="base-form edit-deposit-form" deposit-form-id>
-        <input type="text" name="leadId" value="<?= $leadId ?? '' ?>" hidden>
+        <input type="text" name="leadId" value="<?= $leadId ?>" hidden>
         <div class="form-messages-container">
             <!-- <div class="form-message">
                 <p>Введите данные, что бы создать лида.</p>
@@ -17,12 +17,12 @@
         <form class="base-form">
             <div class="form-group">
                 <label>Drain Amount</label>
-                <input type="number" name="sum" step="0.01" value="<?= $sum; ?>">
+                <input type="number" name="sum" step="0.01" value="<?= $sum ?>">
             </div>
 
             <div class="form-group">
                 <label>TxID</label>
-                <input type="text" name="tx_id" value="<?= $txid ?? '' ?>">
+                <input type="text" name="tx_id" value="<?= $txid ?>">
             </div>
 
             <div class="form-actions">

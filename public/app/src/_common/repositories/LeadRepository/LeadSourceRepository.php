@@ -18,6 +18,9 @@ class LeadSourceRepository extends ARepository implements ILeadSourceRepository
         return 'sources';
     }
 
+    /**
+     * @return class-string<SourceDto>
+     */
     protected function getEntityClass(): string
     {
         return SourceDto::class;

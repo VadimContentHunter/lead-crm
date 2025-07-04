@@ -10,9 +10,9 @@ class TableCellRenderer
     /**
      * Проверяет, является ли значение input-ячейкой.
      *
-     * @param mixed[]|string $cell
+     * @param array<string,mixed>|string|int $cell
      */
-    public static function isInput(array|string $cell): bool
+    public static function isInput(array|string|int $cell): bool
     {
         return is_array($cell) && isset($cell['type'], $cell['name']);
     }
@@ -20,14 +20,17 @@ class TableCellRenderer
     /**
      * Рендерит ячейку в HTML.
      *
-     * @param mixed[]|string|int $cell
+     * @param array<string,mixed>|string|int $cell
      */
     public static function render(array|string|int $cell): string
     {
         if (!self::isInput($cell)) {
-            return (string) $cell;
+            return is_scalar($cell) ? (string) $cell : '';
         }
 
+        /**
+         * @var array<string,mixed> $cell
+         */
         return match ($cell['type']) {
             'text', 'number', 'password' => self::renderInput($cell),
             'select' => self::renderSelect($cell),
@@ -38,7 +41,7 @@ class TableCellRenderer
     /**
      * Рендер input поля.
      *
-     * @param array $cell
+     * @param array<string,mixed> $cell
      */
     private static function renderInput(array $cell): string
     {
@@ -52,7 +55,7 @@ class TableCellRenderer
     /**
      * Рендер select поля.
      *
-     * @param array $cell
+     * @param array<string,mixed> $cell
      */
     private static function renderSelect(array $cell): string
     {

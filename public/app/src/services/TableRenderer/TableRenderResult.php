@@ -15,6 +15,8 @@ class TableRenderResult implements ITableRenderResult
      * @param array<int, array<int, mixed>|string|int> $rows
      * @param array<string, string> $attributes
      * @param array<int, string> $classes
+     * @param array<int, string> $classesWrapper
+     * @param array<string, string> $attributesWrapper
      */
     public function __construct(
         private array $header,

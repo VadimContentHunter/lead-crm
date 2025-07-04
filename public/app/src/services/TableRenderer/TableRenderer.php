@@ -12,10 +12,12 @@ class TableRenderer
     /**
      * Генерирует HTML таблицы.
      *
-     * @param array<int,string> $header     Заголовки колонок (первая строка tbody)
-     * @param array<int,array<int, mixed>|string|int> $rows       Массив строк таблицы
-     * @param array<string,string> $attributes Атрибуты для <table>
-     * @param array<int,string> $classes    CSS-классы таблицы
+     * @param array<int,string> $header            Заголовки колонок (первая строка tbody)
+     * @param array<int,array<int, mixed>|string|int> $rows              Массив строк таблицы
+     * @param array<string,string> $attributes        Атрибуты для <table>
+     * @param array<int,string> $classes           CSS-классы таблицы
+     * @param array<int,string> $classesWrapper    CSS-классы обертки таблицы
+     * @param array<string,string> $attributesWrapper Атрибуты для обертки
      *
      * @return string
      */

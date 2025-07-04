@@ -213,7 +213,8 @@ table.base-table .btn-delete {
   background-size: 1em;
 }
 
-.lead-filter {
+.lead-filter,
+.user-filter {
   margin-bottom: 40px;
   display: flex;
   flex-direction: row !important;
@@ -335,6 +336,7 @@ table.base-table .btn-delete {
   flex-direction: column;
   align-items: center;
   gap: 4px;
+  overflow-y: auto;
 }
 .main-menu .top-menu {
   flex: 1;

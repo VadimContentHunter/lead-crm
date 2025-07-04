@@ -124,7 +124,18 @@ class UserPage
             header: $headers,
             rows: $rows,
             attributes: ['id' => 'user-table-1', 'data-module' => 'users'],
-            classes: ['base-table']
+            classes: ['base-table'],
+            attributesWrapper: [
+                'table-r-id' => 'user-table-1'
+            ],
+            allowedColumns: [
+                'id',
+                'login',
+                'password_hash',
+            ],
+            renameMap: [
+                'password_hash' => 'Пароль',
+            ],
         );
 
         $tableFacade = new TableFacade(new TableTransformer(),  new TableDecorator());
@@ -134,7 +145,14 @@ class UserPage
                 (new TemplateBundle(
                     templatePath: 'containers/average-in-line-component.tpl.php',
                     variables: [
-                    'component' => $tableFacade->renderTable($input)->asHtml()
+                        'component' => $tableFacade->renderFilteredTable($input)->asHtml(),
+                        'filterPanel' => (new TemplateBundle(
+                            templatePath: 'partials/filtersUser.tpl.php',
+                            variables: [
+                                'sortColumns' => $headers,
+                                'selectedData' => []
+                            ]
+                        ))
                     ]
                 ))
             ]

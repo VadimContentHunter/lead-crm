@@ -248,12 +248,12 @@ class LeadPage
         });
 
         // Берём ключи ассоциативного массива + элементы индексного массива
-        $headers = array_merge(
+        $headers = array_unique(array_merge(
             array_keys(LeadMapper::toFlatViewArray(
                 $this->leadManagement->get()->executeColumnNames()->getArray()
             )),
             $this->balanceManagement->get()->executeColumnNames()->getArray()
-        );
+        ));
 
         // Убираем возможные дубликаты
         // $headers = array_values(array_unique(array_merge(
@@ -289,6 +289,9 @@ class LeadPage
                 'current' => 'Текущие',
                 'drain' => 'Потери',
                 'potential' => 'Потенциал',
+            ],
+            attributesWrapper: [
+                'table-r-id' => 'lead-table-1'
             ]
         );
 

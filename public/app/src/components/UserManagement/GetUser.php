@@ -5,6 +5,7 @@ namespace crm\src\components\UserManagement;
 use crm\src\_common\interfaces\IValidation;
 use crm\src\components\UserManagement\_entities\User;
 use crm\src\components\UserManagement\_common\DTOs\UserInputDto;
+use crm\src\components\UserManagement\_common\DTOs\UserFilterDto;
 use crm\src\components\UserManagement\_common\adapters\UserResult;
 use crm\src\components\UserManagement\_common\interfaces\IUserResult;
 use crm\src\components\UserManagement\_common\interfaces\IUserRepository;
@@ -139,6 +140,19 @@ class GetUser
             $mapped = array_map($mapper, $users);
 
             return UserResult::success($mapped);
+        } catch (\Throwable $e) {
+            return UserResult::failure($e);
+        }
+    }
+
+    public function filtered(UserFilterDto $filter): IUserResult
+    {
+        try {
+            $leads = $this->userRepository->getFilteredUsers($filter);
+            if (empty($leads)) {
+                return UserResult::failure(new UserManagementException("Пользователи по фильтру не найдены"));
+            }
+            return UserResult::success($leads);
         } catch (\Throwable $e) {
             return UserResult::failure($e);
         }

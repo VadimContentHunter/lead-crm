@@ -56,7 +56,9 @@ class TableFacade
             $decorated['header'],
             $decorated['rows'],
             $input->getAttributes(),
-            $input->getClasses()
+            $input->getClasses(),
+            $input->getClassesWrapper(),
+            $input->getAttrWrapper()
         );
     }
 }

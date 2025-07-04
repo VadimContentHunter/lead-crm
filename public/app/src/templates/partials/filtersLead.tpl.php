@@ -142,7 +142,7 @@ $search = $selectedData['search'] ?? '';
         method: 'lead.filter.table',
         endpoint: '/api/leads',
         callbackOnData: (response) => {
-            ComponentFunctions.replaceLeadTable(response, '.table-wrapper');
+            ComponentFunctions.replaceLeadTable(response, '[table-r-id]');
         }
     });
 
@@ -152,7 +152,7 @@ $search = $selectedData['search'] ?? '';
         method: 'lead.filter.table.clear',
         endpoint: '/api/leads',
         callbackOnData: (response) => {
-            ComponentFunctions.replaceLeadTable(response, '.table-wrapper');
+            ComponentFunctions.replaceLeadTable(response, '[table-r-id]');
         },
     });
 

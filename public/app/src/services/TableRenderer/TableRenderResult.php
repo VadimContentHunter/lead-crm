@@ -20,7 +20,9 @@ class TableRenderResult implements ITableRenderResult
         private array $header,
         private array $rows,
         private array $attributes = [],
-        private array $classes = []
+        private array $classes = [],
+        private array $classesWrapper = [],
+        private array $attributesWrapper = []
     ) {
     }
 
@@ -42,6 +44,13 @@ class TableRenderResult implements ITableRenderResult
 
     public function asHtml(): string
     {
-        return TableRenderer::render($this->header, $this->rows, $this->attributes, $this->classes);
+        return TableRenderer::render(
+            header: $this->header,
+            rows: $this->rows,
+            attributes: $this->attributes,
+            classes: $this->classes,
+            classesWrapper: $this->classesWrapper,
+            attributesWrapper: $this->attributesWrapper
+        );
     }
 }

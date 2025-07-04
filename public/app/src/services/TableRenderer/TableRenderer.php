@@ -23,10 +23,14 @@ class TableRenderer
         array $header,
         array $rows,
         array $attributes = [],
-        array $classes = []
+        array $classes = [],
+        array $classesWrapper = [],
+        array $attributesWrapper = [],
     ): string {
         $attrHtml = self::buildHtmlAttributes($attributes);
+        $attrHtmlWrapper = self::buildHtmlAttributes($attributesWrapper);
         $classHtml = empty($classes) ? '' : ' class="' . htmlspecialchars(implode(' ', $classes)) . '"';
+        $classHtmlWrapper = empty($classesWrapper) ? '' : ' class="' . htmlspecialchars(implode(' ', $classesWrapper)) . '"';
 
         $html = "<table{$classHtml}{$attrHtml}><tbody>";
 
@@ -51,7 +55,7 @@ class TableRenderer
 
         $html .= '</tbody></table>';
 
-        $html = '<div class="table-wrapper">' . $html . '</div>';
+        $html = "<div{$classHtmlWrapper}{$attrHtmlWrapper}>" . $html . "</div>";
 
         return $html;
     }

@@ -11,6 +11,8 @@ class TableRenderInput implements ITableRenderInput
      * @param array<int,mixed> $rows
      * @param array<string,string> $attributes
      * @param array<int,string> $classes
+     * @param array<string,string> $attributesWrapper
+     * @param array<int,string> $classesWrapper
      * @param array<int,string> $allowedColumns
      * @param array<string,string> $renameMap
      */
@@ -19,6 +21,8 @@ class TableRenderInput implements ITableRenderInput
         private array $rows,
         private array $attributes = [],
         private array $classes = [],
+        private array $classesWrapper = [],
+        private array $attributesWrapper = [],
         private array $allowedColumns = [],
         private array $renameMap = []
     ) {
@@ -54,6 +58,22 @@ class TableRenderInput implements ITableRenderInput
     public function getClasses(): array
     {
         return $this->classes;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getAttrWrapper(): array
+    {
+        return $this->attributesWrapper;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function getClassesWrapper(): array
+    {
+        return $this->classesWrapper;
     }
 
     /**

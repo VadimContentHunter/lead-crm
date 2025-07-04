@@ -28,6 +28,16 @@ interface ITableRenderInput
     public function getClasses(): array;
 
     /**
+     * @return array<string,string>
+     */
+    public function getAttrWrapper(): array;
+
+    /**
+     * @return string[]
+     */
+    public function getClassesWrapper(): array;
+
+    /**
      * @return string[] Разрешённые колонки
      */
     public function getAllowedColumns(): array;

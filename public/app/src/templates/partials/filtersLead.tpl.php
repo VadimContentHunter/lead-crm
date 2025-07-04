@@ -1,8 +1,9 @@
 <?php
 
-$sourcesList = $sourcesTitle ?? [];
-$statusesList = $statusesTitle ?? [];
-$managersList = $managersLogin ?? [];
+$sortColumns = $sortColumns ?? [];
+$sourcesList = $sourcesList ?? [];
+$statusesList = $statusesList ?? [];
+$managersList = $managersList ?? [];
 $selectedData = $selectedData ?? [];
 
 // Числовые фильтры (по умолчанию null или 0)
@@ -16,11 +17,6 @@ $dir = $selectedData['dir'] ?? 'asc';
 
 // Поисковая строка
 $search = $selectedData['search'] ?? '';
-
-// Выбранные значения для select-ов
-$selectedManagerId = $selectedData['managerId'] ?? '';
-$selectedStatusId = $selectedData['statusId'] ?? '';
-$selectedSourceId = $selectedData['sourceId'] ?? '';
 ?>
 
 <!-- <th>ID</th>
@@ -46,9 +42,15 @@ $selectedSourceId = $selectedData['sourceId'] ?? '';
         <label>Менеджер</label>
         <select name="managerId">
             <option value="">Все менеджеры</option>
-            <option value="1">Иван</option>
-            <option value="2">Анна</option>
-            <!-- Добавь свои варианты -->
+            <?php foreach ($managersList as $manager) : ?>
+                <option <?= (isset($selectedData['accountManagerId'])
+                            && (int)$selectedData['accountManagerId'] === (int)($manager['id'] ?? 0)
+                            ) ? 'selected' : ''
+                        ?>
+                    value="<?= htmlspecialchars($manager['id'] ?? '0') ?>">
+                    <?= htmlspecialchars($manager['login'] ?? 'error') ?>
+                </option>
+            <?php endforeach; ?>
         </select>
     </div>
 
@@ -56,10 +58,15 @@ $selectedSourceId = $selectedData['sourceId'] ?? '';
         <label>Статус</label>
         <select name="statusId">
             <option value="">Все статусы</option>
-            <option value="1">Новый</option>
-            <option value="2">В работе</option>
-            <option value="3">Закрыт</option>
-            <!-- Добавь свои статусы -->
+            <?php foreach ($statusesList as $status) : ?>
+                <option <?= (isset($selectedData['statusId'])
+                            && (int)$selectedData['statusId'] === (int)($status['id'] ?? 0)
+                            ) ? 'selected' : ''
+                        ?>
+                    value="<?= htmlspecialchars($status['id'] ?? '0') ?>">
+                    <?= htmlspecialchars($status['title'] ?? 'error') ?>
+                </option>
+            <?php endforeach; ?>
         </select>
     </div>
 
@@ -67,9 +74,15 @@ $selectedSourceId = $selectedData['sourceId'] ?? '';
         <label>Источник</label>
         <select name="sourceId">
             <option value="">Все источники</option>
-            <option value="1">Реклама</option>
-            <option value="2">Звонок</option>
-            <!-- Добавь свои источники -->
+            <?php foreach ($sourcesList as $source) : ?>
+                <option <?= (isset($selectedData['sourceId'])
+                            && (int)$selectedData['sourceId'] === (int)($source['id'] ?? 0)
+                            ) ? 'selected' : ''
+                        ?>
+                    value="<?= htmlspecialchars($source['id'] ?? '0') ?>">
+                    <?= htmlspecialchars($source['title'] ?? 'error') ?>
+                </option>
+            <?php endforeach; ?>
         </select>
     </div>
 
@@ -92,9 +105,15 @@ $selectedSourceId = $selectedData['sourceId'] ?? '';
         <label>Сортировка</label>
         <select name="sort">
             <option value="">По умолчанию</option>
-            <option value="created_at">Дата создания</option>
-            <option value="full_name">Имя</option>
-            <option value="potential">Potential</option>
+            <?php foreach ($sortColumns as $column) : ?>
+                <option <?= (isset($selectedData['sortColumn'])
+                            && (int)$selectedData['sortColumn'] === (int)($column ?? 0)
+                            ) ? 'selected' : ''
+                        ?>
+                    value="<?= htmlspecialchars($column ?? '0') ?>">
+                    <?= htmlspecialchars($column ?? 'error') ?>
+                </option>
+            <?php endforeach; ?>
             <!-- Добавь поля сортировки -->
         </select>
     </div>

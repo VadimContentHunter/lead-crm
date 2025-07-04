@@ -206,6 +206,25 @@ class LeadPage
 
     public function showAllLeadPage(): void
     {
+        $sourcesList = $this->sourceManagement->get()->executeAllMapped(function (Source $source) {
+            return SourceMapper::toArray($source);
+        })->getArray();
+
+        $statusesList = $this->statusManagement->get()->executeAllMapped(function (Status $status) {
+            return StatusMapper::toArray($status);
+        })->getArray();
+
+        $managersList = $this->userManagement->get()->executeAllMapped(function (User $user) {
+            return UserMapper::toArray($user);
+        })->getArray();
+
+        // $selectedData = [
+        //   'sourceId' => $sourcesList->getSourceId(),
+        //   'statusId' => $leadResult->getStatusId(),
+        //   'accountManagerId' => $leadResult->getAccountManagerId()
+        // ];
+
+
         $headers = $this->leadManagement->get()->executeColumnNames()->getArray();
         // $all = $this->leadManagement->get()->all()->getArray();
         $rows = $this->leadManagement->get()->executeAllMapped(function (Lead $lead) {
@@ -227,7 +246,16 @@ class LeadPage
                     templatePath: 'containers/average-in-line-component.tpl.php',
                     variables: [
                         'component' => $tableFacade->renderTable($input)->asHtml(),
-                        'filterPanel' => (new TemplateBundle(templatePath: 'partials/filtersLead.tpl.php'))
+                        'filterPanel' => (new TemplateBundle(
+                            templatePath: 'partials/filtersLead.tpl.php',
+                            variables: [
+                                'sortColumns' => $headers,
+                                'sourcesList' => $sourcesList,
+                                'statusesList' => $statusesList,
+                                'managersList' => $managersList,
+                                'selectedData' => [],
+                            ]
+                        ))
                     ]
                 ))
             ]

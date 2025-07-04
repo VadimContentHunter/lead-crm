@@ -41,7 +41,12 @@ class LeadManagement
 
     public function get(): GetLead
     {
-        return $this->get ??= new GetLead($this->leadRepository);
+        return $this->get ??= new GetLead(
+            repository: $this->leadRepository,
+            sourceRepository: $this->sourceRepository,
+            statusRepository: $this->statusRepository,
+            accManagerRepository: $this->accountManagerRepository
+        );
     }
 
     public function update(): UpdateLead

@@ -1,13 +1,16 @@
 <?php
 
-    $current = is_int($current ?? 0) ? $current : 0;
-    $drain = is_int($drain ?? 0) ? $drain : 0;
-    $potential = is_int($potential ?? 0) ? $potential : 0;
+    $current = is_numeric($current ?? 0) ? (float)$current : 0.0;
+    $drain = is_numeric($drain ?? 0) ? (float)$drain : 0.0;
+    $potential = is_numeric($potential ?? 0) ? (float)$potential : 0.0;
+    $leadId = is_numeric($leadId ?? 0) ? (int)$leadId : 0;
+    $id = is_numeric($id ?? 0) ? (int)$id : 0;
 ?>
 
 <section class="component component--medium">
     <h2>Общие сведения Balance</h2>
     <form class="base-form edit-balance-form" balance-form-id>
+        <input type="text" name="leadId" value="<?= $leadId ?? '' ?>" hidden>
         <div class="form-messages-container">
             <!-- <div class="form-message">
                 <p>Введите данные, что бы создать лида.</p>
@@ -42,14 +45,7 @@
     ComponentFunctions.attachJsonRpcInputTrigger({
         triggerSelector: '.edit-balance-form[balance-form-id] .form-actions .submit',
         containerSelector: '.edit-balance-form[balance-form-id]',
-        method: 'balance.edit',
-        endpoint: '/api/balances'
-    });
-
-    ComponentFunctions.attachJsonRpcInputTrigger({
-        triggerSelector: '.edit-balance-form[balance-form-id] .form-actions .update',
-        containerSelector: '.edit-balance-form[balance-form-id]',
-        method: 'balance.edit',
+        method: 'balance.create.edit',
         endpoint: '/api/balances'
     });
 

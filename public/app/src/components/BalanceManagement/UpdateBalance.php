@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\components\BalanceManagement\_usecases;
+namespace crm\src\components\BalanceManagement;
 
 use Throwable;
 use crm\src\_common\interfaces\IValidation;
@@ -40,6 +40,40 @@ class UpdateBalance
             if ($updatedId === null || $updatedId <= 0) {
                 return BalanceResult::failure(
                     new BalanceManagementException('Не удалось обновить баланс')
+                );
+            }
+
+            return BalanceResult::success($balance);
+        } catch (Throwable $e) {
+            return BalanceResult::failure($e);
+        }
+    }
+
+    /**
+     * Обновляет баланс по leadId.
+     */
+    public function executeByLeadId(Balance $balance): IBalanceResult
+    {
+        $validationResult = $this->validator->validate($balance);
+
+        if (!$validationResult->isValid()) {
+            return BalanceResult::failure(
+                new BalanceManagementException('Ошибка валидации: ' . implode('; ', $validationResult->getErrors()))
+            );
+        }
+
+        if (empty($balance->leadId) || $balance->leadId <= 0) {
+            return BalanceResult::failure(
+                new BalanceManagementException('Параметр leadId обязателен для обновления баланса')
+            );
+        }
+
+        try {
+            $updatedId = $this->balanceRepository->updateByLeadId($balance);
+
+            if ($updatedId === null || $updatedId <= 0) {
+                return BalanceResult::failure(
+                    new BalanceManagementException('Не удалось обновить баланс по leadId')
                 );
             }
 

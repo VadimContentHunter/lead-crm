@@ -14,11 +14,13 @@ use crm\src\_common\adapters\UserValidatorAdapter;
 use crm\src\_common\repositories\SourceRepository;
 use crm\src\_common\repositories\StatusRepository;
 use crm\src\services\TableRenderer\TableDecorator;
+use crm\src\_common\repositories\BalanceRepository;
 use crm\src\_common\adapters\SourceValidatorAdapter;
 use crm\src\_common\adapters\StatusValidatorAdapter;
 use crm\src\services\TableRenderer\TableRenderInput;
 use crm\src\services\TableRenderer\TableTransformer;
 use crm\src\services\TemplateRenderer\HeaderManager;
+use crm\src\_common\adapters\BalanceValidatorAdapter;
 use crm\src\components\LeadManagement\_entities\Lead;
 use crm\src\components\LeadManagement\LeadManagement;
 use crm\src\components\UserManagement\_entities\User;
@@ -28,6 +30,7 @@ use crm\src\components\SourceManagement\_entities\Source;
 use crm\src\components\SourceManagement\SourceManagement;
 use crm\src\components\StatusManagement\_entities\Status;
 use crm\src\components\StatusManagement\StatusManagement;
+use crm\src\components\BalanceManagement\BalanceManagement;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 use crm\src\_common\repositories\LeadRepository\LeadRepository;
@@ -49,6 +52,8 @@ class LeadPage
 
     private UserManagement $userManagement;
 
+    private BalanceManagement $balanceManagement;
+
     private TemplateRenderer $renderer;
     public function __construct(
         private string $projectPath,
@@ -56,8 +61,10 @@ class LeadPage
         private LoggerInterface $logger = new NullLogger()
     ) {
         $this->renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
+
+        $leadRepository = new LeadRepository($pdo, $logger);
         $this->leadManagement = new LeadManagement(
-            leadRepository: new LeadRepository($pdo, $logger),
+            leadRepository: $leadRepository,
             sourceRepository: new LeadSourceRepository($pdo, $logger),
             statusRepository: new LeadStatusRepository($pdo, $logger),
             accountManagerRepository: new LeadAccountManagerRepository($pdo, $logger),
@@ -77,6 +84,12 @@ class LeadPage
         $this->userManagement = new UserManagement(
             new UserRepository($pdo, $logger),
             new UserValidatorAdapter()
+        );
+
+        $this->balanceManagement = new BalanceManagement(
+            new BalanceRepository($pdo, $logger),
+            new BalanceValidatorAdapter(),
+            $leadRepository
         );
     }
 
@@ -228,6 +241,8 @@ class LeadPage
           'accountManagerId' => $leadResult->getAccountManagerId()
         ];
 
+        $balanceResult = $this->balanceManagement->get()->getByLeadId($leadId);
+
         $this->showPage([
             'components' => [
                 (new TemplateBundle(
@@ -267,9 +282,11 @@ class LeadPage
                 (new TemplateBundle(
                     templatePath: 'components/editLeadBalanceForm.tpl.php',
                     variables: [
-                        'current' => 0,
-                        'drain' => 0,
-                        'potential' => 0
+                        'current' => $balanceResult->getCurrent() ?? 0,
+                        'drain' => $balanceResult->getDrain() ?? 0,
+                        'potential' => $balanceResult->getPotential() ?? 0,
+                        'leadId' => $balanceResult->getLeadId() ?? $leadId ?? 0,
+                        'id' => $balanceResult->getId() ?? 0
                     ]
                 )),
                 (new TemplateBundle(

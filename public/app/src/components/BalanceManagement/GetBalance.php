@@ -1,16 +1,19 @@
 <?php
 
-namespace crm\src\components\BalanceManagement\_usecases;
+namespace crm\src\components\BalanceManagement;
 
 use Throwable;
 use crm\src\components\BalanceManagement\_common\adapters\BalanceResult;
+use crm\src\components\LeadManagement\_common\interfaces\ILeadRepository;
 use crm\src\components\BalanceManagement\_common\interfaces\IBalanceResult;
 use crm\src\components\BalanceManagement\_common\interfaces\IBalanceRepository;
+use crm\src\components\BalanceManagement\_exceptions\BalanceManagementException;
 
 class GetBalance
 {
     public function __construct(
         private IBalanceRepository $repository,
+        private ILeadRepository $leadRepository
     ) {
     }
 
@@ -34,7 +37,7 @@ class GetBalance
     }
 
     /**
-     * Получает баланс по leadId.
+     * Получает баланс по leadId с проверкой существования лида.
      *
      * @param  int $leadId ID лида.
      * @return IBalanceResult Результат операции с найденным балансом или ошибкой.
@@ -42,15 +45,22 @@ class GetBalance
     public function getByLeadId(int $leadId): IBalanceResult
     {
         try {
-            $balance = $this->repository->getByLeadId($leadId);
-            if ($balance === null) {
-                return BalanceResult::failure(new \Exception("Balance not found by leadId: $leadId"));
+            $lead = $this->leadRepository->getById($leadId);
+            if ($lead === null) {
+                return BalanceResult::failure(new BalanceManagementException("Лид не найден по идентификатору: $leadId"));
             }
+
+            $balance = $this->repository->getByLeadId($leadId);
+            if ($balance === null || !$balance) {
+                return BalanceResult::failure(new BalanceManagementException("Баланс не найден по leadId: $leadId"));
+            }
+
             return BalanceResult::success($balance);
         } catch (Throwable $e) {
             return BalanceResult::failure($e);
         }
     }
+
 
     /**
      * Получает все балансы.

@@ -19,4 +19,9 @@ interface IBalanceRepository extends IRepository
      * @return Balance|null
      */
     public function getByLeadId(int $leadId): ?Balance;
+
+    /**
+     * Обновляет данные баланса по leadId.
+     */
+    public function updateByLeadId(Balance $balance): bool;
 }

@@ -20,6 +20,7 @@ use crm\src\controllers\NotFoundController;
 use crm\src\controllers\BootstrapController;
 use crm\src\controllers\API\SourceController;
 use crm\src\controllers\API\StatusController;
+use crm\src\controllers\API\BalanceController;
 use  crm\src\services\RouteHandler\RouteHandler;
 use  crm\src\services\RouteHandler\entities\Route;
 use crm\src\services\Repositories\DbRepository\services\PdoFactory;
@@ -68,6 +69,12 @@ $routes = [
     new Route(
         pattern: '^/api/leads$',
         className: LeadController::class,
+        extraData: [__DIR__, $pdo, $logger]
+    ),
+
+    new Route(
+        pattern: '^/api/balances$',
+        className: BalanceController::class,
         extraData: [__DIR__, $pdo, $logger]
     ),
 

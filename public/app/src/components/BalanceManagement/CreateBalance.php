@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\components\BalanceManagement\_usecases;
+namespace crm\src\components\BalanceManagement;
 
 use Throwable;
 use crm\src\_common\interfaces\IValidation;

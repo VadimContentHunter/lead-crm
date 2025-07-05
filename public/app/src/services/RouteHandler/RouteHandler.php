@@ -134,6 +134,7 @@ class RouteHandler
 
             // Вызываем метод
             // call_user_func_array([$controller, $methodName], $methodParams);
+
             $controller->$methodName(...$methodParams);
         }
     }

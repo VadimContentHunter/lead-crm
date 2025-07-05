@@ -20,13 +20,18 @@ use crm\src\controllers\NotFoundController;
 use crm\src\controllers\BootstrapController;
 use crm\src\controllers\API\SourceController;
 use crm\src\controllers\API\StatusController;
+use crm\src\components\Security\SecureWrapper;
 use crm\src\controllers\API\BalanceController;
 use crm\src\controllers\API\CommentController;
 use crm\src\controllers\API\DepositController;
 use  crm\src\services\RouteHandler\RouteHandler;
 use  crm\src\services\RouteHandler\entities\Route;
+use crm\src\components\Security\BasedAccessGranter;
+use crm\src\components\Security\SecureWrapperFactory;
 use crm\src\components\DepositManagement\_entities\Deposit;
+use crm\src\components\Security\_repositories\AccessRoleRepository;
 use crm\src\services\Repositories\DbRepository\services\PdoFactory;
+use crm\src\components\Security\_repositories\AccessSpaceRepository;
 
 // define('PROJECT_ROOT', __DIR__);
 
@@ -40,6 +45,13 @@ $pdo = PdoFactory::create([
     'user' => 'root',
     'pass' => 'root',
 ]);
+
+
+SecureWrapperFactory::init(new BasedAccessGranter(
+    roleRepository: new AccessRoleRepository($pdo, $this->logger),
+    spaceRepository: new AccessSpaceRepository($pdo, $this->logger),
+));
+// $secureWrapper = new SecureWrapper();
 
 // Создаём маршруты:
 $routes = [

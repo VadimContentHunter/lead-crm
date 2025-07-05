@@ -28,7 +28,8 @@ class TableFacade
         $decorated = $this->decorator->decorateWithActions(
             header: $input->getHeader(),
             rows: $transformed,
-            href: $input->getButtonHref()
+            hrefButton: $input->getButtonHref(),
+            hrefButtonDel: $input->getButtonDelHref()
         );
 
         return new TableRenderResult(
@@ -59,7 +60,8 @@ class TableFacade
         $decorated = $this->decorator->decorateWithActions(
             header: $filtered['header'],
             rows:$filtered['rows'],
-            href: $input->getButtonHref()
+            hrefButton: $input->getButtonHref(),
+            hrefButtonDel: $input->getButtonDelHref()
         );
 
         return new TableRenderResult(
@@ -68,7 +70,7 @@ class TableFacade
             $input->getAttributes(),
             $input->getClasses(),
             $input->getClassesWrapper(),
-            $input->getAttrWrapper()
+            $input->getAttrWrapper(),
         );
     }
 }

@@ -25,7 +25,8 @@ class TableRenderInput implements ITableRenderInput
         private array $attributesWrapper = [],
         private array $allowedColumns = [],
         private array $renameMap = [],
-        private string $hrefButton = ''
+        private string $hrefButton = '',
+        private string $hrefButtonDel = ''
     ) {
     }
 
@@ -96,5 +97,10 @@ class TableRenderInput implements ITableRenderInput
     public function getButtonHref(): string
     {
         return $this->hrefButton;
+    }
+
+    public function getButtonDelHref(): string
+    {
+        return $this->hrefButtonDel;
     }
 }

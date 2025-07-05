@@ -48,4 +48,6 @@ interface ITableRenderInput
     public function getRenameMap(): array;
 
     public function getButtonHref(): string;
+
+    public function getButtonDelHref(): string;
 }

@@ -50,6 +50,10 @@ class UserController
                 $this->editUser($this->rpc->getParams());
             // break;
 
+            case 'user.delete':
+                $this->deleteUser($this->rpc->getParams());
+            // break;
+
             case 'user.filter':
                 $this->filterUsers($this->rpc->getParams());
             // break;
@@ -150,6 +154,29 @@ class UserController
     }
 
     /**
+     * @param array<string,mixed> $params
+     */
+    public function deleteUser(array $params): void
+    {
+        $id = $params['row_id'] ?? $params['id'] ?? null;
+        if (!filter_var($id, FILTER_VALIDATE_INT)) {
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'ID User должен быть целым числом.']
+            ]);
+        }
+
+        $executeResult = $this->userManagement->delete()->executeById((int)$id);
+        if ($executeResult->isSuccess()) {
+            $this->filterUsersFormatTable([]);
+        } else {
+            $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Пользователь не удалён. Причина: ' . $errorMsg]
+            ]);
+        }
+    }
+
+    /**
      * @param array<string, mixed> $params
      */
     public function filterUsers(array $params): void
@@ -190,6 +217,7 @@ class UserController
                 attributes: ['id' => 'user-table-1', 'data-module' => 'users'],
                 classes: ['base-table'],
                 hrefButton: '/page/user-edit',
+                hrefButtonDel: '/page/user-delete',
                 attributesWrapper: [
                     'table-r-id' => 'user-table-1'
                 ],

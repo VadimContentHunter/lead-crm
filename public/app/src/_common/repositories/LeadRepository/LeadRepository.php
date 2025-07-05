@@ -70,17 +70,17 @@ class LeadRepository implements ILeadRepository
         return $result->isSuccess() ? $result->getInt() : null;
     }
 
-    public function update(object $entity): ?int
+    public function update(object|array $entityOrData): ?int
     {
-        if (!$entity instanceof Lead) {
+        if (!$entityOrData instanceof Lead) {
             return null;
         }
 
-        if (!$entity->id) {
+        if (!$entityOrData->id) {
             return null;
         }
 
-        $data = LeadDbMapper::fromEntityToArray($entity);
+        $data = LeadDbMapper::fromEntityToArray($entityOrData);
         // unset($data['id']);
 
         $query = (new QueryBuilder())
@@ -90,7 +90,7 @@ class LeadRepository implements ILeadRepository
 
 
         $result = $this->repository->executeQuery($query);
-        return $result->isSuccess() ? $entity->id : null;
+        return $result->isSuccess() ? $entityOrData->id : null;
     }
 
     public function deleteById(int $id): ?int

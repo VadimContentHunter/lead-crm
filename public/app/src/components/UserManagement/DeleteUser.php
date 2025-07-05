@@ -28,7 +28,7 @@ class DeleteUser
         try {
             $deletedId = $this->userRepository->deleteById($id);
 
-            if ($deletedId === null) {
+            if ($deletedId < 0) {
                 return UserResult::failure(
                     new UserManagementException("Пользователь с ID {$id} не найден или не удалён")
                 );

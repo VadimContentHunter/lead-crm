@@ -222,66 +222,79 @@ export const ComponentFunctions = {
     },
 
     /**
-     * Назначает обработку нескольких input-контейнеров через JSON-RPC по клику на кнопки
+     * Назначает обработку input-контейнеров через JSON-RPC для нескольких триггеров.
      *
-     * @param {Array<{
+     * @param {{
      *   triggerSelector: string,
      *   containerSelector: string,
      *   method: string,
-     *   endpoint?: string
-     * }>} configs
-     * 
-     * @example
-     * componentFunctions.attachJsonRpcInputTriggers([
-     *       { triggerSelector: '.btn-save', containerSelector: '#form-1', method: 'saveLead' },
-     *       { triggerSelector: '.btn-update', containerSelector: '#form-2', method: 'updateLead', endpoint: '/admin/api' },
-     *   ]);
+     *   endpoint?: string,
+     *   callbackOnData?: Function,
+     *   callbackOnError?: Function
+     * }} config
      */
-    attachJsonRpcInputManyTriggers(configs) {
-        for (const config of configs) {
-            const triggers = document.querySelectorAll(config.triggerSelector);
-            const container = document.querySelector(config.containerSelector);
+    attachJsonRpcInputManyTriggers(config) {
+        const {
+            triggerSelector,
+            containerSelector,
+            method,
+            endpoint = '/api',
+            callbackOnData = null,
+            callbackOnError = null,
+        } = config;
 
-            if (!triggers.length || !container) {
-                console.warn('[ComponentFunctions] Кнопки или контейнер не найдены для:', config.triggerSelector);
-                continue;
-            }
+        const triggers = document.querySelectorAll(triggerSelector);
+        const container = document.querySelector(containerSelector);
 
-            const transport = new JsonRpcTransport(config.method, {
-                endpoint: config.endpoint ?? '/api',
-                onContentUpdate: () => { },
-                onData: (payload) => {
-                    const messages = Array.isArray(payload) ? payload : [];
-                    let messageBox =
-                        container.querySelector('.form-messages-container') ||
-                        document.getElementById('global-messages-container');
+        if (!triggers.length || !container) {
+            console.warn('[ComponentFunctions] Кнопки или контейнер не найдены для:', triggerSelector);
+            return;
+        }
 
-                    if (!messageBox) {
-                        console.log('[JsonRpc] Сообщения:', messages);
-                        return;
-                    }
+        const transport = new JsonRpcTransport(method, {
+            endpoint,
+            onContentUpdate: () => { },
+            onData: (payload) => {
+                if (typeof callbackOnData === 'function') {
+                    callbackOnData(payload);
+                    return;
+                }
 
-                    messageBox.innerHTML = '';
-                    for (const msg of messages) {
-                        const div = document.createElement('div');
-                        div.className = 'form-message' + (msg.type && msg.type !== 'info' ? ` ${msg.type}` : '');
-                        div.innerHTML = `<p>${msg.message}</p>`;
-                        messageBox.appendChild(div);
-                    }
-                },
-                onError: (error) => {
+                const messages = Array.isArray(payload) ? payload : [];
+                let messageBox =
+                    container.querySelector('.form-messages-container') ||
+                    document.getElementById('global-messages-container');
+
+                if (!messageBox) {
+                    console.log('[JsonRpc] Сообщения:', messages);
+                    return;
+                }
+
+                messageBox.innerHTML = '';
+                for (const msg of messages) {
+                    const div = document.createElement('div');
+                    div.className = 'form-message' + (msg.type && msg.type !== 'info' ? ` ${msg.type}` : '');
+                    div.innerHTML = `<p>${msg.message}</p>`;
+                    messageBox.appendChild(div);
+                }
+            },
+            onError: (error) => {
+                if (typeof callbackOnError === 'function') {
+                    callbackOnError(error);
+                } else {
                     console.error('[JsonRpcTransport] Ошибка:', error.message);
                 }
-            });
-
-            for (const trigger of triggers) {
-                trigger.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    transport.sendFromSelectorInputs(container);
-                });
             }
+        });
+
+        for (const trigger of triggers) {
+            trigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                transport.sendFromSelectorInputs(container);
+            });
         }
     },
+
 
     /**
      * Заменяет таблицу из ответа или выводит сообщение об отсутствии данных.

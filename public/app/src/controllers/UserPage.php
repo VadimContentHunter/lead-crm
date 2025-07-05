@@ -126,6 +126,7 @@ class UserPage
             attributes: ['id' => 'user-table-1', 'data-module' => 'users'],
             classes: ['base-table'],
             hrefButton: '/page/user-edit',
+            hrefButtonDel: '/page/user-delete',
             attributesWrapper: [
                 'table-r-id' => 'user-table-1'
             ],
@@ -151,9 +152,11 @@ class UserPage
                             templatePath: 'partials/filtersUser.tpl.php',
                             variables: [
                                 'sortColumns' => $headers,
-                                'selectedData' => []
+                                'selectedData' => [],
                             ]
-                        ))
+                        )),
+                        'methodSend' => 'user.delete',
+                        'endpointSend' => '/api/users'
                     ]
                 ))
             ]

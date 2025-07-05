@@ -81,7 +81,9 @@ class Validator
     /**
      * Выполняет валидацию объекта по всем добавленным правилам.
      *
-     * @param object $dataObj Объект (например, Data Object) для валидации.
+     * @param object $dataObj      Объект (например, Data Object)
+     *                             для валидации.
+     * @param string[] $ignoreFields Массив имён полей, которые нужно пропустить при валидации.
      *
      * @throws InvalidArgumentException Если в объекте отсутствует поле,
      *                                  для которого задано правило,
@@ -89,9 +91,13 @@ class Validator
      *
      * @return void
      */
-    public function validate(object $dataObj): void
+    public function validate(object $dataObj, array $ignoreFields = []): void
     {
         foreach ($this->rules as $field => $rule) {
+            if (in_array($field, $ignoreFields, true)) {
+                continue; // пропускаем поле
+            }
+
             if (!property_exists($dataObj, $field)) {
                 throw new InvalidArgumentException("Field '$field' does not exist in Data Object");
             }
@@ -105,10 +111,14 @@ class Validator
         }
     }
 
+
     /**
      * Выполняет валидацию массива по всем добавленным правилам.
      *
-     * @param array<string,mixed> $dataArray Массив данных для валидации.
+     * @param array<string,mixed> $dataArray    Массив данных
+     *                                          для валидации.
+     * @param string[] $ignoreFields Массив имён полей, которые
+     *                               нужно пропустить при валидации.
      *
      * @throws InvalidArgumentException Если в массиве отсутствует поле,
      *                                  для которого задано правило,
@@ -116,9 +126,13 @@ class Validator
      *
      * @return void
      */
-    public function validateArray(array $dataArray): void
+    public function validateArray(array $dataArray, array $ignoreFields = []): void
     {
         foreach ($this->rules as $field => $rule) {
+            if (in_array($field, $ignoreFields, true)) {
+                continue; // пропускаем поле
+            }
+
             if (!array_key_exists($field, $dataArray)) {
                 throw new InvalidArgumentException("Field '$field' does not exist in data array");
             }

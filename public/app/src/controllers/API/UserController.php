@@ -18,9 +18,10 @@ use crm\src\components\UserManagement\UserManagement;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
+use crm\src\components\UserManagement\_common\mappers\UserMapper;
+use crm\src\components\UserManagement\_common\mappers\UserEditMapper;
 use crm\src\components\UserManagement\_common\mappers\UserInputMapper;
 use crm\src\components\UserManagement\_common\mappers\UserFilterMapper;
-use crm\src\components\UserManagement\_common\mappers\UserMapper;
 
 class UserController
 {
@@ -43,6 +44,10 @@ class UserController
         switch ($this->rpc->getMethod()) {
             case 'user.add':
                 $this->createUser($this->rpc->getParams());
+            // break;
+
+            case 'user.edit':
+                $this->editUser($this->rpc->getParams());
             // break;
 
             case 'user.filter':
@@ -100,6 +105,51 @@ class UserController
     }
 
     /**
+     * @param array<string,mixed> $params
+     */
+    public function editUser(array $params): void
+    {
+        $id = $params['userId'] ?? $params['id'] ?? null;
+        if (!filter_var($id, FILTER_VALIDATE_INT)) {
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'ID User должен быть целым числом.']
+            ]);
+        }
+
+        $params['id'] = (int)$id;
+        if (is_string($params['login'] ?? null)) {
+            $userEditDto = UserInputMapper::fromArray($params);
+
+            if (
+                $userEditDto->plainPassword !== ''
+                && $userEditDto->plainPassword !== $userEditDto->confirmPassword
+            ) {
+                $this->rpc->replyData([
+                    ['type' => 'error', 'message' => 'Пароли не совпадают.']
+                ]);
+            }
+
+            $executeResult = $this->userManagement->update()->execute($userEditDto);
+            if ($executeResult->isSuccess()) {
+                $login = $executeResult->getLogin() ?? 'неизвестный логин';
+                $this->rpc->replyData([
+                    ['type' => 'success', 'message' => 'Пользователь обновлен'],
+                    ['type' => 'info', 'message' => "Обновлённый пользователь: <b>{$login}</b>"]
+                ]);
+            } else {
+                $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
+                $this->rpc->replyData([
+                    ['type' => 'error', 'message' => 'Пользователь не обновлен. Причина: ' . $errorMsg]
+                ]);
+            }
+        } else {
+            $this->rpc->replyData([
+                    ['type' => 'error', 'message' => 'Данные пользователя некорректного формата.']
+                ]);
+        }
+    }
+
+    /**
      * @param array<string, mixed> $params
      */
     public function filterUsers(array $params): void
@@ -139,6 +189,7 @@ class UserController
                 rows: $rows,
                 attributes: ['id' => 'user-table-1', 'data-module' => 'users'],
                 classes: ['base-table'],
+                hrefButton: '/page/user-edit',
                 attributesWrapper: [
                     'table-r-id' => 'user-table-1'
                 ],

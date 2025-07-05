@@ -6,7 +6,7 @@ use crm\src\_common\interfaces\IValidationResult;
 
 interface IValidation
 {
-    public function validate(object $dataObj): IValidationResult;
+    public function validate(object $dataObj, array $ignoreFields = []): IValidationResult;
 
     /**
      * @param array<string,mixed> $dataArray

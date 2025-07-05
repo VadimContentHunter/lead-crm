@@ -24,7 +24,8 @@ class TableRenderInput implements ITableRenderInput
         private array $classesWrapper = [],
         private array $attributesWrapper = [],
         private array $allowedColumns = [],
-        private array $renameMap = []
+        private array $renameMap = [],
+        private string $hrefButton = ''
     ) {
     }
 
@@ -90,5 +91,10 @@ class TableRenderInput implements ITableRenderInput
     public function getRenameMap(): array
     {
         return $this->renameMap;
+    }
+
+    public function getButtonHref(): string
+    {
+        return $this->hrefButton;
     }
 }

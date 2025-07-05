@@ -254,6 +254,7 @@ class LeadController
                 rows: $leadBalanceItems->getArray(),
                 attributes: ['id' => 'lead-table-1', 'data-module' => 'leads'],
                 classes: ['base-table'],
+                hrefButton: '/page/lead-edit',
                 allowedColumns: [
                     'id',
                     'contact',

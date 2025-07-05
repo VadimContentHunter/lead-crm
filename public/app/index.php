@@ -110,6 +110,13 @@ $routes = [
         extraData: [__DIR__, $pdo, $logger]
     ),
 
+    new Route(
+        pattern: '^/page/user-edit/(\d+)$',
+        className: UserPage::class,
+        methodName: 'showEditUserPage',
+        extraData: [__DIR__, $pdo, $logger]
+    ),
+
     // PAGES-STATUS
 
     new Route(

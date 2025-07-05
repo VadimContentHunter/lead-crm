@@ -125,6 +125,7 @@ class UserPage
             rows: $rows,
             attributes: ['id' => 'user-table-1', 'data-module' => 'users'],
             classes: ['base-table'],
+            hrefButton: '/page/user-edit',
             attributesWrapper: [
                 'table-r-id' => 'user-table-1'
             ],
@@ -156,6 +157,30 @@ class UserPage
                     ]
                 ))
             ]
+        ]);
+    }
+
+    public function showEditUserPage(string|int $userId): void
+    {
+        if (!filter_var($userId, FILTER_VALIDATE_INT)) {
+            (new NotFoundController())->show404();
+            exit();
+        }
+
+        $result = $this->userManagement->get()->executeById((int)$userId);
+        if (!$result->isSuccess()) {
+            (new NotFoundController())->show404();
+            exit();
+        }
+
+        $this->showPage([
+            'components' => [(new TemplateBundle(
+                templatePath: 'components/editUser.tpl.php',
+                variables: [
+                    'login' => $result->getLogin(),
+                    'userId' => $userId
+                ]
+            ))]
         ]);
     }
 }

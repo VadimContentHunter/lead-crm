@@ -15,24 +15,24 @@ abstract class AValidatorAdapter implements IValidation
      */
     abstract protected function buildValidator(): Validator;
 
-    public function validate(object $dataObj): IValidationResult
+    public function validate(object $dataObj, array $ignoreFields = []): IValidationResult
     {
         $validator = $this->buildValidator();
 
         try {
-            $validator->validate($dataObj);
+            $validator->validate($dataObj, ignoreFields: $ignoreFields);
             return ValidationResult::success();
         } catch (InvalidArgumentException $e) {
             return ValidationResult::failure($e->getMessage());
         }
     }
 
-    public function validateArray(array $dataArray): IValidationResult
+    public function validateArray(array $dataArray, array $ignoreFields = []): IValidationResult
     {
         $validator = $this->buildValidator();
 
         try {
-            $validator->validateArray($dataArray);
+            $validator->validateArray($dataArray, $ignoreFields = []);
             return ValidationResult::success();
         } catch (InvalidArgumentException $e) {
             return ValidationResult::failure($e->getMessage());

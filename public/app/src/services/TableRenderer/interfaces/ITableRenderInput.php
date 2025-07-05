@@ -46,4 +46,6 @@ interface ITableRenderInput
      * @return array<string, string> Карта переименования заголовков
      */
     public function getRenameMap(): array;
+
+    public function getButtonHref(): string;
 }

@@ -15,14 +15,14 @@ class TableDecorator
      * @param  string $actionLabel
      * @return array{header: string[], rows: array<array<mixed>>}
      */
-    public function decorateWithActions(array $header, array $rows, string $actionLabel = ''): array
+    public function decorateWithActions(array $header, array $rows, string $href = '', string $actionLabel = ''): array
     {
         $newHeader = [...$header, $actionLabel];
         $newRows = [];
 
         foreach ($rows as $row) {
             $id = $this->extractId($row);
-            $buttons = $this->buildActions($id);
+            $buttons = $this->buildActions($id, $href);
 
             $newRows[] = [...$row, $buttons];
         }
@@ -46,10 +46,10 @@ class TableDecorator
     /**
      * Генерирует HTML-кнопки для строки.
      */
-    protected function buildActions(mixed $id): string
+    protected function buildActions(mixed $id, string $href = ''): string
     {
         return <<<HTML
-            <a href="/page/lead-edit/{$id}" class="btn-table-action btn-edit" data-id="{$id}">✏️</a>
+            <a href="{$href}/{$id}" class="btn-table-action btn-edit" data-id="{$id}">✏️</a>
             <button type="button" class="btn-delete" data-id="{$id}">🗑️</button>
         HTML;
     }

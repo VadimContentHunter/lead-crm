@@ -118,7 +118,7 @@ class DbRepository implements IRepository
      *                                        Метод сам сделает из них плейсхолдеры param => :param
      * @param string[] $conditions условия с плейсхолдерами, например ["id = :id"]
      */
-    protected function executeUpdate(string $table, array $data, array $conditions): bool
+    protected function executeUpdate(string $table, array $data, array $conditions): int
     {
         $data = array_map([$this, 'sanitizeValue'], $data);
 
@@ -133,7 +133,7 @@ class DbRepository implements IRepository
         $sql = "UPDATE $table SET $set " . $this->buildWhereClause($conditions);
 
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute($data);
+        return $stmt->execute($data) ? (int)$data['id'] ?? 0 : -1;
     }
 
 
@@ -141,14 +141,14 @@ class DbRepository implements IRepository
      * @param string[] $conditions условия с плейсхолдерами
      * @param array<string,mixed> $data       параметры для условий
      */
-    protected function executeDelete(string $table, array $conditions, array $data): bool
+    protected function executeDelete(string $table, array $conditions, array $data): int
     {
         $data = array_map([$this, 'sanitizeValue'], $data);
 
         $sql = "DELETE FROM $table " . $this->buildWhereClause($conditions);
 
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute($data);
+        return $stmt->execute($data) ? (int)$data['id'] ?? 0 : -1;
     }
 
     /**

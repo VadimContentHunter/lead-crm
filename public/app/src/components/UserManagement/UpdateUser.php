@@ -4,6 +4,7 @@ namespace crm\src\components\UserManagement;
 
 use crm\src\_common\interfaces\IValidation;
 use crm\src\components\UserManagement\_entities\User;
+use crm\src\components\UserManagement\_common\DTOs\UserEditDto;
 use crm\src\components\UserManagement\_common\DTOs\UserInputDto;
 use crm\src\components\UserManagement\_common\adapters\UserResult;
 use crm\src\components\UserManagement\_common\interfaces\IUserResult;
@@ -26,7 +27,12 @@ class UpdateUser
      */
     public function execute(UserInputDto $dto): IUserResult
     {
-        $validationResult = $this->validator->validate($dto);
+        $ignoredFields = [];
+        if (empty($dto->plainPassword)) {
+            $ignoredFields = ['plainPassword', 'confirmPassword'];
+        }
+
+        $validationResult = $this->validator->validate($dto, $ignoredFields);
 
         if (!$validationResult->isValid()) {
             return UserResult::failure(
@@ -34,22 +40,19 @@ class UpdateUser
             );
         }
 
-        if (empty($dto->plainPassword)) {
-            return UserResult::failure(
-                new UserManagementException('Пароль обязателен при обновлении')
-            );
+        if (!empty($dto->plainPassword)) {
+            $dto->plainPassword = password_hash($dto->plainPassword, PASSWORD_DEFAULT);
         }
 
         $user = new User(
             login: $dto->login,
-            passwordHash: password_hash($dto->plainPassword, PASSWORD_DEFAULT),
+            passwordHash: $dto->plainPassword,
             id: $dto->id
         );
 
         try {
-            $updatedId = $this->userRepository->update($user);
-
-            if ($updatedId === null || $updatedId <= 0) {
+            $idUpdated = $this->userRepository->update($user);
+            if ($idUpdated < 0) {
                 return UserResult::failure(
                     new UserManagementException('Не удалось обновить пользователя')
                 );

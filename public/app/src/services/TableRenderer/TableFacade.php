@@ -25,13 +25,19 @@ class TableFacade
     public function renderTable(ITableRenderInput $input): ITableRenderResult
     {
         $transformed = $this->transformer->transform($input->getHeader(), $input->getRows());
-        $decorated = $this->decorator->decorateWithActions($input->getHeader(), $transformed);
+        $decorated = $this->decorator->decorateWithActions(
+            header: $input->getHeader(),
+            rows: $transformed,
+            href: $input->getButtonHref()
+        );
 
         return new TableRenderResult(
             $decorated['header'],
             $decorated['rows'],
             $input->getAttributes(),
-            $input->getClasses()
+            $input->getClasses(),
+            $input->getClassesWrapper(),
+            $input->getAttrWrapper()
         );
     }
 
@@ -50,7 +56,11 @@ class TableFacade
             $input->getRenameMap()
         );
 
-        $decorated = $this->decorator->decorateWithActions($filtered['header'], $filtered['rows']);
+        $decorated = $this->decorator->decorateWithActions(
+            header: $filtered['header'],
+            rows:$filtered['rows'],
+            href: $input->getButtonHref()
+        );
 
         return new TableRenderResult(
             $decorated['header'],

@@ -314,9 +314,49 @@ export const ComponentFunctions = {
         } else {
             wrapper.innerHTML = `<p class="no-data-message">Данные не найдены или произошла ошибка при загрузке.</p>`;
         }
+    },
+
+    attachDeleteTrigger({
+        triggerSelector = '[table-r-id] .btn-delete.row-action',
+        containerSelectorAttribute = 'table-r-id',
+        method = 'lead.delete',
+        endpoint = '/api/' }
+    ) {
+        const triggers = document.querySelectorAll(triggerSelector);
+
+        for (const trigger of triggers) {
+            if (trigger.dataset.bound) continue; // защита от повторного добавления
+            trigger.dataset.bound = 'true';
+
+            trigger.addEventListener('click', (event) => {
+                event.preventDefault();
+
+                // Ищем ближайший input[name="row_id"] среди родителей и соседей
+                const rowIdInput = trigger.closest('tr')?.querySelector('input[name="row_id"]');
+                const rowId = rowIdInput?.value ?? null;
+
+                if (!rowId) {
+                    console.warn('[Delete Trigger] Не найден row_id для удаления');
+                    return;
+                }
+
+                const container = trigger.closest(`[${containerSelectorAttribute}]`);
+
+                const transport = new JsonRpcTransport(method, {
+                    endpoint,
+                    onContentUpdate: () => { },
+                    onData: (payload) => {
+                        ComponentFunctions.replaceLeadTable(payload, '[table-r-id]');
+                    },
+                    onError: (error) => {
+                        console.error('[JsonRpcTransport] Ошибка:', error.message);
+                    }
+                });
+
+                transport.send({ rowId });
+            });
+        }
     }
-
-
 
 
 };

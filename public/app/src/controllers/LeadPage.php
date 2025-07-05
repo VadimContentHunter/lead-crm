@@ -313,7 +313,9 @@ class LeadPage
                                 'managersList' => $managersList,
                                 'selectedData' => [],
                             ]
-                        ))
+                        )),
+                        'methodSend' => 'lead.delete',
+                        'endpointSend' => '/api/leads'
                     ]
                 ))
             ]

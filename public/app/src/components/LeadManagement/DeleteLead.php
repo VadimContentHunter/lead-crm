@@ -26,7 +26,7 @@ class DeleteLead
         try {
             $deletedCount = $this->repository->deleteByAccountManagerId($accountManagerId);
 
-            if ($deletedCount === null || $deletedCount <= 0) {
+            if ($deletedCount === null || $deletedCount < 0) {
                 return LeadResult::failure(
                     new LeadManagementException("Лиды с accountManagerId=$accountManagerId не найдены или не удалены")
                 );
@@ -34,6 +34,29 @@ class DeleteLead
 
             return LeadResult::success($deletedCount);
         } catch (Throwable $e) {
+            return LeadResult::failure($e);
+        }
+    }
+
+    /**
+     * Удаляет пользователя по ID.
+     *
+     * @param  int $id ID пользователя.
+     * @return IUserResult Результат операции: успешный с ID удалённого пользователя или с ошибкой.
+     */
+    public function byId(int $id): ILeadResult
+    {
+        try {
+            $deletedId = $this->repository->deleteById($id);
+
+            if ($deletedId < 0) {
+                return LeadResult::failure(
+                    new LeadManagementException("LEAD с ID {$id} не найден или не удалён")
+                );
+            }
+
+            return LeadResult::success($deletedId);
+        } catch (\Throwable $e) {
             return LeadResult::failure($e);
         }
     }

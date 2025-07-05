@@ -16,14 +16,8 @@
 <script type="module">
     import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
     function attachDeleteTrigger() {
-        ComponentFunctions.attachJsonRpcInputManyTriggers({
-            triggerSelector: '[table-r-id] .row-action.btn-delete',
-            containerSelector: '[table-r-id]',
-            method: '<?= $methodSend ?>',
-            endpoint: '<?= $endpointSend ?>',
-            callbackOnData: (response) => {
-                ComponentFunctions.replaceLeadTable(response, '[table-r-id]');
-            }
+        ComponentFunctions.attachDeleteTrigger({
+            endpoint: '/api/leads',
         });
     }
 

@@ -65,6 +65,10 @@ class LeadController
                 $this->editLead($this->rpc->getParams());
             // break;
 
+            case 'lead.delete':
+                $this->deleteLead($this->rpc->getParams());
+            // break;
+
             case 'lead.filter':
                 $this->filterLeads($this->rpc->getParams());
             // break;
@@ -187,6 +191,29 @@ class LeadController
         } else {
             $this->rpc->replyData([
                 ['type' => 'error', 'message' => 'Данные источника некорректного формата.']
+            ]);
+        }
+    }
+
+    /**
+     * @param array<string,mixed> $params
+     */
+    public function deleteLead(array $params): void
+    {
+        $id = $params['row_id'] ?? $params['rowId'] ?? $params['id'] ?? null;
+        if (!filter_var($id, FILTER_VALIDATE_INT)) {
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'ID Lead должен быть целым числом.']
+            ]);
+        }
+
+        $executeResult = $this->leadManagement->delete()->byId((int)$id);
+        if ($executeResult->isSuccess()) {
+            $this->filterLeadsFormatTable([]);
+        } else {
+            $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Пользователь не удалён. Причина: ' . $errorMsg]
             ]);
         }
     }

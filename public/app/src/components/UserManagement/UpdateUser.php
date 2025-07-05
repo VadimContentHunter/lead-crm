@@ -4,12 +4,13 @@ namespace crm\src\components\UserManagement;
 
 use crm\src\_common\interfaces\IValidation;
 use crm\src\components\UserManagement\_entities\User;
-use crm\src\components\UserManagement\_common\DTOs\UserEditDto;
 use crm\src\components\UserManagement\_common\DTOs\UserInputDto;
 use crm\src\components\UserManagement\_common\adapters\UserResult;
 use crm\src\components\UserManagement\_common\interfaces\IUserResult;
 use crm\src\components\UserManagement\_common\interfaces\IUserRepository;
+use crm\src\components\UserManagement\_common\mappers\UserMapper;
 use crm\src\components\UserManagement\_exceptions\UserManagementException;
+use crm\src\controllers\UserPage;
 
 class UpdateUser
 {
@@ -33,22 +34,21 @@ class UpdateUser
         }
 
         $validationResult = $this->validator->validate($dto, $ignoredFields);
-
         if (!$validationResult->isValid()) {
             return UserResult::failure(
                 new UserManagementException('Ошибка валидации: ' . implode('; ', $validationResult->getErrors()))
             );
         }
 
-        if (!empty($dto->plainPassword)) {
-            $dto->plainPassword = password_hash($dto->plainPassword, PASSWORD_DEFAULT);
+        $user = ['id' => $dto->id];
+
+        if (!empty($dto->login)) {
+            $user['login'] = $dto->login;
         }
 
-        $user = new User(
-            login: $dto->login,
-            passwordHash: $dto->plainPassword,
-            id: $dto->id
-        );
+        if (!empty($dto->plainPassword)) {
+            $user['password_hash'] = password_hash($dto->plainPassword, PASSWORD_DEFAULT);
+        }
 
         try {
             $idUpdated = $this->userRepository->update($user);

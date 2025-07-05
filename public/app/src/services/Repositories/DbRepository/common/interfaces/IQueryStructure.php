@@ -36,4 +36,10 @@ interface IQueryStructure
      * @return array<string,mixed>
      */
     public function getPayload(): array;
+
+    public function setBindings(array $bindings): void;
+    /**
+     * @return array<string,mixed>
+     */
+    public function getBindings(): array;
 }

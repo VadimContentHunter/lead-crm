@@ -38,4 +38,20 @@ class UserMapper
             'password_hash' => $user->passwordHash,
         ];
     }
+
+    /**
+     * Преобразует объект User в массив, исключая пустые значения (null, '', 0).
+     *
+     * @return array<string, mixed>
+     */
+    public static function toNonEmptyArray(User $user): array
+    {
+        $data = self::toArray($user);
+
+        return array_filter(
+            $data,
+            fn($value) => !($value === null || $value === '' || $value === 0),
+            ARRAY_FILTER_USE_BOTH
+        );
+    }
 }

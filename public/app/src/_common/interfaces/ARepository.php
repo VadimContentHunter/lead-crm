@@ -55,17 +55,41 @@ abstract class ARepository implements IRepository
         )->getInt();
     }
 
-    public function update(object $entity): ?int
+    /**
+     * Обновляет сущность или часть полей по id.
+     *
+     * @param  object|array<string, mixed> $entityOrData Полный объект или массив полей с ключом id.
+     * @return int|null ID обновлённой сущности или null при неудаче.
+     */
+    public function update(object|array $entityOrData): ?int
     {
-        $data = $this->toArray($entity);
-        $id = $data['id'] ?? throw new \InvalidArgumentException('Поле "id" обязательно для update()');
+        $data = is_object($entityOrData)
+            ? $this->toArray($entityOrData)
+            : $entityOrData;
+
+        $bindings = $data;
+        if (!isset($data['id'])) {
+            throw new \InvalidArgumentException('Поле "id" обязательно для update().');
+        }
+
+        $id = $data['id'];
+        unset($data['id']);
+
+        if (empty($data)) {
+            // Нет данных для обновления
+            $this->logger->warning("Пустой массив для обновления в " . static::class);
+            return null;
+        }
 
         return $this->repository->executeQuery(
-            (new QueryBuilder())->table($this->getTableName())
+            (new QueryBuilder())
+                ->table($this->getTableName())
                 ->where('id = :id')
+                ->bindings($bindings)
                 ->update($data)
         )->getInt();
     }
+
 
     public function deleteById(int $id): ?int
     {

@@ -21,4 +21,23 @@ class UserInputMapper
             id: isset($data['id']) ? (int) $data['id'] : 0
         );
     }
+
+    /**
+     * Преобразует UserInputDto в массив, исключая пустые значения (null, '', 0).
+     *
+     * @return array<string, mixed>
+     */
+    public static function toNonEmptyArray(UserInputDto $dto): array
+    {
+        return array_filter(
+            [
+                'id' => $dto->id,
+                'login' => $dto->login,
+                'plain_password' => $dto->plainPassword,
+                'confirm_password' => $dto->confirmPassword,
+            ],
+            fn($value) => !($value === null || $value === '' || $value === 0),
+            ARRAY_FILTER_USE_BOTH
+        );
+    }
 }

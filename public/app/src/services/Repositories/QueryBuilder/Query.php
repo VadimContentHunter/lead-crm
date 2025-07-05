@@ -26,6 +26,10 @@ class Query implements IQueryStructure
      */
     protected array $bindings = [];
 
+    // -------------------- table --------------------
+    /**
+     * @return void
+     */
     public function setTable(string $table): void
     {
         $this->table = $table;
@@ -35,6 +39,10 @@ class Query implements IQueryStructure
         return $this->table;
     }
 
+    // -------------------- where --------------------
+    /**
+     * @param string $condition
+     */
     public function addWhere(string $condition): void
     {
         $this->wheres[] = $condition;
@@ -48,6 +56,10 @@ class Query implements IQueryStructure
         return $this->wheres;
     }
 
+    // -------------------- order by --------------------
+    /**
+     * @return void
+     */
     public function setOrderBy(string $column, string $direction): void
     {
         $this->orderBy = [$column, strtoupper($direction)];
@@ -61,6 +73,10 @@ class Query implements IQueryStructure
         return $this->orderBy;
     }
 
+    // -------------------- limit --------------------
+    /**
+     * @return void
+     */
     public function setLimit(int $count): void
     {
         $this->limit = $count;
@@ -70,6 +86,10 @@ class Query implements IQueryStructure
         return $this->limit;
     }
 
+    // -------------------- action --------------------
+    /**
+     * @return void
+     */
     public function setAction(string $action): void
     {
         $this->action = $action;
@@ -79,6 +99,7 @@ class Query implements IQueryStructure
         return $this->action;
     }
 
+    // -------------------- payload --------------------
     /**
      * @param array<string,mixed> $data
      */
@@ -93,5 +114,22 @@ class Query implements IQueryStructure
     public function getPayload(): array
     {
         return $this->payload;
+    }
+
+    // -------------------- bindings --------------------
+    /**
+     * @param array<string,mixed> $bindings
+     */
+    public function setBindings(array $bindings): void
+    {
+        $this->bindings = $bindings;
+    }
+
+    /**
+     * @return array<string,mixed>
+     */
+    public function getBindings(): array
+    {
+        return $this->bindings;
     }
 }

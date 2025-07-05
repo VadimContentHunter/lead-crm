@@ -18,12 +18,12 @@ interface IRepository
     public function save(object $entity): ?int;
 
     /**
-     * Обновляет сущность.
+     * Обновляет сущность или часть полей по id.
      *
-     * @param  TEntity $entity
+     * @param  object|array<string, mixed> $entityOrData Полный объект или массив полей с ключом id.
      * @return int|null ID обновлённой сущности или null при неудаче.
      */
-    public function update(object $entity): ?int;
+    public function update(object|array $entityOrData): ?int;
 
     /**
      * Удаляет по ID.

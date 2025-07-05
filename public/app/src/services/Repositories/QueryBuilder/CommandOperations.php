@@ -50,4 +50,15 @@ class CommandOperations implements ICommandOperations
         $this->query->setPayload($data);
         return $this->query;
     }
+
+    /**
+     * @param array<string, mixed> $bindings
+     */
+    public function bindings(array $bindings): ICommandOperations
+    {
+        $currentBindings = $this->query->getBindings();
+        $this->query->setBindings([...$currentBindings, ...$bindings]);
+
+        return $this;
+    }
 }

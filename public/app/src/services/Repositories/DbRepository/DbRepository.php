@@ -67,6 +67,7 @@ class DbRepository implements IRepository
             $wheres = $query->getWheres();
             $orderBy = $query->getOrderBy();
             $limit = $query->getLimit();
+            $bindings = $query->getBindings();
 
             if (!$table || !$action) {
                 $message = "Не указана таблица или действие.";
@@ -76,9 +77,9 @@ class DbRepository implements IRepository
 
             return match ($action) {
                 'insert' => RepoResult::success($this->executeInsert($table, $payload)),
-                'update' => RepoResult::success($this->executeUpdate($table, $payload, $wheres)),
-                'delete' => RepoResult::success($this->executeDelete($table, $wheres, $payload)),
-                'select' => RepoResult::success($this->executeSelect($table, $wheres, $orderBy, $limit, $payload)),
+                'update' => RepoResult::success($this->executeUpdate($table, $payload, $wheres, $bindings)),
+                'delete' => RepoResult::success($this->executeDelete($table, $wheres, $payload, $bindings)),
+                'select' => RepoResult::success($this->executeSelect($table, $wheres, $orderBy, $limit, $payload, $bindings)),
                 default   => RepoResult::failure(new InvalidArgumentException("Неизвестное действие: $action")),
             };
         } catch (PDOException $e) {
@@ -116,16 +117,15 @@ class DbRepository implements IRepository
     /**
      * @param array<string,mixed> $data       и данные для обновления, и параметры для WHERE
      *                                        Метод сам сделает из них плейсхолдеры param => :param
+     * @param array<string,mixed> $bindings
      * @param string[] $conditions условия с плейсхолдерами, например ["id = :id"]
      */
-    protected function executeUpdate(string $table, array $data, array $conditions): int
+    protected function executeUpdate(string $table, array $data, array $conditions, array $bindings = []): int
     {
         $data = array_map([$this, 'sanitizeValue'], $data);
 
         $set = implode(', ', array_map(
             fn($col) => $this->sanitizeIdentifier($col) . " = :$col",
-            // Берём только ключи, которые не используются в условиях
-            // Но проще — пусть будут все, главное чтобы плейсхолдеры в conditions совпадали с ключами в $data
             array_keys($data)
         ));
 
@@ -133,32 +133,46 @@ class DbRepository implements IRepository
         $sql = "UPDATE $table SET $set " . $this->buildWhereClause($conditions);
 
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute($data) ? (int)$data['id'] ?? 0 : -1;
+        $params = !empty($bindings) ? $bindings : $data;
+        return $stmt->execute($params) ? (int)($params['id'] ?? 0) : -1;
     }
 
 
     /**
      * @param string[] $conditions условия с плейсхолдерами
-     * @param array<string,mixed> $data       параметры для условий
+     * @param array<string,mixed> $data       параметры
+     *                                        для условий
+     * @param array<string,mixed> $bindings   дополнительные биндинги
+     *                                        (переопределяют $data при
+     *                                        передаче)
      */
-    protected function executeDelete(string $table, array $conditions, array $data): int
+    protected function executeDelete(string $table, array $conditions, array $data, array $bindings = []): int
     {
         $data = array_map([$this, 'sanitizeValue'], $data);
 
         $sql = "DELETE FROM $table " . $this->buildWhereClause($conditions);
 
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute($data) ? (int)$data['id'] ?? 0 : -1;
+
+        $params = !empty($bindings) ? $bindings : $data;
+
+        return $stmt->execute($params) ? (int)($params['id'] ?? 0) : -1;
     }
+
 
     /**
      * @param string[] $conditions условия с плейсхолдерами
-     * @param array<string,mixed> $data       параметры для условий
-     * @param array<string,string> $orderBy    сортировка, например ["column" => "id", "direction" => "asc"]
+     * @param array<string,mixed> $data       параметры
+     *                                        для условий
+     * @param array<string,string> $orderBy    сортировка, например ["column" => "id",
+     *                                         "direction" => "asc"]
+     * @param array<string,mixed> $bindings   дополнительные биндинги
+     *                                        (переопределяют $data при
+     *                                        передаче)
      *
      * @return mixed[]
      */
-    protected function executeSelect(string $table, array $conditions, ?array $orderBy, ?int $limit, array $data): array
+    protected function executeSelect(string $table, array $conditions, ?array $orderBy, ?int $limit, array $data, array $bindings = []): array
     {
         $data = array_map([$this, 'sanitizeValue'], $data);
 
@@ -175,10 +189,13 @@ class DbRepository implements IRepository
         }
 
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute($data);
+        $params = !empty($bindings) ? $bindings : $data;
+
+        $stmt->execute($params);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
 
     /**

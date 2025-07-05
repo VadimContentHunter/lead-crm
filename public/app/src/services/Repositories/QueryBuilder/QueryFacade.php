@@ -68,4 +68,9 @@ class QueryFacade implements IQueryModifiers, ICommandOperations
     {
         return $this->commands->delete($data);
     }
+
+    public function bindings(array $data = []): ICommandOperations
+    {
+        return $this->commands->bindings($data);
+    }
 }

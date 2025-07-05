@@ -68,7 +68,7 @@ class HandleAccessRole
 
     public function deleteRole(int $roleId): bool
     {
-        return $this->roleRepository->deleteById($roleId);
+        return $this->roleRepository->deleteById($roleId)  === null ? false : true;
     }
 
     public function getRoleById(int $roleId): ?AccessRole

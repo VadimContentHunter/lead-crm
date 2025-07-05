@@ -9,7 +9,7 @@ class UserInputMapper
     /**
      * Преобразует массив данных в UserInputDto.
      *
-     * @param  array<string, mixed> $data
+     * @param  array<string,mixed> $data
      * @return UserInputDto
      */
     public static function fromArray(array $data): UserInputDto
@@ -25,7 +25,7 @@ class UserInputMapper
     /**
      * Преобразует UserInputDto в массив, исключая пустые значения (null, '', 0).
      *
-     * @return array<string, mixed>
+     * @return array<string,mixed>
      */
     public static function toNonEmptyArray(UserInputDto $dto): array
     {
@@ -36,8 +36,7 @@ class UserInputMapper
                 'plain_password' => $dto->plainPassword,
                 'confirm_password' => $dto->confirmPassword,
             ],
-            fn($value) => !($value === null || $value === '' || $value === 0),
-            ARRAY_FILTER_USE_BOTH
+            fn($value) => !($value === '' || $value === 0)
         );
     }
 }

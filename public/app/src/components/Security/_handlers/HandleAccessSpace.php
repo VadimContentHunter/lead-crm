@@ -71,7 +71,7 @@ class HandleAccessSpace
      */
     public function deleteSpace(int $spaceId): bool
     {
-        return $this->spaceRepository->deleteById($spaceId);
+        return $this->spaceRepository->deleteById($spaceId) === null ? false : true;
     }
 
     /**

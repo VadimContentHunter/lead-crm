@@ -42,7 +42,7 @@ class DeleteLead
      * Удаляет пользователя по ID.
      *
      * @param  int $id ID пользователя.
-     * @return IUserResult Результат операции: успешный с ID удалённого пользователя или с ошибкой.
+     * @return ILeadResult Результат операции: успешный с ID удалённого пользователя или с ошибкой.
      */
     public function byId(int $id): ILeadResult
     {

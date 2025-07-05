@@ -26,5 +26,8 @@ interface ICommandOperations
      */
     public function delete(array $data = []): IQueryStructure;
 
+    /**
+     * @param array<string,mixed> $bindings
+     */
     public function bindings(array $bindings): ICommandOperations;
 }

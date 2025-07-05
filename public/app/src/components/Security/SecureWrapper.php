@@ -17,10 +17,9 @@ class SecureWrapper
     }
 
     /**
-     * @param  mixed $args
-     * @return void
+     * @param mixed[] $args
      */
-    public function __call(string $method, array $args)
+    public function __call(string $method, array $args): mixed
     {
         if (!method_exists($this->target, $method)) {
             throw new SecurityException("Метод $method не существует в целевом объекте.");

@@ -11,7 +11,7 @@ class AccessContext
         public ?int $spaceId = null,
         public ?int $id = null,
     ) {
-        if (trim($this->userId) === '') {
+        if ($this->userId === 0) {
             throw new \InvalidArgumentException('Access context userId cannot be empty');
         }
     }

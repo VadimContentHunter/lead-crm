@@ -4,10 +4,9 @@ namespace crm\src\components\Security\_common\interfaces;
 
 use crm\src\_common\interfaces\IRepository;
 use crm\src\components\Security\_entities\AccessContext;
-use crm\src\components\SourceManagement\_entities\Source;
 
 /**
- * @extends IRepository<Source>
+ * @extends IRepository<AccessContext>
  */
 interface IAccessContextRepository extends IRepository
 {

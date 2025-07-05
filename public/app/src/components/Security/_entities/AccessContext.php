@@ -5,11 +5,34 @@ namespace crm\src\components\Security\_entities;
 class AccessContext
 {
     public function __construct(
-        public ?int $userId = null,
+        public int $userId,
         public ?string $sessionAccessHash = null,
+        public ?int $roleId = null,
+        public ?int $spaceId = null,
         public ?int $id = null,
     ) {
+        if (trim($this->userId) === '') {
+            throw new \InvalidArgumentException('Access context userId cannot be empty');
+        }
     }
-    // public int $roleId;
-    // public int $spaceId;
+
+    public function assignRole(int $roleId): void
+    {
+        $this->roleId = $roleId;
+    }
+
+    public function removeRole(): void
+    {
+        $this->roleId = null;
+    }
+
+    public function assignSpace(int $spaceId): void
+    {
+        $this->spaceId = $spaceId;
+    }
+
+    public function removeSpace(): void
+    {
+        $this->spaceId = null;
+    }
 }

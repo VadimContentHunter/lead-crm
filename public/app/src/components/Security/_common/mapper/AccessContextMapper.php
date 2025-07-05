@@ -21,7 +21,9 @@ class AccessContextMapper
         return new AccessContext(
             userId: (int) $data['user_id'],
             sessionAccessHash: (string) $data['session_access_hash'],
-            id: (int) $data['id']
+            id: (int) $data['id'],
+            roleId: isset($data['role_id']) ? (int) $data['role_id'] : null,
+            spaceId: isset($data['space_id']) ? (int) $data['space_id'] : null
         );
     }
 
@@ -36,6 +38,8 @@ class AccessContextMapper
             'id' => $obj->id,
             'session_access_hash ' => $obj->sessionAccessHash,
             'user_id' => $obj->userId,
+            'role_id' => $obj->roleId,
+            'space_id' => $obj->spaceId
         ];
     }
 

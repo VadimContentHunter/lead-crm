@@ -6,7 +6,9 @@ use PDO;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
 use crm\src\services\CrmSchemaProvider;
+use crm\src\components\Security\_handlers\HandleAccessRole;
 use crm\src\services\Repositories\DbRepository\DbRepository;
+use crm\src\components\Security\_repositories\AccessRoleRepository;
 
 class BootstrapController
 {
@@ -21,80 +23,56 @@ class BootstrapController
         $this->logger->info('Bootstrapping...');
         $this->logger->info('Создание таблиц:');
 
-        $this->repository = new DbRepository($pdo);
-        $resultUsers = $this->repository->executeSql(CrmSchemaProvider::get('users') ?? '');
-        if ($resultUsers->isSuccess()) {
-            echo "Users table created<br>";
-            $this->logger->info('Users table created');
-        } else {
-            echo $resultUsers->getError()?->getMessage() ?? 'Неизвестная ошибка' . "<br>";
-            $this->logger->error($resultUsers->getError()?->getMessage() ?? 'Неизвестная ошибка');
+        $this->repository = new DbRepository($pdo, $this->logger);
+
+        $schemas = [
+            'users'           => 'Users',
+            'statuses'        => 'Statuses',
+            'sources'         => 'Sources',
+            'leads'           => 'Leads',
+            'balances'        => 'Balances',
+            'deposits'        => 'Deposits',
+            'comments'        => 'Comments',
+            'access_roles'    => 'Access roles',
+            'access_spaces'   => 'Access spaces',
+            'access_contexts' => 'Access contexts',
+        ];
+
+        foreach ($schemas as $schemaKey => $displayName) {
+            echo "<br>";
+            $result = $this->repository->executeSql(CrmSchemaProvider::get($schemaKey) ?? '');
+            if ($result->isSuccess()) {
+                echo "{$displayName} table created<br>";
+                $this->logger->info("{$displayName} table created");
+            } else {
+                $error = $result->getError()?->getMessage() ?? 'Неизвестная ошибка';
+                echo $error . "<br>";
+                $this->logger->error($error);
+            }
         }
 
-        echo "<br>";
-        $this->repository = new DbRepository($pdo);
-        $resultStatuses = $this->repository->executeSql(CrmSchemaProvider::get('statuses') ?? '');
-        if ($resultStatuses->isSuccess()) {
-            echo "Statuses table created<br>";
-            $this->logger->info('Statuses table created');
-        } else {
-            echo $resultStatuses->getError()?->getMessage() ?? 'Неизвестная ошибка' . "<br>";
-            $this->logger->error($resultStatuses->getError()?->getMessage() ?? 'Неизвестная ошибка');
-        }
+        echo "<br><br>Создание базовых моделей:<br><br>";
+        $this->logger->info('Создание базовых моделей:');
 
-        echo "<br>";
-        $this->repository = new DbRepository($pdo);
-        $resultSources = $this->repository->executeSql(CrmSchemaProvider::get('sources') ?? '');
-        if ($resultSources->isSuccess()) {
-            echo "Sources table created<br>";
-            $this->logger->info('Sources table created');
-        } else {
-            echo $resultSources->getError()?->getMessage() ?? 'Неизвестная ошибка' . "<br>";
-            $this->logger->error($resultSources->getError()?->getMessage() ?? 'Неизвестная ошибка');
-        }
+        $handleAccessRole = new HandleAccessRole(new AccessRoleRepository($pdo, $this->logger));
+        $handleAccessRole->addRole('superadmin', 'Superadmin');
+        echo "<br>Создана роль: superadmin<br>";
+        $this->logger->info('Создана роль: superadmin');
 
-        echo "<br>";
-        $this->repository = new DbRepository($pdo);
-        $resultLeads = $this->repository->executeSql(CrmSchemaProvider::get('leads') ?? '');
-        if ($resultLeads->isSuccess()) {
-            echo "Leads table created<br>";
-            $this->logger->info('Leads table created');
-        } else {
-            echo $resultLeads->getError()?->getMessage() ?? 'Неизвестная ошибка' . "<br>";
-            $this->logger->error($resultLeads->getError()?->getMessage() ?? 'Неизвестная ошибка');
-        }
+        $handleAccessRole->addRole('admin', 'admin');
+        echo "<br>Создана роль: admin<br>";
+        $this->logger->info('Создана роль: admin');
 
-        echo "<br>";
-        $this->repository = new DbRepository($pdo);
-        $resultBalances = $this->repository->executeSql(CrmSchemaProvider::get('balances') ?? '');
-        if ($resultBalances->isSuccess()) {
-            echo "Balances table created<br>";
-            $this->logger->info('Balances table created');
-        } else {
-            echo $resultBalances->getError()?->getMessage() ?? 'Неизвестная ошибка' . "<br>";
-            $this->logger->error($resultBalances->getError()?->getMessage() ?? 'Неизвестная ошибка');
-        }
+        $handleAccessRole->addRole('manager', 'manager');
+        echo "<br>Создана роль: manager<br>";
+        $this->logger->info('Создана роль: manager');
 
-        echo "<br>";
-        $this->repository = new DbRepository($pdo);
-        $resultDeposits = $this->repository->executeSql(CrmSchemaProvider::get('deposits') ?? '');
-        if ($resultDeposits->isSuccess()) {
-            echo "Deposits table created<br>";
-            $this->logger->info('Deposits table created');
-        } else {
-            echo $resultDeposits->getError()?->getMessage() ?? 'Неизвестная ошибка' . "<br>";
-            $this->logger->error($resultDeposits->getError()?->getMessage() ?? 'Неизвестная ошибка');
-        }
+        $handleAccessRole->addRole('team-manager', 'team-manager');
+        echo "<br>Создана роль: team-manager<br>";
+        $this->logger->info('Создана роль: team-manager');
 
-        echo "<br>";
-        $this->repository = new DbRepository($pdo);
-        $resultComments = $this->repository->executeSql(CrmSchemaProvider::get('comments') ?? '');
-        if ($resultComments->isSuccess()) {
-            echo "Comments table created<br>";
-            $this->logger->info('Comments table created');
-        } else {
-            echo $resultComments->getError()?->getMessage() ?? 'Неизвестная ошибка' . "<br>";
-            $this->logger->error($resultComments->getError()?->getMessage() ?? 'Неизвестная ошибка');
-        }
+
+        echo "<br><br>Bootstrapping завершено.<br>";
+        $this->logger->info('Bootstrapping завершено.');
     }
 }

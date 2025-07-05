@@ -135,6 +135,45 @@ class CrmSchemaProvider extends ASchemaProvider
                 );
             SQL,
 
+            'access_contexts' => <<<SQL
+                CREATE TABLE access_contexts (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    user_id INT NOT NULL UNIQUE,
+                    session_access_hash VARCHAR(256) DEFAULT NULL,
+                    role_id INT DEFAULT NULL,
+                    space_id INT DEFAULT NULL,
+
+                    CONSTRAINT fk_access_context_user FOREIGN KEY (user_id)
+                        REFERENCES users(id)
+                        ON DELETE CASCADE,
+
+                    CONSTRAINT fk_access_context_role FOREIGN KEY (role_id)
+                        REFERENCES access_roles(id)
+                        ON DELETE SET NULL,
+
+                    CONSTRAINT fk_access_context_space FOREIGN KEY (space_id)
+                        REFERENCES access_spaces(id)
+                        ON DELETE SET NULL
+                );
+            SQL,
+
+            'access_roles' => <<<SQL
+                CREATE TABLE access_roles (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(128) NOT NULL UNIQUE,
+                    description VARCHAR(255) DEFAULT NULL
+                );
+            SQL,
+
+            'access_spaces' => <<<SQL
+                CREATE TABLE access_spaces (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(128) NOT NULL UNIQUE,
+                    description VARCHAR(255) DEFAULT NULL
+                );
+            SQL,
+
+
         ];
     }
 }

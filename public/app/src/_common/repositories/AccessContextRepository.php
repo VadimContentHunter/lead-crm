@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\components\Security\_repositories;
+namespace crm\src\_common\repositories;
 
 use crm\src\_common\interfaces\ARepository;
 use crm\src\components\Security\_common\interfaces\IAccessContextRepository;

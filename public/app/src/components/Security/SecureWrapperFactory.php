@@ -9,12 +9,15 @@ class SecureWrapperFactory
 {
     private static ?IAccessGranter $accessGranter = null;
 
+    private static ?AccessContext $accessContext = null;
+
     /**
      * Инициализация фабрики. Нужно вызывать один раз при старте приложения.
      */
-    public static function init(IAccessGranter $accessGranter): void
+    public static function init(IAccessGranter $accessGranter, AccessContext $accessContext): void
     {
         self::$accessGranter = $accessGranter;
+        self::$accessContext = $accessContext;
     }
 
     /**
@@ -30,34 +33,23 @@ class SecureWrapperFactory
     }
 
     /**
-     * Основной метод для создания SecureWrapper
+     * Проверка и получение AccessContext
      */
-    public static function create(
-        object $target,
-        int $userId,
-        ?string $sessionAccessHash = null,
-        ?int $roleId = null,
-        ?int $spaceId = null,
-        ?int $id = null
-    ): SecureWrapper {
-        $accessContext = new AccessContext(
-            userId: $userId,
-            sessionAccessHash: $sessionAccessHash,
-            roleId: $roleId,
-            spaceId: $spaceId,
-            id: $id
-        );
+    private static function getAccessContext(): AccessContext
+    {
+        if (self::$accessContext === null) {
+            throw new \RuntimeException('SecureWrapperFactory is not initialized. Call SecureWrapperFactory::init() first.');
+        }
 
-        return new SecureWrapper($target, self::getAccessGranter(), $accessContext);
+        return self::$accessContext;
     }
 
     /**
      * Альтернативный метод с готовым AccessContext
      */
-    public static function createWithContext(
-        object $target,
-        AccessContext $accessContext
+    public static function createSecureWrapper(
+        object $target
     ): SecureWrapper {
-        return new SecureWrapper($target, self::getAccessGranter(), $accessContext);
+        return new SecureWrapper($target, self::getAccessGranter(), self::getAccessContext());
     }
 }

@@ -6,9 +6,9 @@ use PDO;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
 use crm\src\services\CrmSchemaProvider;
+use crm\src\_common\repositories\AccessRoleRepository;
 use crm\src\components\Security\_handlers\HandleAccessRole;
 use crm\src\services\Repositories\DbRepository\DbRepository;
-use crm\src\components\Security\_repositories\AccessRoleRepository;
 
 class BootstrapController
 {

@@ -2,15 +2,9 @@
 
 namespace crm\src\components\Security;
 
-use crm\src\components\Security\AccessRuleRegistry;
 use crm\src\components\Security\_entities\AccessRole;
-use crm\src\components\Security\_entities\AccessRule;
 use crm\src\components\Security\_entities\AccessSpace;
 use crm\src\components\Security\_entities\AccessContext;
-use crm\src\components\Security\_handlers\HandleAccessRole;
-use crm\src\components\Security\_handlers\HandleAccessSpace;
-use crm\src\components\Security\_exceptions\SecurityException;
-use crm\src\components\Security\_handlers\HandleAccessContext;
 use crm\src\components\Security\_common\interfaces\IAccessGranter;
 use crm\src\components\Security\_common\interfaces\IAccessRoleRepository;
 use crm\src\components\Security\_common\interfaces\IAccessSpaceRepository;

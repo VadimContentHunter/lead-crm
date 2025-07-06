@@ -6,6 +6,7 @@ use PDO;
 use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
+use crm\src\controllers\NotFoundController;
 use crm\src\services\TableRenderer\TableFacade;
 use crm\src\_common\repositories\UserRepository;
 use crm\src\_common\adapters\UserValidatorAdapter;
@@ -15,13 +16,22 @@ use crm\src\services\TableRenderer\TableTransformer;
 use crm\src\services\TemplateRenderer\HeaderManager;
 use crm\src\components\UserManagement\_entities\User;
 use crm\src\components\UserManagement\UserManagement;
+use crm\src\_common\repositories\AccessRoleRepository;
+use crm\src\components\Security\_entities\AccessSpace;
+use crm\src\_common\repositories\AccessSpaceRepository;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
+use crm\src\components\Security\_handlers\HandleAccessRole;
+use crm\src\components\Security\_handlers\HandleAccessSpace;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 
 class UserPage
 {
     private UserManagement $userManagement;
+
+    private HandleAccessRole $handleAccessRole;
+
+    private HandleAccessSpace $handleAccessSpace;
 
     private TemplateRenderer $renderer;
     public function __construct(
@@ -35,6 +45,8 @@ class UserPage
             new UserRepository($pdo, $logger),
             new UserValidatorAdapter()
         );
+        $this->handleAccessRole = new HandleAccessRole(new AccessRoleRepository($pdo, $this->logger));
+        $this->handleAccessSpace = new HandleAccessSpace(new AccessSpaceRepository($pdo, $this->logger));
     }
 
     /**
@@ -104,8 +116,16 @@ class UserPage
 
     public function showAddUserPage(): void
     {
+        $spaces = $this->handleAccessSpace->getAllSpaces();
+        array_unshift($spaces, new AccessSpace("По умолчанию", null, "По умолчанию"));
         $this->showPage([
-            'components' => [(new TemplateBundle(templatePath: 'components/addUser.tpl.php'))]
+            'components' => [(new TemplateBundle(
+                templatePath: 'components/addUser.tpl.php',
+                variables: [
+                    'roles' => $this->handleAccessRole->getAllExceptRoles('name', ['superadmin']),
+                    'spaces' => $spaces,
+                ]
+            ))]
         ]);
     }
 

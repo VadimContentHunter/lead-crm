@@ -12,10 +12,9 @@ interface IRepository
     /**
      * Сохраняет сущность.
      *
-     * @param  TEntity $entity
-     * @return int|null ID новой сущности или null при неудаче.
+     * @param TEntity|array<string,mixed> $entity
      */
-    public function save(object $entity): ?int;
+    public function save(object|array $entityOrData): ?int;
 
     /**
      * Обновляет сущность или часть полей по id.
@@ -54,4 +53,14 @@ interface IRepository
      * @return string[]
      */
     public function getColumnNames(): array;
+
+    /**
+     * Возвращает все сущности, исключая записи по значению указанной колонки.
+     *
+     * @param  string     $column         Название колонки
+     *                                    для фильтрации.
+     * @param  int[]|string[] $excludedValues Массив значений для исключения.
+     * @return TEntity[]
+     */
+    public function getAllExcept(string $column = '', array $excludedValues = []): array;
 }

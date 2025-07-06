@@ -80,4 +80,22 @@ class HandleAccessRole
     {
         return $this->roleRepository->getByName($name);
     }
+
+    /**
+     * @return AccessRole[]
+     */
+    public function getAllRoles(): array
+    {
+        return $this->roleRepository->getAll();
+    }
+
+    /**
+     * @param array<int|string> $excludedValues Значения для исключения.
+     *
+     * @return AccessRole[]
+     */
+    public function getAllExceptRoles(string $column = '', array $excludedValues = []): array
+    {
+        return $this->roleRepository->getAllExcept($column, $excludedValues);
+    }
 }

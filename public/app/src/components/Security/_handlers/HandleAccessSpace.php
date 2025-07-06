@@ -16,13 +16,13 @@ class HandleAccessSpace
     /**
      * Добавление нового пространства.
      */
-    public function addSpace(string $name, ?string $description = null): AccessSpace
+    public function addSpace(string $name, ?string $description = null): ?AccessSpace
     {
         $space = new AccessSpace(name: $name, description: $description);
         $savedId = $this->spaceRepository->save($space);
 
         if ($savedId <= 0) {
-            throw new RuntimeException('Failed to save AccessSpace');
+            return null;
         }
 
         $space->id = $savedId;
@@ -88,5 +88,13 @@ class HandleAccessSpace
     public function getSpaceByName(string $name): ?AccessSpace
     {
         return $this->spaceRepository->getByName($name);
+    }
+
+    /**
+     * @return AccessSpace[]
+     */
+    public function getAllSpaces(): array
+    {
+        return $this->spaceRepository->getAll();
     }
 }

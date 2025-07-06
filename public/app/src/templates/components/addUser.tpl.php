@@ -1,5 +1,10 @@
 <?php
 
+use crm\src\components\Security\_entities\AccessRole;
+use crm\src\components\Security\_entities\AccessSpace;
+
+$roles = $roles ?? [];
+$spaces = $spaces ?? [];
 ?>
 
 <section class="component-wrapper-line">
@@ -25,6 +30,29 @@
             <div class="form-group">
                 <label for="password-input">Повторите пароль</label>
                 <input type="password" name="password_confirm">
+            </div>
+
+            <div class="form-group">
+                <label>Выбор роли</label>
+                <select name="role_id">
+                    <option value="">Выберите...</option>
+                    <?php foreach ($roles as $role) {
+                        if ($role instanceof AccessRole) {
+                            echo '<option value="' . ($role->id ?? '0') . '">' . ($role->name ?? '-роль-') . '</option>';
+                        }
+                    }?>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Выбор пространства</label>
+                <select name="space_id">
+                    <?php foreach ($spaces as $space) {
+                        if ($space instanceof AccessSpace) {
+                            echo '<option value="' . ($space->id ?? '0') . '">' . ($space->name  ?? '-пространство-') . '</option>';
+                        }
+                    }?>
+                </select>
             </div>
 
             <div class="form-actions">

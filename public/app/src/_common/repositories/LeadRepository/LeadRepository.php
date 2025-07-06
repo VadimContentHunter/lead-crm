@@ -15,6 +15,7 @@ use crm\src\components\LeadManagement\_common\mappers\LeadDbMapper;
 use crm\src\components\LeadManagement\_common\DTOs\AccountManagerDto;
 use crm\src\components\LeadManagement\_common\mappers\LeadInputMapper;
 use crm\src\components\LeadManagement\_common\interfaces\ILeadRepository;
+use crm\src\components\LeadManagement\_common\mappers\LeadMapper;
 
 class LeadRepository implements ILeadRepository
 {
@@ -52,8 +53,9 @@ class LeadRepository implements ILeadRepository
         return array_column($data, 'COLUMN_NAME');
     }
 
-    public function save(object $entity): ?int
+    public function save(object|array $entity): ?int
     {
+        $entity = is_array($entity) ? LeadMapper::fromArray($entity) : $entity;
         if (!$entity instanceof Lead) {
             return null;
         }
@@ -282,5 +284,45 @@ class LeadRepository implements ILeadRepository
         $result = $this->repository->executeSql($sql, $params);
 
         return $result->getArrayOrNull() ?? [];
+    }
+
+    /**
+     * Получает все сущности, исключая определённые значения по указанной колонке.
+     *
+     * @param string          $column         Название колонки для фильтрации.
+     * @param array<int|string> $excludedValues Значения для исключения.
+     *
+     * @return array<TEntity>
+     */
+    public function getAllExcept(string $column = '', array $excludedValues = []): array
+    {
+        if (empty($excludedValues)) {
+            return $this->getAll();
+        }
+
+        // Базовая проверка корректности имени колонки
+        if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $column)) {
+            throw new \InvalidArgumentException("Недопустимое имя колонки: $column");
+        }
+
+        $placeholders = [];
+        $params = [];
+        foreach ($excludedValues as $index => $value) {
+            $paramName = "exclude_$index";
+            $placeholders[] = ":$paramName";
+            $params[$paramName] = $value;
+        }
+
+        $tableName = $this->getTableName(); // Вы гарантируете правильность имени таблицы
+
+        $sql = sprintf(
+            "SELECT * FROM %s WHERE %s NOT IN (%s)",
+            $tableName,
+            $column,
+            implode(', ', $placeholders)
+        );
+
+        $result = $this->repository->executeSql($sql, $params)->getArrayOrNull() ?? [];
+        return array_map([LeadMapper::class, 'fromArray'], $result);
     }
 }

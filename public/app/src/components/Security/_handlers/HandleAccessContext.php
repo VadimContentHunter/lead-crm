@@ -45,7 +45,7 @@ class HandleAccessContext
             spaceId: $spaceId,
         );
 
-        $savedId = $this->repository->save($context);
+        $savedId = $this->repository->save(AccessContextMapper::toNonEmptyArray($context));
 
         if ($savedId <= 0) {
             return null;
@@ -114,5 +114,10 @@ class HandleAccessContext
     public function delAccessBySessionHash(string $sessionAccessHash): bool
     {
         return $this->repository->deleteBySessionHash($sessionAccessHash);
+    }
+
+    public function delAccessById(int $id): bool
+    {
+        return $this->repository->deleteById($id) !== null ? true : false;
     }
 }

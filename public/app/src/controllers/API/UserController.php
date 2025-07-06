@@ -13,15 +13,21 @@ use crm\src\services\TableRenderer\TableDecorator;
 use crm\src\components\Security\SessionAuthManager;
 use crm\src\services\TableRenderer\TableRenderInput;
 use crm\src\services\TableRenderer\TableTransformer;
+use crm\src\components\Security\_entities\AccessRole;
 use crm\src\components\UserManagement\_entities\User;
 use crm\src\components\UserManagement\UserManagement;
+use crm\src\_common\repositories\AccessRoleRepository;
+use crm\src\_common\repositories\AccessSpaceRepository;
 use crm\src\_common\repositories\AccessContextRepository;
+use crm\src\components\Security\_handlers\HandleAccessRole;
+use crm\src\components\Security\_handlers\HandleAccessSpace;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\components\Security\_handlers\HandleAccessContext;
 use crm\src\components\UserManagement\_common\mappers\UserMapper;
 use crm\src\components\UserManagement\_common\mappers\UserEditMapper;
 use crm\src\components\UserManagement\_common\mappers\UserInputMapper;
 use crm\src\components\UserManagement\_common\mappers\UserFilterMapper;
+use DateTime;
 
 class UserController
 {
@@ -32,6 +38,10 @@ class UserController
     private SessionAuthManager $sessionAuthManager;
 
     private HandleAccessContext $handleAccessContext;
+
+    private HandleAccessRole $handleAccessRole;
+
+    private HandleAccessSpace $handleAccessSpace;
 
     public function __construct(
         private string $projectPath,
@@ -47,6 +57,9 @@ class UserController
         $accessContextRepository = new AccessContextRepository($pdo, $this->logger);
         $this->sessionAuthManager = new SessionAuthManager($accessContextRepository);
         $this->handleAccessContext = new HandleAccessContext($accessContextRepository);
+        $this->handleAccessRole = new HandleAccessRole(new AccessRoleRepository($pdo, $this->logger));
+        $this->handleAccessSpace = new HandleAccessSpace(new AccessSpaceRepository($pdo, $this->logger));
+
 
         $this->rpc = new JsonRpcServerFacade();
         switch ($this->rpc->getMethod()) {
@@ -85,60 +98,123 @@ class UserController
     public function createUser(array $params): void
     {
         if (
-            is_string($params['login'] ?? null)
-            && is_string($params['password'] ?? null)
-            && is_string($params['password_confirm'] ?? null)
+            !is_string($params['login'] ?? null)
+            || !is_string($params['password'] ?? null)
+            || !is_string($params['password_confirm'] ?? null)
         ) {
-            $userInputDto = UserInputMapper::fromArray($params);
-            if ($userInputDto->plainPassword !== $userInputDto->confirmPassword) {
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Данные пользователя некорректного формата.']
+            ]);
+        }
+
+        $role = null;
+        $space = null;
+
+        if (!isset($params['role_id']) || filter_var($params['role_id'], FILTER_VALIDATE_INT) === false) {
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Роль не выбрана.']
+            ]);
+        }
+
+        $role = $this->handleAccessRole->getRoleById($params['role_id']);
+        if ($role === null) {
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Не существует такой роли.']
+            ]);
+        }
+
+        if ($role->name === "superadmin") {
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Данная роль не предназначена для создания пользователей.']
+            ]);
+        }
+
+        if ($role->name === "manager") {
+            if (isset($params['space_id']) && filter_var($params['space_id'], FILTER_VALIDATE_INT) === false) {
                 $this->rpc->replyData([
-                    ['type' => 'error', 'message' => 'Пароли не совпадают.']
+                    ['type' => 'error', 'message' => 'Для этой роли должно быть выбрано пространство.']
                 ]);
             }
 
-            $executeResult = $this->userManagement->create()->execute($userInputDto);
-            if ($executeResult->isSuccess()) {
+            if (isset($params['space_id'])) {
+                $space = $this->handleAccessSpace->getSpaceById($params['space_id']);
+                if ($space === null) {
+                    $this->rpc->replyData([
+                        ['type' => 'error', 'message' => 'Пространство не выбрано.']
+                    ]);
+                }
+            }
+        }
+
+
+        $userInputDto = UserInputMapper::fromArray($params);
+        if ($userInputDto->plainPassword !== $userInputDto->confirmPassword) {
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Пароли не совпадают.']
+            ]);
+        }
+
+        $user = $this->userManagement->create()->execute($userInputDto);
+        if (!$user->isSuccess()) {
+            $errorMsg = $user->getError()?->getMessage() ?? 'неизвестная ошибка';
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Пользователь не добавлен. Причина: ' . $errorMsg]
+            ]);
+        }
                 // $this->sessionAuthManager
                 // $this->handleAccessContext
 
-                $sessionHash = $this->handleAccessContext->generateSessionHash(
-                    $executeResult->getLogin() ?? '',
-                    $executeResult->getPasswordHash() ?? ''
-                );
-                if ($sessionHash === null) {
-                    $this->deleteUserById($executeResult->getId() ?? 0);
-                    $this->rpc->replyData([
-                        ['type' => 'error', 'message' => 'Не удалось создать сессию.']
-                    ]);
-                }
+        $sessionHash = $this->handleAccessContext->generateSessionHash(
+            $user->getLogin() ?? '',
+            $user->getPasswordHash() ?? ''
+        );
+        if ($sessionHash === null) {
+            $this->deleteUserById($user->getId() ?? 0);
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Не удалось создать сессию.']
+            ]);
+        }
 
-                $accessContext  = $this->handleAccessContext->createAccess(
-                    $executeResult->getId() ?? 0,
-                    $sessionHash
-                );
-                if ($accessContext === null) {
-                    $this->deleteUserById($executeResult->getId() ?? 0);
-                    $this->rpc->replyData([
-                        ['type' => 'error', 'message' => 'Не удалось выдать доступ пользователю.']
-                    ]);
-                }
-
-                $login = $executeResult->getLogin() ?? 'неизвестный логин';
+        if ($role->name === "team-manager") {
+            $spaceName = ($user->getLogin() ?? '') . '_space';
+            $spaceDescription = (new DateTime())->format('Y-m-d H:i:s');
+            $space = $this->handleAccessSpace->addSpace($spaceName, $spaceDescription);
+            if ($space === null) {
+                $this->handleAccessContext->delAccessById($accessContext->id ?? 0);
+                $this->deleteUserById($user->getId() ?? 0);
                 $this->rpc->replyData([
-                    ['type' => 'success', 'message' => 'Пользователь добавлен'],
-                    ['type' => 'info', 'message' => "Добавленный пользователь: <b>{$login}</b>"]
-                ]);
-            } else {
-                $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
-                $this->rpc->replyData([
-                    ['type' => 'error', 'message' => 'Пользователь не добавлен. Причина: ' . $errorMsg]
+                    ['type' => 'error', 'message' => 'Не удалось выдать доступ пользователю. (3)']
                 ]);
             }
-        } else {
-            $this->rpc->replyData([
-                    ['type' => 'error', 'message' => 'Данные пользователя некорректного формата.']
-                ]);
         }
+
+        $accessContext  = $this->handleAccessContext->createAccess(
+            $user->getId() ?? 0,
+            $sessionHash,
+            $role->id ?? 0,
+            $space?->id ?? 0
+        );
+        if ($accessContext === null) {
+            $this->deleteUserById($user->getId() ?? 0);
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Не удалось выдать доступ пользователю. (1)']
+            ]);
+        }
+
+        if ($this->handleAccessRole->getRoleById($role->id ?? 0) === null) {
+            $this->handleAccessContext->delAccessById($accessContext->id ?? 0);
+            $this->deleteUserById($user->getId() ?? 0);
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Не удалось выдать доступ пользователю. (2)']
+            ]);
+        }
+
+        $this->sessionAuthManager->login($sessionHash);
+        $login = $user->getLogin() ?? 'неизвестный логин';
+        $this->rpc->replyData([
+            ['type' => 'success', 'message' => 'Пользователь добавлен'],
+            ['type' => 'info', 'message' => "Добавленный пользователь: <b>{$login}</b>"]
+        ]);
     }
 
     private function deleteUserById(int $id): void

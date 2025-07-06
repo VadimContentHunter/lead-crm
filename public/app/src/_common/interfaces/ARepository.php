@@ -48,10 +48,27 @@ abstract class ARepository implements IRepository
      */
     abstract protected function toArray(object $entity): array;
 
-    public function save(object $entity): ?int
+    /**
+     * Сохраняет сущность.
+     *
+     * @param  object|array<string,mixed> $entityOrData
+     * @return int|null ID новой сущности или null при неудаче.
+     */
+    public function save(object|array $entityOrData): ?int
     {
+        $data = is_object($entityOrData)
+        ? $this->toArray($entityOrData)
+        : $entityOrData;
+
+        if (empty($data)) {
+            $this->logger->warning("Пустой массив для сохранения в " . static::class);
+            return null;
+        }
+
         return $this->repository->executeQuery(
-            (new QueryBuilder())->table($this->getTableName())->insert($this->toArray($entity))
+            (new QueryBuilder())
+            ->table($this->getTableName())
+            ->insert($data)
         )->getInt();
     }
 
@@ -138,5 +155,45 @@ abstract class ARepository implements IRepository
 
         $data = $result->getArrayOrNull() ?? [];
         return array_column($data, 'COLUMN_NAME');
+    }
+
+    /**
+     * Получает все сущности, исключая определённые значения по указанной колонке.
+     *
+     * @param string          $column         Название колонки для фильтрации.
+     * @param array<int|string> $excludedValues Значения для исключения.
+     *
+     * @return array<TEntity>
+     */
+    public function getAllExcept(string $column = '', array $excludedValues = []): array
+    {
+        if (empty($excludedValues)) {
+            return $this->getAll();
+        }
+
+        // Базовая проверка корректности имени колонки
+        if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $column)) {
+            throw new \InvalidArgumentException("Недопустимое имя колонки: $column");
+        }
+
+        $placeholders = [];
+        $params = [];
+        foreach ($excludedValues as $index => $value) {
+            $paramName = "exclude_$index";
+            $placeholders[] = ":$paramName";
+            $params[$paramName] = $value;
+        }
+
+        $tableName = $this->getTableName(); // Вы гарантируете правильность имени таблицы
+
+        $sql = sprintf(
+            "SELECT * FROM %s WHERE %s NOT IN (%s)",
+            $tableName,
+            $column,
+            implode(', ', $placeholders)
+        );
+
+        $result = $this->repository->executeSql($sql, $params)->getArrayOrNull() ?? [];
+        return array_map($this->fromArray(), $result);
     }
 }

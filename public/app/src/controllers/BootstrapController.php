@@ -96,12 +96,18 @@ class BootstrapController
 
             $handleAccessContext = new HandleAccessContext(new AccessContextRepository($pdo, $this->logger));
             if ($handleAccessRole->getRoleByName('superadmin') !== null) {
-                $handleAccessContext->createAccess(
-                    userId: $userSuperAdmin->getId(),
-                    roleId: $handleAccessRole->getRoleByName('superadmin')->id ?? 0
-                );
-                echo "<br>Создан контекст доступа: superadmin<br>";
-                $this->logger->info('Создан контекст доступа: superadmin');
+                if (
+                    $handleAccessContext->createAccess(
+                        userId: $userSuperAdmin->getId() ?? 0,
+                        roleId: $handleAccessRole->getRoleByName('superadmin')->id ?? 0
+                    )
+                ) {
+                    echo "<br>Создан контекст доступа: superadmin<br>";
+                    $this->logger->info('Создан контекст доступа: superadmin');
+                } else {
+                    echo "<br>Не удалось создать контекст доступа: superadmin<br>";
+                    $this->logger->error('Не удалось создать контекст доступа: superadmin');
+                }
             } else {
                 echo "<br>Не удалось создать контекст доступа: superadmin<br>";
                 $this->logger->error('Не удалось создать контекст доступа: superadmin');

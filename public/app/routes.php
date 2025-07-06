@@ -1,6 +1,8 @@
 <?php
 
+use PDO;
 use Psr\Log\NullLogger;
+use Psr\Log\LoggerInterface;
 use crm\src\controllers\LeadPage;
 use crm\src\controllers\UserPage;
 use crm\src\controllers\LoginPage;
@@ -18,7 +20,9 @@ use crm\src\controllers\API\CommentController;
 use crm\src\controllers\API\DepositController;
 use crm\src\services\RouteHandler\entities\Route;
 
-return [
+return static function (PDO $pdo, LoggerInterface $logger): array {
+
+    return [
     new Route(
         pattern: '^/bootstrap-key-A7F9X2M3Q8L1$',
         className: BootstrapController::class,
@@ -174,4 +178,5 @@ return [
         methodName: null,
         extraData: ['Добро пожаловать!']
     ),
-];
+    ];
+};

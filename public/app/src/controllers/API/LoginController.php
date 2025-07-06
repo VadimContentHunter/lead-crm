@@ -67,29 +67,25 @@ class LoginController
                 $this->rpc->replyData([
                     ['type' => 'error', 'message' => 'Пользователь не найден']
                 ]);
-                return;
             }
 
-            if (!password_verify($params['password'] ?? '',  $user->getPasswordHash() ?? '')) {
+            if (!password_verify($params['password'],  $user->getPasswordHash() ?? '')) {
                 $this->rpc->replyData([
                     ['type' => 'error', 'message' => 'Некорректный пароль']
                 ]);
-                return;
             }
 
-            $sessionHash = $this->handleAccessContext->generateSessionHash(
-                $user->getLogin(),
-                $user->getPasswordHash()
-            );
-            $isUpdateSession = $this->handleAccessContext->updateSessionHash(
-                $user->getId(),
-                $sessionHash
-            );
-            if (!$isUpdateSession) {
+            if (!$this->handleAccessContext->verifySessionHash($user->getId() ?? 0, $user->getLogin() ?? '', $user->getPasswordHash() ?? '')) {
                 $this->rpc->replyData([
-                    ['type' => 'error', 'message' => 'Произошла ошибка при обновлении сессии']
+                    ['type' => 'error', 'message' => 'Некорректная сессия']
                 ]);
-                return;
+            }
+
+            $sessionHash = $this->handleAccessContext->generateSessionHashByUserId($user->getId() ?? 0);
+            if ($sessionHash === null) {
+                $this->rpc->replyData([
+                    ['type' => 'error', 'message' => 'Не удалось проверить сессию']
+                ]);
             }
 
             $this->sessionAuthManager->login($sessionHash);

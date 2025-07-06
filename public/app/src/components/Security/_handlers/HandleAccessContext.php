@@ -16,8 +16,15 @@ class HandleAccessContext
     ) {
     }
 
-    public function generateSessionHash(string $login, string $passwordHash): string
+    public function generateSessionHash(string $login, string $passwordHash): ?string
     {
+        if (
+            empty($login) || empty($passwordHash) ||
+            mb_strlen($login) < 3 || mb_strlen($passwordHash) < 3
+        ) {
+            return null;
+        }
+
         $data = $login . ':' . $passwordHash;
         return hash_hmac('sha256', $data, self::$secretKey);
     }
@@ -30,7 +37,7 @@ class HandleAccessContext
         ?string $sessionAccessHash = null,
         ?int $roleId = null,
         ?int $spaceId = null,
-    ): AccessContext {
+    ): ?AccessContext {
         $context = new AccessContext(
             userId: $userId,
             sessionAccessHash: $sessionAccessHash,
@@ -41,7 +48,7 @@ class HandleAccessContext
         $savedId = $this->repository->save($context);
 
         if ($savedId <= 0) {
-            throw new RuntimeException('Failed to save AccessContext');
+            return null;
         }
 
         $context->id = $savedId;
@@ -54,15 +61,49 @@ class HandleAccessContext
         return $this->repository->update(AccessContextMapper::toNonEmptyArray($accessContext)) !== null ? true : false;
     }
 
-    public function updateSessionHash(int $userId, string $generateSessionHash): bool
+    public function updateSessionHash(int $userId, string $login, string $passwordHash): bool
     {
         $accessContext = $this->repository->getByUserId($userId);
         if ($accessContext === null) {
             return false;
         }
 
-        $accessContext->sessionAccessHash = $generateSessionHash;
+        $accessContext->sessionAccessHash = $this->generateSessionHash($login, $passwordHash);
+
+        if ($accessContext->sessionAccessHash === null) {
+            return false;
+        }
         return $this->updateAccess($accessContext);
+    }
+
+    public function verifySessionHash(int $userId, string $login, string $passwordHash): bool
+    {
+        $accessContext = $this->repository->getByUserId($userId);
+        if ($accessContext === null) {
+            return false;
+        }
+
+        return $accessContext->sessionAccessHash === $this->generateSessionHash($login, $passwordHash);
+    }
+
+    public function verifySessionHashBySession(int $userId, string $sessionAccessHash): bool
+    {
+        $accessContext = $this->repository->getByUserId($userId);
+        if ($accessContext === null) {
+            return false;
+        }
+
+        return $accessContext->sessionAccessHash === $sessionAccessHash;
+    }
+
+    public function generateSessionHashByUserId(int $userId): ?string
+    {
+        $accessContext = $this->repository->getByUserId($userId);
+        if ($accessContext === null) {
+            return null;
+        }
+
+        return $accessContext->sessionAccessHash;
     }
 
     public function checkAccessBySessionHash(string $sessionAccessHash): bool

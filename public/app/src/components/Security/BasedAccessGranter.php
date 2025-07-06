@@ -17,6 +17,9 @@ class BasedAccessGranter implements IAccessGranter
     ) {
     }
 
+    /**
+     * @param mixed[] $args
+     */
     public function canCall(object $target, string $methodName, array $args, AccessContext $accessContext): bool
     {
         if ($accessContext->roleId === null) {
@@ -24,7 +27,11 @@ class BasedAccessGranter implements IAccessGranter
         }
 
         $role = $this->roleRepository->getById($accessContext->roleId);
-        $space = $this->spaceRepository->getById($accessContext->spaceId);
+        $space = $accessContext->spaceId !== null ? $this->spaceRepository->getById($accessContext->spaceId) : null;
+
+        if ($role === null) {
+            return false;
+        }
 
         if (strtolower($role->name) === 'admin') {
             return true;
@@ -41,12 +48,18 @@ class BasedAccessGranter implements IAccessGranter
         return false;
     }
 
-    private function checkManagerPermissions(AccessRole $role, AccessSpace $space, object $target, string $methodName, array $args): bool
+    /**
+     * @param mixed[] $args
+     */
+    private function checkManagerPermissions(AccessRole $role, ?AccessSpace $space, object $target, string $methodName, array $args): bool
     {
         return false;
     }
 
-    private function checkTeamManagerPermissions(AccessRole $role, AccessSpace $space, object $target, string $methodName, array $args): bool
+    /**
+     * @param mixed[] $args
+     */
+    private function checkTeamManagerPermissions(AccessRole $role, ?AccessSpace $space, object $target, string $methodName, array $args): bool
     {
         return false;
     }

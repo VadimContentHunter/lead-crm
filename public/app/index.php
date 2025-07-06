@@ -3,15 +3,10 @@
 declare(strict_types=1);
 
 use Psr\Log\NullLogger;
-use crm\src\services\LoggerFactory;
 use crm\src\controllers\ErrorController;
 use crm\src\controllers\NotFoundController;
 use  crm\src\services\RouteHandler\RouteHandler;
 use  crm\src\services\RouteHandler\entities\Route;
-use crm\src\components\Security\BasedAccessGranter;
-use crm\src\components\Security\SecureWrapperFactory;
-use crm\src\_common\repositories\AccessRoleRepository;
-use crm\src\_common\repositories\AccessSpaceRepository;
 use crm\src\services\Repositories\DbRepository\services\PdoFactory;
 
 session_start();
@@ -27,6 +22,10 @@ $pdo = PdoFactory::create([
     'user' => 'root',
     'pass' => 'root',
 ]);
+
+// @phpcs:disable Generic.Files.InlineInclude.NotAllowed
+$routesFactory = require_once __DIR__ . '/routes.php';  // phpcs:enable
+// @phpcs:enable Generic.Files.InlineInclude.NotAllowed
 
 // SecureWrapperFactory::init(new BasedAccessGranter(
 //     roleRepository: new AccessRoleRepository($pdo, $logger),

@@ -13,6 +13,7 @@ session_start();
 
 // define('PROJECT_ROOT', __DIR__);
 require_once __DIR__ . '/libs/autoload.php';
+require_once __DIR__ . '/routes.php';
 
 // $logger = LoggerFactory::createLogger(baseLogDir:__DIR__ . '/logs');
 $logger = new NullLogger();
@@ -22,10 +23,6 @@ $pdo = PdoFactory::create([
     'user' => 'root',
     'pass' => 'root',
 ]);
-
-// @phpcs:disable Generic.Files.InlineInclude.NotAllowed
-$routesFactory = require_once __DIR__ . '/routes.php';  // phpcs:enable
-// @phpcs:enable Generic.Files.InlineInclude.NotAllowed
 
 // SecureWrapperFactory::init(new BasedAccessGranter(
 //     roleRepository: new AccessRoleRepository($pdo, $logger),
@@ -46,7 +43,7 @@ $routError = new Route(
 
 // Создаём обработчик маршрутов, передаём список маршрутов и URL для обработки:
 $routeHandler = new RouteHandler(
-    routes: require_once __DIR__ . '/routes.php',
+    routes: loadRoutes($pdo, $logger),
     currentUrl: $_SERVER['REQUEST_URI'],
     defaultRoute: $rout404,
     errorRoute: $routError,

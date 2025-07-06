@@ -14,7 +14,7 @@ class AccessContextMapper
      */
     public static function fromArrayDb(array $data): ?AccessContext
     {
-        if (!is_string($data['user_id']) || $data['user_id'] === "") {
+        if (!isset($data['user_id']) || filter_var($data['user_id'], FILTER_VALIDATE_INT) === false) {
             return null;
         }
 

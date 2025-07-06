@@ -8,9 +8,9 @@ use crm\src\controllers\SourcePage;
 use crm\src\controllers\StatusPage;
 use crm\src\controllers\HomeController;
 use crm\src\controllers\TestController;
-use crm\src\controllers\LoginController;
 use crm\src\controllers\API\LeadController;
 use crm\src\controllers\API\UserController;
+use crm\src\controllers\API\LoginController;
 use crm\src\controllers\BootstrapController;
 use crm\src\controllers\API\SourceController;
 use crm\src\controllers\API\StatusController;
@@ -66,6 +66,12 @@ return [
     new Route(
         pattern: '^/api/deposits$',
         className: DepositController::class,
+        extraData: [__DIR__, $pdo, $logger]
+    ),
+
+    new Route(
+        pattern: '^/api/login$',
+        className: LoginController::class,
         extraData: [__DIR__, $pdo, $logger]
     ),
 

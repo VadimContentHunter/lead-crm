@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\controllers;
+namespace crm\src\controllers\API;
 
 use PDO;
 use Throwable;

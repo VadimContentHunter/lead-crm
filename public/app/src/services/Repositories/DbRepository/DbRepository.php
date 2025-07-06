@@ -191,7 +191,7 @@ class DbRepository implements IRepository
         $stmt = $this->pdo->prepare($sql);
         $params = !empty($bindings) ? $bindings : $data;
 
-        $stmt->execute($params);
+        $a = $stmt->execute($params);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

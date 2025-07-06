@@ -56,8 +56,9 @@ class UserRepository extends ARepository implements IUserRepository
             (new QueryBuilder())
                 ->table($this->getTableName())
                 ->where('login = :login')
+                ->bindings(['login' => $login])
                 ->select()
-        )->getObjectOrNull($this->getEntityClass());
+        )->first()->getObjectOrNullWithMapper($this->getEntityClass(), [UserMapper::class, 'fromArray']);
     }
 
     /**

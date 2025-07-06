@@ -3,27 +3,18 @@
 $message = $params['message'] ?? '';
 ?>
 <section class="login-container">
-    <form class="base-form" method="post" action="/login">
+    <form class="base-form" id="login-form">
         <div class="form-messages-container">
-            <div class="form-message error">
-                <p>Ошибка: неверный логин или пароль.</p>
-            </div>
-            <div class="form-message success">
-                <p>Вы успешно вошли!</p>
-            </div>
-            <div class="form-message">
-                <p>Введите свои учётные данные.</p>
-            </div>
         </div>
 
         <div class="form-group">
             <label for="login-username">Логин</label>
-            <input type="text" id="login-username" name="username" required>
+            <input type="text" name="login" required>
         </div>
 
         <div class="form-group">
             <label for="login-password">Пароль</label>
-            <input type="password" id="login-password" name="password" required>
+            <input type="password" name="password" required>
         </div>
 
         <div class="form-actions">
@@ -31,3 +22,16 @@ $message = $params['message'] ?? '';
         </div>
     </form>
 </section>
+
+<script type="module">
+  import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
+  
+//   window.addEventListener('DOMContentLoaded', () => {
+    ComponentFunctions.attachJsonRpcInputTrigger({
+      triggerSelector: '#login-form .form-actions .form-button.submit',
+      containerSelector: '#login-form',
+      method: 'auth.login',
+      endpoint: '/api/login'
+    });
+//   });
+</script>

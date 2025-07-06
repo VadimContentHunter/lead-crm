@@ -39,7 +39,7 @@ class DepositRepository extends ARepository implements IDepositRepository
         return DepositMapper::toArray($entity);
     }
 
-    public function save(object $entity): ?int
+    public function save(object|array $entity): ?int
     {
         $data = $this->toArray($entity);
         if ($data['created_at'] === null) {

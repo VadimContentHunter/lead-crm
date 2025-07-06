@@ -209,7 +209,7 @@ class UserController
             ]);
         }
 
-        $this->sessionAuthManager->login($sessionHash);
+        // $this->sessionAuthManager->login($sessionHash);
         $login = $user->getLogin() ?? 'неизвестный логин';
         $this->rpc->replyData([
             ['type' => 'success', 'message' => 'Пользователь добавлен'],

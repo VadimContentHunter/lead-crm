@@ -2,6 +2,7 @@
 
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
+use crm\src\services\Partials;
 use crm\src\controllers\LeadPage;
 use crm\src\controllers\UserPage;
 use crm\src\controllers\LoginPage;
@@ -22,7 +23,7 @@ use crm\src\services\RouteHandler\entities\Route;
 /**
  * @return Route[]
  */
-function loadRoutes(PDO $pdo, LoggerInterface $logger = new NullLogger()): array
+function loadRoutes(PDO $pdo, LoggerInterface $logger = new NullLogger(), ?Partials $partials = null): array
 {
     return [
         new Route(
@@ -88,21 +89,21 @@ function loadRoutes(PDO $pdo, LoggerInterface $logger = new NullLogger()): array
             pattern: '^/page/user-add$',
             className: UserPage::class,
             methodName: 'showAddUserPage',
-            extraData: [__DIR__, $pdo, $logger]
+            extraData: [__DIR__, $pdo, $logger, $partials]
         ),
 
         new Route(
             pattern: '^/page/user-all$',
             className: UserPage::class,
             methodName: 'showAllUserPage',
-            extraData: [__DIR__, $pdo, $logger]
+            extraData: [__DIR__, $pdo, $logger, $partials]
         ),
 
         new Route(
             pattern: '^/page/user-edit/(\d+)$',
             className: UserPage::class,
             methodName: 'showEditUserPage',
-            extraData: [__DIR__, $pdo, $logger]
+            extraData: [__DIR__, $pdo, $logger, $partials]
         ),
 
         // PAGES-STATUS
@@ -111,14 +112,14 @@ function loadRoutes(PDO $pdo, LoggerInterface $logger = new NullLogger()): array
             pattern: '^/page/status-add$',
             className: StatusPage::class,
             methodName: 'showAddStatusPage',
-            extraData: [__DIR__, $pdo, $logger]
+            extraData: [__DIR__, $pdo, $logger, $partials]
         ),
 
         new Route(
             pattern: '^/page/status-all$',
             className: StatusPage::class,
             methodName: 'showAllStatusPage',
-            extraData: [__DIR__, $pdo, $logger]
+            extraData: [__DIR__, $pdo, $logger, $partials]
         ),
 
         // PAGES-SOURCE
@@ -127,14 +128,14 @@ function loadRoutes(PDO $pdo, LoggerInterface $logger = new NullLogger()): array
             pattern: '^/page/source-add$',
             className: SourcePage::class,
             methodName: 'showAddSourcePage',
-            extraData: [__DIR__, $pdo, $logger]
+            extraData: [__DIR__, $pdo, $logger, $partials]
         ),
 
         new Route(
             pattern: '^/page/source-all$',
             className: SourcePage::class,
             methodName: 'showAllSourcePage',
-            extraData: [__DIR__, $pdo, $logger]
+            extraData: [__DIR__, $pdo, $logger, $partials]
         ),
 
         // PAGES-LEAD
@@ -143,21 +144,21 @@ function loadRoutes(PDO $pdo, LoggerInterface $logger = new NullLogger()): array
             pattern: '^/page/lead-add$',
             className: LeadPage::class,
             methodName: 'showAddLeadPage',
-            extraData: [__DIR__, $pdo, $logger]
+            extraData: [__DIR__, $pdo, $logger, $partials]
         ),
 
         new Route(
             pattern: '^/page/lead-all$',
             className: LeadPage::class,
             methodName: 'showAllLeadPage',
-            extraData: [__DIR__, $pdo, $logger]
+            extraData: [__DIR__, $pdo, $logger, $partials]
         ),
 
         new Route(
             pattern: '^/page/lead-edit/(\d+)$',
             className: LeadPage::class,
             methodName: 'showEditLeadPage',
-            extraData: [__DIR__, $pdo, $logger]
+            extraData: [__DIR__, $pdo, $logger, $partials]
         ),
 
         // PAGES-OTHER

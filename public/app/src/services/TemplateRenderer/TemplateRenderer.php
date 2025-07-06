@@ -18,8 +18,12 @@ class TemplateRenderer
         $this->headers = $headers;
     }
 
-    public function renderBundle(ITemplateBundle $bundle): string
+    public function renderBundle(?ITemplateBundle $bundle): string
     {
+        if ($bundle === null) {
+            return '';
+        }
+
         $partialsRendered = [];
 
         foreach ($bundle->getPartials() as $partial) {

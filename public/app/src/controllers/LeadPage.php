@@ -6,6 +6,7 @@ use PDO;
 use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
+use crm\src\services\Partials;
 use crm\src\controllers\NotFoundController;
 use crm\src\controllers\API\DepositController;
 use crm\src\services\TableRenderer\TableFacade;
@@ -72,7 +73,8 @@ class LeadPage
     public function __construct(
         private string $projectPath,
         PDO $pdo,
-        private LoggerInterface $logger = new NullLogger()
+        private LoggerInterface $logger = new NullLogger(),
+        private ?Partials $partials = null
     ) {
         $this->logger->info('LeadPage initialized');
         $this->renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
@@ -130,50 +132,9 @@ class LeadPage
         $this->renderer->setHeaders($headers);
 
         try {
-            $layout = (new TemplateBundle(
-                templatePath: 'layout.tpl.php',
-                variables: [
-                    'body_js' => [
-                        '/assets/js/app.js'
-                    ]
-                ],
-                partialsContainer: 'content'
-            ))
-            ->addPartial((new TemplateBundle(
-                templatePath: 'partials/head.tpl.php',
-                variables: [
-                    'title' => 'Тестовая страница',
-                    'css' => [
-                        '/assets/css/reset.css',
-                        '/assets/css/fonts.css',
-                        '/assets/css/styles.css',
-                        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css'
-                    ],
-                    'js' => [
-                        // '/assets/js/JsonRpcResponseHandler.js',
-                        // '/assets/js/JsonRpcClient.js'
-                    ]
-                ],
-                partialsContainer: 'head'
-            )))
-            ->addPartial(
-                (new TemplateBundle(
-                    templatePath: 'containers/page-container.tpl.php',
-                    partialsContainer: 'main_container'
-                ))->addPartial((new TemplateBundle(
-                    templatePath: 'partials/main-menu.tpl.php',
-                    partialsContainer: 'main_menu'
-                )))
-                ->addPartial((new TemplateBundle(
-                    templatePath: 'partials/content.tpl.php',
-                    variables: $components,
-                    partialsContainer: 'content_container'
-                )))
-            );
-
             // Успешный ответ
             $headers->setResponseCode(200);
-            echo $this->renderer->renderBundle($layout);
+            echo $this->renderer->renderBundle($this->partials->getLayout($components));
         } catch (Throwable $e) {
             // Внутренняя ошибка — HTTP 500
             $headers->setResponseCode(500);

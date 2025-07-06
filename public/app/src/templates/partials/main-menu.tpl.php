@@ -1,5 +1,8 @@
 <?php
 
+    $login = $login ?? '';
+    $role = $role ?? '---';
+    $space = $space ?? '---';
 ?>
 
 <!-- Основное меню -->
@@ -14,8 +17,9 @@
 
     <section class="user-info">
         <div class="user-data">
-            <p>Логин: <span>admin</span></p>
-            <p>Данные 1: <span>Тест</span></p>
+            <p>Логин: <span><?= $login ?></span></p>
+            <p>Роль: <span><?= $role ?></span></p>
+            <p>Пространство: <span><?= $space ?></span></p>
         </div>
         
     </section>

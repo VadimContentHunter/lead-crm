@@ -106,6 +106,16 @@ class HandleAccessContext
         return $accessContext->sessionAccessHash;
     }
 
+    public function getAccessByUserId(int $userId): ?AccessContext
+    {
+        return $this->repository->getByUserId($userId);
+    }
+
+    public function getAccessBySessionHash(string $sessionAccessHash): ?AccessContext
+    {
+        return $this->repository->getBySessionHash($sessionAccessHash);
+    }
+
     public function checkAccessBySessionHash(string $sessionAccessHash): bool
     {
         return $this->repository->getBySessionHash($sessionAccessHash) !== null ? true : false;

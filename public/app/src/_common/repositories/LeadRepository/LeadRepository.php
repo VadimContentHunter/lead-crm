@@ -53,6 +53,9 @@ class LeadRepository implements ILeadRepository
         return array_column($data, 'COLUMN_NAME');
     }
 
+    /**
+     * @param object|array<string,mixed> $entity
+     */
     public function save(object|array $entity): ?int
     {
         $entity = is_array($entity) ? LeadMapper::fromArray($entity) : $entity;
@@ -292,7 +295,7 @@ class LeadRepository implements ILeadRepository
      * @param string          $column         Название колонки для фильтрации.
      * @param array<int|string> $excludedValues Значения для исключения.
      *
-     * @return array<TEntity>
+     * @return array<Lead>
      */
     public function getAllExcept(string $column = '', array $excludedValues = []): array
     {

@@ -56,7 +56,7 @@ class StatusPage
         try {
             // Успешный ответ
             $headers->setResponseCode(200);
-            echo $this->renderer->renderBundle($this->partials->getLayout($components));
+            echo $this->renderer->renderBundle($this->partials?->getLayout($components));
         } catch (Throwable $e) {
             // Внутренняя ошибка — HTTP 500
             $headers->setResponseCode(500);

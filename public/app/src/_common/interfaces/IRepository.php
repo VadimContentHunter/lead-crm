@@ -14,7 +14,7 @@ interface IRepository
      *
      * @param TEntity|array<string,mixed> $entity
      */
-    public function save(object|array $entityOrData): ?int;
+    public function save(object|array $entity): ?int;
 
     /**
      * Обновляет сущность или часть полей по id.

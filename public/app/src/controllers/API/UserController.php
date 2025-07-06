@@ -35,8 +35,6 @@ class UserController
 
     private JsonRpcServerFacade $rpc;
 
-    private SessionAuthManager $sessionAuthManager;
-
     private HandleAccessContext $handleAccessContext;
 
     private HandleAccessRole $handleAccessRole;
@@ -55,7 +53,6 @@ class UserController
         );
 
         $accessContextRepository = new AccessContextRepository($pdo, $this->logger);
-        $this->sessionAuthManager = new SessionAuthManager($accessContextRepository);
         $this->handleAccessContext = new HandleAccessContext($accessContextRepository);
         $this->handleAccessRole = new HandleAccessRole(new AccessRoleRepository($pdo, $this->logger));
         $this->handleAccessSpace = new HandleAccessSpace(new AccessSpaceRepository($pdo, $this->logger));
@@ -161,8 +158,6 @@ class UserController
                 ['type' => 'error', 'message' => 'Пользователь не добавлен. Причина: ' . $errorMsg]
             ]);
         }
-                // $this->sessionAuthManager
-                // $this->handleAccessContext
 
         $sessionHash = $this->handleAccessContext->generateSessionHash(
             $user->getLogin() ?? '',
@@ -180,7 +175,6 @@ class UserController
             $spaceDescription = (new DateTime())->format('Y-m-d H:i:s');
             $space = $this->handleAccessSpace->addSpace($spaceName, $spaceDescription);
             if ($space === null) {
-                $this->handleAccessContext->delAccessById($accessContext->id ?? 0);
                 $this->deleteUserById($user->getId() ?? 0);
                 $this->rpc->replyData([
                     ['type' => 'error', 'message' => 'Не удалось выдать доступ пользователю. (3)']
@@ -209,7 +203,6 @@ class UserController
             ]);
         }
 
-        // $this->sessionAuthManager->login($sessionHash);
         $login = $user->getLogin() ?? 'неизвестный логин';
         $this->rpc->replyData([
             ['type' => 'success', 'message' => 'Пользователь добавлен'],

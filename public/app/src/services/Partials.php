@@ -45,6 +45,7 @@ class Partials
         PDO $pdo,
         private LoggerInterface $logger = new NullLogger()
     ) {
+        $this->logger->info('Partials initialized ' . $this->projectPath);
         $this->userManagement = new UserManagement(
             new UserRepository($pdo, $logger),
             new UserValidatorAdapter()

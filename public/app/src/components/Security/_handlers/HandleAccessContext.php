@@ -2,9 +2,10 @@
 
 namespace crm\src\components\Security\_handlers;
 
-use crm\src\components\Security\_entities\AccessContext;
-use crm\src\components\Security\_common\interfaces\IAccessContextRepository;
 use RuntimeException;
+use crm\src\components\Security\_entities\AccessContext;
+use crm\src\components\Security\_common\mappers\AccessContextMapper;
+use crm\src\components\Security\_common\interfaces\IAccessContextRepository;
 
 class HandleAccessContext
 {
@@ -48,9 +49,25 @@ class HandleAccessContext
         return $context;
     }
 
-    public function checkAccessBySessionHash(string $sessionAccessHash): ?AccessContext
+    public function updateAccess(AccessContext $accessContext): bool
     {
-        return $this->repository->getBySessionHash($sessionAccessHash);
+        return $this->repository->update(AccessContextMapper::toNonEmptyArray($accessContext)) !== null ? true : false;
+    }
+
+    public function updateSessionHash(int $userId, string $generateSessionHash): bool
+    {
+        $accessContext = $this->repository->getByUserId($userId);
+        if ($accessContext === null) {
+            return false;
+        }
+
+        $accessContext->sessionAccessHash = $generateSessionHash;
+        return $this->updateAccess($accessContext);
+    }
+
+    public function checkAccessBySessionHash(string $sessionAccessHash): bool
+    {
+        return $this->repository->getBySessionHash($sessionAccessHash) !== null ? true : false;
     }
 
     public function delAccessBySessionHash(string $sessionAccessHash): bool

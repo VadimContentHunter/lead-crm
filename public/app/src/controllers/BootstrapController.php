@@ -6,9 +6,15 @@ use PDO;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
 use crm\src\services\CrmSchemaProvider;
+use crm\src\_common\repositories\UserRepository;
+use crm\src\_common\adapters\UserValidatorAdapter;
+use crm\src\components\UserManagement\UserManagement;
 use crm\src\_common\repositories\AccessRoleRepository;
+use crm\src\_common\repositories\AccessContextRepository;
 use crm\src\components\Security\_handlers\HandleAccessRole;
 use crm\src\services\Repositories\DbRepository\DbRepository;
+use crm\src\components\Security\_handlers\HandleAccessContext;
+use crm\src\components\UserManagement\_common\DTOs\UserInputDto;
 
 class BootstrapController
 {
@@ -51,6 +57,7 @@ class BootstrapController
             }
         }
 
+
         echo "<br><br>Создание базовых моделей:<br><br>";
         $this->logger->info('Создание базовых моделей:');
 
@@ -70,6 +77,40 @@ class BootstrapController
         $handleAccessRole->addRole('team-manager', 'team-manager');
         echo "<br>Создана роль: team-manager<br>";
         $this->logger->info('Создана роль: team-manager');
+
+
+        echo "<br><br>Инициализация базовых пользователей:<br><br>";
+        $userManagement = new UserManagement(
+            new UserRepository($pdo, $logger),
+            new UserValidatorAdapter()
+        );
+        $userSuperAdmin = $userManagement->create()->execute(new UserInputDto(
+            login: 'superadmin',
+            plainPassword: 'superadmin',
+            confirmPassword: 'superadmin',
+        ));
+
+        if ($userSuperAdmin->isSuccess()) {
+            echo "<br>Создан пользователь: superadmin<br>";
+            $this->logger->info('Создан пользователь: superadmin');
+
+            $handleAccessContext = new HandleAccessContext(new AccessContextRepository($pdo, $this->logger));
+            if ($handleAccessRole->getRoleByName('superadmin') !== null) {
+                $handleAccessContext->createAccess(
+                    userId: $userSuperAdmin->getId(),
+                    roleId: $handleAccessRole->getRoleByName('superadmin')->id ?? 0
+                );
+                echo "<br>Создан контекст доступа: superadmin<br>";
+                $this->logger->info('Создан контекст доступа: superadmin');
+            } else {
+                echo "<br>Не удалось создать контекст доступа: superadmin<br>";
+                $this->logger->error('Не удалось создать контекст доступа: superadmin');
+            }
+        } else {
+            $error = $userSuperAdmin->getError()?->getMessage() ?? 'Неизвестная ошибка';
+             echo "<br>" . $error . "<br>";
+            $this->logger->error($error);
+        }
 
 
         echo "<br><br>Bootstrapping завершено.<br>";

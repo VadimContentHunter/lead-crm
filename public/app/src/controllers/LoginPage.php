@@ -7,7 +7,7 @@ use crm\src\services\TemplateRenderer\HeaderManager;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 
-class LoginController
+class LoginPage
 {
     private TemplateRenderer $renderer;
     private HeaderManager $headers;

@@ -61,4 +61,17 @@ class AccessContextRepository extends ARepository implements IAccessContextRepos
                 ->delete(['hash' => $hash])
         )->getBool() ?? false;
     }
+
+    public function getByUserId(int $userId): ?AccessContext
+    {
+        $mapper = $this->fromArray();
+
+        return $this->repository->executeQuery(
+            (new QueryBuilder())
+                ->table($this->getTableName())
+                ->where('user_id = :userId')
+                ->limit(1)
+                ->select(['userId' => $userId])
+        )->first()->getObjectOrNullWithMapper($this->getEntityClass(), $mapper);
+    }
 }

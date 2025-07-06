@@ -42,7 +42,7 @@ class CreateUser
 
         $user = new User(
             login: $dto->login,
-            passwordHash: password_hash($dto->plainPassword, PASSWORD_DEFAULT),
+            passwordHash: $this->generatePasswordHash($dto->plainPassword),
         );
 
         try {
@@ -57,5 +57,28 @@ class CreateUser
                 new UserManagementException("Произошла внутренняя ошибка")
             );
         }
+    }
+
+    /**
+     * Генерация хэша пароля
+     *
+     * @param  string $plainPassword
+     * @return string
+     */
+    public function generatePasswordHash(string $plainPassword): string
+    {
+        return password_hash($plainPassword, PASSWORD_DEFAULT);
+    }
+
+    /**
+     * Проверка соответствия пароля и хэша
+     *
+     * @param  string $plainPassword
+     * @param  string $passwordHash
+     * @return bool
+     */
+    public function validatePassword(string $plainPassword, string $passwordHash): bool
+    {
+        return password_verify($plainPassword, $passwordHash);
     }
 }

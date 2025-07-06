@@ -3,6 +3,7 @@
 use Psr\Log\NullLogger;
 use crm\src\controllers\LeadPage;
 use crm\src\controllers\UserPage;
+use crm\src\controllers\LoginPage;
 use crm\src\controllers\SourcePage;
 use crm\src\controllers\StatusPage;
 use crm\src\controllers\HomeController;
@@ -16,7 +17,6 @@ use crm\src\controllers\API\StatusController;
 use crm\src\controllers\API\CommentController;
 use crm\src\controllers\API\DepositController;
 use crm\src\services\RouteHandler\entities\Route;
-use crm\src\services\Repositories\DbRepository\services\PdoFactory;
 
 return [
     new Route(
@@ -152,7 +152,7 @@ return [
 
     new Route(
         pattern: '^/login',
-        className: LoginController::class,
+        className: LoginPage::class,
         extraData: [__DIR__]
     ),
 

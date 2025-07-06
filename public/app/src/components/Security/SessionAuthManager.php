@@ -5,7 +5,7 @@ namespace crm\src\components\Security;
 use crm\src\components\Security\_entities\AccessContext;
 use crm\src\components\Security\_common\interfaces\IAccessContextRepository;
 
-class SecurityGuard
+class SessionAuthManager
 {
     public static string $sessionAccessHashKey = 'session_access_hash';
 
@@ -15,6 +15,11 @@ class SecurityGuard
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+    }
+
+    public function login(string $sessionAccessHash): void
+    {
+        $_SESSION[self::$sessionAccessHashKey] = $sessionAccessHash;
     }
 
     public function checkAccess(): bool

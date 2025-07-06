@@ -10,14 +10,14 @@ use crm\src\services\TableRenderer\TableFacade;
 use crm\src\_common\repositories\UserRepository;
 use crm\src\_common\adapters\UserValidatorAdapter;
 use crm\src\services\TableRenderer\TableDecorator;
+use crm\src\components\Security\SessionAuthManager;
 use crm\src\services\TableRenderer\TableRenderInput;
 use crm\src\services\TableRenderer\TableTransformer;
-use crm\src\services\TemplateRenderer\HeaderManager;
 use crm\src\components\UserManagement\_entities\User;
 use crm\src\components\UserManagement\UserManagement;
-use crm\src\services\TemplateRenderer\TemplateRenderer;
+use crm\src\_common\repositories\AccessContextRepository;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
-use crm\src\services\TemplateRenderer\_common\TemplateBundle;
+use crm\src\components\Security\_handlers\HandleAccessContext;
 use crm\src\components\UserManagement\_common\mappers\UserMapper;
 use crm\src\components\UserManagement\_common\mappers\UserEditMapper;
 use crm\src\components\UserManagement\_common\mappers\UserInputMapper;
@@ -29,6 +29,10 @@ class UserController
 
     private JsonRpcServerFacade $rpc;
 
+    private SessionAuthManager $sessionAuthManager;
+
+    private HandleAccessContext $handleAccessContext;
+
     public function __construct(
         private string $projectPath,
         PDO $pdo,
@@ -39,6 +43,10 @@ class UserController
             new UserRepository($pdo, $logger),
             new UserValidatorAdapter()
         );
+
+        $accessContextRepository = new AccessContextRepository($pdo, $this->logger);
+        $this->sessionAuthManager = new SessionAuthManager($accessContextRepository);
+        $this->handleAccessContext = new HandleAccessContext($accessContextRepository);
 
         $this->rpc = new JsonRpcServerFacade();
         switch ($this->rpc->getMethod()) {
@@ -90,6 +98,31 @@ class UserController
 
             $executeResult = $this->userManagement->create()->execute($userInputDto);
             if ($executeResult->isSuccess()) {
+                // $this->sessionAuthManager
+                // $this->handleAccessContext
+
+                $sessionHash = $this->handleAccessContext->generateSessionHash(
+                    $executeResult->getLogin() ?? '',
+                    $executeResult->getPasswordHash() ?? ''
+                );
+                if ($sessionHash === null) {
+                    $this->deleteUserById($executeResult->getId() ?? 0);
+                    $this->rpc->replyData([
+                        ['type' => 'error', 'message' => 'Не удалось создать сессию.']
+                    ]);
+                }
+
+                $accessContext  = $this->handleAccessContext->createAccess(
+                    $executeResult->getId() ?? 0,
+                    $sessionHash
+                );
+                if ($accessContext === null) {
+                    $this->deleteUserById($executeResult->getId() ?? 0);
+                    $this->rpc->replyData([
+                        ['type' => 'error', 'message' => 'Не удалось выдать доступ пользователю.']
+                    ]);
+                }
+
                 $login = $executeResult->getLogin() ?? 'неизвестный логин';
                 $this->rpc->replyData([
                     ['type' => 'success', 'message' => 'Пользователь добавлен'],
@@ -105,6 +138,16 @@ class UserController
             $this->rpc->replyData([
                     ['type' => 'error', 'message' => 'Данные пользователя некорректного формата.']
                 ]);
+        }
+    }
+
+    private function deleteUserById(int $id): void
+    {
+        $resDelete = $this->userManagement->delete()->executeById($id);
+        if (!$resDelete->isSuccess()) {
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Не удалось удалить пользователя.']
+            ]);
         }
     }
 

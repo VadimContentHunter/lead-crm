@@ -1,6 +1,5 @@
 <?php
 
-use PDO;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
 use crm\src\controllers\LeadPage;
@@ -23,7 +22,7 @@ use crm\src\services\RouteHandler\entities\Route;
 /**
  * @return Route[]
  */
-function loadRoutes(PDO $pdo, LoggerInterface $logger): array
+function loadRoutes(PDO $pdo, LoggerInterface $logger = new NullLogger()): array
 {
     return [
         new Route(

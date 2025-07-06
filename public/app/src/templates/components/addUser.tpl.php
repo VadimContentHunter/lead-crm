@@ -7,12 +7,6 @@
     <section class="component component--medium">
         <form class="base-form" id="add-user-form">
             <div class="form-messages-container">
-                <div class="form-message error">
-                    <p>Ошибка: неверный логин или пароль.</p>
-                </div>
-                <div class="form-message success">
-                    <p>Вы успешно вошли!</p>
-                </div>
                 <div class="form-message">
                     <p>Введите свои учётные данные.</p>
                 </div>

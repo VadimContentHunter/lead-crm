@@ -36,7 +36,7 @@ class AccessContextMapper
     {
         return [
             'id' => $obj->id,
-            'session_access_hash ' => $obj->sessionAccessHash,
+            'session_access_hash' => $obj->sessionAccessHash,
             'user_id' => $obj->userId,
             'role_id' => $obj->roleId,
             'space_id' => $obj->spaceId

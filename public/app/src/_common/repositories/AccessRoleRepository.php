@@ -3,10 +3,10 @@
 namespace crm\src\_common\repositories;
 
 use crm\src\_common\interfaces\ARepository;
-use crm\src\components\Security\_common\interfaces\IAccessRoleRepository;
 use crm\src\components\Security\_entities\AccessRole;
-use crm\src\components\Security\_common\mappers\AccessRoleMapper;
 use crm\src\services\Repositories\QueryBuilder\QueryBuilder;
+use crm\src\components\Security\_common\mappers\AccessRoleMapper;
+use crm\src\components\Security\_common\interfaces\IAccessRoleRepository;
 
 /**
  * @extends ARepository<AccessRole>
@@ -28,7 +28,7 @@ class AccessRoleRepository extends ARepository implements IAccessRoleRepository
 
     protected function fromArray(): callable
     {
-        return [AccessRoleMapper::class, 'fromArray'];
+        return [AccessRoleMapper::class, 'fromArrayDb'];
     }
 
     protected function toArray(object $entity): array

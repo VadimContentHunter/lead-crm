@@ -28,7 +28,7 @@ class AccessSpaceRepository extends ARepository implements IAccessSpaceRepositor
 
     protected function fromArray(): callable
     {
-        return [AccessSpaceMapper::class, 'fromArray'];
+        return [AccessSpaceMapper::class, 'fromArrayDb'];
     }
 
     protected function toArray(object $entity): array

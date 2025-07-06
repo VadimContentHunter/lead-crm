@@ -16,13 +16,13 @@ class HandleAccessRole
     /**
      * Добавление новой роли.
      */
-    public function addRole(string $name, ?string $description = null): AccessRole
+    public function addRole(string $name, ?string $description = null): ?AccessRole
     {
         $role = new AccessRole(name: $name, description: $description);
         $savedId = $this->roleRepository->save($role);
 
         if ($savedId <= 0) {
-            throw new RuntimeException('Failed to save AccessRole');
+            return null;
         }
 
         $role->id = $savedId;

@@ -28,7 +28,7 @@ class AccessContextRepository extends ARepository implements IAccessContextRepos
 
     protected function fromArray(): callable
     {
-        return [AccessContextMapper::class, 'fromArray'];
+        return [AccessContextMapper::class, 'fromArrayDb'];
     }
 
     protected function toArray(object $entity): array

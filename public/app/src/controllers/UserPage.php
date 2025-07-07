@@ -8,32 +8,21 @@ use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
 use crm\src\components\Security\RoleNames;
 use crm\src\controllers\NotFoundController;
-use crm\src\services\AppContext\AppContext;
 use crm\src\services\AppContext\IAppContext;
-use crm\src\components\Security\SecureWrapper;
 use crm\src\services\TableRenderer\TableFacade;
 use crm\src\_common\repositories\UserRepository;
 use crm\src\_common\adapters\UserValidatorAdapter;
 use crm\src\services\TableRenderer\TableDecorator;
-use crm\src\components\Security\SessionAuthManager;
 use crm\src\services\TableRenderer\TableRenderInput;
 use crm\src\services\TableRenderer\TableTransformer;
 use crm\src\services\TemplateRenderer\HeaderManager;
 use crm\src\components\Security\_entities\AccessRole;
-use crm\src\components\Security\SecureWrapperFactory;
 use crm\src\components\UserManagement\_entities\User;
 use crm\src\components\UserManagement\UserManagement;
-use crm\src\_common\repositories\AccessRoleRepository;
 use crm\src\components\Security\_entities\AccessSpace;
-use crm\src\_common\repositories\AccessSpaceRepository;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
-use crm\src\components\Security\_entities\AccessContext;
-use crm\src\_common\repositories\AccessContextRepository;
-use crm\src\components\Security\_handlers\HandleAccessRole;
-use crm\src\components\Security\_handlers\HandleAccessSpace;
-use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
-use crm\src\components\Security\_handlers\HandleAccessContext;
+use crm\src\components\Security\_common\interfaces\IHandleAccessRole;
 use crm\src\components\Security\_common\interfaces\IHandleAccessSpace;
 
 class UserPage
@@ -43,10 +32,7 @@ class UserPage
     // private HandleAccessRole $handleAccessRole;
     private IHandleAccessSpace $handleAccessSpace;
 
-    /**
-     * @var HandleAccessRole
-     */
-    private SecureWrapper $handleAccessRole;
+    private IHandleAccessRole $handleAccessRole;
 
     // private SecureWrapper $handleAccessSpace;
 
@@ -65,16 +51,8 @@ class UserPage
             new UserValidatorAdapter()
         );
 
-        $this->handleAccessRole = SecureWrapperFactory::createAndWrapObject(HandleAccessRole::class, [
-            new AccessRoleRepository($pdo, $this->logger)
-        ]);
-
         $this->handleAccessSpace = $appContext->getHandleAccessSpace();
-        // $this->handleAccessSpace = SecureWrapperFactory::createAndWrapObject(HandleAccessSpace::class, [
-        //     new AccessSpaceRepository($pdo, $this->logger)
-        // ]);
-        // $this->handleAccessRole = new HandleAccessRole(new AccessRoleRepository($pdo, $this->logger));
-        // $this->handleAccessSpace = new HandleAccessSpace(new AccessSpaceRepository($pdo, $this->logger));
+        $this->handleAccessRole = $appContext->getHandleAccessRole();
     }
 
     /**

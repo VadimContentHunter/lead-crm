@@ -2,11 +2,12 @@
 
 namespace crm\src\components\Security\_handlers;
 
-use crm\src\components\Security\_entities\AccessRole;
-use crm\src\components\Security\_common\interfaces\IAccessRoleRepository;
 use RuntimeException;
+use crm\src\components\Security\_entities\AccessRole;
+use crm\src\components\Security\_common\interfaces\IHandleAccessRole;
+use crm\src\components\Security\_common\interfaces\IAccessRoleRepository;
 
-class HandleAccessRole
+class HandleAccessRole implements IHandleAccessRole
 {
     public function __construct(
         private IAccessRoleRepository $roleRepository

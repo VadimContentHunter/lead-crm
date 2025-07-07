@@ -22,15 +22,17 @@ use crm\src\components\Security\_entities\AccessContext;
 use crm\src\_common\repositories\AccessContextRepository;
 use crm\src\components\Security\_handlers\HandleAccessRole;
 use crm\src\components\Security\_handlers\HandleAccessSpace;
+use crm\src\_common\adapters\Security\SecureHandleAccessRole;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 use crm\src\_common\adapters\Security\SecureHandleAccessSpace;
 use crm\src\components\Security\_handlers\HandleAccessContext;
+use crm\src\components\Security\_common\interfaces\IHandleAccessRole;
 use crm\src\components\Security\_common\interfaces\IHandleAccessSpace;
 
 class SecurityAppContext implements IAppContext
 {
     public UserManagement $userManagement;
-    public HandleAccessRole $handleAccessRole;
+    public IHandleAccessRole $handleAccessRole;
     public IHandleAccessSpace $handleAccessSpace;
     public SessionAuthManager $sessionAuthManager;
     public HandleAccessContext $handleAccessContext;
@@ -51,6 +53,7 @@ class SecurityAppContext implements IAppContext
         $this->accessRoleRepository = new AccessRoleRepository($pdo, $logger);
         $this->accessSpaceRepository = new AccessSpaceRepository($pdo, $logger);
         $this->accessContextRepository = new AccessContextRepository($pdo, $logger);
+        $basedAccessGranter = new BasedAccessGranter($this->accessRoleRepository, $this->accessSpaceRepository);
 
         $this->sessionAuthManager = new SessionAuthManager($this->accessContextRepository);
         $this->userManagement = new UserManagement(new UserRepository($pdo, $logger), new UserValidatorAdapter());
@@ -61,7 +64,13 @@ class SecurityAppContext implements IAppContext
 
         $this->handleAccessSpace = new SecureHandleAccessSpace(
             $this->accessSpaceRepository,
-            new BasedAccessGranter($this->accessRoleRepository, $this->accessSpaceRepository),
+            $basedAccessGranter,
+            $this->thisAccessContext
+        );
+
+        $this->handleAccessRole = new SecureHandleAccessRole(
+            $this->accessRoleRepository,
+            $basedAccessGranter,
             $this->thisAccessContext
         );
 
@@ -95,7 +104,7 @@ class SecurityAppContext implements IAppContext
         return $this->userManagement;
     }
 
-    public function getHandleAccessRole(): HandleAccessRole
+    public function getHandleAccessRole(): IHandleAccessRole
     {
         return $this->handleAccessRole;
     }

@@ -11,17 +11,16 @@ use crm\src\components\Security\_entities\AccessSpace;
 use crm\src\_common\repositories\AccessSpaceRepository;
 use crm\src\components\Security\_entities\AccessContext;
 use crm\src\_common\repositories\AccessContextRepository;
-use crm\src\components\Security\_handlers\HandleAccessRole;
-use crm\src\components\Security\_handlers\HandleAccessSpace;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 use crm\src\components\Security\_handlers\HandleAccessContext;
+use crm\src\components\Security\_common\interfaces\IHandleAccessRole;
 use crm\src\components\Security\_common\interfaces\IHandleAccessSpace;
 
 interface IAppContext
 {
     public function getUserManagement(): UserManagement;
 
-    public function getHandleAccessRole(): HandleAccessRole;
+    public function getHandleAccessRole(): IHandleAccessRole;
 
     public function getHandleAccessSpace(): IHandleAccessSpace;
 

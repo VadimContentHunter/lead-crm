@@ -7,6 +7,7 @@ use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
 use crm\src\services\AppContext\AppContext;
+use crm\src\services\AppContext\IAppContext;
 use crm\src\_common\repositories\UserRepository;
 use crm\src\_common\adapters\UserValidatorAdapter;
 use crm\src\services\TemplateRenderer\HeaderManager;
@@ -22,12 +23,9 @@ class AccessDeniedPage
 {
     private TemplateRenderer $renderer;
     public function __construct(
-        private string $projectPath,
-        private LoggerInterface $logger = new NullLogger(),
-        private ?AppContext $appContext = null
+        private IAppContext $appContext
     ) {
-        $this->logger->info('UserPage initialized');
-        $this->renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
+        $this->renderer = $this->appContext->getTemplateRenderer();
         $this->showPage();
     }
 

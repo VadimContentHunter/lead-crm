@@ -7,11 +7,12 @@ use crm\src\components\UserManagement\_entities\User;
 use crm\src\components\UserManagement\_common\DTOs\UserInputDto;
 use crm\src\components\UserManagement\_common\DTOs\UserFilterDto;
 use crm\src\components\UserManagement\_common\adapters\UserResult;
+use crm\src\components\UserManagement\_common\interfaces\IGetUser;
 use crm\src\components\UserManagement\_common\interfaces\IUserResult;
 use crm\src\components\UserManagement\_common\interfaces\IUserRepository;
 use crm\src\components\UserManagement\_exceptions\UserManagementException;
 
-class GetUser
+class GetUser implements IGetUser
 {
     public function __construct(
         private IUserRepository $userRepository,

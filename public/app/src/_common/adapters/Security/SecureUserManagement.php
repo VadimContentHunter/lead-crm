@@ -1,25 +1,31 @@
 <?php
 
-namespace crm\src\components\UserManagement;
+namespace crm\src\_common\adapters\Security;
 
 use crm\src\_common\interfaces\IValidation;
 use crm\src\components\UserManagement\GetUser;
 use crm\src\components\UserManagement\CreateUser;
 use crm\src\components\UserManagement\DeleteUser;
 use crm\src\components\UserManagement\UpdateUser;
+use crm\src\_common\adapters\Security\SecureGetUser;
+use crm\src\components\Security\_entities\AccessContext;
+use crm\src\components\Security\_common\interfaces\IAccessGranter;
+use crm\src\components\UserManagement\_common\interfaces\IGetUser;
 use crm\src\components\UserManagement\_common\interfaces\IUserManagement;
 use crm\src\components\UserManagement\_common\interfaces\IUserRepository;
 
-class UserManagement implements IUserManagement
+class SecureUserManagement implements IUserManagement
 {
     private ?CreateUser $create = null;
-    private ?GetUser $get = null;
+    private ?IGetUser $get = null;
     private ?UpdateUser $update = null;
     private ?DeleteUser $delete = null;
 
     public function __construct(
         private IUserRepository $repository,
         private IValidation $validator,
+        private IAccessGranter $accessGranter,
+        private ?AccessContext $accessContext
     ) {
     }
 
@@ -28,9 +34,9 @@ class UserManagement implements IUserManagement
         return $this->create ??= new CreateUser($this->repository, $this->validator);
     }
 
-    public function get(): GetUser
+    public function get(): IGetUser
     {
-        return $this->get ??= new GetUser($this->repository, $this->validator);
+        return $this->get ??= new SecureGetUser($this->repository, $this->validator, $this->accessGranter, $this->accessContext);
     }
 
     public function update(): UpdateUser

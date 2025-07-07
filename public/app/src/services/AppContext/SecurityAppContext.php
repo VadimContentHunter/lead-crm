@@ -6,39 +6,42 @@ use PDO;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
 use crm\src\services\AppContext\IAppContext;
-use crm\src\components\Security\SecureWrapper;
 use crm\src\_common\repositories\UserRepository;
 use crm\src\_common\adapters\UserValidatorAdapter;
 use crm\src\components\Security\BasedAccessGranter;
 use crm\src\components\Security\SessionAuthManager;
 use crm\src\components\Security\_entities\AccessRole;
-use crm\src\components\Security\SecureWrapperFactory;
 use crm\src\components\UserManagement\_entities\User;
-use crm\src\components\UserManagement\UserManagement;
 use crm\src\_common\repositories\AccessRoleRepository;
 use crm\src\components\Security\_entities\AccessSpace;
 use crm\src\_common\repositories\AccessSpaceRepository;
+use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\components\Security\_entities\AccessContext;
 use crm\src\_common\repositories\AccessContextRepository;
+use crm\src\_common\adapters\Security\SecureUserManagement;
 use crm\src\components\Security\_handlers\HandleAccessRole;
-use crm\src\components\Security\_handlers\HandleAccessSpace;
 use crm\src\_common\adapters\Security\SecureHandleAccessRole;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 use crm\src\_common\adapters\Security\SecureHandleAccessSpace;
 use crm\src\components\Security\_handlers\HandleAccessContext;
 use crm\src\components\Security\_common\interfaces\IHandleAccessRole;
 use crm\src\components\Security\_common\interfaces\IHandleAccessSpace;
+use crm\src\components\UserManagement\_common\interfaces\IUserManagement;
 
 class SecurityAppContext implements IAppContext
 {
-    public UserManagement $userManagement;
+    public IUserManagement $userManagement;
     public IHandleAccessRole $handleAccessRole;
     public IHandleAccessSpace $handleAccessSpace;
     public SessionAuthManager $sessionAuthManager;
     public HandleAccessContext $handleAccessContext;
+
     public AccessRoleRepository $accessRoleRepository;
     public AccessSpaceRepository $accessSpaceRepository;
     public AccessContextRepository $accessContextRepository;
+    public UserRepository $userRepository;
+
+    public TemplateRenderer $templateRenderer;
 
     public ?User $thisUser = null;
     public ?AccessRole $thisRole = null;
@@ -50,13 +53,15 @@ class SecurityAppContext implements IAppContext
         PDO $pdo,
         public LoggerInterface $logger = new NullLogger()
     ) {
+        $this->templateRenderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
+
         $this->accessRoleRepository = new AccessRoleRepository($pdo, $logger);
         $this->accessSpaceRepository = new AccessSpaceRepository($pdo, $logger);
         $this->accessContextRepository = new AccessContextRepository($pdo, $logger);
-        $basedAccessGranter = new BasedAccessGranter($this->accessRoleRepository, $this->accessSpaceRepository);
+        $this->userRepository = new UserRepository($pdo, $logger);
 
+        $basedAccessGranter = new BasedAccessGranter($this->accessRoleRepository, $this->accessSpaceRepository);
         $this->sessionAuthManager = new SessionAuthManager($this->accessContextRepository);
-        $this->userManagement = new UserManagement(new UserRepository($pdo, $logger), new UserValidatorAdapter());
         $this->thisAccessContext = $this->sessionAuthManager->getCurrentAccessContext();
 
         $this->handleAccessContext = new HandleAccessContext($this->accessContextRepository);
@@ -70,6 +75,13 @@ class SecurityAppContext implements IAppContext
 
         $this->handleAccessRole = new SecureHandleAccessRole(
             $this->accessRoleRepository,
+            $basedAccessGranter,
+            $this->thisAccessContext
+        );
+
+        $this->userManagement = new SecureUserManagement(
+            $this->userRepository,
+            new UserValidatorAdapter(),
             $basedAccessGranter,
             $this->thisAccessContext
         );
@@ -92,14 +104,18 @@ class SecurityAppContext implements IAppContext
         // ]);
 
 
-        // if ($this->thisAccessContext !== null) {
-        //     $this->thisUser = $this->userManagement->get()->executeById($this->thisAccessContext->userId)->getUser();
-        //     $this->thisRole = $this->handleAccessRole->getRoleById($this->thisAccessContext->roleId ?? 0);
-        //     $this->thisSpace = $this->handleAccessSpace->getSpaceById($this->thisAccessContext->spaceId ?? 0);
-        // }
+        if ($this->thisAccessContext !== null) {
+            $userRepo = new UserRepository($pdo, $logger);
+            $roleRepo = $this->accessRoleRepository;
+            $spaceRepo = $this->accessSpaceRepository;
+
+            $this->thisUser = $userRepo->getById($this->thisAccessContext->userId);
+            $this->thisRole = $roleRepo->getById($this->thisAccessContext->roleId ?? 0);
+            $this->thisSpace = $spaceRepo->getById($this->thisAccessContext->spaceId ?? 0);
+        }
     }
 
-    public function getUserManagement(): UserManagement
+    public function getUserManagement(): IUserManagement
     {
         return $this->userManagement;
     }
@@ -137,6 +153,11 @@ class SecurityAppContext implements IAppContext
     public function getAccessContextRepository(): AccessContextRepository
     {
         return $this->accessContextRepository;
+    }
+
+    public function getTemplateRenderer(): TemplateRenderer
+    {
+        return $this->templateRenderer;
     }
 
     public function getThisUser(): ?User

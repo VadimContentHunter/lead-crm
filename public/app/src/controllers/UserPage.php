@@ -24,10 +24,11 @@ use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 use crm\src\components\Security\_common\interfaces\IHandleAccessRole;
 use crm\src\components\Security\_common\interfaces\IHandleAccessSpace;
+use crm\src\components\UserManagement\_common\interfaces\IUserManagement;
 
 class UserPage
 {
-    private UserManagement $userManagement;
+    private IUserManagement $userManagement;
 
     // private HandleAccessRole $handleAccessRole;
     private IHandleAccessSpace $handleAccessSpace;
@@ -39,18 +40,10 @@ class UserPage
     private TemplateRenderer $renderer;
 
     public function __construct(
-        private string $projectPath,
-        PDO $pdo,
         private IAppContext $appContext,
-        private LoggerInterface $logger = new NullLogger(),
     ) {
-        $this->logger->info('UserPage initialized');
-        $this->renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
-        $this->userManagement = new UserManagement(
-            new UserRepository($pdo, $logger),
-            new UserValidatorAdapter()
-        );
-
+        $this->renderer = $appContext->getTemplateRenderer();
+        $this->userManagement = $appContext->getUserManagement();
         $this->handleAccessSpace = $appContext->getHandleAccessSpace();
         $this->handleAccessRole = $appContext->getHandleAccessRole();
     }

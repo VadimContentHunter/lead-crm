@@ -24,20 +24,20 @@ class TemplateRenderer
             return '';
         }
 
-        $partialsRendered = [];
+        $appContextRendered = [];
 
-        foreach ($bundle->getPartials() as $partial) {
+        foreach ($bundle->getAppContext() as $partial) {
             $rendered = $this->renderBundle($partial);
-            $container = $partial->getPartialsContainerName();
+            $container = $partial->getpartialsContainerName();
 
             if ($container) {
-                $partialsRendered[$container] = $rendered;
+                $appContextRendered[$container] = $rendered;
             }
         }
 
         // Объединяем переменные и отрендеренные partial'ы
         $resolvedVars = $this->resolveVariables($bundle->getVariables());
-        $mainVars = array_merge($resolvedVars, $partialsRendered);
+        $mainVars = array_merge($resolvedVars, $appContextRendered);
 
         $output = $this->render($bundle->getTemplatePath(), $mainVars);
 

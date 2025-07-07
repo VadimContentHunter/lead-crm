@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Psr\Log\NullLogger;
-use crm\src\services\Partials;
+use crm\src\services\AppContext;
 use crm\src\controllers\ErrorController;
 use crm\src\controllers\NotFoundController;
 use  crm\src\services\RouteHandler\RouteHandler;
@@ -24,7 +24,7 @@ $pdo = PdoFactory::create([
     'user' => 'root',
     'pass' => 'root',
 ]);
-$partials = new Partials(__DIR__, $pdo, $logger);
+$appContext = new AppContext(__DIR__, $pdo, $logger);
 
 // SecureWrapperFactory::init(new BasedAccessGranter(
 //     roleRepository: new AccessRoleRepository($pdo, $logger),
@@ -45,7 +45,7 @@ $routError = new Route(
 
 // Создаём обработчик маршрутов, передаём список маршрутов и URL для обработки:
 $routeHandler = new RouteHandler(
-    routes: loadRoutes($pdo, $logger, $partials),
+    routes: loadRoutes($pdo, $logger, $appContext),
     currentUrl: $_SERVER['REQUEST_URI'],
     defaultRoute: $rout404,
     errorRoute: $routError,

@@ -132,10 +132,20 @@ export const ComponentFunctions = {
 
                 messageBox.innerHTML = '';
                 for (const msg of messages) {
+                    if(msg.type === 'redirect'){
+                        continue;
+                    }
+
                     const div = document.createElement('div');
                     div.className = 'form-message' + (msg.type && msg.type !== 'info' ? ` ${msg.type}` : '');
                     div.innerHTML = `<p>${msg.message}</p>`;
                     messageBox.appendChild(div);
+                }
+
+                const redirect = messages.find((msg) => msg.type === 'redirect');
+                if (redirect) {
+                    setTimeout(() => {}, 1000);
+                    window.location.href = redirect.url || '/';
                 }
             },
             onError: (error) => {

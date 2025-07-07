@@ -6,7 +6,7 @@ use PDO;
 use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
-use crm\src\services\Partials;
+use crm\src\services\AppContext;
 use crm\src\controllers\NotFoundController;
 use crm\src\services\TableRenderer\TableFacade;
 use crm\src\_common\repositories\UserRepository;
@@ -45,7 +45,7 @@ class UserPage
         private string $projectPath,
         PDO $pdo,
         private LoggerInterface $logger = new NullLogger(),
-        private ?Partials $partials = null
+        private ?AppContext $appContext = null
     ) {
         $this->logger->info('UserPage initialized');
         $this->renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
@@ -69,7 +69,7 @@ class UserPage
         try {
             // Успешный ответ
             $headers->setResponseCode(200);
-            echo $this->renderer->renderBundle($this->partials?->getLayout($components));
+            echo $this->renderer->renderBundle($this->appContext?->getLayout($components));
         } catch (Throwable $e) {
             // Внутренняя ошибка — HTTP 500
             $headers->setResponseCode(500);

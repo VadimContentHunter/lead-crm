@@ -105,12 +105,12 @@
     </nav>
 
     <nav class="list-main-menu bottom-menu">
-        <div class="item-main-menu item-logout">
+        <a href="/logout" class="item-main-menu">
             <div class="icon-wrapper">
                 <i class="fa-solid fa-right-from-bracket"></i>
             </div>
             <p>Выход</p>
-        </div>
+        </a>
     </nav>
 </aside>
 

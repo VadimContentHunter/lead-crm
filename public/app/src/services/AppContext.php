@@ -22,7 +22,7 @@ use crm\src\components\Security\_handlers\HandleAccessSpace;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 use crm\src\components\Security\_handlers\HandleAccessContext;
 
-class Partials
+class AppContext
 {
     public UserManagement $userManagement;
 
@@ -45,7 +45,7 @@ class Partials
         PDO $pdo,
         private LoggerInterface $logger = new NullLogger()
     ) {
-        $this->logger->info('Partials initialized ' . $this->projectPath);
+        $this->logger->info('AppContext initialized ' . $this->projectPath);
         $this->userManagement = new UserManagement(
             new UserRepository($pdo, $logger),
             new UserValidatorAdapter()
@@ -118,5 +118,28 @@ class Partials
                 partialsContainer: 'content_container'
             )))
         );
+    }
+
+    public function checkSessionAndRedirect(): void
+    {
+        if ($this->sessionAuthManager->checkAccess()) {
+            header('Location: /page/lead-all');
+            exit;
+        }
+    }
+
+    public function redirectIfNotAuthenticated(): void
+    {
+        if (!$this->sessionAuthManager->checkAccess()) {
+            header('Location: /login');
+            exit;
+        }
+    }
+
+    public function logoutAndRedirect(): never
+    {
+        $this->sessionAuthManager->logout();
+        header('Location: /login');
+        exit;
     }
 }

@@ -6,7 +6,7 @@ use PDO;
 use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
-use crm\src\services\Partials;
+use crm\src\services\AppContext;
 use crm\src\services\TableRenderer\TableFacade;
 use crm\src\_common\repositories\SourceRepository;
 use crm\src\services\TableRenderer\TableDecorator;
@@ -29,7 +29,7 @@ class SourcePage
         private string $projectPath,
         PDO $pdo,
         private LoggerInterface $logger = new NullLogger(),
-        private ?Partials $partials = null
+        private ?AppContext $appContext = null
     ) {
         $this->logger->info('SourcePage initialized');
         $this->renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
@@ -52,7 +52,7 @@ class SourcePage
 
         try {
             $headers->setResponseCode(200);
-            echo $this->renderer->renderBundle($this->partials?->getLayout($components));
+            echo $this->renderer->renderBundle($this->appContext?->getLayout($components));
         } catch (Throwable $e) {
             // Внутренняя ошибка — HTTP 500
             $headers->setResponseCode(500);

@@ -48,6 +48,10 @@ class LoginController
                 $this->login($this->rpc->getParams());
             // break;
 
+            case 'auth.logout':
+                $this->logout();
+            // break;
+
             default:
                 $this->rpc->replyError(-32601, 'Метод не найден');
         }
@@ -91,11 +95,20 @@ class LoginController
             $this->sessionAuthManager->login($sessionHash);
             $this->rpc->replyData([
                 ['type' => 'success', 'message' => 'Успешная авторизация'],
+                ['type' => 'redirect', 'url' => '/page/lead-all'],
             ]);
         } else {
             $this->rpc->replyData([
                 ['type' => 'error', 'message' => 'Данные источника некорректного формата.']
             ]);
         }
+    }
+
+    public function logout(): void
+    {
+        $this->sessionAuthManager->logout();
+        $this->rpc->replyData([
+            ['type' => 'redirect', 'url' => '/login'],
+        ]);
     }
 }

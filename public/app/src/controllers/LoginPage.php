@@ -3,6 +3,8 @@
 namespace crm\src\controllers;
 
 use Throwable;
+use crm\src\services\AppContext;
+use crm\src\components\Security\SessionAuthManager;
 use crm\src\services\TemplateRenderer\HeaderManager;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
@@ -13,13 +15,16 @@ class LoginPage
     private HeaderManager $headers;
 
     public function __construct(
-        private string $projectPath
+        private string $projectPath,
+        private ?AppContext $appContext = null
     ) {
         $this->headers = new HeaderManager();
         $this->headers->set('Content-Type', 'text/html; charset=utf-8');
 
         $this->renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
         $this->renderer->setHeaders($this->headers);
+
+        $this->appContext->checkSessionAndRedirect();
 
         $this->show();
     }
@@ -64,5 +69,10 @@ class LoginPage
             // echo "Произошла ошибка: " . $e->getMessage();
             throw $e;
         }
+    }
+
+    public function logout()
+    {
+        $this->appContext->logoutAndRedirect();
     }
 }

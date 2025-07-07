@@ -9,7 +9,7 @@ class TemplateBundle implements ITemplateBundle
     /**
      * @var ITemplateBundle[]
      */
-    private array $partials = [];
+    private array $appContext = [];
 
     public function __construct(
         private string $templatePath,
@@ -31,7 +31,7 @@ class TemplateBundle implements ITemplateBundle
         return $this->variables;
     }
 
-    public function getPartialsContainerName(): ?string
+    public function getpartialsContainerName(): ?string
     {
         return $this->partialsContainer;
     }
@@ -39,14 +39,14 @@ class TemplateBundle implements ITemplateBundle
     /**
      * @return ITemplateBundle[]
      */
-    public function getPartials(): array
+    public function getAppContext(): array
     {
-        return $this->partials;
+        return $this->appContext;
     }
 
     public function addPartial(ITemplateBundle $partial): self
     {
-        $this->partials[] = $partial;
+        $this->appContext[] = $partial;
 
         return $this;
     }

@@ -10,11 +10,11 @@ interface ITemplateBundle
      * @return mixed[]
      */
     public function getVariables(): array;
-    public function getPartialsContainerName(): ?string;
+    public function getpartialsContainerName(): ?string;
 
     /**
      * @return ITemplateBundle[]
      */
-    public function getPartials(): array;
+    public function getAppContext(): array;
     public function addPartial(ITemplateBundle $partial): self;
 }

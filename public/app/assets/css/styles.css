@@ -447,6 +447,20 @@ table.base-table .btn-delete {
   overflow-y: auto;
 }
 
+.error-component {
+  text-align: center;
+}
+.error-component .error-code {
+  font-size: 64px;
+  font-weight: bold;
+  color: #e74c3c;
+  margin-bottom: 16px;
+}
+.error-component .error-message {
+  font-size: 18px;
+  color: #333;
+}
+
 body {
   font-family: "Inter", sans-serif;
 }

@@ -10,4 +10,6 @@ interface IAccessGranter
      * @param mixed[] $args
      */
     public function canCall(object $target, string $methodName, array $args, AccessContext $accessContext): bool;
+
+    public function canCreate(string $className, ?AccessContext $accessContext): bool;
 }

@@ -96,19 +96,15 @@ class HandleAccessContext
         return $accessContext->sessionAccessHash === $sessionAccessHash;
     }
 
-    public function generateSessionHashByUserId(int $userId): ?string
-    {
-        $accessContext = $this->repository->getByUserId($userId);
-        if ($accessContext === null) {
-            return null;
-        }
-
-        return $accessContext->sessionAccessHash;
-    }
-
     public function getAccessByUserId(int $userId): ?AccessContext
     {
         return $this->repository->getByUserId($userId);
+    }
+
+    public function getSessionHashByUserId(int $userId): ?string
+    {
+        $context = $this->repository->getByUserId($userId);
+        return $context ? $context->sessionAccessHash : null;
     }
 
     public function getAccessBySessionHash(string $sessionAccessHash): ?AccessContext

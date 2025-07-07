@@ -17,10 +17,12 @@ use crm\src\components\Security\_entities\AccessSpace;
 use crm\src\_common\repositories\AccessSpaceRepository;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\_common\repositories\AccessContextRepository;
+use crm\src\components\Security\_entities\AccessContext;
 use crm\src\components\Security\_handlers\HandleAccessRole;
 use crm\src\components\Security\_handlers\HandleAccessSpace;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 use crm\src\components\Security\_handlers\HandleAccessContext;
+use Monolog\Logger;
 
 class AppContext
 {
@@ -34,33 +36,44 @@ class AppContext
 
     public HandleAccessContext $handleAccessContext;
 
+    public AccessRoleRepository $accessRoleRepository;
+
+    public AccessSpaceRepository $accessSpaceRepository;
+
+    public AccessContextRepository $accessContextRepository;
+
     public ?User $thisUser = null;
 
     public ?AccessRole $thisRole = null;
 
     public ?AccessSpace $thisSpace = null;
 
+    public ?AccessContext $thisAccessContext = null;
+
     public function __construct(
-        private string $projectPath,
+        public string $projectPath,
         PDO $pdo,
-        private LoggerInterface $logger = new NullLogger()
+        public LoggerInterface $logger = new NullLogger()
     ) {
         $this->logger->info('AppContext initialized ' . $this->projectPath);
         $this->userManagement = new UserManagement(
             new UserRepository($pdo, $logger),
             new UserValidatorAdapter()
         );
-        $accessContextRepository = new AccessContextRepository($pdo, $this->logger);
-        $this->sessionAuthManager = new SessionAuthManager($accessContextRepository);
-        $this->handleAccessContext = new HandleAccessContext($accessContextRepository);
-        $this->handleAccessRole = new HandleAccessRole(new AccessRoleRepository($pdo, $this->logger));
-        $this->handleAccessSpace = new HandleAccessSpace(new AccessSpaceRepository($pdo, $this->logger));
+        $this->accessContextRepository = new AccessContextRepository($pdo, $this->logger);
+        $this->accessRoleRepository = new AccessRoleRepository($pdo, $this->logger);
+        $this->accessSpaceRepository = new AccessSpaceRepository($pdo, $this->logger);
 
-        $accessContext = $this->sessionAuthManager->getCurrentAccessContext();
-        if ($accessContext !== null) {
-            $this->thisUser = $this->userManagement->get()->executeById($accessContext->userId)->getUser();
-            $this->thisRole = $this->handleAccessRole->getRoleById($accessContext->roleId ?? 0);
-            $this->thisSpace = $this->handleAccessSpace->getSpaceById($accessContext->spaceId ?? 0);
+        $this->sessionAuthManager = new SessionAuthManager($this->accessContextRepository);
+        $this->handleAccessContext = new HandleAccessContext($this->accessContextRepository);
+        $this->handleAccessRole = new HandleAccessRole($this->accessRoleRepository);
+        $this->handleAccessSpace = new HandleAccessSpace($this->accessSpaceRepository);
+
+        $this->thisAccessContext = $this->sessionAuthManager->getCurrentAccessContext();
+        if ($this->thisAccessContext !== null) {
+            $this->thisUser = $this->userManagement->get()->executeById($this->thisAccessContext->userId)->getUser();
+            $this->thisRole = $this->handleAccessRole->getRoleById($this->thisAccessContext->roleId ?? 0);
+            $this->thisSpace = $this->handleAccessSpace->getSpaceById($this->thisAccessContext->spaceId ?? 0);
         }
     }
 

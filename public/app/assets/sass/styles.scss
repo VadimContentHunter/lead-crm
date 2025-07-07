@@ -8,6 +8,7 @@
 @use './layout/content';
 @use './layout/footer';
 @use './components/base_components';
+@use './components/error-component';
 
 body {
     font-family: 'Inter', sans-serif;

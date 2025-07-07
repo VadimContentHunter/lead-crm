@@ -3,9 +3,11 @@
 namespace crm\src\controllers\API;
 
 use PDO;
+use DateTime;
 use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
+use crm\src\components\Security\RoleNames;
 use crm\src\services\TableRenderer\TableFacade;
 use crm\src\_common\repositories\UserRepository;
 use crm\src\_common\adapters\UserValidatorAdapter;
@@ -27,7 +29,6 @@ use crm\src\components\UserManagement\_common\mappers\UserMapper;
 use crm\src\components\UserManagement\_common\mappers\UserEditMapper;
 use crm\src\components\UserManagement\_common\mappers\UserInputMapper;
 use crm\src\components\UserManagement\_common\mappers\UserFilterMapper;
-use DateTime;
 
 class UserController
 {
@@ -120,20 +121,20 @@ class UserController
             ]);
         }
 
-        if ($role->name === "superadmin") {
+        if (RoleNames::isSuperAdmin($role->name)) {
             $this->rpc->replyData([
                 ['type' => 'error', 'message' => 'Данная роль не предназначена для создания пользователей.']
             ]);
         }
 
-        if ($role->name === "manager") {
+        if (RoleNames::isManager($role->name)) {
             if (isset($params['space_id']) && filter_var($params['space_id'], FILTER_VALIDATE_INT) === false) {
                 $this->rpc->replyData([
                     ['type' => 'error', 'message' => 'Для этой роли должно быть выбрано пространство.']
                 ]);
             }
 
-            if (isset($params['space_id'])) {
+            if (isset($params['space_id']) && $params['space_id'] > 0) {
                 $space = $this->handleAccessSpace->getSpaceById($params['space_id']);
                 if ($space === null) {
                     $this->rpc->replyData([
@@ -170,7 +171,7 @@ class UserController
             ]);
         }
 
-        if ($role->name === "team-manager") {
+        if (RoleNames::isTeamManager($role->name)) {
             $spaceName = ($user->getLogin() ?? '') . '_space';
             $spaceDescription = (new DateTime())->format('Y-m-d H:i:s');
             $space = $this->handleAccessSpace->addSpace($spaceName, $spaceDescription);
@@ -204,9 +205,17 @@ class UserController
         }
 
         $login = $user->getLogin() ?? 'неизвестный логин';
+        $roleName = $role->name ?? 'нет';
+        $spaceName = $space?->name ?? 'нет';
         $this->rpc->replyData([
             ['type' => 'success', 'message' => 'Пользователь добавлен'],
-            ['type' => 'info', 'message' => "Добавленный пользователь: <b>{$login}</b>"]
+            ['type' => 'info', 'message' => <<<HTML
+                    Добавленный пользователь:
+                    <br>Логин: <b>{$login}</b>
+                    <br>Роль: <b>{$roleName}</b>
+                    <br>Пространство: <b>{$spaceName}</b>
+                HTML
+            ]
         ]);
     }
 

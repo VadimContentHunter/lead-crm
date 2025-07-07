@@ -10,6 +10,7 @@ use crm\src\_common\repositories\UserRepository;
 use crm\src\_common\adapters\UserValidatorAdapter;
 use crm\src\components\Security\SessionAuthManager;
 use crm\src\services\TemplateRenderer\HeaderManager;
+use crm\src\components\Security\SecureWrapperFactory;
 use crm\src\components\UserManagement\UserManagement;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\_common\repositories\AccessContextRepository;
@@ -79,20 +80,32 @@ class LoginController
                 ]);
             }
 
-            if (!$this->handleAccessContext->verifySessionHash($user->getId() ?? 0, $user->getLogin() ?? '', $user->getPasswordHash() ?? '')) {
+            // if (!$this->handleAccessContext->verifySessionHash($user->getId() ?? 0, $user->getLogin() ?? '', $user->getPasswordHash() ?? '')) {
+            //     $this->rpc->replyData([
+            //         ['type' => 'error', 'message' => 'Некорректная сессия']
+            //     ]);
+            // }
+
+            $isUpdateSessionHash = $this->handleAccessContext->updateSessionHash(
+                $user->getId() ?? 0,
+                $user->getLogin() ?? '',
+                $user->getPasswordHash() ?? ''
+            );
+            if (!$isUpdateSessionHash) {
                 $this->rpc->replyData([
-                    ['type' => 'error', 'message' => 'Некорректная сессия']
+                    ['type' => 'error', 'message' => 'Не удалось обновить сессию']
                 ]);
             }
 
-            $sessionHash = $this->handleAccessContext->generateSessionHashByUserId($user->getId() ?? 0);
-            if ($sessionHash === null) {
+            $sessionHash = $this->handleAccessContext->getSessionHashByUserId($user->getId() ?? 0);
+            if (!$isUpdateSessionHash) {
                 $this->rpc->replyData([
-                    ['type' => 'error', 'message' => 'Не удалось проверить сессию']
+                   ['type' => 'error', 'message' => 'Не удалось получить сессию']
                 ]);
             }
 
             $this->sessionAuthManager->login($sessionHash);
+            // SecureWrapperFactory::$accessContext = $this->sessionAuthManager->getCurrentAccessContext();
             $this->rpc->replyData([
                 ['type' => 'success', 'message' => 'Успешная авторизация'],
                 ['type' => 'redirect', 'url' => '/page/lead-all'],

@@ -6,6 +6,7 @@ namespace crm\src\services\RouteHandler;
 
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
+use crm\src\components\Security\SecureWrapperFactory;
 use  crm\src\services\RouteHandler\common\interfaces\IRoute;
 
 class RouteHandler
@@ -124,13 +125,15 @@ class RouteHandler
         $methodParams = array_merge(array_values($methodExtraData), $routeParams);
 
         // Создаём контроллер через Reflection
-        $reflection = new \ReflectionClass($className);
-        $controller = $reflection->newInstanceArgs($constructorParams);
+        // $reflection = new \ReflectionClass($className);
+        // $controller = $reflection->newInstanceArgs($constructorParams);
 
+        $controller = SecureWrapperFactory::createAndWrapObject($className, $constructorParams);
         if ($methodName !== null) {
-            if (!method_exists($controller, $methodName)) {
-                throw new \RuntimeException("Метод {$methodName} не найден в классе {$className}.");
-            }
+            // Убирается проверка так как вызов метода будет через оболочку
+            // if (!method_exists($controller, $methodName)) {
+            //     throw new \RuntimeException("Метод {$methodName} не найден в классе {$className}.");
+            // }
 
             // Вызываем метод
             // call_user_func_array([$controller, $methodName], $methodParams);

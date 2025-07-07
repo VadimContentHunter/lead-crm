@@ -11,6 +11,7 @@ use crm\src\controllers\SourcePage;
 use crm\src\controllers\StatusPage;
 use crm\src\controllers\HomeController;
 use crm\src\controllers\TestController;
+use crm\src\controllers\AccessDeniedPage;
 use crm\src\controllers\API\LeadController;
 use crm\src\controllers\API\UserController;
 use crm\src\controllers\API\LoginController;
@@ -165,19 +166,25 @@ function loadRoutes(PDO $pdo, LoggerInterface $logger = new NullLogger(), ?AppCo
         // PAGES-OTHER
 
         new Route(
-            pattern: '^/login',
+            pattern: '^/login$',
             className: LoginPage::class,
             extraData: [__DIR__, $appContext]
         ),
 
         new Route(
-            pattern: '^/logout',
+            pattern: '^/logout$',
             className: LogoutPage::class,
             extraData: [$appContext]
         ),
 
         new Route(
-            pattern: '^/test',
+            pattern: '^/access-denied$',
+            className: AccessDeniedPage::class,
+            extraData: [__DIR__, $logger, $appContext]
+        ),
+
+        new Route(
+            pattern: '^/test$',
             className: TestController::class,
             extraData: [__DIR__]
         ),

@@ -31,7 +31,7 @@ class SessionAuthManager
     public function logout(): void
     {
         $hash = $_SESSION[self::$sessionAccessHashKey] ?? '';
-        $this->repository->deleteBySessionHash($hash);
+        // $this->repository->deleteBySessionHash($hash);
         unset($_SESSION[self::$sessionAccessHashKey]);
         session_destroy();
     }

@@ -7,6 +7,7 @@ use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
 use crm\src\services\AppContext;
+use crm\src\components\Security\RoleNames;
 use crm\src\controllers\NotFoundController;
 use crm\src\services\TableRenderer\TableFacade;
 use crm\src\_common\repositories\UserRepository;
@@ -16,15 +17,15 @@ use crm\src\components\Security\SessionAuthManager;
 use crm\src\services\TableRenderer\TableRenderInput;
 use crm\src\services\TableRenderer\TableTransformer;
 use crm\src\services\TemplateRenderer\HeaderManager;
+use crm\src\components\Security\_entities\AccessRole;
 use crm\src\components\UserManagement\_entities\User;
 use crm\src\components\UserManagement\UserManagement;
 use crm\src\_common\repositories\AccessRoleRepository;
 use crm\src\components\Security\_entities\AccessSpace;
 use crm\src\_common\repositories\AccessSpaceRepository;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
-use crm\src\_common\repositories\AccessContextRepository;
 use crm\src\components\Security\_entities\AccessContext;
-use crm\src\components\Security\_entities\AccessRole;
+use crm\src\_common\repositories\AccessContextRepository;
 use crm\src\components\Security\_handlers\HandleAccessRole;
 use crm\src\components\Security\_handlers\HandleAccessSpace;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
@@ -87,7 +88,7 @@ class UserPage
             'components' => [(new TemplateBundle(
                 templatePath: 'components/addUser.tpl.php',
                 variables: [
-                    'roles' => $this->handleAccessRole->getAllExceptRoles('name', ['superadmin']),
+                    'roles' => $this->handleAccessRole->getAllExceptRoles('name', [RoleNames::SUPER_ADMIN->value]),
                     'spaces' => $spaces,
                 ]
             ))]

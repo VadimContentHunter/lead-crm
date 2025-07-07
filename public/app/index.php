@@ -3,13 +3,14 @@
 declare(strict_types=1);
 
 use Psr\Log\NullLogger;
-use crm\src\services\AppContext;
 use crm\src\services\LoggerFactory;
 use crm\src\controllers\ErrorController;
 use crm\src\controllers\NotFoundController;
+use crm\src\services\AppContext\AppContext;
 use  crm\src\services\RouteHandler\RouteHandler;
 use  crm\src\services\RouteHandler\entities\Route;
 use crm\src\components\Security\BasedAccessGranter;
+use crm\src\services\AppContext\SecurityAppContext;
 use crm\src\components\Security\SecureWrapperFactory;
 use crm\src\_common\repositories\AccessRoleRepository;
 use crm\src\_common\repositories\AccessSpaceRepository;
@@ -29,7 +30,9 @@ $pdo = PdoFactory::create([
     'user' => 'root',
     'pass' => 'root',
 ]);
-$appContext = new AppContext(__DIR__, $pdo, $logger);
+// $appContext = new AppContext(__DIR__, $pdo, $logger);
+$appContext = new SecurityAppContext(__DIR__, $pdo, $logger);
+
 SecureWrapperFactory::init(
     new BasedAccessGranter(
         $appContext->accessRoleRepository,
@@ -56,7 +59,7 @@ $routError = new Route(
 
 // Создаём обработчик маршрутов, передаём список маршрутов и URL для обработки:
 $routeHandler = new RouteHandler(
-    routes: loadRoutes($pdo, $logger, $appContext),
+    routes: loadRoutes($pdo, $appContext, $logger),
     currentUrl: $_SERVER['REQUEST_URI'],
     defaultRoute: $rout404,
     errorRoute: $routError,

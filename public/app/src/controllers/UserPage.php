@@ -6,9 +6,11 @@ use PDO;
 use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
-use crm\src\services\AppContext;
 use crm\src\components\Security\RoleNames;
 use crm\src\controllers\NotFoundController;
+use crm\src\services\AppContext\AppContext;
+use crm\src\services\AppContext\IAppContext;
+use crm\src\components\Security\SecureWrapper;
 use crm\src\services\TableRenderer\TableFacade;
 use crm\src\_common\repositories\UserRepository;
 use crm\src\_common\adapters\UserValidatorAdapter;
@@ -18,6 +20,7 @@ use crm\src\services\TableRenderer\TableRenderInput;
 use crm\src\services\TableRenderer\TableTransformer;
 use crm\src\services\TemplateRenderer\HeaderManager;
 use crm\src\components\Security\_entities\AccessRole;
+use crm\src\components\Security\SecureWrapperFactory;
 use crm\src\components\UserManagement\_entities\User;
 use crm\src\components\UserManagement\UserManagement;
 use crm\src\_common\repositories\AccessRoleRepository;
@@ -31,22 +34,29 @@ use crm\src\components\Security\_handlers\HandleAccessSpace;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 use crm\src\components\Security\_handlers\HandleAccessContext;
+use crm\src\components\Security\_common\interfaces\IHandleAccessSpace;
 
 class UserPage
 {
     private UserManagement $userManagement;
 
-    private HandleAccessRole $handleAccessRole;
+    // private HandleAccessRole $handleAccessRole;
+    private IHandleAccessSpace $handleAccessSpace;
 
-    private HandleAccessSpace $handleAccessSpace;
+    /**
+     * @var HandleAccessRole
+     */
+    private SecureWrapper $handleAccessRole;
 
+    // private SecureWrapper $handleAccessSpace;
 
     private TemplateRenderer $renderer;
+
     public function __construct(
         private string $projectPath,
         PDO $pdo,
+        private IAppContext $appContext,
         private LoggerInterface $logger = new NullLogger(),
-        private ?AppContext $appContext = null
     ) {
         $this->logger->info('UserPage initialized');
         $this->renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
@@ -54,8 +64,17 @@ class UserPage
             new UserRepository($pdo, $logger),
             new UserValidatorAdapter()
         );
-        $this->handleAccessRole = new HandleAccessRole(new AccessRoleRepository($pdo, $this->logger));
-        $this->handleAccessSpace = new HandleAccessSpace(new AccessSpaceRepository($pdo, $this->logger));
+
+        $this->handleAccessRole = SecureWrapperFactory::createAndWrapObject(HandleAccessRole::class, [
+            new AccessRoleRepository($pdo, $this->logger)
+        ]);
+
+        $this->handleAccessSpace = $appContext->getHandleAccessSpace();
+        // $this->handleAccessSpace = SecureWrapperFactory::createAndWrapObject(HandleAccessSpace::class, [
+        //     new AccessSpaceRepository($pdo, $this->logger)
+        // ]);
+        // $this->handleAccessRole = new HandleAccessRole(new AccessRoleRepository($pdo, $this->logger));
+        // $this->handleAccessSpace = new HandleAccessSpace(new AccessSpaceRepository($pdo, $this->logger));
     }
 
     /**
@@ -83,12 +102,18 @@ class UserPage
     public function showAddUserPage(): void
     {
         $spaces = $this->handleAccessSpace->getAllSpaces();
+        $roles = $this->handleAccessRole->getAllExceptRoles('name', [RoleNames::SUPER_ADMIN->value]);
+
+        if (count($roles) > 1) {
+            array_unshift($roles, new AccessRole("По умолчанию", null, "По умолчанию"));
+        }
+
         array_unshift($spaces, new AccessSpace("По умолчанию", null, "По умолчанию"));
         $this->showPage([
             'components' => [(new TemplateBundle(
                 templatePath: 'components/addUser.tpl.php',
                 variables: [
-                    'roles' => $this->handleAccessRole->getAllExceptRoles('name', [RoleNames::SUPER_ADMIN->value]),
+                    'roles' => $roles,
                     'spaces' => $spaces,
                 ]
             ))]

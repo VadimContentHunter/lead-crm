@@ -1,53 +1,46 @@
 <?php
 
-namespace crm\src\services;
+namespace crm\src\services\AppContext;
 
 use PDO;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
-use PHPUnit\Framework\Assert;
+use crm\src\services\AppContext\IAppContext;
+use crm\src\components\Security\SecureWrapper;
 use crm\src\_common\repositories\UserRepository;
 use crm\src\_common\adapters\UserValidatorAdapter;
+use crm\src\components\Security\BasedAccessGranter;
 use crm\src\components\Security\SessionAuthManager;
 use crm\src\components\Security\_entities\AccessRole;
+use crm\src\components\Security\SecureWrapperFactory;
 use crm\src\components\UserManagement\_entities\User;
 use crm\src\components\UserManagement\UserManagement;
 use crm\src\_common\repositories\AccessRoleRepository;
 use crm\src\components\Security\_entities\AccessSpace;
 use crm\src\_common\repositories\AccessSpaceRepository;
-use crm\src\services\TemplateRenderer\TemplateRenderer;
-use crm\src\_common\repositories\AccessContextRepository;
 use crm\src\components\Security\_entities\AccessContext;
+use crm\src\_common\repositories\AccessContextRepository;
 use crm\src\components\Security\_handlers\HandleAccessRole;
 use crm\src\components\Security\_handlers\HandleAccessSpace;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
+use crm\src\_common\adapters\Security\SecureHandleAccessSpace;
 use crm\src\components\Security\_handlers\HandleAccessContext;
-use Monolog\Logger;
+use crm\src\components\Security\_common\interfaces\IHandleAccessSpace;
 
-class AppContext
+class SecurityAppContext implements IAppContext
 {
     public UserManagement $userManagement;
-
     public HandleAccessRole $handleAccessRole;
-
-    public HandleAccessSpace $handleAccessSpace;
-
+    public IHandleAccessSpace $handleAccessSpace;
     public SessionAuthManager $sessionAuthManager;
-
     public HandleAccessContext $handleAccessContext;
-
     public AccessRoleRepository $accessRoleRepository;
-
     public AccessSpaceRepository $accessSpaceRepository;
-
     public AccessContextRepository $accessContextRepository;
 
     public ?User $thisUser = null;
-
     public ?AccessRole $thisRole = null;
-
     public ?AccessSpace $thisSpace = null;
-
     public ?AccessContext $thisAccessContext = null;
 
     public function __construct(
@@ -55,37 +48,110 @@ class AppContext
         PDO $pdo,
         public LoggerInterface $logger = new NullLogger()
     ) {
-        $this->logger->info('AppContext initialized ' . $this->projectPath);
-        $this->userManagement = new UserManagement(
-            new UserRepository($pdo, $logger),
-            new UserValidatorAdapter()
-        );
-        $this->accessContextRepository = new AccessContextRepository($pdo, $this->logger);
-        $this->accessRoleRepository = new AccessRoleRepository($pdo, $this->logger);
-        $this->accessSpaceRepository = new AccessSpaceRepository($pdo, $this->logger);
+        $this->accessRoleRepository = new AccessRoleRepository($pdo, $logger);
+        $this->accessSpaceRepository = new AccessSpaceRepository($pdo, $logger);
+        $this->accessContextRepository = new AccessContextRepository($pdo, $logger);
 
         $this->sessionAuthManager = new SessionAuthManager($this->accessContextRepository);
+        $this->userManagement = new UserManagement(new UserRepository($pdo, $logger), new UserValidatorAdapter());
+        $this->thisAccessContext = $this->sessionAuthManager->getCurrentAccessContext();
+
         $this->handleAccessContext = new HandleAccessContext($this->accessContextRepository);
         $this->handleAccessRole = new HandleAccessRole($this->accessRoleRepository);
-        $this->handleAccessSpace = new HandleAccessSpace($this->accessSpaceRepository);
 
-        $this->thisAccessContext = $this->sessionAuthManager->getCurrentAccessContext();
-        if ($this->thisAccessContext !== null) {
-            $this->thisUser = $this->userManagement->get()->executeById($this->thisAccessContext->userId)->getUser();
-            $this->thisRole = $this->handleAccessRole->getRoleById($this->thisAccessContext->roleId ?? 0);
-            $this->thisSpace = $this->handleAccessSpace->getSpaceById($this->thisAccessContext->spaceId ?? 0);
-        }
+        $this->handleAccessSpace = new SecureHandleAccessSpace(
+            $this->accessSpaceRepository,
+            new BasedAccessGranter($this->accessRoleRepository, $this->accessSpaceRepository),
+            $this->thisAccessContext
+        );
+
+        // $this->handleAccessSpace = new SecureHandleAccessSpace(
+        //     $this->accessSpaceRepository,
+        //     new BasedAccessGranter($this->accessRoleRepository, $this->accessSpaceRepository),
+        //     $this->thisAccessContext
+        // );
+
+        // $this->handleAccessSpace = SecureWrapper::createWrapped(
+        //     HandleAccessSpace::class,
+        //     [$this->accessSpaceRepository],
+        //     new BasedAccessGranter($this->accessRoleRepository, $this->accessSpaceRepository),
+        //     $this->thisAccessContext
+        // );
+
+        // $this->handleAccessSpace = SecureWrapperFactory::createAndWrapObject(HandleAccessSpace::class, [
+        //     new AccessSpaceRepository($pdo, $this->logger)
+        // ]);
+
+
+        // if ($this->thisAccessContext !== null) {
+        //     $this->thisUser = $this->userManagement->get()->executeById($this->thisAccessContext->userId)->getUser();
+        //     $this->thisRole = $this->handleAccessRole->getRoleById($this->thisAccessContext->roleId ?? 0);
+        //     $this->thisSpace = $this->handleAccessSpace->getSpaceById($this->thisAccessContext->spaceId ?? 0);
+        // }
     }
 
-    /**
-     * @param array<string, mixed> $components
-     */
-    public function getLayout(
-        array $components = [],
-    ): TemplateBundle {
-        // $renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
-        // $layout = (new TemplateBundle(templatePath: 'components/addUser.tpl.php'));
+    public function getUserManagement(): UserManagement
+    {
+        return $this->userManagement;
+    }
 
+    public function getHandleAccessRole(): HandleAccessRole
+    {
+        return $this->handleAccessRole;
+    }
+
+    public function getHandleAccessSpace(): IHandleAccessSpace
+    {
+        return $this->handleAccessSpace;
+    }
+
+    public function getSessionAuthManager(): SessionAuthManager
+    {
+        return $this->sessionAuthManager;
+    }
+
+    public function getHandleAccessContext(): HandleAccessContext
+    {
+        return $this->handleAccessContext;
+    }
+
+    public function getAccessRoleRepository(): AccessRoleRepository
+    {
+        return $this->accessRoleRepository;
+    }
+
+    public function getAccessSpaceRepository(): AccessSpaceRepository
+    {
+        return $this->accessSpaceRepository;
+    }
+
+    public function getAccessContextRepository(): AccessContextRepository
+    {
+        return $this->accessContextRepository;
+    }
+
+    public function getThisUser(): ?User
+    {
+        return $this->thisUser;
+    }
+
+    public function getThisRole(): ?AccessRole
+    {
+        return $this->thisRole;
+    }
+
+    public function getThisSpace(): ?AccessSpace
+    {
+        return $this->thisSpace;
+    }
+
+    public function getThisAccessContext(): ?AccessContext
+    {
+        return $this->thisAccessContext;
+    }
+
+    public function getLayout(array $components = []): TemplateBundle
+    {
         return (new TemplateBundle(
             templatePath: 'layout.tpl.php',
             variables: [

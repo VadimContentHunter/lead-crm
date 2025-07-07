@@ -35,7 +35,6 @@ $spaces = $spaces ?? [];
             <div class="form-group">
                 <label>Выбор роли</label>
                 <select name="role_id">
-                    <option value="">Выберите...</option>
                     <?php foreach ($roles as $role) {
                         if ($role instanceof AccessRole) {
                             echo '<option value="' . ($role->id ?? '0') . '">' . ($role->name ?? '-роль-') . '</option>';

@@ -6,7 +6,7 @@ use PDO;
 use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
-use crm\src\services\AppContext;
+use crm\src\services\AppContext\AppContext;
 use crm\src\_common\repositories\UserRepository;
 use crm\src\_common\adapters\UserValidatorAdapter;
 use crm\src\services\TemplateRenderer\HeaderManager;
@@ -56,7 +56,10 @@ class AccessDeniedPage
     public function getComponents(): array
     {
         return [
-            (new TemplateBundle(templatePath: 'components/accessDenied.tpl.php'))
+            (new TemplateBundle(
+                templatePath: 'components/accessDenied.tpl.php',
+                variables: ['message' => urldecode($_GET['message'] ?? '')]
+            ))
         ];
     }
 }

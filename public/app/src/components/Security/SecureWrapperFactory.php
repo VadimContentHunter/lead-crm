@@ -2,7 +2,7 @@
 
 namespace crm\src\components\Security;
 
-use crm\src\services\AppContext;
+use crm\src\services\AppContext\AppContext;
 use crm\src\components\Security\_entities\AccessContext;
 use crm\src\components\Security\_common\interfaces\IAccessGranter;
 

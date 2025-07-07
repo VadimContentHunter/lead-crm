@@ -2,11 +2,12 @@
 
 namespace crm\src\components\Security\_handlers;
 
-use crm\src\components\Security\_entities\AccessSpace;
-use crm\src\components\Security\_common\interfaces\IAccessSpaceRepository;
 use RuntimeException;
+use crm\src\components\Security\_entities\AccessSpace;
+use crm\src\components\Security\_common\interfaces\IHandleAccessSpace;
+use crm\src\components\Security\_common\interfaces\IAccessSpaceRepository;
 
-class HandleAccessSpace
+class HandleAccessSpace implements IHandleAccessSpace
 {
     public function __construct(
         private IAccessSpaceRepository $spaceRepository
@@ -93,8 +94,8 @@ class HandleAccessSpace
     /**
      * @return AccessSpace[]
      */
-    public function getAllSpaces(): array
+    public function getAllSpaces(string $column = '', array $values = []): array
     {
-        return $this->spaceRepository->getAll();
+        return $this->spaceRepository->getAllByColumnValues($column, $values);
     }
 }

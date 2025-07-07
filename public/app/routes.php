@@ -2,7 +2,6 @@
 
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
-use crm\src\services\AppContext;
 use crm\src\controllers\LeadPage;
 use crm\src\controllers\UserPage;
 use crm\src\controllers\LoginPage;
@@ -14,8 +13,10 @@ use crm\src\controllers\TestController;
 use crm\src\controllers\AccessDeniedPage;
 use crm\src\controllers\API\LeadController;
 use crm\src\controllers\API\UserController;
+use crm\src\services\AppContext\AppContext;
 use crm\src\controllers\API\LoginController;
 use crm\src\controllers\BootstrapController;
+use crm\src\services\AppContext\IAppContext;
 use crm\src\controllers\API\SourceController;
 use crm\src\controllers\API\StatusController;
 use crm\src\controllers\API\CommentController;
@@ -25,7 +26,7 @@ use crm\src\services\RouteHandler\entities\Route;
 /**
  * @return Route[]
  */
-function loadRoutes(PDO $pdo, LoggerInterface $logger = new NullLogger(), ?AppContext $appContext = null): array
+function loadRoutes(PDO $pdo, IAppContext $appContext, LoggerInterface $logger = new NullLogger()): array
 {
     return [
         new Route(
@@ -91,7 +92,7 @@ function loadRoutes(PDO $pdo, LoggerInterface $logger = new NullLogger(), ?AppCo
             pattern: '^/page/user-add$',
             className: UserPage::class,
             methodName: 'showAddUserPage',
-            extraData: [__DIR__, $pdo, $logger, $appContext]
+            extraData: [__DIR__, $pdo, $appContext, $logger]
         ),
 
         new Route(

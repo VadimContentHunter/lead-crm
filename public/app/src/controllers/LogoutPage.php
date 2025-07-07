@@ -2,7 +2,7 @@
 
 namespace crm\src\controllers;
 
-use crm\src\services\AppContext;
+use crm\src\services\AppContext\AppContext;
 
 class LogoutPage
 {

@@ -24,6 +24,12 @@ class SecureWrapper
       * @param class-string $className
       * @param array<int, mixed> $constructorArgs
       */
+    /**
+     * Фабрика: создаёт целевой объект (динамический наследник) и оборачивает в SecureWrapper.
+     *
+     * @param class-string $className
+     * @param array<int, mixed> $constructorArgs
+     */
     public static function createWrapped(
         string $className,
         array $constructorArgs,
@@ -34,27 +40,22 @@ class SecureWrapper
             throw new SecurityException("Класс $className не найден.");
         }
 
-        // if ($accessContext === null) {
-        //     header('Location: /login');
-        //     exit;
-        //     // throw new SecurityException("Пользователь не авторизован.");
-        // }
-
         try {
             if (!$accessGranter->canCreate($className, $accessContext)) {
                 $userId = $accessContext->userId ?? 0;
                 throw new SecurityException("Доступ к классу $className запрещен для пользователя {$userId}");
             }
-        } catch (AuthenticationRequiredException  $e) {
-            // Перенаправляем на страницу логина
+        } catch (AuthenticationRequiredException $e) {
             header('Location: /login');
             exit;
         }
 
+        // Создаём экземпляр динамического класса с передачей аргументов конструктора
         $target = new $className(...$constructorArgs);
 
         return new self($target, $accessGranter, $accessContext);
     }
+
 
     /**
      * @param mixed[] $args
@@ -64,19 +65,18 @@ class SecureWrapper
         if ($this->accessContext === null) {
             header('Location: /login');
             exit;
-            // throw new SecurityException("Пользователь не авторизован.");
         }
 
-        if (!method_exists($this->target, $method)) {
-            throw new SecurityException("Метод $method не существует в целевом объекте.");
-        }
-
-        if (!$this->accessGranter->canCall($this->target, $method, $args, $this->accessContext)) {
-            header('Location: /access-denied');
+        try {
+            return $this->accessGranter->callWithAccessCheck(
+                $this->target,
+                $method,
+                $args,
+                $this->accessContext
+            );
+        } catch (SecurityException $se) {
+            header('Location: /access-denied?message=' . urlencode($se->getMessage()));
             exit;
-            // throw new SecurityException("Доступ к методу $method запрещен для пользователя {$this->accessContext->userId}");
         }
-
-        return $this->target->$method(...$args);
     }
 }

@@ -6,7 +6,7 @@ use PDO;
 use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
-use crm\src\services\AppContext;
+use crm\src\services\AppContext\AppContext;
 use crm\src\services\TableRenderer\TableFacade;
 use crm\src\_common\repositories\StatusRepository;
 use crm\src\services\TableRenderer\TableDecorator;

@@ -328,4 +328,44 @@ class LeadRepository implements ILeadRepository
         $result = $this->repository->executeSql($sql, $params)->getArrayOrNull() ?? [];
         return array_map([LeadMapper::class, 'fromArray'], $result);
     }
+
+    /**
+     * Возвращает все сущности, где значение указанной колонки входит в переданный список.
+     * Если список пустой или колонка не указана — вернёт все сущности.
+     *
+     * @param  string           $column Название колонки для фильтрации.
+     * @param  int[]|string[]   $values Массив значений для включения.
+     * @return TEntity[]
+     */
+    public function getAllByColumnValues(string $column = '', array $values = []): array
+    {
+        if (empty($column) || empty($values)) {
+            // Если колонка или значения не заданы — вернём все записи
+            return $this->getAll();
+        }
+
+        // Проверка корректности имени колонки
+        if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $column)) {
+            throw new \InvalidArgumentException("Недопустимое имя колонки: $column");
+        }
+
+        $placeholders = [];
+        $params = [];
+        foreach ($values as $index => $value) {
+            $paramName = "value_$index";
+            $placeholders[] = ":$paramName";
+            $params[$paramName] = $value;
+        }
+
+        $sql = sprintf(
+            "SELECT * FROM %s WHERE %s IN (%s)",
+            $this->getTableName(),
+            $column,
+            implode(', ', $placeholders)
+        );
+
+        $result = $this->repository->executeSql($sql, $params)->getArrayOrNull() ?? [];
+
+        return array_map([LeadMapper::class, 'fromArray'], $result);
+    }
 }

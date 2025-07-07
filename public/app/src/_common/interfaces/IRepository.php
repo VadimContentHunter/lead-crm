@@ -63,4 +63,13 @@ interface IRepository
      * @return TEntity[]
      */
     public function getAllExcept(string $column = '', array $excludedValues = []): array;
+
+    /**
+     * Возвращает все сущности, где значение указанной колонки входит в переданный список.
+     *
+     * @param  string           $column Название колонки для фильтрации.
+     * @param  int[]|string[]   $values Массив значений для включения.
+     * @return TEntity[]
+     */
+    public function getAllByColumnValues(string $column = '', array $values = []): array;
 }

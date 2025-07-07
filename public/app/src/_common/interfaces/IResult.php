@@ -47,4 +47,13 @@ interface IResult
      * @param    callable(mixed): (T|null) $mapper
      */
     public function mapEach(callable $mapper, bool $removeNulls = true): static;
+
+    /**
+     * Применяет преобразование к данным и возвращает новый экземпляр с преобразованным значением.
+     *
+     * @template T
+     * @param    callable(mixed): T $mapper
+     * @return   static
+     */
+    public function mapToNew(callable $mapper): static;
 }

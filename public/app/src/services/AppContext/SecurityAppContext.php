@@ -5,6 +5,7 @@ namespace crm\src\services\AppContext;
 use PDO;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
+use crm\src\components\Security\RoleNames;
 use crm\src\services\AppContext\IAppContext;
 use crm\src\_common\repositories\UserRepository;
 use crm\src\_common\adapters\UserValidatorAdapter;
@@ -218,7 +219,8 @@ class SecurityAppContext implements IAppContext
                 variables: [
                     'login' => $this->thisUser?->login ?? '---',
                     'role' => $this->thisRole?->name ?? '---',
-                    'space' => $this->thisSpace?->name ?? '---'
+                    'space' => $this->thisSpace?->name ?? '---',
+                    'menuItems' => $this->getMenuItems()
                 ]
             )))
             ->addPartial((new TemplateBundle(
@@ -228,6 +230,71 @@ class SecurityAppContext implements IAppContext
             )))
         );
     }
+
+    public function getMenuItems(): array
+    {
+        $items = [
+            [
+                'name' => 'Главная',
+                'href' => '/test',
+                'icon' => 'fa-solid fa-house',
+            ],
+            [
+                'name' => 'Добавить пользователя',
+                'href' => '/page/user-add',
+                'icon' => 'fa-solid fa-house',
+            ],
+            [
+                'name' => 'Все пользователя',
+                'href' => '/page/user-all',
+                'icon' => 'fa-solid fa-house',
+            ],
+            [
+                'name' => 'Добавить статус',
+                'href' => '/page/status-add',
+                'icon' => 'fa-solid fa-house',
+            ],
+            [
+                'name' => 'Статусы',
+                'href' => '/page/status-all',
+                'icon' => 'fa-solid fa-house',
+            ],
+            [
+                'name' => 'Добавить источник',
+                'href' => '/page/source-add',
+                'icon' => 'fa-solid fa-house',
+            ],
+            [
+                'name' => 'Источники',
+                'href' => '/page/source-all',
+                'icon' => 'fa-solid fa-house',
+            ],
+            [
+                'name' => 'Добавить лида',
+                'href' => '/page/lead-add',
+                'icon' => 'fa-solid fa-house',
+            ],
+            [
+                'name' => 'Все лиды P2P',
+                'href' => '/page/lead-all',
+                'icon' => 'fa-solid fa-house',
+            ],
+            [
+                'name' => 'Все лиды (Инвестка)',
+                'href' => '/page/lead-all',
+                'icon' => 'fa-solid fa-house',
+            ],
+        ];
+
+        // if (RoleNames::isManager($this->thisRole->name)) {
+        //     $items = array_filter($items, fn($item) => $item['name'] !== 'Добавить пользователя');
+        //     // Если важен порядок ключей:
+        //     $items = array_values($items);
+        // }
+
+        return $items;
+    }
+
 
     public function checkSessionAndRedirect(): void
     {

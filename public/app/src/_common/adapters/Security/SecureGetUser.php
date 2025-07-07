@@ -17,6 +17,9 @@ use crm\src\components\UserManagement\_common\interfaces\IUserRepository;
 
 class SecureGetUser implements IGetUser
 {
+    /**
+     * @var GetUser
+     */
     private SecureWrapper $secure;
 
     public function __construct(
@@ -34,36 +37,36 @@ class SecureGetUser implements IGetUser
 
     public function executeById(int $id): IUserResult
     {
-        return $this->secure->executeById($id);
+        return $this->secure?->executeById($id);
     }
 
     public function executeByLogin(string $login): IUserResult
     {
-        return $this->secure->executeByLogin($login);
+        return $this->secure?->executeByLogin($login);
     }
 
     public function executeByDto(UserInputDto $dto): IUserResult
     {
-        return $this->secure->executeByDto($dto);
+        return $this->secure?->executeByDto($dto);
     }
 
     public function executeAll(): IUserResult
     {
-        return $this->secure->executeAll();
+        return $this->secure?->executeAll();
     }
 
     public function executeColumnNames(array $renameMap = []): IUserResult
     {
-        return $this->secure->executeColumnNames($renameMap);
+        return $this->secure?->executeColumnNames($renameMap);
     }
 
     public function executeAllMapped(callable $mapper): IUserResult
     {
-        return $this->secure->executeAllMapped($mapper);
+        return $this->secure?->executeAllMapped($mapper);
     }
 
     public function filtered(UserFilterDto $filter): IUserResult
     {
-        return $this->secure->filtered($filter);
+        return $this->secure?->filtered($filter);
     }
 }

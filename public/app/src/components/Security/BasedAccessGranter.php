@@ -3,22 +3,29 @@
 namespace crm\src\components\Security;
 
 use crm\src\controllers\LeadPage;
+use crm\src\controllers\UserPage;
 use crm\src\controllers\LoginPage;
 use crm\src\controllers\LogoutPage;
 use crm\src\components\Security\RoleNames;
 use crm\src\controllers\NotFoundController;
 use crm\src\controllers\API\LoginController;
 use crm\src\controllers\BootstrapController;
+use crm\src\components\UserManagement\GetUser;
 use crm\src\components\Security\_entities\AccessRole;
 use crm\src\components\Security\_entities\AccessSpace;
 use crm\src\components\Security\_entities\AccessContext;
 use crm\src\components\Security\_handlers\HandleAccessRole;
 use crm\src\components\Security\_handlers\HandleAccessSpace;
 use crm\src\components\Security\_exceptions\SecurityException;
+use crm\src\components\UserManagement\_common\DTOs\UserFilterDto;
+use crm\src\components\Security\_common\DTOs\AccessFullContextDTO;
 use crm\src\components\Security\_common\interfaces\IAccessGranter;
+use crm\src\components\Security\_common\mappers\AccessFullContextMapper;
 use crm\src\components\Security\_common\interfaces\IAccessRoleRepository;
 use crm\src\components\Security\_common\interfaces\IAccessSpaceRepository;
 use crm\src\components\Security\_exceptions\AuthenticationRequiredException;
+use crm\src\components\UserManagement\_common\mappers\UserMapper;
+use crm\src\components\UserManagement\_entities\User;
 
 class BasedAccessGranter implements IAccessGranter
 {
@@ -86,12 +93,22 @@ class BasedAccessGranter implements IAccessGranter
 
         // Менеджер — вызываем особую логику
         if (RoleNames::isManager($role->name)) {
-            return $this->handleManagerCall($role, $space, $target, $methodName, $args);
+            return $this->handleManagerCall(
+                AccessFullContextMapper::fromEntities($accessContext, $role, $space),
+                $target,
+                $methodName,
+                $args
+            );
         }
 
         // Тим-лид — другая логика
         if (RoleNames::isTeamManager($role->name)) {
-            return $this->handleTeamManagerCall($role, $space, $target, $methodName, $args);
+            return $this->handleTeamManagerCall(
+                AccessFullContextMapper::fromEntities($accessContext, $role, $space),
+                $target,
+                $methodName,
+                $args
+            );
         }
 
         throw new SecurityException("Нет доступа для роли {$role->name}");
@@ -121,15 +138,15 @@ class BasedAccessGranter implements IAccessGranter
     /**
      * @param mixed[] $args
      */
-    private function handleManagerCall(AccessRole $role, ?AccessSpace $space, object $target, string $methodName, array $args): mixed
+    private function handleManagerCall(AccessFullContextDTO $accessFullContext, object $target, string $methodName, array $args): mixed
     {
         // throw new SecurityException("Нет доступа для роли {$role->name}");
         if ($target instanceof HandleAccessSpace) {
             switch ($methodName) {
                 case 'getAllSpaces':
-                    return $target->getAllSpaces('id', [$space?->id ?? 0]);
-                default:
-                    throw new SecurityException("Метод {$methodName} не разрешён для HandleAccessSpace");
+                    return $target->getAllSpaces('id', [$accessFullContext->getSpaceId() ?? 0]);
+                // default:
+                //     throw new SecurityException("Метод {$methodName} не разрешён для HandleAccessSpace");
             }
         }
 
@@ -137,8 +154,21 @@ class BasedAccessGranter implements IAccessGranter
             switch ($methodName) {
                 case 'getAllExceptRoles':
                     return $this->roleRepository->getAllByColumnValues('name', [ RoleNames::MANAGER->value]);
-                default:
-                    throw new SecurityException("Метод {$methodName} не разрешён для HandleAccessRole");
+            }
+        }
+
+        if ($target instanceof GetUser) {
+            switch ($methodName) {
+                case 'executeAllMapped':
+                    $a = $target->executeById($accessFullContext->userId)->mapToNew(fn (mixed $data) => [UserMapper::toArray($data)]);
+                    return $a;
+            }
+        }
+
+        if ($target instanceof UserPage) {
+            switch ($methodName) {
+            //         case 'showAddUserPage':
+            //             throw new SecurityException("Менеджер не может добавлять пользователей.");
             }
         }
 
@@ -148,7 +178,7 @@ class BasedAccessGranter implements IAccessGranter
     /**
      * @param mixed[] $args
      */
-    private function handleTeamManagerCall(AccessRole $role, ?AccessSpace $space, object $target, string $methodName, array $args): mixed
+    private function handleTeamManagerCall(AccessFullContextDTO $accessFullContext, object $target, string $methodName, array $args): mixed
     {
         return $target->$methodName(...$args);
     }

@@ -44,6 +44,7 @@ abstract class AResult implements IResult
         return $this->data;
     }
 
+
     public function getArray(): array
     {
         return is_array($this->data) ? $this->data : [];
@@ -77,6 +78,24 @@ abstract class AResult implements IResult
         }
         return $mapper($this->data);
     }
+
+    /**
+     * Применяет преобразование к данным и возвращает новый экземпляр с преобразованным значением.
+     *
+     * @template T
+     * @param    callable(mixed): T $mapper
+     * @return   static
+     */
+    public function mapToNew(callable $mapper): static
+    {
+        try {
+            $newData = $mapper($this->data);
+            return static::success($newData);
+        } catch (Throwable $e) {
+            return static::failure($e);
+        }
+    }
+
 
     /**
      * Если data — массив, извлекает из него первый элемент и сохраняет его в data.

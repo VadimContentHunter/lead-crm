@@ -26,14 +26,6 @@ class DeleteStatus
      */
     public function executeById(int $id): IStatusResult
     {
-        $validationResult = $this->validator->validateArray(['id' => $id]);
-
-        if (!$validationResult->isValid()) {
-            return StatusResult::failure(
-                new StatusManagementException('Ошибка валидации: ' . implode('; ', $validationResult->getErrors()))
-            );
-        }
-
         try {
             $deletedId = $this->StatusRepository->deleteById($id);
 

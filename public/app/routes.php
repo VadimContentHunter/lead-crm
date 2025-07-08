@@ -123,7 +123,7 @@ function loadRoutes(PDO $pdo, IAppContext $appContext, LoggerInterface $logger =
             pattern: '^/page/status-all/?$',
             className: StatusPage::class,
             methodName: 'showAllStatusPage',
-            extraData: [__DIR__, $pdo, $logger, $appContext]
+            extraData: [$appContext]
         ),
 
         // PAGES-SOURCE

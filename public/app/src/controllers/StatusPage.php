@@ -72,7 +72,17 @@ class StatusPage
             header: $headers,
             rows: $rows,
             attributes: ['id' => 'status-table-1', 'data-module' => 'statuses'],
-            classes: ['base-table']
+            classes: ['base-table'],
+            hrefButton: '/page/status-edit',
+            hrefButtonDel: '/page/status-delete',
+            attributesWrapper: [
+                'table-r-id' => 'status-table-1'
+            ],
+            allowedColumns: [
+                'id',
+                'title',
+            ],
+            renameMap: [],
         );
 
         $tableFacade = new TableFacade(new TableTransformer(),  new TableDecorator());
@@ -82,7 +92,9 @@ class StatusPage
                 (new TemplateBundle(
                     templatePath: 'containers/average-in-line-component.tpl.php',
                     variables: [
-                        'component' => $tableFacade->renderTable($input)->asHtml()
+                        'component' => $tableFacade->renderTable($input)->asHtml(),
+                        'methodSend' => 'status.delete',
+                        'endpointSend' => '/api/statuses'
                     ]
                 ))
             ]

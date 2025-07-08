@@ -6,8 +6,9 @@ use PDO;
 use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
-use crm\src\services\AppContext\AppContext;
 use crm\src\controllers\NotFoundController;
+use crm\src\services\AppContext\AppContext;
+use crm\src\services\AppContext\IAppContext;
 use crm\src\controllers\API\DepositController;
 use crm\src\services\TableRenderer\TableFacade;
 use crm\src\_common\repositories\UserRepository;
@@ -40,7 +41,6 @@ use crm\src\components\BalanceManagement\BalanceManagement;
 use crm\src\components\CommentManagement\_entities\Comment;
 use crm\src\components\CommentManagement\CommentManagement;
 use crm\src\components\DepositManagement\DepositManagement;
-use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 use crm\src\_common\repositories\LeadRepository\LeadRepository;
 use crm\src\components\LeadManagement\_common\mappers\LeadMapper;
@@ -71,53 +71,23 @@ class LeadPage
     private CommentManagement $commentManagement;
 
     public function __construct(
-        private string $projectPath,
-        PDO $pdo,
-        private LoggerInterface $logger = new NullLogger(),
-        private ?AppContext $appContext = null
+        private IAppContext $appContext
     ) {
-        $this->logger->info('LeadPage initialized');
-        $this->renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
+        $this->renderer = $this->appContext->getTemplateRenderer();
 
-        $this->commentManagement = new CommentManagement(
-            new CommentRepository($pdo, $logger),
-            new CommentValidatorAdapter()
-        );
+        $this->commentManagement = $this->appContext->getCommentManagement();
 
-        $leadRepository = new LeadRepository($pdo, $logger);
-        $this->leadManagement = new LeadManagement(
-            leadRepository: $leadRepository,
-            sourceRepository: new LeadSourceRepository($pdo, $logger),
-            statusRepository: new LeadStatusRepository($pdo, $logger),
-            accountManagerRepository: new LeadAccountManagerRepository($pdo, $logger),
-            validator: new LeadValidatorAdapter()
-        );
+        $this->leadManagement = $this->appContext->getLeadManagement();
 
-        $this->sourceManagement = new SourceManagement(
-            new SourceRepository($pdo, $logger),
-            new SourceValidatorAdapter()
-        );
+        $this->sourceManagement = $this->appContext->getSourceManagement();
 
-        $this->statusManagement = new StatusManagement(
-            new StatusRepository($pdo, $logger),
-            new StatusValidatorAdapter()
-        );
+        $this->statusManagement = $this->appContext->getStatusManagement();
 
-        $this->userManagement = new UserManagement(
-            new UserRepository($pdo, $logger),
-            new UserValidatorAdapter()
-        );
+        $this->userManagement = $this->appContext->getUserManagement();
 
-        $this->balanceManagement = new BalanceManagement(
-            new BalanceRepository($pdo, $logger),
-            new BalanceValidatorAdapter(),
-            $leadRepository
-        );
+        $this->balanceManagement = $this->appContext->getBalanceManagement();
 
-        $this->depositManagement = new DepositManagement(
-            new DepositRepository($pdo, $logger),
-            new DepositValidatorAdapter()
-        );
+        $this->depositManagement = $this->appContext->getDepositManagement();
     }
 
     /**

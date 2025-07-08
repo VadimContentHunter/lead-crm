@@ -3,38 +3,44 @@
 namespace crm\src\_common\adapters\Security;
 
 use crm\src\components\Security\SecureWrapper;
+use crm\src\components\UserManagement\_entities\User;
 use crm\src\components\Security\_entities\AccessContext;
-use crm\src\components\SourceManagement\_entities\Source;
+use crm\src\components\UserManagement\_common\DTOs\UserFilterDto;
 use crm\src\components\Security\_common\interfaces\IAccessGranter;
-use crm\src\components\SourceManagement\_common\interfaces\ISourceRepository;
-use crm\src\components\LeadManagement\_common\interfaces\ILeadSourceRepository;
+use crm\src\components\UserManagement\_common\interfaces\IUserRepository;
+use crm\src\components\LeadManagement\_common\interfaces\ILeadAccountManagerRepository;
 
 /**
- * Secure обёртка для SourceRepository с проверкой доступа.
+ * Secure обёртка над UserRepository с проверкой доступа.
  */
-class SecureSourceRepository implements ISourceRepository, ILeadSourceRepository
+class SecureUserRepository implements IUserRepository, ILeadAccountManagerRepository
 {
     private SecureWrapper $secure;
 
     /**
-     * @param ISourceRepository $repository Оригинальный репозиторий.
+     * @param IUserRepository $repository
      */
     public function __construct(
-        ISourceRepository $repository,
+        IUserRepository $repository,
         IAccessGranter $accessGranter,
         ?AccessContext $accessContext
     ) {
         $this->secure = new SecureWrapper($repository, $accessGranter, $accessContext);
     }
 
-    public function deleteByTitle(string $title): ?int
+    public function deleteByLogin(string $login): ?int
     {
-        return $this->secure->__call('deleteByTitle', [$title]);
+        return $this->secure->__call('deleteByLogin', [$login]);
     }
 
-    public function getByTitle(string $title): ?Source
+    public function getByLogin(string $login): ?User
     {
-        return $this->secure->__call('getByTitle', [$title]);
+        return $this->secure->__call('getByLogin', [$login]);
+    }
+
+    public function getFilteredUsers(UserFilterDto $filter): array
+    {
+        return $this->secure->__call('getFilteredUsers', [$filter]);
     }
 
     public function save(object|array $entityOrData): ?int

@@ -4,14 +4,15 @@ namespace crm\src\_common\adapters\Security;
 
 use crm\src\components\Security\SecureWrapper;
 use crm\src\components\Security\_entities\AccessContext;
-use crm\src\components\Security\_common\interfaces\IAccessGranter;
 use crm\src\components\StatusManagement\_entities\Status;
+use crm\src\components\Security\_common\interfaces\IAccessGranter;
 use crm\src\components\StatusManagement\_common\interfaces\IStatusRepository;
+use crm\src\components\LeadManagement\_common\interfaces\ILeadStatusRepository;
 
 /**
  * Secure обёртка над StatusRepository с проверкой доступа.
  */
-class SecureStatusRepository implements IStatusRepository
+class SecureStatusRepository implements IStatusRepository, ILeadStatusRepository
 {
     private SecureWrapper $secure;
 

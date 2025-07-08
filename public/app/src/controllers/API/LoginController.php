@@ -6,6 +6,7 @@ use PDO;
 use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
+use crm\src\services\AppContext\IAppContext;
 use crm\src\_common\repositories\UserRepository;
 use crm\src\_common\adapters\UserValidatorAdapter;
 use crm\src\components\Security\SessionAuthManager;
@@ -13,6 +14,7 @@ use crm\src\components\UserManagement\UserManagement;
 use crm\src\_common\repositories\AccessContextRepository;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\components\Security\_handlers\HandleAccessContext;
+use crm\src\components\UserManagement\_common\interfaces\IUserManagement;
 
 class LoginController
 {
@@ -22,24 +24,17 @@ class LoginController
 
     private HandleAccessContext $handleAccessContext;
 
-    private UserManagement $userManagement;
+    private IUserManagement $userManagement;
 
     public function __construct(
-        private string $projectPath,
-        PDO $pdo,
-        private LoggerInterface $logger = new NullLogger()
+        private IAppContext $appContext
     ) {
-        $this->logger->info('LoginController initialized for project ' . $this->projectPath);
 
-        $accessContextRepository = new AccessContextRepository($pdo, $this->logger);
-        $this->sessionAuthManager = new SessionAuthManager($accessContextRepository);
-        $this->handleAccessContext = new HandleAccessContext($accessContextRepository);
-        $this->userManagement = new UserManagement(
-            new UserRepository($pdo, $logger),
-            new UserValidatorAdapter()
-        );
+        $this->sessionAuthManager = $this->appContext->getSessionAuthManager();
+        $this->handleAccessContext = $this->appContext->getHandleAccessContext();
+        $this->userManagement = $this->appContext->getUserManagement();
 
-        $this->rpc = new JsonRpcServerFacade();
+        $this->rpc = $this->appContext->getJsonRpcServerFacade();
         switch ($this->rpc->getMethod()) {
             case 'auth.login':
                 $this->login($this->rpc->getParams());

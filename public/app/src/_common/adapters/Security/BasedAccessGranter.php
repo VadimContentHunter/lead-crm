@@ -75,7 +75,7 @@ class BasedAccessGranter implements IAccessGranter
         object $target,
         string $methodName,
         array $args,
-        AccessContext $accessContext
+        ?AccessContext $accessContext
     ): mixed {
         if (!method_exists($target, $methodName)) {
             throw new SecurityException("Метод $methodName не существует в целевом объекте.");
@@ -84,6 +84,10 @@ class BasedAccessGranter implements IAccessGranter
         if ($this->isAllowedMethod($methodName)) {
             // Просто вызываем оригинальный метод
             return $target->$methodName(...$args);
+        }
+
+        if ($accessContext === null) {
+            throw new AuthenticationRequiredException("Пользователь не авторизован");
         }
 
         if ($accessContext->roleId === null) {
@@ -145,6 +149,7 @@ class BasedAccessGranter implements IAccessGranter
     {
         return in_array($methodName, [
             'show404',
+            'executeByLogin',
         ], true);
     }
 

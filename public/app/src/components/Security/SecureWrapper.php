@@ -57,11 +57,6 @@ class SecureWrapper
      */
     public function __call(string $method, array $args): mixed
     {
-        if ($this->accessContext === null) {
-            header('Location: /login');
-            exit;
-        }
-
         try {
             return $this->accessGranter->callWithAccessCheck(
                 $this->target,
@@ -72,6 +67,9 @@ class SecureWrapper
         } catch (JsonRpcSecurityException $e) {
             // Отправляем JSON-RPC ошибку
             throw $e;
+        } catch (AuthenticationRequiredException $e) {
+            header('Location: /login');
+            exit;
         } catch (SecurityException $se) {
             header('Location: /access-denied?message=' . urlencode($se->getMessage()));
             exit;

@@ -191,6 +191,32 @@ class BasedAccessGranter implements IAccessGranter
                     $search = $argSearch === '' ? $login : $search;
 
                     return $target->filterUsersFormatTable(['login' => $login, 'search' => $search]);
+                case 'createUser':
+                    $role_id = $args[0]['role_id'] ?? null;
+                    $space_id = $args[0]['space_id'] ?? null;
+
+                    $role = $this->roleRepository->getById($role_id);
+                    if ($role === null) {
+                        break;
+                    }
+
+                    if ($space_id !== null) {
+                        $space = $this->spaceRepository->getById($space_id);
+                    }
+
+                    // 3. Проверка ограничений для выбранной роли
+                    if (!RoleNames::isManager($role->name)) {
+                        throw new JsonRpcSecurityException("Данная роль не предназначена для создания пользователей.");
+                    }
+
+                    // 4. Проверка пространства для роли менеджера
+                    if ($accessFullContext->getSpaceId() !== $space?->id) {
+                        throw new JsonRpcSecurityException("Менеджер может добавлять только в свое пространство.");
+                    }
+
+                    $args[0]['space_id'] = $space?->id;
+                    $args[0]['role_id'] = $role->id;
+                    return $target->createUser($args[0]);
             }
         }
 

@@ -115,10 +115,11 @@ class UserController
 
 
     /**
-     * @param array<string,mixed> $params
+     * @param array<string, mixed> $params
      */
     public function createUser(array $params): void
     {
+        // 1. Проверка базовых параметров пользователя
         if (
             !is_string($params['login'] ?? null)
             || !is_string($params['password'] ?? null)
@@ -129,6 +130,7 @@ class UserController
             ]);
         }
 
+        // 2. Проверка роли пользователя
         $role = null;
         $space = null;
 
@@ -145,37 +147,22 @@ class UserController
             ]);
         }
 
-        if (RoleNames::isSuperAdmin($role->name)) {
+        $space = $this->handleAccessSpace->getSpaceById($params['space_id'] ?? 0);
+        if ($space === null && $params['space_id'] !== null) {
             $this->rpc->replyData([
-                ['type' => 'error', 'message' => 'Данная роль не предназначена для создания пользователей.']
+                ['type' => 'error', 'message' => 'Пространство не выбрано.']
             ]);
         }
 
-        if (RoleNames::isManager($role->name)) {
-            if (isset($params['space_id']) && filter_var($params['space_id'], FILTER_VALIDATE_INT) === false) {
-                $this->rpc->replyData([
-                    ['type' => 'error', 'message' => 'Для этой роли должно быть выбрано пространство.']
-                ]);
-            }
-
-            if (isset($params['space_id']) && $params['space_id'] > 0) {
-                $space = $this->handleAccessSpace->getSpaceById($params['space_id']);
-                if ($space === null) {
-                    $this->rpc->replyData([
-                        ['type' => 'error', 'message' => 'Пространство не выбрано.']
-                    ]);
-                }
-            }
-        }
-
-
+        // 5. Создание DTO пользователя и проверка пароля
         $userInputDto = UserInputMapper::fromArray($params);
         if ($userInputDto->plainPassword !== $userInputDto->confirmPassword) {
             $this->rpc->replyData([
-                ['type' => 'error', 'message' => 'Пароли не совпадают.']
+            ['type' => 'error', 'message' => 'Пароли не совпадают.']
             ]);
         }
 
+        // 6. Создание пользователя
         $user = $this->userManagement->create()->execute($userInputDto);
         if (!$user->isSuccess()) {
             $errorMsg = $user->getError()?->getMessage() ?? 'неизвестная ошибка';
@@ -184,6 +171,7 @@ class UserController
             ]);
         }
 
+        // 7. Генерация сессии
         $sessionHash = $this->handleAccessContext->generateSessionHash(
             $user->getLogin() ?? '',
             $user->getPasswordHash() ?? ''
@@ -191,10 +179,11 @@ class UserController
         if ($sessionHash === null) {
             $this->deleteUserById($user->getId() ?? 0);
             $this->rpc->replyData([
-                ['type' => 'error', 'message' => 'Не удалось создать сессию.']
+            ['type' => 'error', 'message' => 'Не удалось создать сессию.']
             ]);
         }
 
+        // 8. Автоматическое создание пространства для роли TeamManager
         if (RoleNames::isTeamManager($role->name)) {
             $spaceName = ($user->getLogin() ?? '') . '_space';
             $spaceDescription = (new DateTime())->format('Y-m-d H:i:s');
@@ -202,11 +191,12 @@ class UserController
             if ($space === null) {
                 $this->deleteUserById($user->getId() ?? 0);
                 $this->rpc->replyData([
-                    ['type' => 'error', 'message' => 'Не удалось выдать доступ пользователю. (3)']
+                ['type' => 'error', 'message' => 'Не удалось выдать доступ пользователю. (3)']
                 ]);
             }
         }
 
+        // 9. Создание записи доступа (AccessContext)
         $accessContext  = $this->handleAccessContext->createAccess(
             $user->getId() ?? 0,
             $sessionHash,
@@ -216,23 +206,25 @@ class UserController
         if ($accessContext === null) {
             $this->deleteUserById($user->getId() ?? 0);
             $this->rpc->replyData([
-                ['type' => 'error', 'message' => 'Не удалось выдать доступ пользователю. (1)']
+            ['type' => 'error', 'message' => 'Не удалось выдать доступ пользователю. (1)']
             ]);
         }
 
+        // 10. Финальная проверка корректности доступа
         if ($this->handleAccessRole->getRoleById($role->id ?? 0) === null) {
             $this->handleAccessContext->delAccessById($accessContext->id ?? 0);
             $this->deleteUserById($user->getId() ?? 0);
             $this->rpc->replyData([
-                ['type' => 'error', 'message' => 'Не удалось выдать доступ пользователю. (2)']
+            ['type' => 'error', 'message' => 'Не удалось выдать доступ пользователю. (2)']
             ]);
         }
 
+        // 11. Возвращение успешного ответа
         $login = $user->getLogin() ?? 'неизвестный логин';
         $roleName = $role->name ?? 'нет';
         $spaceName = $space?->name ?? 'нет';
         $this->rpc->replyData([
-            ['type' => 'success', 'message' => 'Пользователь добавлен'],
+        ['type' => 'success', 'message' => 'Пользователь добавлен'],
             ['type' => 'info', 'message' => <<<HTML
                     Добавленный пользователь:
                     <br>Логин: <b>{$login}</b>
@@ -242,6 +234,7 @@ class UserController
             ]
         ]);
     }
+
 
     private function deleteUserById(int $id): void
     {

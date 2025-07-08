@@ -335,7 +335,7 @@ class LeadRepository implements ILeadRepository
      *
      * @param  string           $column Название колонки для фильтрации.
      * @param  int[]|string[]   $values Массив значений для включения.
-     * @return TEntity[]
+     * @return Lead[]
      */
     public function getAllByColumnValues(string $column = '', array $values = []): array
     {

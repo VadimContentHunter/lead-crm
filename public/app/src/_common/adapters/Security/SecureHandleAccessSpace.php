@@ -12,9 +12,6 @@ use crm\src\components\Security\_common\interfaces\IAccessSpaceRepository;
 
 class SecureHandleAccessSpace implements IHandleAccessSpace
 {
-    /**
-     * @var HandleAccessSpace
-     */
     private SecureWrapper $secure;
 
     public function __construct(
@@ -22,57 +19,42 @@ class SecureHandleAccessSpace implements IHandleAccessSpace
         IAccessGranter $accessGranter,
         ?AccessContext $accessContext
     ) {
-        // Создаем реальный target
         $target = new HandleAccessSpace($spaceRepository);
-
-        // Создаем оборачивающий объект
         $this->secure = new SecureWrapper($target, $accessGranter, $accessContext);
-
-        // Оборачиваем его
-        // $this->secureHandleAccessSpace = new SecureWrapper($target, $accessGranter, $accessContext);
     }
 
-    /**
-     * Добавление нового пространства.
-     */
     public function addSpace(string $name, ?string $description = null): ?AccessSpace
     {
-        return $this->secure->addSpace($name, $description);
+        return $this->secure->__call('addSpace', [$name, $description]);
     }
 
-    /**
-     * Редактирование пространства по ID.
-     */
     public function editSpaceById(int $spaceId, ?string $newName = null, ?string $newDescription = null): bool
     {
-        return $this->secure->editSpaceById($spaceId, $newName, $newDescription);
+        return $this->secure->__call('editSpaceById', [$spaceId, $newName, $newDescription]);
     }
 
-    /**
-     * Редактирование пространства по имени (этот метод остался локальным).
-     */
     public function editSpaceByName(string $spaceName, ?string $newName = null, ?string $newDescription = null): bool
     {
-        return $this->secure->editSpaceByName($spaceName, $newName, $newDescription);
+        return $this->secure->__call('editSpaceByName', [$spaceName, $newName, $newDescription]);
     }
 
     public function deleteSpace(int $spaceId): bool
     {
-        return $this->secure->deleteSpace($spaceId);
+        return $this->secure->__call('deleteSpace', [$spaceId]);
     }
 
     public function getSpaceById(int $spaceId): ?AccessSpace
     {
-        return $this->secure->getSpaceById($spaceId);
+        return $this->secure->__call('getSpaceById', [$spaceId]);
     }
 
     public function getSpaceByName(string $name): ?AccessSpace
     {
-        return $this->secure->getSpaceByName($name);
+        return $this->secure->__call('getSpaceByName', [$name]);
     }
 
     public function getAllSpaces(string $column = '', array $values = []): array
     {
-        return $this->secure->getAllSpaces($column, $values);
+        return $this->secure->__call('getAllSpaces', [$column, $values]);
     }
 }

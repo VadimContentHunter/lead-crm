@@ -197,6 +197,9 @@ class SecurityAppContext implements IAppContext, ISecurity
         return $this->thisAccessContext;
     }
 
+    /**
+     * @param array<string,mixed> $components
+     */
     public function getLayout(array $components = []): TemplateBundle
     {
         return (new TemplateBundle(
@@ -247,6 +250,9 @@ class SecurityAppContext implements IAppContext, ISecurity
         );
     }
 
+    /**
+     * @return array<int,array{name:string,href:string,icon:string}>
+     */
     public function getMenuItems(): array
     {
         $items = [
@@ -340,7 +346,7 @@ class SecurityAppContext implements IAppContext, ISecurity
      *
      * @template T of object
      * @param    T $target Объект, который нужно обернуть
-     * @return   SecureWrapper&T Обёрнутый объект (типизированный SecureWrapper)
+     * @return   SecureWrapper
      */
     public function wrapWithSecurity(object $target): SecureWrapper
     {

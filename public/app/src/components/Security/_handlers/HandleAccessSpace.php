@@ -92,6 +92,8 @@ class HandleAccessSpace implements IHandleAccessSpace
     }
 
     /**
+     * @param int[]|string[] $values
+     *
      * @return AccessSpace[]
      */
     public function getAllSpaces(string $column = '', array $values = []): array

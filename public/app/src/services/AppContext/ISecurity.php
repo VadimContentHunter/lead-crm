@@ -11,7 +11,7 @@ interface ISecurity
      *
      * @template T of object
      * @param    T $target Объект, который нужно обернуть
-     * @return   SecureWrapper&T Обёрнутый объект (типизированный SecureWrapper)
+     * @return   SecureWrapper
      */
     public function wrapWithSecurity(object $target): SecureWrapper;
 }

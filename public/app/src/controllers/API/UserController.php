@@ -78,6 +78,9 @@ class UserController
     private function initMethodMap(): void
     {
         if ($this->appContext instanceof ISecurity) {
+            /**
+             * @var UserController $secureCall
+             */
             $secureCall = $this->appContext->wrapWithSecurity($this);
         } else {
             $secureCall = $this;

@@ -71,7 +71,7 @@ class LoginPage
         }
     }
 
-    public function logout()
+    public function logout(): void
     {
         $this->appContext->logoutAndRedirect();
     }

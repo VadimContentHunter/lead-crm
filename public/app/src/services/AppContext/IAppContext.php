@@ -51,6 +51,9 @@ interface IAppContext
 
     public function getThisAccessContext(): ?AccessContext;
 
+    /**
+     * @param array<string,mixed> $components
+     */
     public function getLayout(array $components = []): TemplateBundle;
 
     public function checkSessionAndRedirect(): void;

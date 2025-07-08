@@ -37,6 +37,8 @@ interface IHandleAccessSpace
     public function getSpaceByName(string $name): ?AccessSpace;
 
     /**
+     * @param array<int|string> $values
+     *
      * @return AccessSpace[]
      */
     public function getAllSpaces(string $column = '', array $values = []): array;

@@ -98,7 +98,7 @@ class LoginController
             }
 
             $sessionHash = $this->handleAccessContext->getSessionHashByUserId($user->getId() ?? 0);
-            if (!$isUpdateSessionHash) {
+            if (!$sessionHash) {
                 $this->rpc->replyData([
                    ['type' => 'error', 'message' => 'Не удалось получить сессию']
                 ]);

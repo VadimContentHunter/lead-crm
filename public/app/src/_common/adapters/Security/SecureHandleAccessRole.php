@@ -12,9 +12,6 @@ use crm\src\components\Security\_common\interfaces\IAccessRoleRepository;
 
 class SecureHandleAccessRole implements IHandleAccessRole
 {
-    /**
-     * @var SecureWrapper
-     */
     private SecureWrapper $secure;
 
     public function __construct(
@@ -22,50 +19,47 @@ class SecureHandleAccessRole implements IHandleAccessRole
         IAccessGranter $accessGranter,
         ?AccessContext $accessContext
     ) {
-        // Создаём реальный target
         $target = new HandleAccessRole($roleRepository);
-
-        // Оборачиваем его
         $this->secure = new SecureWrapper($target, $accessGranter, $accessContext);
     }
 
     public function addRole(string $name, ?string $description = null): ?AccessRole
     {
-        return $this->secure->addRole($name, $description);
+        return $this->secure->__call('addRole', [$name, $description]);
     }
 
     public function editRoleById(int $roleId, ?string $newName = null, ?string $newDescription = null): bool
     {
-        return $this->secure->editRoleById($roleId, $newName, $newDescription);
+        return $this->secure->__call('editRoleById', [$roleId, $newName, $newDescription]);
     }
 
     public function editRoleByName(string $roleName, ?string $newName = null, ?string $newDescription = null): bool
     {
-        return $this->secure->editRoleByName($roleName, $newName, $newDescription);
+        return $this->secure->__call('editRoleByName', [$roleName, $newName, $newDescription]);
     }
 
     public function deleteRole(int $roleId): bool
     {
-        return $this->secure->deleteRole($roleId);
+        return $this->secure->__call('deleteRole', [$roleId]);
     }
 
     public function getRoleById(int $roleId): ?AccessRole
     {
-        return $this->secure->getRoleById($roleId);
+        return $this->secure->__call('getRoleById', [$roleId]);
     }
 
     public function getRoleByName(string $name): ?AccessRole
     {
-        return $this->secure->getRoleByName($name);
+        return $this->secure->__call('getRoleByName', [$name]);
     }
 
     public function getAllRoles(): array
     {
-        return $this->secure->getAllRoles();
+        return $this->secure->__call('getAllRoles', []);
     }
 
     public function getAllExceptRoles(string $column = '', array $excludedValues = []): array
     {
-        return $this->secure->getAllExceptRoles($column, $excludedValues);
+        return $this->secure->__call('getAllExceptRoles', [$column, $excludedValues]);
     }
 }

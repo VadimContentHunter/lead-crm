@@ -164,10 +164,10 @@ class AppContext
      * Создаёт экземпляр класса по именованным или позиционным аргументам.
      *
      * @param  class-string $className
-     * @param  array<int|string, mixed> $params    Позиционные или именованные аргументы конструктора.
+     * @param  array<int|string,mixed> $params    Позиционные или именованные аргументы конструктора.
      * @return object
      *
-     * @throws InvalidArgumentException|ReflectionException
+     * @throws InvalidArgumentException
      */
     public static function createInstance(string $className, array $params = []): object
     {

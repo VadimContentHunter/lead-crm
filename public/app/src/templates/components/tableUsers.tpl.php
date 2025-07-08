@@ -2,6 +2,7 @@
 
 use crm\src\services\TableRenderer\TableCellRenderer;
 
+$filterPanel ??= '';
 $header ??= [];
 $rows ??= [];
 ?>
@@ -20,14 +21,14 @@ $rows ??= [];
                     </tr>
 
                     <?php  foreach ($rows as $row) {
-                        $html .= '<tr>';
+                        echo '<tr>';
 
                         // Если $row не массив, оборачиваем в массив
                         foreach (is_iterable($row) ? $row : [$row] as $cell) {
-                            $html .= '<td>' . TableCellRenderer::render($cell) . '</td>';
+                            echo '<td>' . TableCellRenderer::render($cell) . '</td>';
                         }
 
-                        $html .= '</tr>';
+                        echo '</tr>';
                     } ?>
                 </tbody>
             </table>

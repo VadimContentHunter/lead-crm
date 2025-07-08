@@ -38,7 +38,7 @@ class AccessDeniedPage
         try {
             $components = ['components' => $this->getComponents()];
             $headers->setResponseCode(403);
-            echo $this->renderer->renderBundle($this->appContext?->getLayout($components));
+            echo $this->renderer->renderBundle($this->appContext->getLayout($components));
         } catch (Throwable $e) {
             // Внутренняя ошибка — HTTP 500
             $headers->setResponseCode(500);

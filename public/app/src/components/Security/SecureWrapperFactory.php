@@ -58,6 +58,9 @@ class SecureWrapperFactory
 
     /**
      * Создаёт новый объект указанного класса и оборачивает его в SecureWrapper с текущим контекстом безопасности.
+     *
+     * @param class-string $className
+     * @param array<int|string,mixed> $constructorArgs
      */
     public static function createAndWrapObject(
         string $className,
@@ -65,7 +68,7 @@ class SecureWrapperFactory
     ): SecureWrapper {
         return SecureWrapper::createWrapped(
             $className,
-            $constructorArgs,
+            array_values($constructorArgs),
             self::getAccessGranter(),
             self::getAccessContext()
         );

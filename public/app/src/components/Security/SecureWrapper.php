@@ -23,14 +23,8 @@ class SecureWrapper
       * Фабрика: создаёт целевой объект и оборачивает в SecureWrapper.
       *
       * @param class-string $className
-      * @param array<int, mixed> $constructorArgs
+      * @param array<int,mixed> $constructorArgs
       */
-    /**
-     * Фабрика: создаёт целевой объект (динамический наследник) и оборачивает в SecureWrapper.
-     *
-     * @param class-string $className
-     * @param array<int, mixed> $constructorArgs
-     */
     public static function createWrapped(
         string $className,
         array $constructorArgs,

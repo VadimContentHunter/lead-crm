@@ -37,15 +37,16 @@ class ApiController
 
         if (!isset($this->methods[$method])) {
             $this->rpc->replyError(-32601, 'Метод не найден');
-            return;
         }
 
         ($this->methods[$method])();
     }
 
+    /**
+     * @param array<string,mixed> $params
+     */
     public function getError(array $params): void
     {
-        $a = $_GET;
         $this->rpc->replyError($params['code'] ?? 100, $params['message'] ?? 'Неизвестная ошибка');
     }
 }

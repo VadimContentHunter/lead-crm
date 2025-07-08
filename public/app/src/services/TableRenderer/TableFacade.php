@@ -97,6 +97,10 @@ class TableFacade
         );
 
         return new class ($decorated['header'], $decorated['rows']) {
+             /**
+              * @param string[] $header
+              * @param mixed[] $rows
+              */
             public function __construct(
                 public array $header,
                 public array $rows

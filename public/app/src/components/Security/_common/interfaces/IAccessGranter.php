@@ -3,6 +3,7 @@
 namespace crm\src\components\Security\_common\interfaces;
 
 use crm\src\components\Security\_entities\AccessContext;
+use crm\src\components\Security\_exceptions\SecurityException;
 
 interface IAccessGranter
 {

@@ -7,6 +7,7 @@ use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
 use crm\src\services\AppContext\AppContext;
+use crm\src\services\AppContext\IAppContext;
 use crm\src\services\TableRenderer\TableFacade;
 use crm\src\_common\repositories\SourceRepository;
 use crm\src\services\TableRenderer\TableDecorator;
@@ -25,18 +26,12 @@ class SourcePage
     private SourceManagement $sourceManagement;
 
     private TemplateRenderer $renderer;
+
     public function __construct(
-        private string $projectPath,
-        PDO $pdo,
-        private LoggerInterface $logger = new NullLogger(),
-        private ?AppContext $appContext = null
+        private IAppContext $appContext
     ) {
-        $this->logger->info('SourcePage initialized');
-        $this->renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
-        $this->sourceManagement = new SourceManagement(
-            new SourceRepository($pdo, $logger),
-            new SourceValidatorAdapter()
-        );
+        $this->renderer = $this->appContext->getTemplateRenderer();
+        $this->sourceManagement = $this->appContext->getSourceManagement();
     }
 
     /**

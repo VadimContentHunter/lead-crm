@@ -6,6 +6,7 @@ use PDO;
 use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
+use crm\src\services\AppContext\IAppContext;
 use crm\src\_common\repositories\SourceRepository;
 use crm\src\_common\adapters\SourceValidatorAdapter;
 use crm\src\components\SourceManagement\SourceManagement;
@@ -18,17 +19,11 @@ class SourceController
     private JsonRpcServerFacade $rpc;
 
     public function __construct(
-        private string $projectPath,
-        PDO $pdo,
-        private LoggerInterface $logger = new NullLogger()
+        private IAppContext $appContext
     ) {
-        $this->logger->info('SourceController initialized for project ' . $this->projectPath);
-        $this->sourceManagement = new SourceManagement(
-            new SourceRepository($pdo, $logger),
-            new SourceValidatorAdapter()
-        );
+        $this->sourceManagement = $this->appContext->getSourceManagement();
 
-        $this->rpc = new JsonRpcServerFacade();
+        $this->rpc = $this->appContext->getJsonRpcServerFacade();
         switch ($this->rpc->getMethod()) {
             case 'source.add':
                 $this->createSource($this->rpc->getParams());

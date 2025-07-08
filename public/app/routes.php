@@ -59,31 +59,31 @@ function loadRoutes(PDO $pdo, IAppContext $appContext, LoggerInterface $logger =
         new Route(
             pattern: '^/api/sources/?$',
             className: SourceController::class,
-            extraData: [__DIR__, $pdo, $logger]
+            extraData: [$appContext]
         ),
 
         new Route(
             pattern: '^/api/leads/?$',
             className: LeadController::class,
-            extraData: [__DIR__, $pdo, $logger]
+            extraData: [$appContext]
         ),
 
         new Route(
             pattern: '^/api/comments/?$',
             className: CommentController::class,
-            extraData: [__DIR__, $pdo, $logger]
+            extraData: [$appContext]
         ),
 
         new Route(
             pattern: '^/api/deposits/?$',
             className: DepositController::class,
-            extraData: [__DIR__, $pdo, $logger]
+            extraData: [$appContext]
         ),
 
         new Route(
             pattern: '^/api/login/?$',
             className: LoginController::class,
-            extraData: [__DIR__, $pdo, $logger]
+            extraData: [$appContext]
         ),
 
         // PAGES
@@ -132,14 +132,14 @@ function loadRoutes(PDO $pdo, IAppContext $appContext, LoggerInterface $logger =
             pattern: '^/page/source-add/?$',
             className: SourcePage::class,
             methodName: 'showAddSourcePage',
-            extraData: [__DIR__, $pdo, $logger, $appContext]
+            extraData: [$appContext]
         ),
 
         new Route(
             pattern: '^/page/source-all/?$',
             className: SourcePage::class,
             methodName: 'showAllSourcePage',
-            extraData: [__DIR__, $pdo, $logger, $appContext]
+            extraData: [$appContext]
         ),
 
         // PAGES-LEAD
@@ -148,21 +148,21 @@ function loadRoutes(PDO $pdo, IAppContext $appContext, LoggerInterface $logger =
             pattern: '^/page/lead-add/?$',
             className: LeadPage::class,
             methodName: 'showAddLeadPage',
-            extraData: [__DIR__, $pdo, $logger, $appContext]
+            extraData: [$appContext]
         ),
 
         new Route(
             pattern: '^/page/lead-all/?$',
             className: LeadPage::class,
             methodName: 'showAllLeadPage',
-            extraData: [__DIR__, $pdo, $logger, $appContext]
+            extraData: [$appContext]
         ),
 
         new Route(
             pattern: '^/page/lead-edit/(\d+)/?$',
             className: LeadPage::class,
             methodName: 'showEditLeadPage',
-            extraData: [__DIR__, $pdo, $logger, $appContext]
+            extraData: [$appContext]
         ),
 
         // PAGES-OTHER

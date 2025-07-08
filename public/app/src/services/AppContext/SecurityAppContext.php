@@ -11,8 +11,10 @@ use crm\src\services\AppContext\IAppContext;
 use crm\src\components\Security\SecureWrapper;
 use crm\src\_common\repositories\UserRepository;
 use crm\src\_common\adapters\UserValidatorAdapter;
+use crm\src\_common\repositories\SourceRepository;
 use crm\src\_common\repositories\StatusRepository;
 use crm\src\components\Security\SessionAuthManager;
+use crm\src\_common\adapters\SourceValidatorAdapter;
 use crm\src\_common\adapters\StatusValidatorAdapter;
 use crm\src\components\Security\_entities\AccessRole;
 use crm\src\components\UserManagement\_entities\User;
@@ -23,10 +25,12 @@ use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\components\Security\_entities\AccessContext;
 use crm\src\_common\adapters\Security\BasedAccessGranter;
 use crm\src\_common\repositories\AccessContextRepository;
+use crm\src\components\SourceManagement\SourceManagement;
 use crm\src\components\StatusManagement\StatusManagement;
 use crm\src\_common\adapters\Security\SecureUserManagement;
 use crm\src\components\Security\_handlers\HandleAccessRole;
 use crm\src\_common\adapters\Security\SecureHandleAccessRole;
+use crm\src\_common\adapters\Security\SecureSourceRepository;
 use crm\src\_common\adapters\Security\SecureStatusRepository;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
@@ -36,11 +40,13 @@ use crm\src\components\Security\_common\interfaces\IAccessGranter;
 use crm\src\components\Security\_common\interfaces\IHandleAccessRole;
 use crm\src\components\Security\_common\interfaces\IHandleAccessSpace;
 use crm\src\components\UserManagement\_common\interfaces\IUserManagement;
+use crm\src\components\SourceManagement\_common\interfaces\ISourceRepository;
 use crm\src\components\StatusManagement\_common\interfaces\IStatusManagement;
 use crm\src\components\StatusManagement\_common\interfaces\IStatusRepository;
 
 class SecurityAppContext implements IAppContext, ISecurity
 {
+    public SourceManagement $sourceManagement;
     public IStatusManagement $statusManagement;
     public IUserManagement $userManagement;
     public IHandleAccessRole $handleAccessRole;
@@ -54,6 +60,7 @@ class SecurityAppContext implements IAppContext, ISecurity
     public AccessContextRepository $accessContextRepository;
     public UserRepository $userRepository;
     public IStatusRepository $statusRepository;
+    public ISourceRepository $sourceRepository;
 
     public TemplateRenderer $templateRenderer;
     // public JsonRpcServerFacade $jsonRpcServerFacade;
@@ -116,6 +123,17 @@ class SecurityAppContext implements IAppContext, ISecurity
             new StatusValidatorAdapter(),
         );
 
+        $this->sourceRepository = new SecureSourceRepository(
+            new SourceRepository($pdo, $logger),
+            $this->accessGranter,
+            $this->thisAccessContext
+        );
+
+        $this->sourceManagement = new SourceManagement(
+            $this->sourceRepository,
+            new SourceValidatorAdapter()
+        );
+
         if ($this->thisAccessContext !== null) {
             $userRepo = new UserRepository($pdo, $logger);
             $roleRepo = $this->accessRoleRepository;
@@ -125,6 +143,11 @@ class SecurityAppContext implements IAppContext, ISecurity
             $this->thisRole = $roleRepo->getById($this->thisAccessContext->roleId ?? 0);
             $this->thisSpace = $spaceRepo->getById($this->thisAccessContext->spaceId ?? 0);
         }
+    }
+
+    public function getSourceManagement(): SourceManagement
+    {
+        return $this->sourceManagement;
     }
 
     public function getStatusManagement(): IStatusManagement

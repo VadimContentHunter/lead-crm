@@ -11,6 +11,7 @@ use crm\src\_common\repositories\AccessSpaceRepository;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\components\Security\_entities\AccessContext;
 use crm\src\_common\repositories\AccessContextRepository;
+use crm\src\components\SourceManagement\SourceManagement;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 use crm\src\components\Security\_handlers\HandleAccessContext;
@@ -22,6 +23,8 @@ use crm\src\components\StatusManagement\_common\interfaces\IStatusManagement;
 
 interface IAppContext
 {
+    public function getSourceManagement(): SourceManagement;
+
     public function getStatusManagement(): IStatusManagement;
 
     public function getUserManagement(): IUserManagement;

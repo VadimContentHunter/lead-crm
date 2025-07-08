@@ -7,6 +7,7 @@ use crm\src\controllers\UserPage;
 use crm\src\controllers\LoginPage;
 use crm\src\controllers\LogoutPage;
 use crm\src\components\Security\RoleNames;
+use crm\src\_common\interfaces\IValidation;
 use crm\src\controllers\API\UserController;
 use crm\src\controllers\NotFoundController;
 use crm\src\controllers\API\LoginController;
@@ -15,6 +16,7 @@ use crm\src\services\AppContext\IAppContext;
 use crm\src\components\UserManagement\GetUser;
 use crm\src\components\Security\_entities\AccessRole;
 use crm\src\components\UserManagement\_entities\User;
+use crm\src\components\UserManagement\UserManagement;
 use crm\src\components\Security\_entities\AccessSpace;
 use crm\src\components\Security\_entities\AccessContext;
 use crm\src\components\Security\_handlers\HandleAccessRole;
@@ -27,6 +29,7 @@ use crm\src\components\Security\_common\interfaces\IAccessGranter;
 use crm\src\components\Security\_exceptions\JsonRpcSecurityException;
 use crm\src\components\Security\_common\mappers\AccessFullContextMapper;
 use crm\src\components\Security\_common\interfaces\IAccessRoleRepository;
+use crm\src\components\UserManagement\_common\interfaces\IUserRepository;
 use crm\src\components\Security\_common\interfaces\IAccessSpaceRepository;
 use crm\src\components\Security\_exceptions\AuthenticationRequiredException;
 
@@ -34,7 +37,8 @@ class BasedAccessGranter implements IAccessGranter
 {
     public function __construct(
         private IAccessRoleRepository $roleRepository,
-        private IAccessSpaceRepository $spaceRepository
+        private IAccessSpaceRepository $spaceRepository,
+        private IUserRepository $userRepository,
     ) {
     }
 
@@ -163,8 +167,8 @@ class BasedAccessGranter implements IAccessGranter
         if ($target instanceof GetUser) {
             switch ($methodName) {
                 case 'executeAllMapped':
-                    $a = $target->executeById($accessFullContext->userId)->mapToNew(fn (mixed $data) => [UserMapper::toArray($data)]);
-                    return $a;
+                    return $target->executeById($accessFullContext->userId)
+                                ->mapToNew(fn (mixed $data) => [UserMapper::toArray($data)]);
             }
         }
 
@@ -177,6 +181,16 @@ class BasedAccessGranter implements IAccessGranter
                     throw new JsonRpcSecurityException("Менеджер не может удалить пользователей");
                 case 'editUser':
                     throw new JsonRpcSecurityException("Менеджер не может редактировать пользователей");
+                case 'filterUsers':
+                case 'filterUsersFormatTable':
+                    $userLogin = $this->userRepository->getById($accessFullContext->userId)?->login;
+                    $argSearch = $args[0]['search'] ?? '';
+
+                    $login = $userLogin ?? '--';
+                    $search = ($argSearch !== $login && (int)$argSearch !== $accessFullContext->userId) ? '--' : $argSearch;
+                    $search = $argSearch === '' ? $login : $search;
+
+                    return $target->filterUsersFormatTable(['login' => $login, 'search' => $search]);
             }
         }
 

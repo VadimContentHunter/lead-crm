@@ -51,7 +51,8 @@ $routeHandler = new RouteHandler(
     errorRoute: $routError,
     accessGranter: new BasedAccessGranter(
         $appContext->accessRoleRepository,
-        $appContext->accessSpaceRepository
+        $appContext->accessSpaceRepository,
+        $appContext->userRepository
     ),
     accessContext: $appContext->thisAccessContext,
     logger: $logger

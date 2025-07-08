@@ -2,12 +2,12 @@
 
 namespace crm\src\controllers;
 
-use crm\src\services\AppContext\AppContext;
+use crm\src\services\AppContext\IAppContext;
 
 class LogoutPage
 {
     public function __construct(
-        private AppContext $appContext
+        private IAppContext $appContext
     ) {
         $this->appContext->logoutAndRedirect();
     }

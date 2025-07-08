@@ -6,6 +6,7 @@ use crm\src\controllers\LeadPage;
 use crm\src\controllers\UserPage;
 use crm\src\controllers\LoginPage;
 use crm\src\controllers\LogoutPage;
+use crm\src\controllers\StatusPage;
 use crm\src\components\Security\RoleNames;
 use crm\src\_common\interfaces\IValidation;
 use crm\src\controllers\API\UserController;
@@ -20,6 +21,8 @@ use crm\src\components\UserManagement\_entities\User;
 use crm\src\components\UserManagement\UserManagement;
 use crm\src\components\Security\_entities\AccessSpace;
 use crm\src\components\Security\_entities\AccessContext;
+use crm\src\components\StatusManagement\_entities\Status;
+use crm\src\components\StatusManagement\StatusManagement;
 use crm\src\components\Security\_handlers\HandleAccessRole;
 use crm\src\components\Security\_handlers\HandleAccessSpace;
 use crm\src\components\Security\_exceptions\SecurityException;
@@ -33,8 +36,6 @@ use crm\src\components\Security\_common\interfaces\IAccessRoleRepository;
 use crm\src\components\UserManagement\_common\interfaces\IUserRepository;
 use crm\src\components\Security\_common\interfaces\IAccessSpaceRepository;
 use crm\src\components\Security\_exceptions\AuthenticationRequiredException;
-use crm\src\components\StatusManagement\_entities\Status;
-use crm\src\controllers\StatusPage;
 
 class BasedAccessGranter implements IAccessGranter
 {
@@ -241,6 +242,13 @@ class BasedAccessGranter implements IAccessGranter
             switch ($methodName) {
                 case 'showAddStatusPage':
                     throw new SecurityException("Менеджер не может посетить страницу создания статуса.");
+            }
+        }
+
+        if ($target instanceof StatusController) {
+            switch ($methodName) {
+                case 'deleteStatus':
+                    throw new JsonRpcSecurityException("Менеджер не может удалять статусы.");
             }
         }
 

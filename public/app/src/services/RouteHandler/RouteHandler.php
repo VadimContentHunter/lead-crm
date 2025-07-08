@@ -6,8 +6,10 @@ namespace crm\src\services\RouteHandler;
 
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
-use crm\src\components\Security\SecureWrapperFactory;
+use crm\src\components\Security\SecureWrapper;
+use crm\src\components\Security\_entities\AccessContext;
 use  crm\src\services\RouteHandler\common\interfaces\IRoute;
+use crm\src\components\Security\_common\interfaces\IAccessGranter;
 
 class RouteHandler
 {
@@ -15,11 +17,13 @@ class RouteHandler
      * @param IRoute[] $routes
      */
     public function __construct(
+        private IAccessGranter $accessGranter,
         public readonly string $currentUrl = '',
         private array $routes = [],
         private bool $autoProcessUrl = true,
         private ?IRoute $defaultRoute = null,
         private ?IRoute $errorRoute = null,
+        private ?AccessContext $accessContext = null,
         private LoggerInterface $logger = new NullLogger()
     ) {
     }
@@ -128,7 +132,7 @@ class RouteHandler
         // $reflection = new \ReflectionClass($className);
         // $controller = $reflection->newInstanceArgs($constructorParams);
 
-        $controller = SecureWrapperFactory::createAndWrapObject($className, $constructorParams);
+        $controller = SecureWrapper::createWrapped($className, $constructorParams, $this->accessGranter, $this->accessContext);
         if ($methodName !== null) {
             // Убирается проверка так как вызов метода будет через оболочку
             // if (!method_exists($controller, $methodName)) {

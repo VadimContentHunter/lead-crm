@@ -9,11 +9,10 @@ use crm\src\controllers\NotFoundController;
 use crm\src\services\AppContext\AppContext;
 use  crm\src\services\RouteHandler\RouteHandler;
 use  crm\src\services\RouteHandler\entities\Route;
-use crm\src\components\Security\BasedAccessGranter;
 use crm\src\services\AppContext\SecurityAppContext;
-use crm\src\components\Security\SecureWrapperFactory;
 use crm\src\_common\repositories\AccessRoleRepository;
 use crm\src\_common\repositories\AccessSpaceRepository;
+use crm\src\_common\adapters\Security\BasedAccessGranter;
 use crm\src\services\Repositories\DbRepository\services\PdoFactory;
 
 session_start();
@@ -33,19 +32,6 @@ $pdo = PdoFactory::create([
 // $appContext = new AppContext(__DIR__, $pdo, $logger);
 $appContext = new SecurityAppContext(__DIR__, $pdo, $logger);
 
-SecureWrapperFactory::init(
-    new BasedAccessGranter(
-        $appContext->accessRoleRepository,
-        $appContext->accessSpaceRepository
-    ),
-    $appContext->thisAccessContext
-);
-// SecureWrapperFactory::init(new BasedAccessGranter(
-//     roleRepository: new AccessRoleRepository($pdo, $logger),
-//     spaceRepository: new AccessSpaceRepository($pdo, $logger),
-// ));
-
-
 $rout404 = new Route(
     pattern: '.*',
     className: NotFoundController::class,
@@ -63,6 +49,11 @@ $routeHandler = new RouteHandler(
     currentUrl: $_SERVER['REQUEST_URI'],
     defaultRoute: $rout404,
     errorRoute: $routError,
+    accessGranter: new BasedAccessGranter(
+        $appContext->accessRoleRepository,
+        $appContext->accessSpaceRepository
+    ),
+    accessContext: $appContext->thisAccessContext,
     logger: $logger
 );
 

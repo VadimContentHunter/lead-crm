@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\components\Security;
+namespace crm\src\_common\adapters\Security;
 
 use crm\src\controllers\LeadPage;
 use crm\src\controllers\UserPage;
@@ -11,6 +11,7 @@ use crm\src\controllers\API\UserController;
 use crm\src\controllers\NotFoundController;
 use crm\src\controllers\API\LoginController;
 use crm\src\controllers\BootstrapController;
+use crm\src\services\AppContext\IAppContext;
 use crm\src\components\UserManagement\GetUser;
 use crm\src\components\Security\_entities\AccessRole;
 use crm\src\components\UserManagement\_entities\User;
@@ -33,7 +34,7 @@ class BasedAccessGranter implements IAccessGranter
 {
     public function __construct(
         private IAccessRoleRepository $roleRepository,
-        private IAccessSpaceRepository $spaceRepository,
+        private IAccessSpaceRepository $spaceRepository
     ) {
     }
 

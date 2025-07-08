@@ -11,7 +11,6 @@ use crm\src\services\AppContext\IAppContext;
 use crm\src\components\Security\SecureWrapper;
 use crm\src\_common\repositories\UserRepository;
 use crm\src\_common\adapters\UserValidatorAdapter;
-use crm\src\components\Security\BasedAccessGranter;
 use crm\src\components\Security\SessionAuthManager;
 use crm\src\components\Security\_entities\AccessRole;
 use crm\src\components\UserManagement\_entities\User;
@@ -20,6 +19,7 @@ use crm\src\components\Security\_entities\AccessSpace;
 use crm\src\_common\repositories\AccessSpaceRepository;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\components\Security\_entities\AccessContext;
+use crm\src\_common\adapters\Security\BasedAccessGranter;
 use crm\src\_common\repositories\AccessContextRepository;
 use crm\src\_common\adapters\Security\SecureUserManagement;
 use crm\src\components\Security\_handlers\HandleAccessRole;
@@ -67,13 +67,16 @@ class SecurityAppContext implements IAppContext, ISecurity
         $this->accessContextRepository = new AccessContextRepository($pdo, $logger);
         $this->userRepository = new UserRepository($pdo, $logger);
 
-        $this->accessGranter = new BasedAccessGranter($this->accessRoleRepository, $this->accessSpaceRepository);
         $this->sessionAuthManager = new SessionAuthManager($this->accessContextRepository);
         $this->thisAccessContext = $this->sessionAuthManager->getCurrentAccessContext();
 
         $this->handleAccessContext = new HandleAccessContext($this->accessContextRepository);
         $this->handleAccessRole = new HandleAccessRole($this->accessRoleRepository);
 
+        $this->accessGranter = new BasedAccessGranter(
+            $this->accessRoleRepository,
+            $this->accessSpaceRepository,
+        );
         $this->handleAccessSpace = new SecureHandleAccessSpace(
             $this->accessSpaceRepository,
             $this->accessGranter,
@@ -92,24 +95,6 @@ class SecurityAppContext implements IAppContext, ISecurity
             $this->accessGranter,
             $this->thisAccessContext
         );
-
-        // $this->handleAccessSpace = new SecureHandleAccessSpace(
-        //     $this->accessSpaceRepository,
-        //     new BasedAccessGranter($this->accessRoleRepository, $this->accessSpaceRepository),
-        //     $this->thisAccessContext
-        // );
-
-        // $this->handleAccessSpace = SecureWrapper::createWrapped(
-        //     HandleAccessSpace::class,
-        //     [$this->accessSpaceRepository],
-        //     new BasedAccessGranter($this->accessRoleRepository, $this->accessSpaceRepository),
-        //     $this->thisAccessContext
-        // );
-
-        // $this->handleAccessSpace = SecureWrapperFactory::createAndWrapObject(HandleAccessSpace::class, [
-        //     new AccessSpaceRepository($pdo, $this->logger)
-        // ]);
-
 
         if ($this->thisAccessContext !== null) {
             $userRepo = new UserRepository($pdo, $logger);

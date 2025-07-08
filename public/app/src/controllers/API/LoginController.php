@@ -9,13 +9,9 @@ use Psr\Log\LoggerInterface;
 use crm\src\_common\repositories\UserRepository;
 use crm\src\_common\adapters\UserValidatorAdapter;
 use crm\src\components\Security\SessionAuthManager;
-use crm\src\services\TemplateRenderer\HeaderManager;
-use crm\src\components\Security\SecureWrapperFactory;
 use crm\src\components\UserManagement\UserManagement;
-use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\_common\repositories\AccessContextRepository;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
-use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 use crm\src\components\Security\_handlers\HandleAccessContext;
 
 class LoginController
@@ -105,7 +101,6 @@ class LoginController
             }
 
             $this->sessionAuthManager->login($sessionHash);
-            // SecureWrapperFactory::$accessContext = $this->sessionAuthManager->getCurrentAccessContext();
             $this->rpc->replyData([
                 ['type' => 'success', 'message' => 'Успешная авторизация'],
                 ['type' => 'redirect', 'url' => '/page/lead-all'],

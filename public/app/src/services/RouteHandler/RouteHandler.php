@@ -132,7 +132,12 @@ class RouteHandler
         // $reflection = new \ReflectionClass($className);
         // $controller = $reflection->newInstanceArgs($constructorParams);
 
-        $controller = SecureWrapper::createWrapped($className, $constructorParams, $this->accessGranter, $this->accessContext);
+        $controller = SecureWrapper::createWrapped(
+            $className,
+            array_values($constructorParams),
+            $this->accessGranter,
+            $this->accessContext
+        );
         if ($methodName !== null) {
             // Убирается проверка так как вызов метода будет через оболочку
             // if (!method_exists($controller, $methodName)) {

@@ -10,8 +10,6 @@ use crm\src\components\SourceManagement\_common\interfaces\ISourceRepository;
 
 /**
  * Secure обёртка для SourceRepository с проверкой доступа.
- *
- * @implements ISourceRepository
  */
 class SecureSourceRepository implements ISourceRepository
 {

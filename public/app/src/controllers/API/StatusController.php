@@ -19,10 +19,11 @@ use crm\src\components\StatusManagement\StatusManagement;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\components\Security\_exceptions\JsonRpcSecurityException;
 use crm\src\components\UserManagement\_common\mappers\UserFilterMapper;
+use crm\src\components\StatusManagement\_common\interfaces\IStatusManagement;
 
 class StatusController
 {
-    private StatusManagement $statusManagement;
+    private IStatusManagement $statusManagement;
 
     private JsonRpcServerFacade $rpc;
 

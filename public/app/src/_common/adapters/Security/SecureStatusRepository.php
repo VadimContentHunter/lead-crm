@@ -10,8 +10,6 @@ use crm\src\components\StatusManagement\_common\interfaces\IStatusRepository;
 
 /**
  * Secure обёртка над StatusRepository с проверкой доступа.
- *
- * @implements IStatusRepository
  */
 class SecureStatusRepository implements IStatusRepository
 {

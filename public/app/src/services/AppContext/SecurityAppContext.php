@@ -341,7 +341,7 @@ class SecurityAppContext implements IAppContext, ISecurity
             ],
         ];
 
-        if (RoleNames::isManager($this->thisRole->name)) {
+        if (RoleNames::isManager($this->thisRole?->name ?? '')) {
             $items = array_filter($items, fn($item) => $item['href'] !== '/page/status-add');
             // Если важен порядок ключей:
             $items = array_values($items);

@@ -13,10 +13,11 @@ use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\components\StatusManagement\_entities\Status;
 use crm\src\components\StatusManagement\StatusManagement;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
+use crm\src\components\StatusManagement\_common\interfaces\IStatusManagement;
 
 class StatusPage
 {
-    private StatusManagement $statusManagement;
+    private IStatusManagement $statusManagement;
 
     private TemplateRenderer $renderer;
 
@@ -41,7 +42,7 @@ class StatusPage
         try {
             // Успешный ответ
             $headers->setResponseCode(200);
-            echo $this->renderer->renderBundle($this->appContext?->getLayout($components));
+            echo $this->renderer->renderBundle($this->appContext->getLayout($components));
         } catch (Throwable $e) {
             // Внутренняя ошибка — HTTP 500
             $headers->setResponseCode(500);

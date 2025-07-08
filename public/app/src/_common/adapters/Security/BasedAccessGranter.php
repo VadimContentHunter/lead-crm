@@ -196,7 +196,8 @@ class BasedAccessGranter implements IAccessGranter
                     $search = ($argSearch !== $login && (int)$argSearch !== $accessFullContext->userId) ? '--' : $argSearch;
                     $search = $argSearch === '' ? $login : $search;
 
-                    return $target->filterUsersFormatTable(['login' => $login, 'search' => $search]);
+                    $target->filterUsersFormatTable(['login' => $login, 'search' => $search]);
+                    break;
                 case 'createUser':
                     $role_id = $args[0]['role_id'] ?? null;
                     $space_id = $args[0]['space_id'] ?? null;
@@ -222,7 +223,8 @@ class BasedAccessGranter implements IAccessGranter
 
                     $args[0]['space_id'] = $space?->id;
                     $args[0]['role_id'] = $role->id;
-                    return $target->createUser($args[0]);
+                    $target->createUser($args[0]);
+                    break;
             }
         }
 

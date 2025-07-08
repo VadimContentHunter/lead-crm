@@ -2,21 +2,13 @@
 
 namespace crm\src\controllers;
 
-use PDO;
 use Throwable;
-use Psr\Log\NullLogger;
-use Psr\Log\LoggerInterface;
-use crm\src\services\AppContext\AppContext;
+use crm\src\services\AppContext\IAppContext;
 use crm\src\services\TableRenderer\TableFacade;
-use crm\src\_common\repositories\StatusRepository;
 use crm\src\services\TableRenderer\TableDecorator;
-use crm\src\_common\adapters\StatusValidatorAdapter;
 use crm\src\services\TableRenderer\TableRenderInput;
 use crm\src\services\TableRenderer\TableTransformer;
 use crm\src\services\TemplateRenderer\HeaderManager;
-use crm\src\components\Security\_entities\AccessRole;
-use crm\src\components\UserManagement\_entities\User;
-use crm\src\components\Security\_entities\AccessSpace;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\components\StatusManagement\_entities\Status;
 use crm\src\components\StatusManagement\StatusManagement;
@@ -29,17 +21,10 @@ class StatusPage
     private TemplateRenderer $renderer;
 
     public function __construct(
-        private string $projectPath,
-        PDO $pdo,
-        private LoggerInterface $logger = new NullLogger(),
-        private ?AppContext $appContext = null
+        private IAppContext $appContext
     ) {
-        $this->logger->info('StatusPage initialized');
-        $this->renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
-        $this->statusManagement = new StatusManagement(
-            new StatusRepository($pdo, $logger),
-            new StatusValidatorAdapter()
-        );
+        $this->statusManagement = $appContext->getStatusManagement();
+        $this->renderer = $appContext->getTemplateRenderer();
     }
 
     /**

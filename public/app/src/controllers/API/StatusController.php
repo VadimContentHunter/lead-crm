@@ -6,10 +6,13 @@ use PDO;
 use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
+use crm\src\services\AppContext\ISecurity;
+use crm\src\services\AppContext\IAppContext;
 use crm\src\_common\repositories\StatusRepository;
 use crm\src\_common\adapters\StatusValidatorAdapter;
 use crm\src\components\StatusManagement\StatusManagement;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
+use crm\src\components\Security\_exceptions\JsonRpcSecurityException;
 
 class StatusController
 {
@@ -17,18 +20,17 @@ class StatusController
 
     private JsonRpcServerFacade $rpc;
 
-    public function __construct(
-        private string $projectPath,
-        PDO $pdo,
-        private LoggerInterface $logger = new NullLogger()
-    ) {
-        $this->logger->info('StatusController initialized for project ' . $this->projectPath);
-        $this->statusManagement = new StatusManagement(
-            new StatusRepository($pdo, $logger),
-            new StatusValidatorAdapter()
-        );
+    /**
+     * @var array<string, callable>
+     */
+    private array $methods = [];
 
-        $this->rpc = new JsonRpcServerFacade();
+    public function __construct(
+        private IAppContext $appContext,
+    ) {
+        $this->statusManagement = $this->appContext->getStatusManagement();
+
+        $this->rpc = $this->appContext->getJsonRpcServerFacade();
         switch ($this->rpc->getMethod()) {
             case 'status.add':
                 $this->createStatus($this->rpc->getParams());
@@ -36,6 +38,44 @@ class StatusController
 
             default:
                 $this->rpc->replyError(-32601, 'Метод не найден');
+        }
+    }
+
+    private function initMethodMap(): void
+    {
+        if ($this->appContext instanceof ISecurity) {
+            /**
+             * @var UserController $secureCall
+             */
+            $secureCall = $this->appContext->wrapWithSecurity($this);
+        } else {
+            $secureCall = $this;
+        }
+
+        $this->methods = [
+            'user.add'                => fn() => $secureCall->createUser($this->rpc->getParams()),
+            'user.edit'               => fn() => $secureCall->editUser($this->rpc->getParams()),
+            'user.delete'             => fn() => $secureCall->deleteUser($this->rpc->getParams()),
+            'user.filter'             => fn() => $secureCall->filterUsers($this->rpc->getParams()),
+            'user.filter.table'       => fn() => $secureCall->filterUsersFormatTable($this->rpc->getParams()),
+            'user.filter.table.clear' => fn() => $secureCall->filterUsersFormatTable([]),
+        ];
+    }
+
+    public function init(): void
+    {
+        try {
+            $method = $this->rpc->getMethod();
+
+            if (!isset($this->methods[$method])) {
+                throw new JsonRpcSecurityException('Метод не найден', -32601);
+            }
+
+            ($this->methods[$method])();
+        } catch (JsonRpcSecurityException $e) {
+            $this->rpc->send($e->toJsonRpcError($this->rpc->getId()));
+        } catch (\Throwable $e) {
+            $this->rpc->replyError(-32000, $e->getMessage());
         }
     }
 

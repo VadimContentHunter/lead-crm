@@ -64,13 +64,6 @@ class UserController
         $this->handleAccessSpace = $this->appContext->getHandleAccessSpace();
         $this->rpc = $this->appContext->getJsonRpcServerFacade();
 
-        // SecureWrapper::createWrapped(
-        //     UserController::class,
-        //     $constructorArgs,
-        //     $this->appContext->getAccessGranter(),
-        //     $this->appContext->getThisAccessContext()
-        // );
-
         $this->initMethodMap();
         $this->init();
     }

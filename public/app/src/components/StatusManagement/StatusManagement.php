@@ -4,9 +4,10 @@ namespace crm\src\components\StatusManagement;
 
 use crm\src\_common\interfaces\IValidation;
 use crm\src\components\StatusManagement\GetStatus;
+use crm\src\components\StatusManagement\_common\interfaces\IStatusManagement;
 use crm\src\components\StatusManagement\_common\interfaces\IStatusRepository;
 
-class StatusManagement
+class StatusManagement implements IStatusManagement
 {
     private ?CreateStatus $create = null;
     private ?GetStatus $get = null;

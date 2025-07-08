@@ -172,13 +172,17 @@ class BasedAccessGranter implements IAccessGranter
             switch ($methodName) {
                 case 'deleteUser':
                     throw new JsonRpcSecurityException("Менеджер не может удалить пользователей");
+                case 'deleteUserById':
+                    throw new JsonRpcSecurityException("Менеджер не может удалить пользователей");
+                case 'editUser':
+                    throw new JsonRpcSecurityException("Менеджер не может редактировать пользователей");
             }
         }
 
         if ($target instanceof UserPage) {
             switch ($methodName) {
-            //         case 'showAddUserPage':
-            //             throw new SecurityException("Менеджер не может добавлять пользователей.");
+                case 'showEditUserPage':
+                    throw new SecurityException("Менеджер не может редактировать пользователей.");
             }
         }
 

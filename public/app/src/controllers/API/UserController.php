@@ -310,15 +310,15 @@ class UserController
             ]);
         }
 
-        // $executeResult = $this->userManagement->delete()->executeById((int)$id);
-        // if ($executeResult->isSuccess()) {
-        //     $this->filterUsersFormatTable([]);
-        // } else {
-        //     $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
-        //     $this->rpc->replyData([
-        //         ['type' => 'error', 'message' => 'Пользователь не удалён. Причина: ' . $errorMsg]
-        //     ]);
-        // }
+        $executeResult = $this->userManagement->delete()->executeById((int)$id);
+        if ($executeResult->isSuccess()) {
+            $this->filterUsersFormatTable([]);
+        } else {
+            $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Пользователь не удалён. Причина: ' . $errorMsg]
+            ]);
+        }
     }
 
     /**

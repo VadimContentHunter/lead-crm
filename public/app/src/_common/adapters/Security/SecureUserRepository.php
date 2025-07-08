@@ -13,7 +13,7 @@ use crm\src\components\LeadManagement\_common\interfaces\ILeadAccountManagerRepo
 /**
  * Secure обёртка над UserRepository с проверкой доступа.
  */
-class SecureUserRepository implements IUserRepository, ILeadAccountManagerRepository
+class SecureUserRepository implements IUserRepository
 {
     private SecureWrapper $secure;
 

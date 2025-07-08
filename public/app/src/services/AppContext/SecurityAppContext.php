@@ -4,6 +4,7 @@ namespace crm\src\services\AppContext;
 
 use PDO;
 use Psr\Log\NullLogger;
+use Random\Engine\Secure;
 use Psr\Log\LoggerInterface;
 use crm\src\components\Security\RoleNames;
 use crm\src\services\AppContext\ISecurity;
@@ -20,7 +21,10 @@ use crm\src\_common\repositories\DepositRepository;
 use crm\src\components\Security\SessionAuthManager;
 use crm\src\_common\adapters\SourceValidatorAdapter;
 use crm\src\_common\adapters\StatusValidatorAdapter;
+use crm\src\_common\adapters\BalanceValidatorAdapter;
 use crm\src\_common\adapters\CommentValidatorAdapter;
+use crm\src\_common\adapters\DepositValidatorAdapter;
+use crm\src\components\LeadManagement\_entities\Lead;
 use crm\src\components\LeadManagement\LeadManagement;
 use crm\src\components\Security\_entities\AccessRole;
 use crm\src\components\UserManagement\_entities\User;
@@ -44,14 +48,19 @@ use crm\src\_common\adapters\Security\SecureSourceRepository;
 use crm\src\_common\adapters\Security\SecureStatusRepository;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
+use crm\src\_common\adapters\Security\SecureBalanceRepository;
+use crm\src\_common\adapters\Security\SecureDepositRepository;
 use crm\src\_common\adapters\Security\SecureHandleAccessSpace;
 use crm\src\components\Security\_handlers\HandleAccessContext;
 use crm\src\_common\repositories\LeadRepository\LeadRepository;
+use crm\src\_common\adapters\Security\SecureLeadSourceRepository;
+use crm\src\_common\adapters\Security\SecureLeadStatusRepository;
 use crm\src\components\Security\_common\interfaces\IAccessGranter;
 use crm\src\_common\repositories\LeadRepository\LeadSourceRepository;
 use crm\src\_common\repositories\LeadRepository\LeadStatusRepository;
 use crm\src\components\Security\_common\interfaces\IHandleAccessRole;
 use crm\src\components\Security\_common\interfaces\IHandleAccessSpace;
+use crm\src\_common\adapters\Security\SecureLeadAccountManagerRepository;
 use crm\src\components\UserManagement\_common\interfaces\IUserManagement;
 use crm\src\_common\repositories\LeadRepository\LeadAccountManagerRepository;
 use crm\src\components\SourceManagement\_common\interfaces\ISourceRepository;
@@ -81,9 +90,11 @@ class SecurityAppContext implements IAppContext, ISecurity
     public SecureSourceRepository $sourceRepository;
 
     public LeadRepository $leadRepository;
-    public SecureUserRepository $secureUserRepository;
+    public SecureLeadAccountManagerRepository $secureLeadAccountManagerRepository;
     public BalanceRepository $balanceRepository;
     public DepositRepository $depositRepository;
+    public SecureLeadStatusRepository $secureLeadStatusRepository;
+    public SecureLeadSourceRepository $secureLeadSourceRepository;
 
     public TemplateRenderer $templateRenderer;
     // public JsonRpcServerFacade $jsonRpcServerFacade;
@@ -164,18 +175,50 @@ class SecurityAppContext implements IAppContext, ISecurity
 
         $this->leadRepository = new LeadRepository($pdo, $logger);
 
-        $this->secureUserRepository = new SecureUserRepository(
-            new UserRepository($pdo, $logger),
+        $this->secureLeadStatusRepository = new SecureLeadStatusRepository(
+            new StatusRepository($pdo, $logger),
+            $this->accessGranter,
+            $this->thisAccessContext
+        );
+
+        $this->secureLeadSourceRepository = new SecureLeadSourceRepository(
+            new SourceRepository($pdo, $logger),
+            $this->accessGranter,
+            $this->thisAccessContext
+        );
+
+
+        $this->secureLeadAccountManagerRepository = new SecureLeadAccountManagerRepository(
+            new LeadAccountManagerRepository($pdo, $logger),
             $this->accessGranter,
             $this->thisAccessContext
         );
 
         $this->leadManagement = new LeadManagement(
             leadRepository: $this->leadRepository,
-            sourceRepository: $this->sourceRepository,
-            statusRepository: $this->statusRepository,
-            accountManagerRepository: $this->secureUserRepository,
+            sourceRepository: $this->secureLeadSourceRepository,
+            statusRepository: $this->secureLeadStatusRepository,
+            accountManagerRepository: $this->secureLeadAccountManagerRepository,
             validator: new LeadValidatorAdapter()
+        );
+
+        $this->balanceManagement = new BalanceManagement(
+            repository: new SecureBalanceRepository(
+                new BalanceRepository($pdo, $logger),
+                $this->accessGranter,
+                $this->thisAccessContext
+            ),
+            validator: new BalanceValidatorAdapter(),
+            leadRepository: $this->leadRepository,
+        );
+
+        $this->depositManagement = new DepositManagement(
+            repository: new SecureDepositRepository(
+                new DepositRepository($pdo, $logger),
+                $this->accessGranter,
+                $this->thisAccessContext
+            ),
+            validator: new DepositValidatorAdapter()
         );
 
         if ($this->thisAccessContext !== null) {

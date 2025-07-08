@@ -4,37 +4,38 @@ namespace crm\src\_common\adapters\Security;
 
 use crm\src\components\Security\SecureWrapper;
 use crm\src\components\Security\_entities\AccessContext;
-use crm\src\components\SourceManagement\_entities\Source;
 use crm\src\components\Security\_common\interfaces\IAccessGranter;
-use crm\src\components\SourceManagement\_common\interfaces\ISourceRepository;
-use crm\src\components\LeadManagement\_common\interfaces\ILeadSourceRepository;
+use crm\src\components\BalanceManagement\_entities\Balance;
+use crm\src\components\BalanceManagement\_common\interfaces\IBalanceRepository;
 
 /**
- * Secure обёртка для SourceRepository с проверкой доступа.
+ * Secure обёртка для BalanceRepository с проверкой доступа.
  */
-class SecureSourceRepository implements ISourceRepository
+class SecureBalanceRepository implements IBalanceRepository
 {
     private SecureWrapper $secure;
 
-    /**
-     * @param ISourceRepository $repository Оригинальный репозиторий.
-     */
     public function __construct(
-        ISourceRepository $repository,
+        IBalanceRepository $repository,
         IAccessGranter $accessGranter,
         ?AccessContext $accessContext
     ) {
         $this->secure = new SecureWrapper($repository, $accessGranter, $accessContext);
     }
 
-    public function deleteByTitle(string $title): ?int
+    public function deleteByLeadId(int $leadId): ?int
     {
-        return $this->secure->__call('deleteByTitle', [$title]);
+        return $this->secure->__call('deleteByLeadId', [$leadId]);
     }
 
-    public function getByTitle(string $title): ?Source
+    public function getByLeadId(int $leadId): ?Balance
     {
-        return $this->secure->__call('getByTitle', [$title]);
+        return $this->secure->__call('getByLeadId', [$leadId]);
+    }
+
+    public function updateByLeadId(Balance $balance): bool
+    {
+        return $this->secure->__call('updateByLeadId', [$balance]);
     }
 
     public function save(object|array $entityOrData): ?int

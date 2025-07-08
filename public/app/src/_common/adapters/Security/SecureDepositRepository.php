@@ -4,42 +4,43 @@ namespace crm\src\_common\adapters\Security;
 
 use crm\src\components\Security\SecureWrapper;
 use crm\src\components\Security\_entities\AccessContext;
-use crm\src\components\SourceManagement\_entities\Source;
 use crm\src\components\Security\_common\interfaces\IAccessGranter;
-use crm\src\components\SourceManagement\_common\interfaces\ISourceRepository;
-use crm\src\components\LeadManagement\_common\interfaces\ILeadSourceRepository;
+use crm\src\components\DepositManagement\_entities\Deposit;
+use crm\src\components\DepositManagement\_common\interfaces\IDepositRepository;
 
 /**
- * Secure обёртка для SourceRepository с проверкой доступа.
+ * Secure обёртка для DepositRepository с проверкой доступа.
  */
-class SecureSourceRepository implements ISourceRepository
+class SecureDepositRepository implements IDepositRepository
 {
     private SecureWrapper $secure;
 
-    /**
-     * @param ISourceRepository $repository Оригинальный репозиторий.
-     */
     public function __construct(
-        ISourceRepository $repository,
+        IDepositRepository $repository,
         IAccessGranter $accessGranter,
         ?AccessContext $accessContext
     ) {
         $this->secure = new SecureWrapper($repository, $accessGranter, $accessContext);
     }
 
-    public function deleteByTitle(string $title): ?int
+    public function save(object|array $entity): ?int
     {
-        return $this->secure->__call('deleteByTitle', [$title]);
+        return $this->secure->__call('save', [$entity]);
     }
 
-    public function getByTitle(string $title): ?Source
+    public function deleteByLeadId(int $leadId): ?int
     {
-        return $this->secure->__call('getByTitle', [$title]);
+        return $this->secure->__call('deleteByLeadId', [$leadId]);
     }
 
-    public function save(object|array $entityOrData): ?int
+    public function getByLeadId(int $leadId): ?Deposit
     {
-        return $this->secure->__call('save', [$entityOrData]);
+        return $this->secure->__call('getByLeadId', [$leadId]);
+    }
+
+    public function updateByLeadId(Deposit $deposit): bool
+    {
+        return $this->secure->__call('updateByLeadId', [$deposit]);
     }
 
     public function update(object|array $entityOrData): ?int

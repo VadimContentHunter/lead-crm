@@ -12,7 +12,7 @@ use crm\src\components\LeadManagement\_common\interfaces\ILeadStatusRepository;
 /**
  * Secure обёртка над StatusRepository с проверкой доступа.
  */
-class SecureStatusRepository implements IStatusRepository, ILeadStatusRepository
+class SecureStatusRepository implements IStatusRepository
 {
     private SecureWrapper $secure;
 

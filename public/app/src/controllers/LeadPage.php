@@ -50,6 +50,7 @@ use crm\src\_common\repositories\LeadRepository\LeadStatusRepository;
 use crm\src\components\SourceManagement\_common\mappers\SourceMapper;
 use crm\src\components\StatusManagement\_common\mappers\StatusMapper;
 use crm\src\components\BalanceManagement\_common\mappers\BalanceMapper;
+use crm\src\components\UserManagement\_common\interfaces\IUserManagement;
 use crm\src\_common\repositories\LeadRepository\LeadAccountManagerRepository;
 
 class LeadPage
@@ -60,7 +61,7 @@ class LeadPage
 
     private StatusManagement $statusManagement;
 
-    private UserManagement $userManagement;
+    private IUserManagement $userManagement;
 
     private BalanceManagement $balanceManagement;
 

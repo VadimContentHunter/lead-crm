@@ -26,14 +26,6 @@ class DeleteSource
      */
     public function executeById(int $id): ISourceResult
     {
-        $validationResult = $this->validator->validateArray(['id' => $id]);
-
-        if (!$validationResult->isValid()) {
-            return SourceResult::failure(
-                new SourceManagementException('Ошибка валидации: ' . implode('; ', $validationResult->getErrors()))
-            );
-        }
-
         try {
             $deletedId = $this->sourceRepository->deleteById($id);
 

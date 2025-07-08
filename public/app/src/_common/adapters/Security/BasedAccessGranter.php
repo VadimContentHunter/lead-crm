@@ -6,6 +6,7 @@ use crm\src\controllers\LeadPage;
 use crm\src\controllers\UserPage;
 use crm\src\controllers\LoginPage;
 use crm\src\controllers\LogoutPage;
+use crm\src\controllers\SourcePage;
 use crm\src\controllers\StatusPage;
 use crm\src\components\Security\RoleNames;
 use crm\src\_common\interfaces\IValidation;
@@ -14,6 +15,7 @@ use crm\src\controllers\NotFoundController;
 use crm\src\controllers\API\LoginController;
 use crm\src\controllers\BootstrapController;
 use crm\src\services\AppContext\IAppContext;
+use crm\src\controllers\API\SourceController;
 use crm\src\controllers\API\StatusController;
 use crm\src\components\UserManagement\GetUser;
 use crm\src\components\Security\_entities\AccessRole;
@@ -235,6 +237,8 @@ class BasedAccessGranter implements IAccessGranter
             switch ($methodName) {
                 case 'createStatus':
                     throw new JsonRpcSecurityException("Менеджер не может создавать статусы.");
+                case 'deleteStatus':
+                    throw new JsonRpcSecurityException("Менеджер не может удалять статусы.");
             }
         }
 
@@ -245,10 +249,19 @@ class BasedAccessGranter implements IAccessGranter
             }
         }
 
-        if ($target instanceof StatusController) {
+        if ($target instanceof SourceController) {
             switch ($methodName) {
-                case 'deleteStatus':
-                    throw new JsonRpcSecurityException("Менеджер не может удалять статусы.");
+                case 'createSource':
+                    throw new JsonRpcSecurityException("Менеджер не может создавать источники.");
+                case 'deleteSource':
+                    throw new JsonRpcSecurityException("Менеджер не может удалять источники.");
+            }
+        }
+
+        if ($target instanceof SourcePage) {
+            switch ($methodName) {
+                case 'showAddStatusPage':
+                    throw new SecurityException("Менеджер не может посетить страницу создания источника.");
             }
         }
 

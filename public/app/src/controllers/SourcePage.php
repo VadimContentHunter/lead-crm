@@ -78,7 +78,17 @@ class SourcePage
             header: $headers,
             rows: $rows,
             attributes: ['id' => 'source-table-1', 'data-module' => 'sources'],
-            classes: ['base-table']
+            classes: ['base-table'],
+            hrefButton: '/page/source-edit',
+            hrefButtonDel: '/page/source-delete',
+            attributesWrapper: [
+                'table-r-id' => 'source-table-1'
+            ],
+            allowedColumns: [
+                'id',
+                'title',
+            ],
+            renameMap: [],
         );
 
         $tableFacade = new TableFacade(new TableTransformer(),  new TableDecorator());
@@ -88,7 +98,9 @@ class SourcePage
                 (new TemplateBundle(
                     templatePath: 'containers/average-in-line-component.tpl.php',
                     variables: [
-                        'component' => $tableFacade->renderTable($input)->asHtml()
+                        'component' => $tableFacade->renderTable($input)->asHtml(),
+                        'methodSend' => 'source.delete',
+                        'endpointSend' => '/api/sources'
                     ]
                 ))
             ]

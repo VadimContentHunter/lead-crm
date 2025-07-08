@@ -27,7 +27,7 @@ class StatusController
     private JsonRpcServerFacade $rpc;
 
     /**
-     * @var array<string, callable>
+     * @var array<string,callable>
      */
     private array $methods = [];
 

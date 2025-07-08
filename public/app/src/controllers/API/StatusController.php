@@ -29,23 +29,17 @@ class StatusController
         private IAppContext $appContext,
     ) {
         $this->statusManagement = $this->appContext->getStatusManagement();
-
         $this->rpc = $this->appContext->getJsonRpcServerFacade();
-        switch ($this->rpc->getMethod()) {
-            case 'status.add':
-                $this->createStatus($this->rpc->getParams());
-            // break;
 
-            default:
-                $this->rpc->replyError(-32601, 'Метод не найден');
-        }
+        $this->initMethodMap();
+        $this->init();
     }
 
     private function initMethodMap(): void
     {
         if ($this->appContext instanceof ISecurity) {
             /**
-             * @var UserController $secureCall
+             * @var StatusController $secureCall
              */
             $secureCall = $this->appContext->wrapWithSecurity($this);
         } else {
@@ -53,12 +47,7 @@ class StatusController
         }
 
         $this->methods = [
-            'user.add'                => fn() => $secureCall->createUser($this->rpc->getParams()),
-            'user.edit'               => fn() => $secureCall->editUser($this->rpc->getParams()),
-            'user.delete'             => fn() => $secureCall->deleteUser($this->rpc->getParams()),
-            'user.filter'             => fn() => $secureCall->filterUsers($this->rpc->getParams()),
-            'user.filter.table'       => fn() => $secureCall->filterUsersFormatTable($this->rpc->getParams()),
-            'user.filter.table.clear' => fn() => $secureCall->filterUsersFormatTable([]),
+            'status.add' => fn() => $secureCall->createStatus($this->rpc->getParams()),
         ];
     }
 

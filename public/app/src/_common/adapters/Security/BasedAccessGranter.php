@@ -13,6 +13,7 @@ use crm\src\controllers\NotFoundController;
 use crm\src\controllers\API\LoginController;
 use crm\src\controllers\BootstrapController;
 use crm\src\services\AppContext\IAppContext;
+use crm\src\controllers\API\StatusController;
 use crm\src\components\UserManagement\GetUser;
 use crm\src\components\Security\_entities\AccessRole;
 use crm\src\components\UserManagement\_entities\User;
@@ -32,6 +33,8 @@ use crm\src\components\Security\_common\interfaces\IAccessRoleRepository;
 use crm\src\components\UserManagement\_common\interfaces\IUserRepository;
 use crm\src\components\Security\_common\interfaces\IAccessSpaceRepository;
 use crm\src\components\Security\_exceptions\AuthenticationRequiredException;
+use crm\src\components\StatusManagement\_entities\Status;
+use crm\src\controllers\StatusPage;
 
 class BasedAccessGranter implements IAccessGranter
 {
@@ -224,6 +227,20 @@ class BasedAccessGranter implements IAccessGranter
             switch ($methodName) {
                 case 'showEditUserPage':
                     throw new SecurityException("Менеджер не может редактировать пользователей.");
+            }
+        }
+
+        if ($target instanceof StatusController) {
+            switch ($methodName) {
+                case 'createStatus':
+                    throw new JsonRpcSecurityException("Менеджер не может создавать статусы.");
+            }
+        }
+
+        if ($target instanceof StatusPage) {
+            switch ($methodName) {
+                case 'showAddStatusPage':
+                    throw new SecurityException("Менеджер не может посетить страницу создания статуса.");
             }
         }
 

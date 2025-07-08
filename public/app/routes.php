@@ -53,7 +53,7 @@ function loadRoutes(PDO $pdo, IAppContext $appContext, LoggerInterface $logger =
         new Route(
             pattern: '^/api/statuses/?$',
             className: StatusController::class,
-            extraData: [__DIR__, $pdo, $logger]
+            extraData: [$appContext]
         ),
 
         new Route(
@@ -71,12 +71,6 @@ function loadRoutes(PDO $pdo, IAppContext $appContext, LoggerInterface $logger =
         new Route(
             pattern: '^/api/comments/?$',
             className: CommentController::class,
-            extraData: [__DIR__, $pdo, $logger]
-        ),
-
-        new Route(
-            pattern: '^/api/deposits/?$',
-            className: DepositController::class,
             extraData: [__DIR__, $pdo, $logger]
         ),
 

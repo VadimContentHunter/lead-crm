@@ -126,6 +126,15 @@ class UserPage
 
         $this->showPage([
             'components' => [
+                // (new TemplateBundle(
+                //     templatePath: 'components/tableUsers.tpl.php',
+                //     variables: [
+                //         'header' => $tableFacade->getRenderHeaderRows($input)?->header ?? [],
+                //         'rows' => $tableFacade->getRenderHeaderRows($input)?->rows ?? [],
+                //     ]
+                // )),
+
+
                 (new TemplateBundle(
                     templatePath: 'containers/average-in-line-component.tpl.php',
                     variables: [

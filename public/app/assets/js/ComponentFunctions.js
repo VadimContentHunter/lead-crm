@@ -327,9 +327,9 @@ export const ComponentFunctions = {
     },
 
     attachDeleteTrigger({
-        triggerSelector = '[table-r-id] .btn-delete.row-action',
-        containerSelectorAttribute = 'table-r-id',
-        method = 'lead.delete',
+        triggerSelector,
+        containerSelectorAttribute,
+        method,
         endpoint = '/api/' }
     ) {
         const triggers = document.querySelectorAll(triggerSelector);

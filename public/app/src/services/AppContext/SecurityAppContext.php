@@ -6,7 +6,9 @@ use PDO;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
 use crm\src\components\Security\RoleNames;
+use crm\src\services\AppContext\ISecurity;
 use crm\src\services\AppContext\IAppContext;
+use crm\src\components\Security\SecureWrapper;
 use crm\src\_common\repositories\UserRepository;
 use crm\src\_common\adapters\UserValidatorAdapter;
 use crm\src\components\Security\BasedAccessGranter;
@@ -22,14 +24,16 @@ use crm\src\_common\repositories\AccessContextRepository;
 use crm\src\_common\adapters\Security\SecureUserManagement;
 use crm\src\components\Security\_handlers\HandleAccessRole;
 use crm\src\_common\adapters\Security\SecureHandleAccessRole;
+use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 use crm\src\_common\adapters\Security\SecureHandleAccessSpace;
 use crm\src\components\Security\_handlers\HandleAccessContext;
+use crm\src\components\Security\_common\interfaces\IAccessGranter;
 use crm\src\components\Security\_common\interfaces\IHandleAccessRole;
 use crm\src\components\Security\_common\interfaces\IHandleAccessSpace;
 use crm\src\components\UserManagement\_common\interfaces\IUserManagement;
 
-class SecurityAppContext implements IAppContext
+class SecurityAppContext implements IAppContext, ISecurity
 {
     public IUserManagement $userManagement;
     public IHandleAccessRole $handleAccessRole;
@@ -37,12 +41,14 @@ class SecurityAppContext implements IAppContext
     public SessionAuthManager $sessionAuthManager;
     public HandleAccessContext $handleAccessContext;
 
+    public IAccessGranter $accessGranter;
     public AccessRoleRepository $accessRoleRepository;
     public AccessSpaceRepository $accessSpaceRepository;
     public AccessContextRepository $accessContextRepository;
     public UserRepository $userRepository;
 
     public TemplateRenderer $templateRenderer;
+    // public JsonRpcServerFacade $jsonRpcServerFacade;
 
     public ?User $thisUser = null;
     public ?AccessRole $thisRole = null;
@@ -61,7 +67,7 @@ class SecurityAppContext implements IAppContext
         $this->accessContextRepository = new AccessContextRepository($pdo, $logger);
         $this->userRepository = new UserRepository($pdo, $logger);
 
-        $basedAccessGranter = new BasedAccessGranter($this->accessRoleRepository, $this->accessSpaceRepository);
+        $this->accessGranter = new BasedAccessGranter($this->accessRoleRepository, $this->accessSpaceRepository);
         $this->sessionAuthManager = new SessionAuthManager($this->accessContextRepository);
         $this->thisAccessContext = $this->sessionAuthManager->getCurrentAccessContext();
 
@@ -70,20 +76,20 @@ class SecurityAppContext implements IAppContext
 
         $this->handleAccessSpace = new SecureHandleAccessSpace(
             $this->accessSpaceRepository,
-            $basedAccessGranter,
+            $this->accessGranter,
             $this->thisAccessContext
         );
 
         $this->handleAccessRole = new SecureHandleAccessRole(
             $this->accessRoleRepository,
-            $basedAccessGranter,
+            $this->accessGranter,
             $this->thisAccessContext
         );
 
         $this->userManagement = new SecureUserManagement(
             $this->userRepository,
             new UserValidatorAdapter(),
-            $basedAccessGranter,
+            $this->accessGranter,
             $this->thisAccessContext
         );
 
@@ -141,6 +147,11 @@ class SecurityAppContext implements IAppContext
         return $this->handleAccessContext;
     }
 
+    public function getAccessGranter(): IAccessGranter
+    {
+        return $this->accessGranter;
+    }
+
     public function getAccessRoleRepository(): AccessRoleRepository
     {
         return $this->accessRoleRepository;
@@ -159,6 +170,11 @@ class SecurityAppContext implements IAppContext
     public function getTemplateRenderer(): TemplateRenderer
     {
         return $this->templateRenderer;
+    }
+
+    public function getJsonRpcServerFacade(): JsonRpcServerFacade
+    {
+        return new JsonRpcServerFacade();
     }
 
     public function getThisUser(): ?User
@@ -317,5 +333,21 @@ class SecurityAppContext implements IAppContext
         $this->sessionAuthManager->logout();
         header('Location: /login');
         exit;
+    }
+
+    /**
+     * Оборачивает переданный объект в SecureWrapper с текущим контекстом доступа.
+     *
+     * @template T of object
+     * @param    T $target Объект, который нужно обернуть
+     * @return   SecureWrapper&T Обёрнутый объект (типизированный SecureWrapper)
+     */
+    public function wrapWithSecurity(object $target): SecureWrapper
+    {
+        return new SecureWrapper(
+            $target,
+            $this->getAccessGranter(),
+            $this->getThisAccessContext()
+        );
     }
 }

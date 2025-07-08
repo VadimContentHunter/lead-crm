@@ -11,6 +11,7 @@ use crm\src\controllers\StatusPage;
 use crm\src\controllers\HomeController;
 use crm\src\controllers\TestController;
 use crm\src\controllers\AccessDeniedPage;
+use crm\src\controllers\API\ApiController;
 use crm\src\controllers\API\LeadController;
 use crm\src\controllers\API\UserController;
 use crm\src\services\AppContext\AppContext;
@@ -38,9 +39,15 @@ function loadRoutes(PDO $pdo, IAppContext $appContext, LoggerInterface $logger =
         // API
 
         new Route(
+            pattern: '^/api/?$',
+            className: ApiController::class,
+            extraData: [$appContext]
+        ),
+
+        new Route(
             pattern: '^/api/users/?$',
             className: UserController::class,
-            extraData: [__DIR__, $pdo, $logger]
+            extraData: [$appContext]
         ),
 
         new Route(
@@ -169,7 +176,7 @@ function loadRoutes(PDO $pdo, IAppContext $appContext, LoggerInterface $logger =
         new Route(
             pattern: '^/login/?$',
             className: LoginPage::class,
-            extraData: [__DIR__, $appContext]
+            extraData: [$appContext]
         ),
 
         new Route(

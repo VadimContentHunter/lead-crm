@@ -4,6 +4,7 @@ namespace crm\src\controllers;
 
 use Throwable;
 use crm\src\services\AppContext\AppContext;
+use crm\src\services\AppContext\IAppContext;
 use crm\src\components\Security\SessionAuthManager;
 use crm\src\services\TemplateRenderer\HeaderManager;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
@@ -15,13 +16,12 @@ class LoginPage
     private HeaderManager $headers;
 
     public function __construct(
-        private string $projectPath,
-        private ?AppContext $appContext = null
+        private IAppContext $appContext
     ) {
         $this->headers = new HeaderManager();
         $this->headers->set('Content-Type', 'text/html; charset=utf-8');
 
-        $this->renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
+        $this->renderer = $this->appContext->getTemplateRenderer();
         $this->renderer->setHeaders($this->headers);
 
         $this->appContext->checkSessionAndRedirect();

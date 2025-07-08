@@ -7,6 +7,7 @@ use Throwable;
 use crm\src\components\Security\_entities\AccessContext;
 use crm\src\components\Security\_exceptions\SecurityException;
 use crm\src\components\Security\_common\interfaces\IAccessGranter;
+use crm\src\components\Security\_exceptions\JsonRpcSecurityException;
 use crm\src\components\Security\_exceptions\AuthenticationRequiredException;
 
 class SecureWrapper
@@ -74,6 +75,9 @@ class SecureWrapper
                 $args,
                 $this->accessContext
             );
+        } catch (JsonRpcSecurityException $e) {
+            // Отправляем JSON-RPC ошибку
+            throw $e;
         } catch (SecurityException $se) {
             header('Location: /access-denied?message=' . urlencode($se->getMessage()));
             exit;

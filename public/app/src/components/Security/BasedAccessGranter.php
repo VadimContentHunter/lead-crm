@@ -7,25 +7,27 @@ use crm\src\controllers\UserPage;
 use crm\src\controllers\LoginPage;
 use crm\src\controllers\LogoutPage;
 use crm\src\components\Security\RoleNames;
+use crm\src\controllers\API\UserController;
 use crm\src\controllers\NotFoundController;
 use crm\src\controllers\API\LoginController;
 use crm\src\controllers\BootstrapController;
 use crm\src\components\UserManagement\GetUser;
 use crm\src\components\Security\_entities\AccessRole;
+use crm\src\components\UserManagement\_entities\User;
 use crm\src\components\Security\_entities\AccessSpace;
 use crm\src\components\Security\_entities\AccessContext;
 use crm\src\components\Security\_handlers\HandleAccessRole;
 use crm\src\components\Security\_handlers\HandleAccessSpace;
 use crm\src\components\Security\_exceptions\SecurityException;
 use crm\src\components\UserManagement\_common\DTOs\UserFilterDto;
+use crm\src\components\UserManagement\_common\mappers\UserMapper;
 use crm\src\components\Security\_common\DTOs\AccessFullContextDTO;
 use crm\src\components\Security\_common\interfaces\IAccessGranter;
+use crm\src\components\Security\_exceptions\JsonRpcSecurityException;
 use crm\src\components\Security\_common\mappers\AccessFullContextMapper;
 use crm\src\components\Security\_common\interfaces\IAccessRoleRepository;
 use crm\src\components\Security\_common\interfaces\IAccessSpaceRepository;
 use crm\src\components\Security\_exceptions\AuthenticationRequiredException;
-use crm\src\components\UserManagement\_common\mappers\UserMapper;
-use crm\src\components\UserManagement\_entities\User;
 
 class BasedAccessGranter implements IAccessGranter
 {
@@ -162,6 +164,14 @@ class BasedAccessGranter implements IAccessGranter
                 case 'executeAllMapped':
                     $a = $target->executeById($accessFullContext->userId)->mapToNew(fn (mixed $data) => [UserMapper::toArray($data)]);
                     return $a;
+            }
+        }
+
+        if ($target instanceof UserController) {
+            // throw new SecurityException("Метод {$methodName} не разрешён для HandleAccessSpace");
+            switch ($methodName) {
+                case 'deleteUser':
+                    throw new JsonRpcSecurityException("Менеджер не может удалить пользователей");
             }
         }
 

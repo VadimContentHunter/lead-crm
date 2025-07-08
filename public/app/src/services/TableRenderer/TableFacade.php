@@ -73,4 +73,35 @@ class TableFacade
             $input->getAttrWrapper(),
         );
     }
+
+    /**
+     * Полный цикл с фильтрацией и переименованием столбцов.
+     *
+     * @param  ITableRenderInput $input
+     * @return object{header: string[], rows: mixed[]}
+     */
+    public function getRenderHeaderRows(ITableRenderInput $input): object
+    {
+        $filtered = $this->transformer->filterAndRename(
+            $input->getHeader(),
+            $input->getRows(),
+            $input->getAllowedColumns(),
+            $input->getRenameMap()
+        );
+
+        $decorated = $this->decorator->decorateWithActions(
+            header: $filtered['header'],
+            rows:$filtered['rows'],
+            hrefButton: $input->getButtonHref(),
+            hrefButtonDel: $input->getButtonDelHref()
+        );
+
+        return new class ($decorated['header'], $decorated['rows']) {
+            public function __construct(
+                public array $header,
+                public array $rows
+            ) {
+            }
+        };
+    }
 }

@@ -8,11 +8,15 @@ use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
 use crm\src\components\Security\RoleNames;
+use crm\src\services\AppContext\ISecurity;
+use crm\src\services\AppContext\IAppContext;
+use crm\src\components\Security\SecureWrapper;
 use crm\src\services\TableRenderer\TableFacade;
 use crm\src\_common\repositories\UserRepository;
 use crm\src\_common\adapters\UserValidatorAdapter;
 use crm\src\services\TableRenderer\TableDecorator;
 use crm\src\components\Security\SessionAuthManager;
+use crm\src\services\AppContext\SecurityAppContext;
 use crm\src\services\TableRenderer\TableRenderInput;
 use crm\src\services\TableRenderer\TableTransformer;
 use crm\src\components\Security\_entities\AccessRole;
@@ -26,69 +30,86 @@ use crm\src\components\Security\_handlers\HandleAccessSpace;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\components\Security\_handlers\HandleAccessContext;
 use crm\src\components\UserManagement\_common\mappers\UserMapper;
+use crm\src\components\Security\_common\interfaces\IHandleAccessRole;
+use crm\src\components\Security\_exceptions\JsonRpcSecurityException;
 use crm\src\components\UserManagement\_common\mappers\UserEditMapper;
+use crm\src\components\Security\_common\interfaces\IHandleAccessSpace;
 use crm\src\components\UserManagement\_common\mappers\UserInputMapper;
 use crm\src\components\UserManagement\_common\mappers\UserFilterMapper;
+use crm\src\components\UserManagement\_common\interfaces\IUserManagement;
 
 class UserController
 {
-    private UserManagement $userManagement;
+    private IUserManagement $userManagement;
 
     private JsonRpcServerFacade $rpc;
 
     private HandleAccessContext $handleAccessContext;
 
-    private HandleAccessRole $handleAccessRole;
+    private IHandleAccessRole $handleAccessRole;
 
-    private HandleAccessSpace $handleAccessSpace;
+    private IHandleAccessSpace $handleAccessSpace;
+
+    /**
+     * @var array<string, callable>
+     */
+    private array $methods = [];
 
     public function __construct(
-        private string $projectPath,
-        PDO $pdo,
-        private LoggerInterface $logger = new NullLogger()
+        private IAppContext $appContext,
     ) {
-        $this->logger->info('UserController initialized for project ' . $this->projectPath);
-        $this->userManagement = new UserManagement(
-            new UserRepository($pdo, $logger),
-            new UserValidatorAdapter()
-        );
+        $this->userManagement = $this->appContext->getUserManagement();
+        $this->handleAccessContext = $this->appContext->getHandleAccessContext();
+        $this->handleAccessRole = $this->appContext->getHandleAccessRole();
+        $this->handleAccessSpace = $this->appContext->getHandleAccessSpace();
+        $this->rpc = $this->appContext->getJsonRpcServerFacade();
 
-        $accessContextRepository = new AccessContextRepository($pdo, $this->logger);
-        $this->handleAccessContext = new HandleAccessContext($accessContextRepository);
-        $this->handleAccessRole = new HandleAccessRole(new AccessRoleRepository($pdo, $this->logger));
-        $this->handleAccessSpace = new HandleAccessSpace(new AccessSpaceRepository($pdo, $this->logger));
+        // SecureWrapper::createWrapped(
+        //     UserController::class,
+        //     $constructorArgs,
+        //     $this->appContext->getAccessGranter(),
+        //     $this->appContext->getThisAccessContext()
+        // );
 
+        $this->initMethodMap();
+        $this->init();
+    }
 
-        $this->rpc = new JsonRpcServerFacade();
-        switch ($this->rpc->getMethod()) {
-            case 'user.add':
-                $this->createUser($this->rpc->getParams());
-            // break;
+    private function initMethodMap(): void
+    {
+        if ($this->appContext instanceof ISecurity) {
+            $secureCall = $this->appContext->wrapWithSecurity($this);
+        } else {
+            $secureCall = $this;
+        }
 
-            case 'user.edit':
-                $this->editUser($this->rpc->getParams());
-            // break;
+        $this->methods = [
+            'user.add'                => fn() => $secureCall->createUser($this->rpc->getParams()),
+            'user.edit'               => fn() => $secureCall->editUser($this->rpc->getParams()),
+            'user.delete'             => fn() => $secureCall->deleteUser($this->rpc->getParams()),
+            'user.filter'             => fn() => $secureCall->filterUsers($this->rpc->getParams()),
+            'user.filter.table'       => fn() => $secureCall->filterUsersFormatTable($this->rpc->getParams()),
+            'user.filter.table.clear' => fn() => $secureCall->filterUsersFormatTable([]),
+        ];
+    }
 
-            case 'user.delete':
-                $this->deleteUser($this->rpc->getParams());
-            // break;
+    public function init(): void
+    {
+        try {
+            $method = $this->rpc->getMethod();
 
-            case 'user.filter':
-                $this->filterUsers($this->rpc->getParams());
-            // break;
+            if (!isset($this->methods[$method])) {
+                throw new JsonRpcSecurityException('Метод не найден', -32601);
+            }
 
-            case 'user.filter.table':
-                $this->filterUsersFormatTable($this->rpc->getParams());
-            // break;
-
-            case 'user.filter.table.clear':
-                $this->filterUsersFormatTable([]);
-            // break;
-
-            default:
-                $this->rpc->replyError(-32601, 'Метод не найден');
+            ($this->methods[$method])();
+        } catch (JsonRpcSecurityException $e) {
+            $this->rpc->send($e->toJsonRpcError($this->rpc->getId()));
+        } catch (\Throwable $e) {
+            $this->rpc->replyError(-32000, $e->getMessage());
         }
     }
+
 
     /**
      * @param array<string,mixed> $params
@@ -279,22 +300,22 @@ class UserController
      */
     public function deleteUser(array $params): void
     {
-        $id = $params['row_id'] ?? $params['id'] ?? null;
+        $id = $params['row_id'] ?? $params['rowId'] ?? $params['id'] ?? null;
         if (!filter_var($id, FILTER_VALIDATE_INT)) {
             $this->rpc->replyData([
                 ['type' => 'error', 'message' => 'ID User должен быть целым числом.']
             ]);
         }
 
-        $executeResult = $this->userManagement->delete()->executeById((int)$id);
-        if ($executeResult->isSuccess()) {
-            $this->filterUsersFormatTable([]);
-        } else {
-            $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
-            $this->rpc->replyData([
-                ['type' => 'error', 'message' => 'Пользователь не удалён. Причина: ' . $errorMsg]
-            ]);
-        }
+        // $executeResult = $this->userManagement->delete()->executeById((int)$id);
+        // if ($executeResult->isSuccess()) {
+        //     $this->filterUsersFormatTable([]);
+        // } else {
+        //     $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
+        //     $this->rpc->replyData([
+        //         ['type' => 'error', 'message' => 'Пользователь не удалён. Причина: ' . $errorMsg]
+        //     ]);
+        // }
     }
 
     /**

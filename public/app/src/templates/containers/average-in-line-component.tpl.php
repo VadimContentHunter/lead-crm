@@ -17,7 +17,10 @@
     import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
     function attachDeleteTrigger() {
         ComponentFunctions.attachDeleteTrigger({
-            endpoint: '/api/leads',
+            triggerSelector: '[table-r-id] .btn-delete.row-action',
+            containerSelectorAttribute: 'table-r-id',
+            method: '<?= $methodSend ?>',
+            endpoint: '<?= $endpointSend ?>',
         });
     }
 

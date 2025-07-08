@@ -11,8 +11,10 @@ use crm\src\_common\repositories\AccessSpaceRepository;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\components\Security\_entities\AccessContext;
 use crm\src\_common\repositories\AccessContextRepository;
+use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 use crm\src\components\Security\_handlers\HandleAccessContext;
+use crm\src\components\Security\_common\interfaces\IAccessGranter;
 use crm\src\components\Security\_common\interfaces\IHandleAccessRole;
 use crm\src\components\Security\_common\interfaces\IHandleAccessSpace;
 use crm\src\components\UserManagement\_common\interfaces\IUserManagement;
@@ -29,6 +31,8 @@ interface IAppContext
 
     public function getHandleAccessContext(): HandleAccessContext;
 
+    public function getAccessGranter(): IAccessGranter;
+
     public function getAccessRoleRepository(): AccessRoleRepository;
 
     public function getAccessSpaceRepository(): AccessSpaceRepository;
@@ -36,6 +40,8 @@ interface IAppContext
     public function getAccessContextRepository(): AccessContextRepository;
 
     public function getTemplateRenderer(): TemplateRenderer;
+
+    public function getJsonRpcServerFacade(): JsonRpcServerFacade;
 
     public function getThisUser(): ?User;
 

@@ -2,6 +2,7 @@
 
 namespace crm\src\services\AppContext;
 
+use crm\src\services\LeadCommentService;
 use crm\src\components\Security\SessionAuthManager;
 use crm\src\components\LeadManagement\LeadManagement;
 use crm\src\components\Security\_entities\AccessRole;
@@ -29,6 +30,8 @@ use crm\src\components\StatusManagement\_common\interfaces\IStatusManagement;
 
 interface IAppContext
 {
+    public function getLeadCommentService(): LeadCommentService;
+
     public function getBalanceManagement(): BalanceManagement;
 
     public function getDepositManagement(): DepositManagement;

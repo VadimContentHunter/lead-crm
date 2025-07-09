@@ -6,6 +6,7 @@ use PDO;
 use Psr\Log\NullLogger;
 use Random\Engine\Secure;
 use Psr\Log\LoggerInterface;
+use crm\src\services\LeadCommentService;
 use crm\src\components\Security\RoleNames;
 use crm\src\services\AppContext\ISecurity;
 use crm\src\services\AppContext\IAppContext;
@@ -33,7 +34,6 @@ use crm\src\components\Security\_entities\AccessSpace;
 use crm\src\_common\repositories\AccessSpaceRepository;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\components\Security\_entities\AccessContext;
-use crm\src\_common\adapters\Security\BasedAccessGranter\BasedAccessGranter;
 use crm\src\_common\repositories\AccessContextRepository;
 use crm\src\components\SourceManagement\SourceManagement;
 use crm\src\components\StatusManagement\StatusManagement;
@@ -64,6 +64,7 @@ use crm\src\components\Security\_common\interfaces\IHandleAccessSpace;
 use crm\src\_common\adapters\Security\SecureLeadAccountManagerRepository;
 use crm\src\components\LeadManagement\_common\interfaces\ILeadRepository;
 use crm\src\components\UserManagement\_common\interfaces\IUserManagement;
+use crm\src\_common\adapters\Security\BasedAccessGranter\BasedAccessGranter;
 use crm\src\_common\repositories\LeadRepository\LeadAccountManagerRepository;
 use crm\src\components\SourceManagement\_common\interfaces\ISourceRepository;
 use crm\src\components\StatusManagement\_common\interfaces\IStatusManagement;
@@ -71,6 +72,8 @@ use crm\src\components\StatusManagement\_common\interfaces\IStatusRepository;
 
 class SecurityAppContext implements IAppContext, ISecurity
 {
+    public LeadCommentService $leadCommentService;
+
     public BalanceManagement $balanceManagement;
     public DepositManagement $depositManagement;
     public LeadManagement $leadManagement;
@@ -227,6 +230,11 @@ class SecurityAppContext implements IAppContext, ISecurity
             validator: new DepositValidatorAdapter()
         );
 
+        $this->leadCommentService = new LeadCommentService(
+            $this->commentManagement,
+            $this->getThisUser()
+        );
+
         if ($this->thisAccessContext !== null) {
             $userRepo = new UserRepository($pdo, $logger);
             $roleRepo = $this->accessRoleRepository;
@@ -236,6 +244,11 @@ class SecurityAppContext implements IAppContext, ISecurity
             $this->thisRole = $roleRepo->getById($this->thisAccessContext->roleId ?? 0);
             $this->thisSpace = $spaceRepo->getById($this->thisAccessContext->spaceId ?? 0);
         }
+    }
+
+    public function getLeadCommentService(): LeadCommentService
+    {
+        return $this->leadCommentService;
     }
 
     public function getBalanceManagement(): BalanceManagement

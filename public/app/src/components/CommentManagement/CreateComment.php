@@ -18,6 +18,23 @@ class CreateComment
     }
 
     /**
+     * Генерирует строку комментария в консольном формате.
+     *
+     * @param  Comment   $comment
+     * @param  string|null $userLabel Дополнительное имя пользователя (login / name)
+     * @return string
+     */
+    public static function formatConsole(Comment $comment, ?string $userLabel = null): string
+    {
+        $date = $comment->createdAt?->format('Y-m-d H:i:s') ?? date('Y-m-d H:i:s');
+        $userId = $comment->userId ?? 'system';
+
+        $userPart = $userLabel ? " [$userId - $userLabel]" : " [$userId]";
+
+        return sprintf("[%s]%s %s", $date, $userPart, $comment->comment);
+    }
+
+    /**
      * Создаёт новый комментарий.
      *
      * Валидирует данные, сохраняет через репозиторий и возвращает результат.
@@ -25,7 +42,7 @@ class CreateComment
      * @param  Comment $comment
      * @return ICommentResult
      */
-    public function execute(Comment $comment): ICommentResult
+    public function execute(Comment $comment, ?string $userLabel = null): ICommentResult
     {
         $validationResult = $this->validator->validate($comment);
 
@@ -37,6 +54,7 @@ class CreateComment
 
         try {
             $comment->createdAt = new \DateTime();
+            $comment->comment = self::formatConsole($comment, $userLabel);
             $commentId = $this->commentRepository->save($comment);
 
             if ($commentId === null || $commentId <= 0) {

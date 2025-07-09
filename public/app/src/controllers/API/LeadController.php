@@ -18,8 +18,11 @@ use crm\src\_common\adapters\BalanceValidatorAdapter;
 use crm\src\components\LeadManagement\_entities\Lead;
 use crm\src\components\LeadManagement\LeadManagement;
 use crm\src\components\BalanceManagement\BalanceManagement;
+use crm\src\components\CommentManagement\_entities\Comment;
+use crm\src\components\CommentManagement\CommentManagement;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\_common\repositories\LeadRepository\LeadRepository;
+use crm\src\components\LeadManagement\_common\DTOs\LeadFilterDto;
 use crm\src\components\LeadManagement\_common\mappers\LeadMapper;
 use crm\src\_common\repositories\LeadRepository\LeadSourceRepository;
 use crm\src\_common\repositories\LeadRepository\LeadStatusRepository;
@@ -28,6 +31,7 @@ use crm\src\components\LeadManagement\_common\mappers\LeadInputMapper;
 use crm\src\components\BalanceManagement\_common\mappers\BalanceMapper;
 use crm\src\components\LeadManagement\_common\mappers\LeadFilterMapper;
 use crm\src\_common\repositories\LeadRepository\LeadAccountManagerRepository;
+use crm\src\services\LeadCommentService;
 
 class LeadController
 {
@@ -36,6 +40,8 @@ class LeadController
     private BalanceManagement $balanceManagement;
 
     private JsonRpcServerFacade $rpc;
+
+    private LeadCommentService $leadCommentService;
 
     /**
      * @var array<string,callable>
@@ -50,6 +56,8 @@ class LeadController
         $this->balanceManagement = $this->appContext->getBalanceManagement();
 
         $this->rpc = $this->appContext->getJsonRpcServerFacade();
+
+        $this->leadCommentService = $this->appContext->getLeadCommentService();
 
         $this->initMethodMap();
         $this->init();
@@ -111,6 +119,9 @@ class LeadController
 
             $executeResult = $this->leadManagement->create()->execute($leadInputDto);
             if ($executeResult->isSuccess()) {
+                // $this->sendComment($oldData, $executeResult->getLead());
+                $this->leadCommentService->logCreate($executeResult->getLead());
+
                 $fullName = $executeResult->getFullName() ?? 'не указано имя';
                 $contact = $executeResult->getContact() ?? 'не указан контакт';
                 $address = $executeResult->getAddress() ?? 'не указан адрес';
@@ -167,8 +178,12 @@ class LeadController
                     ['type' => 'error', 'message' => 'Некорректные данные для создания лида.']
                 ]);
             }
+
+            $oldData = $this->leadManagement->get()->byId($id)->getLead();
             $executeResult = $this->leadManagement->update()->execute($leadInputDto);
             if ($executeResult->isSuccess()) {
+                $this->leadCommentService->logUpdate($oldData, $executeResult->getLead());
+
                 $fullName = $executeResult->getFullName() ?? 'не указано имя';
                 $contact = $executeResult->getContact() ?? 'не указан контакт';
                 $address = $executeResult->getAddress() ?? 'не указан адрес';
@@ -216,6 +231,7 @@ class LeadController
 
         $executeResult = $this->leadManagement->delete()->byId((int)$id);
         if ($executeResult->isSuccess()) {
+            $this->leadCommentService->logDelete($executeResult->getLead());
             $this->filterLeadsFormatTable([]);
         } else {
             $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';

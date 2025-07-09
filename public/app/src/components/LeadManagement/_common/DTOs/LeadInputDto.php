@@ -12,6 +12,7 @@ class LeadInputDto
         public ?int $sourceId = null,
         public ?int $statusId = null,
         public ?int $accountManagerId = null,
+        public ?string $groupName = null
     ) {
     }
 }

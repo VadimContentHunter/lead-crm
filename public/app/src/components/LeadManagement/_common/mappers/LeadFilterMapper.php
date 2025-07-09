@@ -24,6 +24,7 @@ class LeadFilterMapper
             drainMin: isset($data['drainMin']) && $data['drainMin'] !== '' ? (float)$data['drainMin'] : null,
             sort: $data['sort'] ?? '',
             sortDir: $data['sortDir'] ?? $data['dir'] ?? 'asc',
+            groupName: $data['groupName'] ?? null,
         );
     }
 
@@ -46,6 +47,7 @@ class LeadFilterMapper
             'drainMin' => $dto->drainMin,
             'sort' => $dto->sort,
             'sortDir' => $dto->sortDir,
+            'groupName' => $dto->groupName,
         ];
     }
 }

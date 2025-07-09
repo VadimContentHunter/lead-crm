@@ -18,6 +18,7 @@ class Lead
         public ?AccountManagerDto $accountManager = null,
         public ?DateTime $createdAt = null,
         public ?int $id = null,
+        public ?string $groupName = '---',
     ) {
     }
 }

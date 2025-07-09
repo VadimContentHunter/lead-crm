@@ -5,14 +5,17 @@ namespace crm\src\components\LeadManagement;
 use Throwable;
 use crm\src\components\LeadManagement\_entities\Lead;
 use crm\src\components\LeadManagement\_common\DTOs\LeadFilterDto;
+use crm\src\components\LeadManagement\_common\mappers\LeadMapper;
 use crm\src\components\LeadManagement\_common\adapters\LeadResult;
 use crm\src\components\LeadManagement\_common\interfaces\ILeadResult;
+use crm\src\components\LeadManagement\_common\mappers\SourceDtoMapper;
+use crm\src\components\LeadManagement\_common\mappers\StatusDtoMapper;
 use crm\src\components\LeadManagement\_common\interfaces\ILeadRepository;
 use crm\src\components\LeadManagement\_exceptions\LeadManagementException;
+use crm\src\components\LeadManagement\_common\mappers\AccountManagerMapper;
 use crm\src\components\LeadManagement\_common\interfaces\ILeadSourceRepository;
 use crm\src\components\LeadManagement\_common\interfaces\ILeadStatusRepository;
 use crm\src\components\LeadManagement\_common\interfaces\ILeadAccountManagerRepository;
-use crm\src\components\LeadManagement\_common\mappers\LeadMapper;
 
 class GetLead
 {
@@ -129,14 +132,14 @@ class GetLead
                 return LeadResult::failure(new LeadManagementException("Лиды не найдены"));
             }
 
-            $hydratedLeads = $this->hydrateLeads($leads);
+            $hydratedLeads = is_array(reset($leads))
+                ? $this->hydrateArrayLeads($leads)
+                : $this->hydrateLeads($leads);
             return LeadResult::success($hydratedLeads);
         } catch (Throwable $e) {
             return LeadResult::failure($e);
         }
     }
-
-
 
     public function filtered(LeadFilterDto $filter): ILeadResult
     {
@@ -163,6 +166,34 @@ class GetLead
         } catch (\Throwable $e) {
             return LeadResult::failure($e);
         }
+    }
+
+    /**
+     * Гидрация для массива lead'ов.
+     *
+     * @param  array<int, array<string, mixed>> $leads
+     * @return array<int, array<string, mixed>>
+     */
+    public function hydrateArrayLeads(array $leads): array
+    {
+        foreach ($leads as &$lead) {
+            if (!empty($lead['source_id'])) {
+                $sourceDto = $this->sourceRepository->getById((int)$lead['source_id']);
+                $lead['source'] = $sourceDto === null ? null : SourceDtoMapper::toArray($sourceDto);
+            }
+
+            if (!empty($lead['status_id'])) {
+                $statusDto = $this->statusRepository->getById((int)$lead['status_id']);
+                $lead['status'] = $statusDto === null ? null : StatusDtoMapper::toArray($statusDto);
+            }
+
+            if (!empty($lead['account_manager_id'])) {
+                $accountManagerDto = $this->accManagerRepository->getById((int)$lead['account_manager_id']);
+                $lead['account_manager'] = $accountManagerDto === null ? null : AccountManagerMapper::toArray($accountManagerDto);
+            }
+        }
+
+        return $leads;
     }
 
     /**

@@ -18,7 +18,7 @@ use crm\src\components\LeadManagement\_common\mappers\LeadMapper;
 
 class LeadRepository implements ILeadRepository
 {
-    protected DbRepository $repository;
+    public DbRepository $repository;
 
     public function __construct(
         PDO $pdo,

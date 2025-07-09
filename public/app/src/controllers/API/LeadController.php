@@ -262,14 +262,15 @@ class LeadController
         $executeResult = $this->leadManagement->get()->filteredWithHydrate(LeadFilterMapper::fromArray($params));
         if ($executeResult->isSuccess()) {
             $leadBalanceItems = $executeResult->mapEach(function (Lead|array $lead) {
-                $lead = LeadMapper::toFlatViewArray($lead);
+                // $spaceName = is_array($lead) ? ($lead['space_name'] ?? null) : null;
+                // $lead = is_array($lead) ? LeadMapper::fromArray($lead) : $lead;
+                $newLead = LeadMapper::toFlatViewArray($lead);
                 $balance = $this->balanceManagement
                     ->get()
-                    ->getByLeadId($lead['id'] ?? 0)
+                    ->getByLeadId($newLead['id'] ?? 0)
                     ->first()
                     ->mapData([BalanceMapper::class, 'toArray']);
-
-                return array_merge(LeadMapper::toFlatViewArray($lead), $balance ?? []);
+                return array_merge($newLead, $balance ?? []);
             });
 
             $headers = array_merge(
@@ -294,6 +295,7 @@ class LeadController
                     'contact',
                     'full_name',
                     'account_manager',
+                    'groupName',
                     'address',
                     'source',
                     'status',
@@ -304,6 +306,7 @@ class LeadController
                 renameMap: [
                     'full_name' => 'Полное имя',
                     'account_manager' => 'Менеджер',
+                    'groupName' => 'Группа',
                     'contact' => 'Контакт',
                     'address' => 'Адрес',
                     'source' => 'Источник',

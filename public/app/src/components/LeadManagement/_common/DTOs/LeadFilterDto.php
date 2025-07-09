@@ -13,7 +13,8 @@ class LeadFilterDto
         public ?float $balanceMin = null,
         public ?float $drainMin = null,
         public ?string $sort = null,
-        public ?string $sortDir = null
+        public ?string $sortDir = null,
+        public ?string $groupName = null,
     ) {
     }
 }

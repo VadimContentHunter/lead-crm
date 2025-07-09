@@ -10,13 +10,19 @@ use crm\src\controllers\API\LeadController;
 use crm\src\controllers\API\UserController;
 use crm\src\controllers\API\SourceController;
 use crm\src\controllers\API\StatusController;
+use crm\src\components\LeadManagement\GetLead;
 use crm\src\components\UserManagement\GetUser;
+use crm\src\components\Security\_entities\AccessSpace;
+use crm\src\components\Security\_entities\AccessContext;
 use crm\src\components\Security\_handlers\HandleAccessRole;
 use crm\src\components\Security\_handlers\HandleAccessSpace;
 use crm\src\components\Security\_exceptions\SecurityException;
+use crm\src\_common\repositories\LeadRepository\LeadRepository;
+use crm\src\components\LeadManagement\_common\DTOs\LeadFilterDto;
 use crm\src\components\UserManagement\_common\mappers\UserMapper;
 use crm\src\components\Security\_common\DTOs\AccessFullContextDTO;
 use crm\src\components\Security\_exceptions\JsonRpcSecurityException;
+use crm\src\components\Security\_common\mappers\AccessFullContextMapper;
 use crm\src\components\Security\_common\interfaces\IAccessRoleRepository;
 use crm\src\components\UserManagement\_common\interfaces\IUserRepository;
 use crm\src\components\Security\_common\interfaces\IAccessSpaceRepository;
@@ -85,8 +91,114 @@ class ManagerRoleHandler implements IRoleAccessHandler
             }
         }
 
+        if ($target instanceof LeadRepository && $methodName === 'getAll') {
+            $res = $target->getLeadsByManagerId($context->userId);
+            foreach ($res as $lead) {
+                $lead->groupName = $context->getSpaceName();
+            }
+            return $res;
+            // $filter = new LeadFilterDto(manager: $context->userId);
+            // return $this->getFilteredLeads($target, $filter, AccessFullContextMapper::toAccessContext($context), $context?->space);
+        }
+
+        if ($target instanceof LeadRepository && $methodName === 'getFilteredLeads') {
+            $filter = $args[0] instanceof LeadFilterDto ? $args[0] : new LeadFilterDto(manager: $context->userId);
+            $filter->manager = $context->userId;
+            return $this->getFilteredLeads($target, $filter, AccessFullContextMapper::toAccessContext($context), $context?->space);
+        }
+
         return $target->$methodName(...$args);
     }
+
+    public function getFilteredLeads(LeadRepository $leadRepository, LeadFilterDto $filter, AccessContext $accessContext, ?AccessSpace $space = null): array
+    {
+        $params = [];
+
+        $isPotentialSet = is_numeric($filter->potentialMin) && $filter->potentialMin > 0;
+        $isBalanceSet = is_numeric($filter->balanceMin) && $filter->balanceMin > 0;
+        $isDrainSet = is_numeric($filter->drainMin) && $filter->drainMin > 0;
+
+        $sql = <<<SQL
+            SELECT leads.*, access_spaces.name AS space_name
+            FROM leads
+            LEFT JOIN statuses ON statuses.id = leads.status_id
+            LEFT JOIN sources ON sources.id = leads.source_id
+            LEFT JOIN users ON users.id = leads.account_manager_id
+            LEFT JOIN access_contexts ON access_contexts.user_id = leads.account_manager_id
+            LEFT JOIN access_spaces ON access_spaces.id = access_contexts.space_id
+        SQL;
+
+        $sql .= ' WHERE 1 = 1';
+
+        if ($space !== null) {
+            $sql .= " AND access_spaces.id = :space_id";
+            $params['space_id'] = $space->id;
+        } else {
+            $sql .= " AND leads.account_manager_id = :manager_id";
+            $params['manager_id'] = $accessContext->userId;
+        }
+
+        if ($isPotentialSet || $isBalanceSet || $isDrainSet) {
+            $sql .= ' LEFT JOIN balances ON balances.lead_id = leads.id';
+
+            if ($isPotentialSet) {
+                $sql .= " AND balances.potential >= :potential_min";
+                $params['potential_min'] = $filter->potentialMin;
+            }
+
+            if ($isBalanceSet) {
+                $sql .= " AND balances.current >= :balance_min";
+                $params['balance_min'] = $filter->balanceMin;
+            }
+
+            if ($isDrainSet) {
+                $sql .= " AND balances.drain >= :drain_min";
+                $params['drain_min'] = $filter->drainMin;
+            }
+        }
+
+        if (!empty($filter->search)) {
+            $sql .= " AND (leads.full_name LIKE :searchFullName OR leads.contact LIKE :searchContact)";
+            $params['searchFullName'] = '%' . $filter->search . '%';
+            $params['searchContact'] = '%' . $filter->search . '%';
+        }
+
+        if (!empty($filter->manager)) {
+            $sql .= " AND users.id = :manager";
+            $params['manager'] = $filter->manager;
+        }
+
+        if (!empty($filter->status)) {
+            $sql .= " AND statuses.id = :status";
+            $params['status'] = $filter->status;
+        }
+
+        if (!empty($filter->source)) {
+            $sql .= " AND sources.id = :source";
+            $params['source'] = $filter->source;
+        }
+
+        if (!empty($filter->groupName)) {
+            $sql .= " AND access_spaces.name = :space";
+            $params['space'] = $filter->groupName;
+        }
+
+        $allowedSortFields = [
+        'leads.id', 'leads.full_name', 'leads.address',
+        'statuses.title', 'sources.title', 'users.login',
+        'balances.current', 'balances.drain', 'balances.potential',
+        'access_spaces.name'
+        ];
+
+        $sortBy = in_array($filter->sort, $allowedSortFields, true) ? $filter->sort : 'leads.id';
+        $sortDir = strtolower($filter->sortDir ?? '') === 'desc' ? 'DESC' : 'ASC';
+        $sql .= " ORDER BY $sortBy $sortDir";
+
+        $result = $leadRepository->repository->executeSql($sql, $params);
+
+        return $result->getArrayOrNull() ?? [];
+    }
+
 
     private function handleUserController(AccessFullContextDTO $context, UserController $target, string $method, array $args): mixed
     {

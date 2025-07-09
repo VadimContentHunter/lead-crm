@@ -27,6 +27,7 @@ class LeadInputMapper
             sourceId: isset($data['sourceId']) ? (int) $data['sourceId'] : null,
             statusId: isset($data['statusId']) ? (int) $data['statusId'] : null,
             accountManagerId: isset($data['accountManagerId']) ? (int) $data['accountManagerId'] : null,
+            groupName: isset($data['groupName']) ? (string) $data['groupName'] : null
         );
     }
 
@@ -46,6 +47,7 @@ class LeadInputMapper
             'sourceId' => $dto->sourceId,
             'statusId' => $dto->statusId,
             'accountManagerId' => $dto->accountManagerId,
+            'groupName' => $dto->groupName
         ];
     }
 
@@ -65,6 +67,7 @@ class LeadInputMapper
             sourceId: $lead->source?->id,
             statusId: $lead->status?->id,
             accountManagerId: $lead->accountManager?->id,
+            groupName: $lead->groupName
         );
     }
 }

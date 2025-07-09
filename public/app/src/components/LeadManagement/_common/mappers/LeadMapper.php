@@ -35,6 +35,7 @@ class LeadMapper
                 ? new DateTime($data['created_at'])
                 : null,
             id: isset($data['id']) ? (int)$data['id'] : null,
+            groupName: isset($data['group_name']) ? (string)$data['group_name'] : null
         );
     }
 
@@ -55,6 +56,7 @@ class LeadMapper
             'status_id' => $lead->status?->id,
             'account_manager_id' => $lead->accountManager?->id,
             'created_at' => $lead->createdAt?->format('Y-m-d H:i:s'),
+            'group_name' => $lead->groupName
         ];
     }
 
@@ -81,6 +83,7 @@ class LeadMapper
                 ? AccountManagerMapper::toArray($lead->accountManager)
                 : null,
             'created_at' => $lead->createdAt?->format('Y-m-d H:i:s'),
+            'group_name' => $lead->groupName,
         ];
     }
 
@@ -109,6 +112,7 @@ class LeadMapper
                     'status_id' => $lead->status?->id,
                     'account_manager_id' => $lead->accountManager?->id,
                     'created_at' => $lead->createdAt?->format('Y-m-d H:i:s'),
+                    'group_name' => $lead->groupName,
                     default => null,
                 };
             } elseif (is_array($lead)) {
@@ -138,6 +142,7 @@ class LeadMapper
             'status' => $lead->status instanceof StatusDto ? StatusDtoMapper::toArray($lead->status) : null,
             'account_manager' => $lead->accountManager ? AccountManagerMapper::toArray($lead->accountManager) : null,
             'created_at' => $lead->createdAt?->format('Y-m-d H:i:s'),
+            'groupName' => $lead->groupName,
         ];
     }
 
@@ -158,6 +163,7 @@ class LeadMapper
             'source' => null,
             'status' => null,
             'created_at' => null,
+            'groupName' => null,
         ];
 
         if ($lead instanceof Lead) {
@@ -169,6 +175,7 @@ class LeadMapper
             $result['source'] = $lead->source?->title;
             $result['status'] = $lead->status?->title;
             $result['created_at'] = $lead->createdAt?->format('Y-m-d H:i:s');
+            $result['groupName'] = $lead->groupName;
             // balance здесь нет, добавь, если нужно
         } elseif (is_array($lead)) {
             $result['id'] = $lead['id'] ?? null;
@@ -179,6 +186,7 @@ class LeadMapper
             $result['source'] = $lead['source']['title'] ?? $lead['source'] ?? ($lead['source_id'] ?? null);
             $result['status'] = $lead['status']['title'] ?? $lead['status'] ?? ($lead['status_id'] ?? null);
             $result['created_at'] = $lead['created_at'] ?? null;
+            $result['groupName'] = $lead['group_name'] ?? $lead['group_name'] ?? null;
         }
 
         return $result;

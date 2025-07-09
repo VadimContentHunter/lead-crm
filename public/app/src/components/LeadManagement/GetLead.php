@@ -132,9 +132,21 @@ class GetLead
                 return LeadResult::failure(new LeadManagementException("Лиды не найдены"));
             }
 
-            $hydratedLeads = is_array(reset($leads))
-                ? $this->hydrateArrayLeads($leads)
-                : $this->hydrateLeads($leads);
+            /**
+             * @var Lead[]|array<int,array<string,mixed>> $leads
+             */
+            $first = reset($leads);
+            if (is_array($first)) {
+                /**
+                 * @var array<int, array<string, mixed>> $leads
+                 */
+                $hydratedLeads = $this->hydrateArrayLeads($leads);
+            } else {
+                /**
+                 * @var Lead[] $leads
+                 */
+                $hydratedLeads = $this->hydrateLeads($leads);
+            }
             return LeadResult::success($hydratedLeads);
         } catch (Throwable $e) {
             return LeadResult::failure($e);

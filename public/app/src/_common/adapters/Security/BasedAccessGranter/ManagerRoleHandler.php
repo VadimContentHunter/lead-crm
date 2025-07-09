@@ -102,14 +102,17 @@ class ManagerRoleHandler implements IRoleAccessHandler
         }
 
         if ($target instanceof LeadRepository && $methodName === 'getFilteredLeads') {
-            $filter = $args[0] instanceof LeadFilterDto ? $args[0] : new LeadFilterDto(manager: $context->userId);
-            $filter->manager = $context->userId;
-            return $this->getFilteredLeads($target, $filter, AccessFullContextMapper::toAccessContext($context), $context?->space);
+            $filter = $args[0] instanceof LeadFilterDto ? $args[0] : new LeadFilterDto(manager: (string)$context->userId);
+            $filter->manager = (string)$context->userId;
+            return $this->getFilteredLeads($target, $filter, AccessFullContextMapper::toAccessContext($context), $context->space);
         }
 
         return $target->$methodName(...$args);
     }
 
+    /**
+     * @return mixed[]
+     */
     public function getFilteredLeads(LeadRepository $leadRepository, LeadFilterDto $filter, AccessContext $accessContext, ?AccessSpace $space = null): array
     {
         $params = [];
@@ -199,7 +202,9 @@ class ManagerRoleHandler implements IRoleAccessHandler
         return $result->getArrayOrNull() ?? [];
     }
 
-
+    /**
+     * @param array<int,mixed> $args
+     */
     private function handleUserController(AccessFullContextDTO $context, UserController $target, string $method, array $args): mixed
     {
         if (in_array($method, ['deleteUser', 'deleteUserById', 'editUser'], true)) {
@@ -214,7 +219,8 @@ class ManagerRoleHandler implements IRoleAccessHandler
             $search = ($argSearch !== $login && (int)$argSearch !== $context->userId) ? '--' : $argSearch;
             $search = $argSearch === '' ? $login : $search;
 
-            return $target->filterUsersFormatTable(['login' => $login, 'search' => $search]);
+            $target->filterUsersFormatTable(['login' => $login, 'search' => $search]);
+            // Возврата не требуется filterUsersFormatTable:void
         }
 
         if ($method === 'createUser') {
@@ -223,7 +229,8 @@ class ManagerRoleHandler implements IRoleAccessHandler
 
             $role = $this->roleRepository->getById($role_id);
             if ($role === null) {
-                 return $target->createUser($args[0]);
+                $target->createUser($args[0]);
+                // Возврата не требуется createUser:void
             }
 
             if ($space_id !== null) {
@@ -231,7 +238,7 @@ class ManagerRoleHandler implements IRoleAccessHandler
             }
 
             // 3. Проверка ограничений для выбранной роли
-            if (!RoleNames::isManager($role->name)) {
+            if (!RoleNames::isManager($role?->name ?? '')) {
                 throw new JsonRpcSecurityException("Данная роль не предназначена для создания пользователей.");
             }
 
@@ -241,14 +248,18 @@ class ManagerRoleHandler implements IRoleAccessHandler
             }
 
             $args[0]['space_id'] = $space?->id;
-            $args[0]['role_id'] = $role->id;
+            $args[0]['role_id'] = $role?->id ?? null;
 
-            return $target->createUser($args[0]);
+            $target->createUser($args[0]);
+            // Возврата не требуется createUser:void
         }
 
         return $target->$method(...$args);
     }
 
+    /**
+     * @param string[] $restricted
+     */
     private function denyIfIn(string $method, array $restricted, string $message): void
     {
         if (in_array($method, $restricted, true)) {

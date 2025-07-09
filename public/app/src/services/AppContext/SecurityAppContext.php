@@ -37,6 +37,7 @@ use crm\src\_common\adapters\Security\BasedAccessGranter;
 use crm\src\_common\repositories\AccessContextRepository;
 use crm\src\components\SourceManagement\SourceManagement;
 use crm\src\components\StatusManagement\StatusManagement;
+use crm\src\_common\adapters\Security\SecureLeadRepository;
 use crm\src\_common\adapters\Security\SecureUserManagement;
 use crm\src\_common\adapters\Security\SecureUserRepository;
 use crm\src\components\BalanceManagement\BalanceManagement;
@@ -61,6 +62,7 @@ use crm\src\_common\repositories\LeadRepository\LeadStatusRepository;
 use crm\src\components\Security\_common\interfaces\IHandleAccessRole;
 use crm\src\components\Security\_common\interfaces\IHandleAccessSpace;
 use crm\src\_common\adapters\Security\SecureLeadAccountManagerRepository;
+use crm\src\components\LeadManagement\_common\interfaces\ILeadRepository;
 use crm\src\components\UserManagement\_common\interfaces\IUserManagement;
 use crm\src\_common\repositories\LeadRepository\LeadAccountManagerRepository;
 use crm\src\components\SourceManagement\_common\interfaces\ISourceRepository;
@@ -89,7 +91,7 @@ class SecurityAppContext implements IAppContext, ISecurity
     public SecureStatusRepository $statusRepository;
     public SecureSourceRepository $sourceRepository;
 
-    public LeadRepository $leadRepository;
+    public ILeadRepository $secureLeadRepository;
     public SecureLeadAccountManagerRepository $secureLeadAccountManagerRepository;
     public BalanceRepository $balanceRepository;
     public DepositRepository $depositRepository;
@@ -173,7 +175,11 @@ class SecurityAppContext implements IAppContext, ISecurity
             new CommentValidatorAdapter()
         );
 
-        $this->leadRepository = new LeadRepository($pdo, $logger);
+        $this->secureLeadRepository = new SecureLeadRepository(
+            new LeadRepository($pdo, $logger),
+            $this->accessGranter,
+            $this->thisAccessContext
+        );
 
         $this->secureLeadStatusRepository = new SecureLeadStatusRepository(
             new StatusRepository($pdo, $logger),
@@ -195,7 +201,7 @@ class SecurityAppContext implements IAppContext, ISecurity
         );
 
         $this->leadManagement = new LeadManagement(
-            leadRepository: $this->leadRepository,
+            leadRepository: $this->secureLeadRepository,
             sourceRepository: $this->secureLeadSourceRepository,
             statusRepository: $this->secureLeadStatusRepository,
             accountManagerRepository: $this->secureLeadAccountManagerRepository,
@@ -209,7 +215,7 @@ class SecurityAppContext implements IAppContext, ISecurity
                 $this->thisAccessContext
             ),
             validator: new BalanceValidatorAdapter(),
-            leadRepository: $this->leadRepository,
+            leadRepository: $this->secureLeadRepository,
         );
 
         $this->depositManagement = new DepositManagement(
@@ -307,9 +313,9 @@ class SecurityAppContext implements IAppContext, ISecurity
         return $this->accessContextRepository;
     }
 
-    public function getLeadRepository(): LeadRepository
+    public function getLeadRepository(): ILeadRepository
     {
-        return $this->leadRepository;
+        return $this->secureLeadRepository;
     }
 
     public function getTemplateRenderer(): TemplateRenderer

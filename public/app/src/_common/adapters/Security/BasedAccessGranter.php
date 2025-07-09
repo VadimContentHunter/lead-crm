@@ -91,7 +91,7 @@ class BasedAccessGranter implements IAccessGranter
         }
 
         if ($accessContext->roleId === null) {
-            throw new SecurityException("Пользователь не авторизован");
+            throw new AuthenticationRequiredException("Пользователь не авторизован");
         }
 
         $role = $this->roleRepository->getById($accessContext->roleId);
@@ -100,7 +100,7 @@ class BasedAccessGranter implements IAccessGranter
             : null;
 
         if ($role === null) {
-            throw new SecurityException("Роль не найдена");
+            throw new AuthenticationRequiredException("Роль не найдена");
         }
 
         // Полное право — вызываем как есть

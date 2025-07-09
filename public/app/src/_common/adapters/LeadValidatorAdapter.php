@@ -56,12 +56,12 @@ class LeadValidatorAdapter extends AValidatorAdapter
         //     return null;
         // });
 
-        // $validator->addRule('accountManager', function ($value) {
-        //     if ($value !== null && !is_object($value)) {
-        //         return 'Менеджер должен быть указан';
-        //     }
-        //     return null;
-        // });
+        $validator->addRule('accountManagerId', function ($value) {
+            if ($value !== null && !$this->isIntegerValue($value) && $value > 0) {
+                return 'Менеджер должен быть указан';
+            }
+            return null;
+        });
 
         return $validator;
     }

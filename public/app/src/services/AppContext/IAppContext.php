@@ -23,6 +23,7 @@ use crm\src\_common\repositories\LeadRepository\LeadRepository;
 use crm\src\components\Security\_common\interfaces\IAccessGranter;
 use crm\src\components\Security\_common\interfaces\IHandleAccessRole;
 use crm\src\components\Security\_common\interfaces\IHandleAccessSpace;
+use crm\src\components\LeadManagement\_common\interfaces\ILeadRepository;
 use crm\src\components\UserManagement\_common\interfaces\IUserManagement;
 use crm\src\components\StatusManagement\_common\interfaces\IStatusManagement;
 
@@ -58,7 +59,7 @@ interface IAppContext
 
     public function getAccessContextRepository(): AccessContextRepository;
 
-    public function getLeadRepository(): LeadRepository;
+    public function getLeadRepository(): ILeadRepository;
 
     public function getTemplateRenderer(): TemplateRenderer;
 

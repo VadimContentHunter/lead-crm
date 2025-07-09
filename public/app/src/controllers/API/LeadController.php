@@ -6,6 +6,8 @@ use PDO;
 use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
+use crm\src\services\AppContext\ISecurity;
+use crm\src\services\AppContext\IAppContext;
 use crm\src\services\TableRenderer\TableFacade;
 use crm\src\_common\adapters\LeadValidatorAdapter;
 use crm\src\services\TableRenderer\TableDecorator;
@@ -21,6 +23,7 @@ use crm\src\_common\repositories\LeadRepository\LeadRepository;
 use crm\src\components\LeadManagement\_common\mappers\LeadMapper;
 use crm\src\_common\repositories\LeadRepository\LeadSourceRepository;
 use crm\src\_common\repositories\LeadRepository\LeadStatusRepository;
+use crm\src\components\Security\_exceptions\JsonRpcSecurityException;
 use crm\src\components\LeadManagement\_common\mappers\LeadInputMapper;
 use crm\src\components\BalanceManagement\_common\mappers\BalanceMapper;
 use crm\src\components\LeadManagement\_common\mappers\LeadFilterMapper;
@@ -34,55 +37,59 @@ class LeadController
 
     private JsonRpcServerFacade $rpc;
 
+    /**
+     * @var array<string, callable>
+     */
+    private array $methods = [];
+
     public function __construct(
-        private string $projectPath,
-        PDO $pdo,
-        private LoggerInterface $logger = new NullLogger()
+        private IAppContext $appContext
     ) {
-        $this->logger->info('LeadController initialized for project ' . $this->projectPath);
-        $leadRepository = new LeadRepository($pdo, $logger);
-        $this->leadManagement = new LeadManagement(
-            leadRepository:  $leadRepository,
-            sourceRepository: new LeadSourceRepository($pdo, $logger),
-            statusRepository: new LeadStatusRepository($pdo, $logger),
-            accountManagerRepository: new LeadAccountManagerRepository($pdo, $logger),
-            validator: new LeadValidatorAdapter()
-        );
+        $this->leadManagement = $this->appContext->getLeadManagement();
 
-        $this->balanceManagement = new BalanceManagement(
-            new BalanceRepository($pdo, $logger),
-            new BalanceValidatorAdapter(),
-            $leadRepository
-        );
+        $this->balanceManagement = $this->appContext->getBalanceManagement();
 
-        $this->rpc = new JsonRpcServerFacade();
-        switch ($this->rpc->getMethod()) {
-            case 'lead.add':
-                $this->createLead($this->rpc->getParams());
-            // break;
+        $this->rpc = $this->appContext->getJsonRpcServerFacade();
 
-            case 'lead.edit':
-                $this->editLead($this->rpc->getParams());
-            // break;
+        $this->initMethodMap();
+        $this->init();
+    }
 
-            case 'lead.delete':
-                $this->deleteLead($this->rpc->getParams());
-            // break;
+    private function initMethodMap(): void
+    {
+        if ($this->appContext instanceof ISecurity) {
+            /**
+             * @var LeadController $secureCall
+             */
+            $secureCall = $this->appContext->wrapWithSecurity($this);
+        } else {
+            $secureCall = $this;
+        }
 
-            case 'lead.filter':
-                $this->filterLeads($this->rpc->getParams());
-            // break;
+        $this->methods = [
+            'lead.add'                => fn() => $secureCall->createLead($this->rpc->getParams()),
+            'lead.edit'               => fn() => $secureCall->editLead($this->rpc->getParams()),
+            'lead.delete'             => fn() => $secureCall->deleteLead($this->rpc->getParams()),
+            'lead.filter'             => fn() => $secureCall->filterLeads($this->rpc->getParams()),
+            'lead.filter.table'       => fn() => $secureCall->filterLeadsFormatTable($this->rpc->getParams()),
+            'lead.filter.table.clear' => fn() => $secureCall->filterLeadsFormatTable([]),
+        ];
+    }
 
-            case 'lead.filter.table':
-                $this->filterLeadsFormatTable($this->rpc->getParams());
-            // break;
+    public function init(): void
+    {
+        try {
+            $method = $this->rpc->getMethod();
 
-            case 'lead.filter.table.clear':
-                $this->filterLeadsFormatTable([]);
-            // break;
+            if (!isset($this->methods[$method])) {
+                throw new JsonRpcSecurityException('Метод не найден', -32601);
+            }
 
-            default:
-                $this->rpc->replyError(-32601, 'Метод не найден');
+            ($this->methods[$method])();
+        } catch (JsonRpcSecurityException $e) {
+            $this->rpc->send($e->toJsonRpcError($this->rpc->getId()));
+        } catch (\Throwable $e) {
+            $this->rpc->replyError(-32000, $e->getMessage());
         }
     }
 

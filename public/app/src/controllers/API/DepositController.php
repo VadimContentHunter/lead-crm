@@ -2,19 +2,13 @@
 
 namespace crm\src\controllers\API;
 
-use PDO;
-use Throwable;
-use Psr\Log\NullLogger;
-use Psr\Log\LoggerInterface;
-use crm\src\_common\repositories\BalanceRepository;
+use crm\src\services\AppContext\ISecurity;
+use crm\src\services\AppContext\IAppContext;
 use crm\src\_common\repositories\DepositRepository;
-use crm\src\_common\adapters\BalanceValidatorAdapter;
 use crm\src\_common\adapters\DepositValidatorAdapter;
-use crm\src\components\BalanceManagement\BalanceManagement;
 use crm\src\components\DepositManagement\DepositManagement;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
-use crm\src\_common\repositories\LeadRepository\LeadRepository;
-use crm\src\components\BalanceManagement\_common\mappers\BalanceMapper;
+use crm\src\components\Security\_exceptions\JsonRpcSecurityException;
 use crm\src\components\DepositManagement\_common\mappers\DepositMapper;
 
 class DepositController
@@ -23,32 +17,53 @@ class DepositController
 
     private JsonRpcServerFacade $rpc;
 
+    /**
+     * @var array<string,callable>
+     */
+    private array $methods = [];
     public function __construct(
-        private string $projectPath,
-        PDO $pdo,
-        private LoggerInterface $logger = new NullLogger()
+        private IAppContext $appContext
     ) {
-        $this->logger->info('DepositController initialized for project ' . $this->projectPath);
-        $this->depositManagement = new DepositManagement(
-            new DepositRepository($pdo, $logger),
-            new DepositValidatorAdapter()
-        );
+        $this->depositManagement = $this->appContext->getDepositManagement();
 
-        $this->rpc = new JsonRpcServerFacade();
-        switch ($this->rpc->getMethod()) {
-            case 'deposit.add':
-                $this->createDeposit($this->rpc->getParams());
-            // break;
+        $this->rpc = $this->appContext->getJsonRpcServerFacade();
 
-            case 'deposit.edit':
-                $this->editDeposit($this->rpc->getParams());
-            // break;
-            case 'deposit.create.edit':
-                $this->createOrEditDeposit($this->rpc->getParams());
-            // break;
+        $this->initMethodMap();
+        $this->init();
+    }
 
-            default:
-                $this->rpc->replyError(-32601, 'Метод не найден');
+    private function initMethodMap(): void
+    {
+        if ($this->appContext instanceof ISecurity) {
+            /**
+             * @var DepositController $secureCall
+             */
+            $secureCall = $this->appContext->wrapWithSecurity($this);
+        } else {
+            $secureCall = $this;
+        }
+
+        $this->methods = [
+            'deposit.add' => fn() => $secureCall->createDeposit($this->rpc->getParams()),
+            'deposit.edit' => fn() => $secureCall->editDeposit($this->rpc->getParams()),
+            'deposit.create.edit' => fn() => $secureCall->createOrEditDeposit($this->rpc->getParams()),
+        ];
+    }
+
+    public function init(): void
+    {
+        try {
+            $method = $this->rpc->getMethod();
+
+            if (!isset($this->methods[$method])) {
+                throw new JsonRpcSecurityException('Метод не найден', -32601);
+            }
+
+            ($this->methods[$method])();
+        } catch (JsonRpcSecurityException $e) {
+            $this->rpc->send($e->toJsonRpcError($this->rpc->getId()));
+        } catch (\Throwable $e) {
+            $this->rpc->replyError(-32000, $e->getMessage());
         }
     }
 

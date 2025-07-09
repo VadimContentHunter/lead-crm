@@ -51,7 +51,7 @@ class BalanceController
 
         $this->methods = [
             'balance.add' => fn() => $secureCall->createBalance($this->rpc->getParams()),
-            'comment.edit' => fn() => $secureCall->editBalance($this->rpc->getParams()),
+            'balance.edit' => fn() => $secureCall->editBalance($this->rpc->getParams()),
             'balance.create.edit' => fn() => $secureCall->createOrEditBalance($this->rpc->getParams()),
         ];
     }

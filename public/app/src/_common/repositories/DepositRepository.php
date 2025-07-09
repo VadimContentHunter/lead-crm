@@ -88,6 +88,6 @@ class DepositRepository extends ARepository implements IDepositRepository
                 ->table($this->getTableName())
                 ->where('lead_id = :lead_id')
                 ->update($data)
-        )->getBool() ?? false;
+        )->getBool([0]) ?? false;
     }
 }

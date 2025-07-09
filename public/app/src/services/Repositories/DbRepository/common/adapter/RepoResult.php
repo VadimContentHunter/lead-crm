@@ -44,8 +44,17 @@ class RepoResult implements IRepoResult
         return is_int($this->data) ? $this->data : null;
     }
 
-    public function getBool(): ?bool
+    public function getBool(?array $trueValues = null, ?array $falseValues = null): ?bool
     {
+        if ($trueValues !== null || $falseValues !== null) {
+            if (is_array($trueValues) && in_array($this->data, $trueValues, true)) {
+                return true;
+            }
+
+            if (is_array($falseValues) && in_array($this->data, $falseValues, true)) {
+                return false;
+            }
+        }
         return is_bool($this->data) ? $this->data : null;
     }
 

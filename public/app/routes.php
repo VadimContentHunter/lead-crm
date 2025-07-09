@@ -1,5 +1,6 @@
 <?php
 
+use crm\src\components\BalanceManagement\_entities\Balance;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
 use crm\src\controllers\LeadPage;
@@ -12,6 +13,7 @@ use crm\src\controllers\HomeController;
 use crm\src\controllers\TestController;
 use crm\src\controllers\AccessDeniedPage;
 use crm\src\controllers\API\ApiController;
+use crm\src\controllers\API\BalanceController;
 use crm\src\controllers\API\LeadController;
 use crm\src\controllers\API\UserController;
 use crm\src\services\AppContext\AppContext;
@@ -71,6 +73,12 @@ function loadRoutes(PDO $pdo, IAppContext $appContext, LoggerInterface $logger =
         new Route(
             pattern: '^/api/comments/?$',
             className: CommentController::class,
+            extraData: [$appContext]
+        ),
+
+        new Route(
+            pattern: '^/api/balances/?$',
+            className: BalanceController::class,
             extraData: [$appContext]
         ),
 

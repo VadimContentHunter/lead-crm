@@ -6,11 +6,14 @@ use PDO;
 use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
+use crm\src\services\AppContext\ISecurity;
+use crm\src\services\AppContext\IAppContext;
 use crm\src\_common\repositories\BalanceRepository;
 use crm\src\_common\adapters\BalanceValidatorAdapter;
 use crm\src\components\BalanceManagement\BalanceManagement;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\_common\repositories\LeadRepository\LeadRepository;
+use crm\src\components\Security\_exceptions\JsonRpcSecurityException;
 use crm\src\components\BalanceManagement\_common\mappers\BalanceMapper;
 
 class BalanceController
@@ -19,34 +22,54 @@ class BalanceController
 
     private JsonRpcServerFacade $rpc;
 
+    /**
+     * @var array<string,callable>
+     */
+    private array $methods = [];
+
     public function __construct(
-        private string $projectPath,
-        PDO $pdo,
-        private LoggerInterface $logger = new NullLogger()
+        private IAppContext $appContext
     ) {
-        $this->logger->info('BalanceController initialized for project ' . $this->projectPath);
-        $leadRepository = new LeadRepository($pdo, $logger);
-        $this->balanceManagement = new BalanceManagement(
-            new BalanceRepository($pdo, $logger),
-            new BalanceValidatorAdapter(),
-            $leadRepository
-        );
+        $this->balanceManagement = $this->appContext->getBalanceManagement();
 
-        $this->rpc = new JsonRpcServerFacade();
-        switch ($this->rpc->getMethod()) {
-            case 'balance.add':
-                $this->createBalance($this->rpc->getParams());
-            // break;
+        $this->rpc = $this->appContext->getJsonRpcServerFacade();
 
-            case 'balance.edit':
-                $this->editBalance($this->rpc->getParams());
-            // break;
-            case 'balance.create.edit':
-                $this->createOrEditBalance($this->rpc->getParams());
-            // break;
+        $this->initMethodMap();
+        $this->init();
+    }
 
-            default:
-                $this->rpc->replyError(-32601, 'Метод не найден');
+    private function initMethodMap(): void
+    {
+        if ($this->appContext instanceof ISecurity) {
+            /**
+             * @var BalanceController $secureCall
+             */
+            $secureCall = $this->appContext->wrapWithSecurity($this);
+        } else {
+            $secureCall = $this;
+        }
+
+        $this->methods = [
+            'balance.add' => fn() => $secureCall->createBalance($this->rpc->getParams()),
+            'comment.edit' => fn() => $secureCall->editBalance($this->rpc->getParams()),
+            'balance.create.edit' => fn() => $secureCall->createOrEditBalance($this->rpc->getParams()),
+        ];
+    }
+
+    public function init(): void
+    {
+        try {
+            $method = $this->rpc->getMethod();
+
+            if (!isset($this->methods[$method])) {
+                throw new JsonRpcSecurityException('Метод не найден', -32601);
+            }
+
+            ($this->methods[$method])();
+        } catch (JsonRpcSecurityException $e) {
+            $this->rpc->send($e->toJsonRpcError($this->rpc->getId()));
+        } catch (\Throwable $e) {
+            $this->rpc->replyError(-32000, $e->getMessage());
         }
     }
 

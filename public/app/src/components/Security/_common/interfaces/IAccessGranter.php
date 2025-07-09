@@ -20,5 +20,5 @@ interface IAccessGranter
      *
      * @throws SecurityException Если доступ запрещён.
      */
-    public function callWithAccessCheck(object $target, string $methodName, array $args, AccessContext $accessContext): mixed;
+    public function callWithAccessCheck(object $target, string $methodName, array $args, ?AccessContext $accessContext): mixed;
 }

@@ -52,6 +52,7 @@ use crm\src\components\StatusManagement\_common\mappers\StatusMapper;
 use crm\src\components\BalanceManagement\_common\mappers\BalanceMapper;
 use crm\src\components\UserManagement\_common\interfaces\IUserManagement;
 use crm\src\_common\repositories\LeadRepository\LeadAccountManagerRepository;
+use crm\src\components\StatusManagement\_common\interfaces\IStatusManagement;
 
 class LeadPage
 {
@@ -59,7 +60,7 @@ class LeadPage
 
     private SourceManagement $sourceManagement;
 
-    private StatusManagement $statusManagement;
+    private IStatusManagement $statusManagement;
 
     private IUserManagement $userManagement;
 
@@ -105,7 +106,7 @@ class LeadPage
         try {
             // Успешный ответ
             $headers->setResponseCode(200);
-            echo $this->renderer->renderBundle($this->appContext?->getLayout($components));
+            echo $this->renderer->renderBundle($this->appContext->getLayout($components));
         } catch (Throwable $e) {
             // Внутренняя ошибка — HTTP 500
             $headers->setResponseCode(500);

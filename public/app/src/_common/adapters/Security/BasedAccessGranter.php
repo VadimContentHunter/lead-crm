@@ -10,6 +10,7 @@ use crm\src\controllers\SourcePage;
 use crm\src\controllers\StatusPage;
 use crm\src\components\Security\RoleNames;
 use crm\src\_common\interfaces\IValidation;
+use crm\src\controllers\API\LeadController;
 use crm\src\controllers\API\UserController;
 use crm\src\controllers\NotFoundController;
 use crm\src\controllers\API\LoginController;
@@ -216,12 +217,12 @@ class BasedAccessGranter implements IAccessGranter
                         $space = $this->spaceRepository->getById($space_id);
                     }
 
-                    // 3. Проверка ограничений для выбранной роли
+                // 3. Проверка ограничений для выбранной роли
                     if (!RoleNames::isManager($role->name)) {
                         throw new JsonRpcSecurityException("Данная роль не предназначена для создания пользователей.");
                     }
 
-                    // 4. Проверка пространства для роли менеджера
+                // 4. Проверка пространства для роли менеджера
                     if ($accessFullContext->getSpaceId() !== $space?->id) {
                         throw new JsonRpcSecurityException("Менеджер может добавлять только в свое пространство.");
                     }
@@ -269,6 +270,22 @@ class BasedAccessGranter implements IAccessGranter
             switch ($methodName) {
                 case 'showAddStatusPage':
                     throw new SecurityException("Менеджер не может посетить страницу создания источника.");
+            }
+        }
+
+        if ($target instanceof LeadController) {
+            switch ($methodName) {
+                case 'createLead':
+                    $leadAccountManagerId = $args[0]['accountManagerId'] ?? null;
+                    if (filter_var($leadAccountManagerId, FILTER_VALIDATE_INT) === false) {
+                        break;
+                    }
+
+                    $leadSpace = $this->spaceRepository->getById($leadAccountManagerId ?? 0);
+                    $thisSpace = $this->spaceRepository->getById($accessFullContext->getSpaceId() ?? 0);
+                    if ($leadSpace?->id !== $thisSpace?->id) {
+                        throw new JsonRpcSecurityException("Менеджер может создавать лиды только в пространстве своего менеджера или в своем.");
+                    }
             }
         }
 

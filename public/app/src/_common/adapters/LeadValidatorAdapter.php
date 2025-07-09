@@ -57,7 +57,7 @@ class LeadValidatorAdapter extends AValidatorAdapter
         // });
 
         $validator->addRule('accountManagerId', function ($value) {
-            if ($value !== null && !$this->isIntegerValue($value) && $value > 0) {
+            if ($value === null || !$this->isIntegerValue($value) || $value <= 0) {
                 return 'Менеджер должен быть указан';
             }
             return null;

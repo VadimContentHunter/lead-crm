@@ -156,19 +156,6 @@ class LeadPage
             return UserMapper::toArray($user);
         })->getArray();
 
-        // $selectedData = [
-        //   'sourceId' => $sourcesList->getSourceId(),
-        //   'statusId' => $leadResult->getStatusId(),
-        //   'accountManagerId' => $leadResult->getAccountManagerId()
-        // ];
-
-        // $headers = $this->leadManagement->get()->executeColumnNames()->getArray();
-        // $all = $this->leadManagement->get()->all()->getArray();
-        // $allB = $this->leadManagement->get()->all()->getArray();
-        // $rows = $this->leadManagement->get()->executeAllMapped(function (Lead $lead) {
-        //     return LeadMapper::toArray($lead);
-        // })->getArray();
-
         $leadBalanceItems = $this->leadManagement->get()->all()->mapEach(function (Lead|array $lead) {
             $lead = is_array($lead) ? LeadMapper::fromArray($lead) : $lead;
             $lead = LeadMapper::toFlatViewArray($lead);

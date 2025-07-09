@@ -12,7 +12,7 @@ use  crm\src\services\RouteHandler\entities\Route;
 use crm\src\services\AppContext\SecurityAppContext;
 use crm\src\_common\repositories\AccessRoleRepository;
 use crm\src\_common\repositories\AccessSpaceRepository;
-use crm\src\_common\adapters\Security\BasedAccessGranter;
+use crm\src\_common\adapters\Security\BasedAccessGranter\BasedAccessGranter;
 use crm\src\services\Repositories\DbRepository\services\PdoFactory;
 
 session_start();

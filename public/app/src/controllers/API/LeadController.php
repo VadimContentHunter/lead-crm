@@ -283,11 +283,9 @@ class LeadController
      */
     public function filterLeadsFormatTable(array $params): void
     {
-        $executeResult = $this->leadManagement->get()->filteredWithHydrate(LeadFilterMapper::fromArray($params));
+        $executeResult = $this->leadManagement->get()->all(LeadFilterMapper::fromArray($params));
         if ($executeResult->isSuccess()) {
             $leadBalanceItems = $executeResult->mapEach(function (Lead|array $lead) {
-                // $spaceName = is_array($lead) ? ($lead['space_name'] ?? null) : null;
-                // $lead = is_array($lead) ? LeadMapper::fromArray($lead) : $lead;
                 $newLead = LeadMapper::toFlatViewArray($lead);
                 $balance = $this->balanceManagement
                     ->get()

@@ -157,14 +157,15 @@ class LeadPage
         })->getArray();
 
         $leadBalanceItems = $this->leadManagement->get()->all()->mapEach(function (Lead|array $lead) {
-            $newLead = LeadMapper::toFlatViewArray($lead);
-            $balance = $this->balanceManagement
-                ->get()
-                ->getByLeadId($newLead['id'] ?? 0)
-                ->first()
-                ->mapData([BalanceMapper::class, 'toArray']);
-            return array_merge($newLead, $balance ?? []);
+                $newLead = LeadMapper::toFlatViewArray($lead);
+                $balance = $this->balanceManagement
+                    ->get()
+                    ->getByLeadId($newLead['id'] ?? 0)
+                    ->first()
+                    ->mapData([BalanceMapper::class, 'toArray']);
+                return array_merge($newLead, $balance ?? []);
         });
+
 
         // Берём ключи ассоциативного массива + элементы индексного массива
         $headers = array_unique(array_merge(
@@ -173,8 +174,6 @@ class LeadPage
             )),
             $this->balanceManagement->get()->executeColumnNames()->getArray()
         ));
-
-        $headers[] = 'space_name';
 
         // Убираем возможные дубликаты
         // $headers = array_values(array_unique(array_merge(

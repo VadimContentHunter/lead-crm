@@ -131,8 +131,8 @@ class TeamManagerRoleHandler implements IRoleAccessHandler
 
 
         if ($target instanceof LeadRepository && $methodName === 'getFilteredLeads') {
-            $filter = $args[0] instanceof LeadFilterDto ? $args[0] : new LeadFilterDto(manager: (string)$context->userId);
-            $filter->manager = (string)$context->userId;
+            $filter = $args[0] instanceof LeadFilterDto ? $args[0] : new LeadFilterDto();
+            // $filter->manager = (string)$context->userId;
             return $this->getFilteredLeads($target, $filter, AccessFullContextMapper::toAccessContext($context), $context->space);
         }
 
@@ -142,8 +142,11 @@ class TeamManagerRoleHandler implements IRoleAccessHandler
     /**
      * @return mixed[]
      */
-    public function getFilteredLeads(LeadRepository $leadRepository, LeadFilterDto $filter, AccessContext $accessContext, ?AccessSpace $space = null): array
-    {
+    public function getFilteredLeads(
+        LeadRepository $leadRepository,
+        LeadFilterDto $filter,
+        AccessContext $accessContext
+    ): array {
         $params = [];
 
         $isPotentialSet = is_numeric($filter->potentialMin) && $filter->potentialMin > 0;
@@ -151,42 +154,50 @@ class TeamManagerRoleHandler implements IRoleAccessHandler
         $isDrainSet = is_numeric($filter->drainMin) && $filter->drainMin > 0;
 
         $sql = <<<SQL
-            SELECT leads.*, access_spaces.name AS space_name
-            FROM leads
-            LEFT JOIN statuses ON statuses.id = leads.status_id
-            LEFT JOIN sources ON sources.id = leads.source_id
-            LEFT JOIN users ON users.id = leads.account_manager_id
-            LEFT JOIN access_contexts ON access_contexts.user_id = leads.account_manager_id
-            LEFT JOIN access_spaces ON access_spaces.id = access_contexts.space_id
-        SQL;
+        SELECT leads.*, access_spaces.name AS space_name
+        FROM leads
+        LEFT JOIN statuses ON statuses.id = leads.status_id
+        LEFT JOIN sources ON sources.id = leads.source_id
+        LEFT JOIN users ON users.id = leads.account_manager_id
+        LEFT JOIN access_contexts ON access_contexts.user_id = leads.account_manager_id
+        LEFT JOIN access_spaces ON access_spaces.id = access_contexts.space_id
+        LEFT JOIN balances ON balances.lead_id = leads.id
+        WHERE 1 = 1
+    SQL;
 
-        $sql .= ' WHERE 1 = 1';
+        if (!empty($filter->groupName)) {
+            // Проверка что группа доступна текущему пользователю
+            $contexts = $this->contextRepository->getAllBySpaceId($accessContext->spaceId ?? 0);
+            $allowedSpaceNames = array_unique(
+                array_map(fn($context) => $this->spaceRepository->getById($context->spaceId)?->name, $contexts)
+            );
 
-        if ($space !== null) {
-            $sql .= " AND access_spaces.id = :space_id";
-            $params['space_id'] = $space->id;
+            if (!in_array($filter->groupName, $allowedSpaceNames, true)) {
+                throw new SecurityException("Недостаточно прав для поиска по пространству '{$filter->groupName}'");
+            }
+
+            $sql .= " AND access_spaces.name = :space";
+            $params['space'] = $filter->groupName;
         } else {
-            $sql .= " AND leads.account_manager_id = :manager_id";
-            $params['manager_id'] = $accessContext->userId;
+            // Если нет groupName → ищем по spaceId менеджера
+            $sql .= " AND access_spaces.id = :spaceId";
+            $params['spaceId'] = $accessContext->spaceId ?? 0;
         }
 
-        if ($isPotentialSet || $isBalanceSet || $isDrainSet) {
-            $sql .= ' LEFT JOIN balances ON balances.lead_id = leads.id';
+        // Баланс фильтры
+        if ($isPotentialSet) {
+            $sql .= " AND balances.potential >= :potential_min";
+            $params['potential_min'] = $filter->potentialMin;
+        }
 
-            if ($isPotentialSet) {
-                $sql .= " AND balances.potential >= :potential_min";
-                $params['potential_min'] = $filter->potentialMin;
-            }
+        if ($isBalanceSet) {
+            $sql .= " AND balances.current >= :balance_min";
+            $params['balance_min'] = $filter->balanceMin;
+        }
 
-            if ($isBalanceSet) {
-                $sql .= " AND balances.current >= :balance_min";
-                $params['balance_min'] = $filter->balanceMin;
-            }
-
-            if ($isDrainSet) {
-                $sql .= " AND balances.drain >= :drain_min";
-                $params['drain_min'] = $filter->drainMin;
-            }
+        if ($isDrainSet) {
+            $sql .= " AND balances.drain >= :drain_min";
+            $params['drain_min'] = $filter->drainMin;
         }
 
         if (!empty($filter->search)) {
@@ -210,11 +221,7 @@ class TeamManagerRoleHandler implements IRoleAccessHandler
             $params['source'] = $filter->source;
         }
 
-        if (!empty($filter->groupName)) {
-            $sql .= " AND access_spaces.name = :space";
-            $params['space'] = $filter->groupName;
-        }
-
+        // Сортировка
         $allowedSortFields = [
         'leads.id', 'leads.full_name', 'leads.address',
         'statuses.title', 'sources.title', 'users.login',
@@ -230,6 +237,9 @@ class TeamManagerRoleHandler implements IRoleAccessHandler
 
         return $result->getArrayOrNull() ?? [];
     }
+
+
+
 
     public function getUsersFilter(
         AccessFullContextDTO $context,

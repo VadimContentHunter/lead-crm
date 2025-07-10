@@ -4,8 +4,8 @@
 
 <section class="component-wrapper-line">
 
-    <section class="component component--medium">
-        <form class="base-form" id="add-source-form">
+    <section class="component-wrapper">
+        <form class="base-form component" id="add-source-form">
             <div class="form-messages-container">
                 <div class="form-message">
                     <p>Введите название источника.</p>

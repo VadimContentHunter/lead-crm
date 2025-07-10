@@ -7,10 +7,10 @@ $roles = $roles ?? [];
 $spaces = $spaces ?? [];
 ?>
 
-<section class="component-wrapper-line">
+<!-- <section class="component-wrapper-line"> -->
 
-    <section class="component component--medium">
-        <form class="base-form" id="add-user-form">
+    <section class="component-wrapper">
+        <form class="base-form component" id="add-user-form">
             <div class="form-messages-container">
                 <div class="form-message">
                     <p>Введите свои учётные данные.</p>
@@ -60,7 +60,7 @@ $spaces = $spaces ?? [];
             </div>
         </form>
     </section>
-</section>
+<!-- </section> -->
 
 <script type="module">
   import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';

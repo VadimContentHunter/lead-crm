@@ -7,7 +7,7 @@
 ?>
 
 <section class="component-wrapper-line">
-    <section class="component component-table">
+    <section class="component-wrapper-table component">
         <?= $filterPanel ?>
         <?= $component ?>
     </section>

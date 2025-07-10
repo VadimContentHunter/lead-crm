@@ -3,7 +3,7 @@
 $message = $params['message'] ?? '';
 ?>
 <section class="login-container">
-    <form class="base-form" id="login-form">
+    <form class="base-form component" id="login-form">
         <div class="form-messages-container">
         </div>
 

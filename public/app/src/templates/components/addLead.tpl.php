@@ -6,13 +6,13 @@
 ?>
 
 <section class="component-wrapper-line">
-    <section class="component component--medium"  id="add-lead-form">
+    <section class="component-wrapper"  id="add-lead-form">
             <div class="form-messages-container">
                 <div class="form-message">
                     <p>Введите данные, что бы создать лида.</p>
                 </div>
             </div>
-            <form class="base-form">
+            <form class="base-form component">
                 <div class="form-group">
                     <label>Полное имя *</label>
                     <input type="text" name="fullName">

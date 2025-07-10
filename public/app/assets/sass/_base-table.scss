@@ -4,7 +4,7 @@
 // }
 
 table.base-table {
-    width: 100%;
+    width: auto;
     // min-width: 900px;
     border-collapse: collapse;
     font-family: inherit;
@@ -12,7 +12,8 @@ table.base-table {
     background-color: #fff;
     border-radius: 8px;
     overflow-x: auto;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eee;
+    // box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 
     tbody {
         tr {

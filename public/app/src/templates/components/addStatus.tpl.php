@@ -4,8 +4,8 @@
 
 <section class="component-wrapper-line">
 
-    <section class="component component--medium">
-        <form class="base-form" id="add-status-form">
+    <section class="component-wrapper">
+        <form class="base-form component" id="add-status-form">
             <div class="form-messages-container">
                 <div class="form-message">
                     <p>Введите название статуса.</p>

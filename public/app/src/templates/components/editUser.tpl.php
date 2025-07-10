@@ -6,8 +6,8 @@
 
 <section class="component-wrapper-line">
 
-    <section class="component component--medium">
-        <form class="base-form" id="add-user-form">
+    <section class="component-wrapper">
+        <form class="base-form component" id="add-user-form">
             <input type="text" name="userId" value="<?= $userId ?>" hidden>
             <div class="form-messages-container">
             </div>

@@ -2,8 +2,8 @@
 
 ?>
 
-<section class="component component--medium">
-    <form class="base-form">
+<section class="component-wrapper">
+    <form class="base-form component">
         <div class="form-group">
             <label for="text-input">Текст</label>
             <input type="text" id="text-input" name="text">

@@ -7,7 +7,7 @@
     $id = isset($id) && is_numeric($id) ? (int)$id : 0;
 ?>
 
-<section class="component component--medium">
+<section class="component-wrapper">
     <h2>Общие сведения Balance</h2>
     <form class="base-form edit-balance-form" balance-form-id>
         <input type="text" name="leadId" value="<?= $leadId ?>" hidden>
@@ -16,7 +16,7 @@
                 <p>Введите данные, что бы создать лида.</p>
             </div> -->
         </div>
-        <form class="base-form">
+        <form class="base-form component">
             <div class="form-group">
                 <label>Current</label>
                 <input type="number" name="current" step="0.01" value="<?= $current; ?>">

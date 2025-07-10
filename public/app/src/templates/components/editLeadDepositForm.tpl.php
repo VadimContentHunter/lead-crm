@@ -5,7 +5,7 @@
     $leadId = isset($leadId) && is_numeric($leadId) ? (int)$leadId : 0;
 ?>
 
-<section class="component component--medium">
+<section class="component-wrapper">
     <h2>Общие сведения Deposit</h2>
     <form class="base-form edit-deposit-form" deposit-form-id>
         <input type="text" name="leadId" value="<?= $leadId ?>" hidden>
@@ -14,7 +14,7 @@
                 <p>Введите данные, что бы создать лида.</p>
             </div> -->
         </div>
-        <form class="base-form">
+        <form class="base-form component">
             <div class="form-group">
                 <label>Drain Amount</label>
                 <input type="number" name="sum" step="0.01" value="<?= $sum ?>">

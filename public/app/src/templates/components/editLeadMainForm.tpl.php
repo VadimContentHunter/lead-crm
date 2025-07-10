@@ -10,7 +10,7 @@
     $leadId = $leadId ?? '';
 ?>
 
-<section class="component component--medium">
+<section class="component-wrapper">
     <h2>Общие сведения лида</h2>
     <form class="base-form edit-lead-form" lead-form-id>
         <input type="text" name="leadId" value="<?= $leadId ?>" hidden>
@@ -19,7 +19,7 @@
                 <p>Введите данные, что бы создать лида.</p>
             </div>
         </div>
-        <form class="base-form">
+        <form class="base-form component">
             <div class="form-group">
                 <label>Полное имя *</label>
                 <input type="text" name="fullName" value="<?= $fullName ?>">

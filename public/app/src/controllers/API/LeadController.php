@@ -119,8 +119,10 @@ class LeadController
 
             $executeResult = $this->leadManagement->create()->execute($leadInputDto);
             if ($executeResult->isSuccess()) {
-                // $this->sendComment($oldData, $executeResult->getLead());
-                $this->leadCommentService->logCreate($executeResult->getLead());
+                $this->leadCommentService->sendComment(
+                    $executeResult->getId(),
+                    'Лид создан (ID: ' . $executeResult->getId() . ')'
+                );
 
                 $fullName = $executeResult->getFullName() ?? 'не указано имя';
                 $contact = $executeResult->getContact() ?? 'не указан контакт';
@@ -182,7 +184,12 @@ class LeadController
             $oldData = $this->leadManagement->get()->byId($id)->getLead();
             $executeResult = $this->leadManagement->update()->execute($leadInputDto);
             if ($executeResult->isSuccess()) {
-                $this->leadCommentService->logUpdate($oldData, $executeResult->getLead());
+                $this->leadCommentService->compareObjects(
+                    $oldData,
+                    $executeResult->getLead(),
+                    (int)$id,
+                    'Лид обновлен: ID (' . $id . ')'
+                );
 
                 $fullName = $executeResult->getFullName() ?? 'не указано имя';
                 $contact = $executeResult->getContact() ?? 'не указан контакт';
@@ -231,7 +238,8 @@ class LeadController
 
         $executeResult = $this->leadManagement->delete()->byId((int)$id);
         if ($executeResult->isSuccess()) {
-            $this->leadCommentService->logDelete($executeResult->getLead());
+            // $this->leadCommentService->logDelete($executeResult->getLead());
+            $this->leadCommentService->sendComment((int)$id, 'Лид удалён (ID: ' . (int)$id . ')');
             $this->filterLeadsFormatTable([]);
         } else {
             $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';

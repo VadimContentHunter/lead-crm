@@ -230,11 +230,6 @@ class SecurityAppContext implements IAppContext, ISecurity
             validator: new DepositValidatorAdapter()
         );
 
-        $this->leadCommentService = new LeadCommentService(
-            $this->commentManagement,
-            $this->getThisUser()
-        );
-
         if ($this->thisAccessContext !== null) {
             $userRepo = new UserRepository($pdo, $logger);
             $roleRepo = $this->accessRoleRepository;
@@ -244,6 +239,11 @@ class SecurityAppContext implements IAppContext, ISecurity
             $this->thisRole = $roleRepo->getById($this->thisAccessContext->roleId ?? 0);
             $this->thisSpace = $spaceRepo->getById($this->thisAccessContext->spaceId ?? 0);
         }
+
+        $this->leadCommentService = new LeadCommentService(
+            $this->commentManagement,
+            $this->getThisUser()
+        );
     }
 
     public function getLeadCommentService(): LeadCommentService

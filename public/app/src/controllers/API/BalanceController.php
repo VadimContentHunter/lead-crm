@@ -6,11 +6,13 @@ use PDO;
 use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
+use crm\src\services\LeadCommentService;
 use crm\src\services\AppContext\ISecurity;
 use crm\src\services\AppContext\IAppContext;
 use crm\src\_common\repositories\BalanceRepository;
 use crm\src\_common\adapters\BalanceValidatorAdapter;
 use crm\src\components\BalanceManagement\BalanceManagement;
+use crm\src\components\CommentManagement\CommentManagement;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\_common\repositories\LeadRepository\LeadRepository;
 use crm\src\components\Security\_exceptions\JsonRpcSecurityException;
@@ -21,6 +23,8 @@ class BalanceController
     private BalanceManagement $balanceManagement;
 
     private JsonRpcServerFacade $rpc;
+
+    private LeadCommentService $leadCommentService;
 
     /**
      * @var array<string,callable>
@@ -33,6 +37,8 @@ class BalanceController
         $this->balanceManagement = $this->appContext->getBalanceManagement();
 
         $this->rpc = $this->appContext->getJsonRpcServerFacade();
+
+        $this->leadCommentService = $this->appContext->getLeadCommentService();
 
         $this->initMethodMap();
         $this->init();
@@ -103,6 +109,8 @@ class BalanceController
         }
         $executeResult = $this->balanceManagement->create()->execute($balanceDto);
         if ($executeResult->isSuccess()) {
+            $this->leadCommentService->sendComment((int)$leadId, 'Баланс добавлен (ID: ' . (int)$leadId . ')');
+
             $current = $executeResult->getCurrent() ?? 0;
             $drain = $executeResult->getDrain() ?? 0;
             $potential = $executeResult->getPotential() ?? 0;
@@ -155,8 +163,17 @@ class BalanceController
                 ['type' => 'error', 'message' => 'Некорректные данные для создания Баланса.']
             ]);
         }
+
+        $oldBalance = $this->balanceManagement->get()->getByLeadId($leadId)->getBalance();
         $executeResult = $this->balanceManagement->update()->executeByLeadId($balanceDto);
         if ($executeResult->isSuccess()) {
+            $this->leadCommentService->compareObjects(
+                $oldBalance,
+                $executeResult->getBalance(),
+                (int)$leadId,
+                'Баланс изменён (ID: ' . ($oldBalance?->id ?? '---') . ')'
+            );
+
             $current = $executeResult->getCurrent() ?? 0;
             $drain = $executeResult->getDrain() ?? 0;
             $potential = $executeResult->getPotential() ?? 0;

@@ -2,6 +2,7 @@
 
 namespace crm\src\controllers\API;
 
+use crm\src\services\LeadCommentService;
 use crm\src\services\AppContext\ISecurity;
 use crm\src\services\AppContext\IAppContext;
 use crm\src\_common\repositories\DepositRepository;
@@ -17,6 +18,8 @@ class DepositController
 
     private JsonRpcServerFacade $rpc;
 
+    private LeadCommentService $leadCommentService;
+
     /**
      * @var array<string,callable>
      */
@@ -27,6 +30,8 @@ class DepositController
         $this->depositManagement = $this->appContext->getDepositManagement();
 
         $this->rpc = $this->appContext->getJsonRpcServerFacade();
+
+        $this->leadCommentService = $this->appContext->getLeadCommentService();
 
         $this->initMethodMap();
         $this->init();
@@ -96,6 +101,8 @@ class DepositController
         }
         $executeResult = $this->depositManagement->create()->execute($depositDto);
         if ($executeResult->isSuccess()) {
+            $this->leadCommentService->sendComment($leadId, 'Добавлен депозит суммой ' . $executeResult->getSum());
+
             $sum = $executeResult->getSum() ?? 0;
             $txId = $executeResult->getTxId() ?? 0;
             $leadId = $executeResult->getLeadId() ?? 'Не указан';
@@ -146,8 +153,17 @@ class DepositController
             ]);
         }
 
+        $oldDeposit = $this->depositManagement->get()->getByLeadId($leadId)->getDeposit();
         $executeResult = $this->depositManagement->update()->executeByLeadId($depositDto);
         if ($executeResult->isSuccess()) {
+            $this->leadCommentService->compareObjects(
+                $oldDeposit,
+                $executeResult->getDeposit(),
+                (int)$leadId,
+                'Изменен депозит (ID: ' . ($oldDeposit?->id ?? '---') . ')'
+            );
+
+
             $sum = $executeResult->getSum() ?? 0;
             $txId = $executeResult->getTxId() ?? 0;
             $leadId = $executeResult->getLeadId() ?? 'Не указан';

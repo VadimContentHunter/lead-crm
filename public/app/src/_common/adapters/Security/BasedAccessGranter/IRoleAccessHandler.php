@@ -16,7 +16,7 @@ interface IRoleAccessHandler
      * @param  string $methodName
      * @return bool
      */
-    public function supports(object $target, string $methodName): bool;
+    public function supports(object $target, string $methodName, AccessFullContextDTO $context): bool;
 
     /**
      * Выполняет обработку вызова target::methodName с учётом AccessFullContext.

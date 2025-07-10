@@ -19,6 +19,8 @@ use crm\src\components\UserManagement\_common\interfaces\IUserRepository;
 use crm\src\components\Security\_common\interfaces\IAccessSpaceRepository;
 use crm\src\_common\adapters\Security\BasedAccessGranter\ManagerRoleHandler;
 use crm\src\components\Security\_exceptions\AuthenticationRequiredException;
+use crm\src\_common\adapters\Security\BasedAccessGranter\TeamManagerRoleHandler;
+use crm\src\components\Security\_common\interfaces\IAccessContextRepository;
 
 class BasedAccessGranter implements IAccessGranter
 {
@@ -28,12 +30,24 @@ class BasedAccessGranter implements IAccessGranter
     private array $roleHandlers;
 
     public function __construct(
+        private IAccessContextRepository $contextRepository,
         private IAccessRoleRepository $roleRepository,
         private IAccessSpaceRepository $spaceRepository,
         private IUserRepository $userRepository,
     ) {
         $this->roleHandlers = [
-            new ManagerRoleHandler($this->roleRepository, $this->spaceRepository, $this->userRepository),
+            new ManagerRoleHandler(
+                $this->contextRepository,
+                $this->roleRepository,
+                $this->spaceRepository,
+                $this->userRepository
+            ),
+            new TeamManagerRoleHandler(
+                $this->contextRepository,
+                $this->roleRepository,
+                $this->spaceRepository,
+                $this->userRepository
+            ),
         // в будущем другие обработчики ролей
         ];
     }
@@ -86,7 +100,7 @@ class BasedAccessGranter implements IAccessGranter
         $fullContext = AccessFullContextMapper::fromEntities($accessContext, $role, $space);
 
         foreach ($this->roleHandlers as $handler) {
-            if ($handler->supports($target, $methodName)) {
+            if ($handler->supports($target, $methodName, $fullContext)) {
                 return $handler->handle($fullContext, $target, $methodName, $args);
             }
         }

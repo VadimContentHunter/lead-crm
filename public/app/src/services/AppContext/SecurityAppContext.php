@@ -128,6 +128,7 @@ class SecurityAppContext implements IAppContext, ISecurity
         $this->handleAccessRole = new HandleAccessRole($this->accessRoleRepository);
 
         $this->accessGranter = new BasedAccessGranter(
+            $this->accessContextRepository,
             $this->accessRoleRepository,
             $this->accessSpaceRepository,
             $this->userRepository

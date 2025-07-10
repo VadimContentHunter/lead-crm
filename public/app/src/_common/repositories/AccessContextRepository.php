@@ -74,4 +74,24 @@ class AccessContextRepository extends ARepository implements IAccessContextRepos
                 ->select(['userId' => $userId])
         )->first()->getObjectOrNullWithMapper($this->getEntityClass(), $mapper);
     }
+
+    public function getAllBySpaceId(int $spaceId): array
+    {
+        return $this->repository->executeQuery(
+            (new QueryBuilder())
+            ->table($this->getTableName())
+            ->where('space_id = :spaceId')
+            ->select(['spaceId' => $spaceId])
+        )->getValidMappedList($this->fromArray());
+    }
+
+    public function getAllByRoleId(int $roleId): array
+    {
+        return $this->repository->executeQuery(
+            (new QueryBuilder())
+            ->table($this->getTableName())
+            ->where('role_id = :roleId')
+            ->select(['roleId' => $roleId])
+        )->getValidMappedList($this->fromArray());
+    }
 }

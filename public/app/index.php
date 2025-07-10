@@ -50,6 +50,7 @@ $routeHandler = new RouteHandler(
     defaultRoute: $rout404,
     errorRoute: $routError,
     accessGranter: new BasedAccessGranter(
+        $appContext->accessContextRepository,
         $appContext->accessRoleRepository,
         $appContext->accessSpaceRepository,
         $appContext->userRepository

@@ -1,26 +1,47 @@
 $border-radius-base: 16px;
 
+// Цвета
+$color-background: #fbfdff; // Основной фон
+$color-primary: #007bff; // Главный цвет
+$color-primary-dark: #0056b3; // Тёмная версия главного цвета
+$color-divider: #eee; // Цвет разделителей, фона header таблицы и т.п.
+$color-divider-dark: #ccc; // Тёмная версия разделителей
+$color-danger: #dc3545; // Цвет ошибок, предупреждений, критических элементов
+$color-danger-dark: #a71d2a; // Тёмная версия danger
+
 // Размеры текста
 $font-size-base: 16px; // Обычный текст (тело, меню)
 $font-size-heading: 24px; // Главный заголовок
 $font-size-subheading: 18px; // Вторичный заголовок или подзаголовок
-// $shadow-soft: 0 0 12px rgba(0, 0, 0, 0.1);
+
 $shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.08);
 
+// Примеси для линий
 %line-bottom {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
-%line-top {
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid $color-divider;
 }
 
+%line-top {
+    border-top: 1px solid $color-divider;
+}
+
+// CSS переменные
 :root {
     --font-size-base: #{$font-size-base};
     --font-size-heading: #{$font-size-heading};
     --font-size-subheading: #{$font-size-subheading};
     --border-radius-base: #{$border-radius-base};
     --shadow-soft: #{$shadow-soft};
+
+    --color-background: #{$color-background};
+    --color-primary: #{$color-primary};
+    --color-primary-dark: #{$color-primary-dark};
+    --color-divider: #{$color-divider};
+    --color-divider-dark: #{$color-divider-dark};
+    --color-danger: #{$color-danger};
+    --color-danger-dark: #{$color-danger-dark};
 }
+
 
 .icon-wrapper {
     font-size: 24px;

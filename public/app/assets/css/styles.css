@@ -1,5 +1,5 @@
 .content-container .header-content {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #eee;
 }
 
 :root {
@@ -8,6 +8,13 @@
   --font-size-subheading: 18px;
   --border-radius-base: 16px;
   --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.08);
+  --color-background: #fbfdff;
+  --color-primary: #007bff;
+  --color-primary-dark: #0056b3;
+  --color-divider: #eee;
+  --color-divider-dark: #ccc;
+  --color-danger: #dc3545;
+  --color-danger-dark: #a71d2a;
 }
 
 .icon-wrapper {
@@ -221,6 +228,48 @@ table.base-table .btn-delete {
   gap: 16px;
   flex-wrap: wrap;
 }
+.btn-default {
+  padding: 0.5em 1em;
+  font-size: var(--font-size-base);
+  border-radius: var(--border-radius-base);
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.button-primary {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+.button-primary:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.button-inline {
+  background-color: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.button-inline:hover {
+  color: #fff;
+  background-color: var(--color-primary);
+}
+
+.button-danger {
+  background-color: var(--color-danger);
+  color: #fff;
+}
+.button-danger:hover {
+  background-color: var(--color-danger-dark);
+}
+
+.button-secondary {
+  background-color: var(--color-divider);
+  color: #333;
+}
+.button-secondary:hover {
+  background-color: var(--color-divider-dark);
+}
+
 .login-container {
   height: 100vh;
   width: 100%;

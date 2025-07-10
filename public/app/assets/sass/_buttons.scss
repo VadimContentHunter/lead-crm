@@ -1,0 +1,56 @@
+@use './var';
+
+// Общий стиль кнопки
+.btn-default {
+    padding: 0.5em 1em;
+    font-size: var(--font-size-base);
+    border-radius: var(--border-radius-base);
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+// Основная кнопка (заливка)
+.button-primary {
+    // @extend .button;
+    background-color: var(--color-primary);
+    color: #fff;
+
+    &:hover {
+        background-color: var(--color-primary-dark);
+    }
+}
+
+// Кнопка-ссылка (только текст и обводка)
+.button-inline {
+    // @extend .button;
+    background-color: transparent;
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    
+    &:hover {
+        color: #fff;
+        background-color: var(--color-primary);
+    }
+}
+
+// Опасная кнопка
+.button-danger {
+    // @extend .button;
+    background-color: var(--color-danger);
+    color: #fff;
+
+    &:hover {
+        background-color: var(--color-danger-dark);
+    }
+}
+
+// Серый вариант (например, отмена, нейтральные действия)
+.button-secondary {
+    // @extend .button;
+    background-color: var(--color-divider);
+    color: #333;
+
+    &:hover {
+        background-color: var(--color-divider-dark);
+    }
+}

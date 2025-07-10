@@ -81,13 +81,15 @@ class UserPage
 
         array_unshift($spaces, new AccessSpace("По умолчанию", null, "По умолчанию"));
         $this->showPage([
-            'components' => [(new TemplateBundle(
-                templatePath: 'components/addUser.tpl.php',
-                variables: [
+            'components' => [$this->appContext->packComponentWrapperLine(
+                (new TemplateBundle(
+                    templatePath: 'components/addUser.tpl.php',
+                    variables: [
                     'roles' => $roles,
                     'spaces' => $spaces,
-                ]
-            ))]
+                    ]
+                ))
+            )]
         ]);
     }
 
@@ -112,6 +114,7 @@ class UserPage
             attributesWrapper: [
                 'table-r-id' => 'user-table-1'
             ],
+            classesWrapper: ['table-wrapper'],
             allowedColumns: [
                 'id',
                 'login',

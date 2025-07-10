@@ -360,6 +360,7 @@ class UserController
                 renameMap: [
                     'password_hash' => 'Пароль',
                 ],
+                classesWrapper: ['table-wrapper'],
             );
 
             $tableFacade = new TableFacade(new TableTransformer(),  new TableDecorator());

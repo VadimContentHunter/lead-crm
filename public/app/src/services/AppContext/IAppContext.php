@@ -81,6 +81,8 @@ interface IAppContext
      */
     public function getLayout(array $components = []): TemplateBundle;
 
+    public function packComponentWrapperLine(TemplateBundle $component): TemplateBundle;
+
     public function checkSessionAndRedirect(): void;
 
     public function redirectIfNotAuthenticated(): void;

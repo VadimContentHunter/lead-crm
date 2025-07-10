@@ -336,7 +336,11 @@ class LeadController
                     'current' => 'Текущие',
                     'drain' => 'Потери',
                     'potential' => 'Потенциал',
-                ]
+                ],
+                attributesWrapper: [
+                    'table-r-id' => 'user-table-1'
+                ],
+                classesWrapper: ['table-wrapper'],
             );
 
             $tableFacade = new TableFacade(new TableTransformer(),  new TableDecorator());

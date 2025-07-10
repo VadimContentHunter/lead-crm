@@ -215,7 +215,8 @@ class LeadPage
             ],
             attributesWrapper: [
                 'table-r-id' => 'lead-table-1'
-            ]
+            ],
+            classesWrapper: ['table-wrapper'],
         );
 
         $tableFacade = new TableFacade(new TableTransformer(),  new TableDecorator());

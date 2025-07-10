@@ -482,6 +482,15 @@ class SecurityAppContext implements IAppContext, ISecurity
         return $items;
     }
 
+    public function packComponentWrapperLine(TemplateBundle $component): TemplateBundle
+    {
+        return (new TemplateBundle(
+            templatePath: 'containers/component-wrapper-line.tpl.php',
+            variables: [
+                'component' => $component,
+            ]
+        ));
+    }
 
     public function checkSessionAndRedirect(): void
     {

@@ -8,11 +8,21 @@ $color-divider: #eee; // Цвет разделителей, фона header та
 $color-divider-dark: #ccc; // Тёмная версия разделителей
 $color-danger: #dc3545; // Цвет ошибок, предупреждений, критических элементов
 $color-danger-dark: #a71d2a; // Тёмная версия danger
+$color-neutral: #ccc; // Нейтральный цвет для иконок, меню, неактивных состояний
+$color-neutral-light: #d1d1d1; // Более светлый вариант (например, для второстепенного текста)
 
-// Размеры текста
+// Размеры текста 
 $font-size-base: 16px; // Обычный текст (тело, меню)
 $font-size-heading: 24px; // Главный заголовок
 $font-size-subheading: 18px; // Вторичный заголовок или подзаголовок
+
+// Цвета для уведомлений
+$color-notify-info: #f5f5f5;
+$color-notify-success: #e6f4ea;
+$color-notify-danger: #fcebea;
+$color-notify-info-text: #333333;
+$color-notify-success-text: #2d5935;
+$color-notify-danger-text: #842029;
 
 $shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.08);
 
@@ -40,6 +50,15 @@ $shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.08);
     --color-divider-dark: #{$color-divider-dark};
     --color-danger: #{$color-danger};
     --color-danger-dark: #{$color-danger-dark};
+    --color-neutral: #{$color-neutral};
+    --color-neutral-light: #{$color-neutral-light};
+
+    --color-notify-info: #{$color-notify-info};
+    --color-notify-success: #{$color-notify-success};
+    --color-notify-danger: #{$color-notify-danger};
+    --color-notify-info-text: #{$color-notify-info-text};
+    --color-notify-success-text: #{$color-notify-success-text};
+    --color-notify-danger-text: #{$color-notify-danger-text};
 }
 
 
@@ -50,6 +69,10 @@ $shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.08);
     display: flex;
     justify-content: center;
     align-items: center;
+
+    i {
+        color: var(--color-neutral)
+    }
     // color: green;
 }
 

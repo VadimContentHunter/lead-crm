@@ -2,6 +2,7 @@
 @use './base-form';
 @use './base-table.scss';
 @use './base-filter';
+@use './notification';
 @use './buttons';
 @use './login-container';
 @use './layout/page';
@@ -13,4 +14,5 @@
 
 body {
     font-family: 'Inter', sans-serif;
+    background-color: var(--color-background);
 }

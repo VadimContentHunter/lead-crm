@@ -48,7 +48,8 @@ $paddingY: $gap / 2;
     padding: 24px;
     background-color: #fff;
     border-radius: var(--border-radius-base);
-    box-shadow: var(--shadow-soft);
+    // box-shadow: var(--shadow-soft);
+        border: 1px solid var(--color-divider);
 
     // &--full {
     //     grid-column: 1 / -1;

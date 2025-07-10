@@ -10,7 +10,8 @@
     <!-- Панель навигации -->
     <header class="header">
         <div class="icon-main">
-            <i class="fas fa-leaf"></i>
+            <i class="fa-solid fa-chart-simple"></i>
+            <!-- <i class="fas fa-leaf"></i> -->
         </div>
         <p>CRM</p>
     </header>

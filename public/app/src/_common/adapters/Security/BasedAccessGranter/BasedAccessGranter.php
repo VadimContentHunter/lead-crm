@@ -37,7 +37,7 @@ class BasedAccessGranter implements IAccessGranter
     ) {
         $this->roleHandlers = [
             new ManagerRoleHandler(
-                $this->contextRepository,
+                // $this->contextRepository,
                 $this->roleRepository,
                 $this->spaceRepository,
                 $this->userRepository

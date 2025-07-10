@@ -120,7 +120,7 @@ class LeadController
             $executeResult = $this->leadManagement->create()->execute($leadInputDto);
             if ($executeResult->isSuccess()) {
                 $this->leadCommentService->sendComment(
-                    $executeResult->getId(),
+                    $executeResult->getId() ?? 0,
                     'Лид создан (ID: ' . $executeResult->getId() . ')'
                 );
 
@@ -283,7 +283,7 @@ class LeadController
      */
     public function filterLeadsFormatTable(array $params): void
     {
-        $executeResult = $this->leadManagement->get()->all(LeadFilterMapper::fromArray($params));
+        $executeResult = $this->leadManagement->get()->filteredWithHydrate(LeadFilterMapper::fromArray($params));
         if ($executeResult->isSuccess()) {
             $leadBalanceItems = $executeResult->mapEach(function (Lead|array $lead) {
                 $newLead = LeadMapper::toFlatViewArray($lead);

@@ -32,7 +32,7 @@ use crm\src\components\Security\_common\interfaces\IAccessContextRepository;
 class ManagerRoleHandler implements IRoleAccessHandler
 {
     public function __construct(
-        private IAccessContextRepository $contextRepository,
+        // private IAccessContextRepository $contextRepository,
         private IAccessRoleRepository $roleRepository,
         private IAccessSpaceRepository $spaceRepository,
         private IUserRepository $userRepository
@@ -41,7 +41,7 @@ class ManagerRoleHandler implements IRoleAccessHandler
 
     public function supports(object $target, string $methodName, AccessFullContextDTO $context): bool
     {
-        return RoleNames::isManager($context->role->name);
+        return RoleNames::isManager($context->role->name ?? '');
     }
 
     public function handle(AccessFullContextDTO $context, object $target, string $methodName, array $args): mixed
@@ -124,7 +124,7 @@ class ManagerRoleHandler implements IRoleAccessHandler
         $isDrainSet = is_numeric($filter->drainMin) && $filter->drainMin > 0;
 
         $sql = <<<SQL
-            SELECT leads.*, access_spaces.name AS space_name
+            SELECT leads.*, access_spaces.name AS group_name
             FROM leads
             LEFT JOIN statuses ON statuses.id = leads.status_id
             LEFT JOIN sources ON sources.id = leads.source_id

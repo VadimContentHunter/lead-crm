@@ -22,13 +22,18 @@ class LeadCommentService
      * @param array<string,string> $rename
      */
     public function compareObjects(
-        object $obj1,
-        object $obj2,
+        ?object $obj1,
+        ?object $obj2,
         int $leadId,
         string $messageStart,
         array $rename = []
     ): void {
         $data = [];
+
+        if ($obj1 === null || $obj2 === null) {
+            $this->sendComment($leadId, 'Объекты сохранились!');
+            return;
+        }
 
         // Получаем все публичные свойства первого объекта
         $properties = array_keys(get_object_vars($obj1));
@@ -63,16 +68,7 @@ class LeadCommentService
             $message = $messageStart . ' Данные не изменились!';
         }
 
-        $comment = new Comment(
-            comment: $message,
-            leadId: $leadId,
-            userId: $this->thisUser?->id
-        );
-
-        $this->commentManagement->create()->execute(
-            $comment,
-            $this->thisUser?->login ?? '---'
-        );
+        $this->sendComment($leadId, $message);
     }
 
     public function sendComment(int $leadId, string $message): void

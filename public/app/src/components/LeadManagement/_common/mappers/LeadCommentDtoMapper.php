@@ -32,6 +32,8 @@ class LeadCommentDtoMapper
 
     /**
      * Преобразует массив данных (например, из формы) в LeadCommentDto
+     *
+     * @param array<string,mixed> $data
      */
     public static function fromArray(array $data): LeadCommentDto
     {

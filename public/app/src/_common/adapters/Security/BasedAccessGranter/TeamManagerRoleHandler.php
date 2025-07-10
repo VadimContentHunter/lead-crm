@@ -45,9 +45,12 @@ class TeamManagerRoleHandler implements IRoleAccessHandler
 
     public function supports(object $target, string $methodName, AccessFullContextDTO $context): bool
     {
-        return RoleNames::isTeamManager($context->role->name);
+        return RoleNames::isTeamManager($context->role?->name ?? '');
     }
 
+    /**
+     * @return mixed
+     */
     public function handle(AccessFullContextDTO $context, object $target, string $methodName, array $args): mixed
     {
         if ($target instanceof HandleAccessSpace && $methodName === 'getAllSpaces') {
@@ -133,7 +136,7 @@ class TeamManagerRoleHandler implements IRoleAccessHandler
         if ($target instanceof LeadRepository && $methodName === 'getFilteredLeads') {
             $filter = $args[0] instanceof LeadFilterDto ? $args[0] : new LeadFilterDto();
             // $filter->manager = (string)$context->userId;
-            return $this->getFilteredLeads($target, $filter, AccessFullContextMapper::toAccessContext($context), $context->space);
+            return $this->getFilteredLeads($target, $filter, AccessFullContextMapper::toAccessContext($context));
         }
 
         return $target->$methodName(...$args);
@@ -154,7 +157,7 @@ class TeamManagerRoleHandler implements IRoleAccessHandler
         $isDrainSet = is_numeric($filter->drainMin) && $filter->drainMin > 0;
 
         $sql = <<<SQL
-        SELECT leads.*, access_spaces.name AS space_name
+        SELECT leads.*, access_spaces.name AS group_name
         FROM leads
         LEFT JOIN statuses ON statuses.id = leads.status_id
         LEFT JOIN sources ON sources.id = leads.source_id
@@ -169,7 +172,7 @@ class TeamManagerRoleHandler implements IRoleAccessHandler
             // Проверка что группа доступна текущему пользователю
             $contexts = $this->contextRepository->getAllBySpaceId($accessContext->spaceId ?? 0);
             $allowedSpaceNames = array_unique(
-                array_map(fn($context) => $this->spaceRepository->getById($context->spaceId)?->name, $contexts)
+                array_map(fn($context) => $this->spaceRepository->getById($context->spaceId ?? 0)?->name, $contexts)
             );
 
             if (!in_array($filter->groupName, $allowedSpaceNames, true)) {
@@ -240,7 +243,9 @@ class TeamManagerRoleHandler implements IRoleAccessHandler
 
 
 
-
+    /**
+     * @param array<int,mixed> $args
+     */
     public function getUsersFilter(
         AccessFullContextDTO $context,
         array $args
@@ -254,7 +259,7 @@ class TeamManagerRoleHandler implements IRoleAccessHandler
         $argLogin = $userFilterDto?->login ?? '';
         $argSearch = $userFilterDto?->search ?? '';
 
-        $login = $userLogin ?? '';
+        $login = $argLogin;
         $search = $argSearch === '' ? $login : $argSearch;
 
         if (!in_array($context->userId, $allowedUserIds, true)) {
@@ -270,14 +275,7 @@ class TeamManagerRoleHandler implements IRoleAccessHandler
             return UserResult::success($allowedUsers);
         }
 
-        if ($search !== '') {
-            return UserResult::success([]);
-        }
-
-        // Получаем всех пользователей по разрешённым userId
-        $allowedUserIds = count($allowedUserIds) > 0 ? $allowedUserIds : [0];
-        $allowedUsers = $this->userRepository->getAllByColumnValues('id', $allowedUserIds);
-        return UserResult::success($allowedUsers);
+        return UserResult::success([]);
     }
 
     /**

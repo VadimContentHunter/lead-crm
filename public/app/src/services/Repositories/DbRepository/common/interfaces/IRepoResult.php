@@ -14,7 +14,11 @@ interface IRepoResult
 
     public function getInt(): ?int;
 
-    public function getBool(): ?bool;
+    /**
+     * @param mixed[]|null $trueValues
+     * @param mixed[]|null $falseValues
+     */
+    public function getBool(?array $trueValues = null, ?array $falseValues = null): ?bool;
 
     public function hasNull(): bool;
 

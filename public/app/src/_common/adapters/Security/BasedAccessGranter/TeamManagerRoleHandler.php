@@ -95,17 +95,20 @@ class TeamManagerRoleHandler implements IRoleAccessHandler
         }
 
         if ($target instanceof LeadController && $methodName === 'createLead') {
+            // Получаем все AccessContext текущего пространства
+            $contexts = $this->contextRepository->getAllByColumnValues('space_id', [$context->getSpaceId() ?? 0]);
+            $userIds = array_map(fn($c) => $c->userId, $contexts);
+
+            // Из запроса
             $leadAccountManagerId = $args[0]['accountManagerId'] ?? null;
-            if (filter_var($leadAccountManagerId, FILTER_VALIDATE_INT) === false) {
-                return $target->$methodName(...$args);
+
+            if (!is_numeric($leadAccountManagerId) || !in_array((int)$leadAccountManagerId, $userIds, true)) {
+                throw new JsonRpcSecurityException("Недостаточно прав: выбранный менеджер не входит в ваше пространство.");
             }
 
-            $leadSpace = $this->spaceRepository->getById($leadAccountManagerId ?? 0);
-            $thisSpace = $this->spaceRepository->getById($context->getSpaceId() ?? 0);
-            if ($leadSpace?->id !== $thisSpace?->id) {
-                throw new JsonRpcSecurityException("Менеджер может создавать лиды только в пространстве своего менеджера или в своем.");
-            }
+            return $target->$methodName(...$args);
         }
+
 
         if ($target instanceof LeadRepository && $methodName === 'getAll') {
             $res = $target->getLeadsByManagerId($context->userId);

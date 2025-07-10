@@ -111,14 +111,24 @@ class TeamManagerRoleHandler implements IRoleAccessHandler
 
 
         if ($target instanceof LeadRepository && $methodName === 'getAll') {
-            $res = $target->getLeadsByManagerId($context->userId);
+            $contexts = $this->contextRepository->getAllByColumnValues('space_id', [$context->getSpaceId() ?? 0]);
+            $userIds = array_map(fn($c) => $c->userId, $contexts);
+
+            // Если есть контексты — получаем лиды всех пользователей этого пространства,
+            // иначе — только текущего пользователя
+            $managerIds = !empty($userIds) ? $userIds : [$context->userId];
+
+            // Загружаем лиды по колонке account_manager_id
+            $res = $target->getAllByColumnValues('account_manager_id', $managerIds);
+
+            // Добавляем название пространства
             foreach ($res as $lead) {
                 $lead->groupName = $context->getSpaceName();
             }
+
             return $res;
-            // $filter = new LeadFilterDto(manager: $context->userId);
-            // return $this->getFilteredLeads($target, $filter, AccessFullContextMapper::toAccessContext($context), $context?->space);
         }
+
 
         if ($target instanceof LeadRepository && $methodName === 'getFilteredLeads') {
             $filter = $args[0] instanceof LeadFilterDto ? $args[0] : new LeadFilterDto(manager: (string)$context->userId);

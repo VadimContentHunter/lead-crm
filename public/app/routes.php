@@ -196,7 +196,7 @@ function loadRoutes(PDO $pdo, IAppContext $appContext, LoggerInterface $logger =
         new Route(
             pattern: '^/test/?$',
             className: TestController::class,
-            extraData: [__DIR__]
+            extraData: [$appContext]
         ),
 
         new Route(

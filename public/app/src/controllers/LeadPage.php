@@ -163,6 +163,7 @@ class LeadPage
                     ->getByLeadId($newLead['id'] ?? 0)
                     ->first()
                     ->mapData([BalanceMapper::class, 'toArray']);
+                unset($balance['id']);
                 return array_merge($newLead, $balance ?? []);
         });
 

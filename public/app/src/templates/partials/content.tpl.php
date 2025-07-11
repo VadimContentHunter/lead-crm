@@ -55,10 +55,10 @@ const notifier = new NotificationManager({
 });
 
 // Пример генерации уведомлений
-notifier.add('Уведомление 1', 'info');
-notifier.add('Уведомление 2', 'success');
-notifier.add('Уведомление 3', 'danger');
-notifier.add('Уведомление 4', 'info');
-notifier.add('Уведомление 5', 'success'); // Появится, когда освободится место
-notifier.add('Уведомление 6', 'danger');
+// notifier.add('Уведомление 1', 'info');
+// notifier.add('Уведомление 2', 'success');
+// notifier.add('Уведомление 3', 'danger');
+// notifier.add('Уведомление 4', 'info');
+// notifier.add('Уведомление 5', 'success'); // Появится, когда освободится место
+// notifier.add('Уведомление 6', 'danger');
 </script>

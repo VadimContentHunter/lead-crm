@@ -39,11 +39,17 @@
         background-color: #ffffff;
         padding: 12px var(--padding-horizontal-base);
         border-radius: var(--border-radius-base);
+        border: 1px solid var(--color-divider);
         box-shadow: var(--shadow-soft);
     }
 
     .user-data {
-        display: none;
+        transition: opacity 0.2s ease-in;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        // display: none;
+        position: absolute;
         color: var(--color-neutral-dark);
         background-color: #ffffff;
         padding: 12px var(--padding-horizontal-base);
@@ -62,8 +68,10 @@
         }
 
         &>.user-data {
-            display: block;
-            position: absolute;
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            // display: block;
             margin-top: 40px;
         }
     }

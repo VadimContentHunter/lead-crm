@@ -9,6 +9,34 @@
     border: 1px solid transparent;
 }
 
+.btn-icon {
+    padding: 4px 8px;
+    border-radius: var(--border-radius-base);
+    cursor: pointer;
+
+    i {
+        transition: transform 0.15s;
+        font-size: 16px;
+        color: var(--color-neutral);
+    }
+
+    &:hover {
+        i {
+            transform: scale(1.2);
+            color: var(--color-neutral-dark);
+        }
+    }
+
+    &.button-active {
+        &:hover {
+            i {
+                transform: scale(1.2);
+                color: var(--color-danger);
+            }
+        }
+    }
+}
+
 // Основная кнопка (заливка)
 .button-primary {
     // @extend .button;

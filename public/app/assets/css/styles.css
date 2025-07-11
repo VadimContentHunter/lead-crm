@@ -8,6 +8,8 @@
   --font-size-subheading: 18px;
   --border-radius-base: 16px;
   --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.08);
+  --shadow-soft-left: -2px 0 10px rgba(0, 0, 0, 0.08);
+  --shadow-soft-right: 2px 0 10px rgba(0, 0, 0, 0.08);
   --font-size-small: 12px;
   --color-background: #fbfdff;
   --color-primary: #007bff;
@@ -36,16 +38,6 @@
 }
 .icon-wrapper i {
   color: var(--color-neutral);
-}
-
-.default-btn {
-  padding: 8px 16px;
-  background-color: #ededed;
-  border-radius: var(--border-radius-base);
-}
-.default-btn:hover {
-  cursor: pointer;
-  background-color: lightgreen;
 }
 
 .main-wrapper-horizontal {
@@ -128,18 +120,26 @@ table.base-table {
   font-family: inherit;
   font-size: 14px;
   background-color: #fff;
-  border-radius: 8px;
+  border-radius: var(--border-radius-base);
   overflow-x: auto;
   border: 1px solid #eee;
+  z-index: 10;
 }
 table.base-table tbody tr:first-child {
-  background-color: #f6f7f9;
+  background-color: var(--color-primary);
   font-weight: 600;
-  color: #333;
+  color: #fff;
+}
+table.base-table tbody tr:first-child td:last-child {
+  border: none;
+  border-radius: 0 var(--border-radius-base) 0 0;
+  background-color: rgba(0, 123, 255, 0.4588235294);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }
 table.base-table tbody tr td {
   padding: 10px 16px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--color-divider);
   white-space: nowrap;
   vertical-align: middle;
 }
@@ -164,6 +164,9 @@ table.base-table tbody tr td:nth-child(8) {
 table.base-table tbody tr td:last-child {
   width: 120px;
   text-align: center;
+  position: sticky;
+  right: 0;
+  background-color: #fff;
 }
 table.base-table tbody tr:not(:first-child):hover {
   background-color: #fafafa;
@@ -344,6 +347,25 @@ table.base-table .btn-delete {
   border-radius: var(--border-radius-base);
   cursor: pointer;
   border: 1px solid transparent;
+}
+
+.btn-icon {
+  padding: 4px 8px;
+  border-radius: var(--border-radius-base);
+  cursor: pointer;
+}
+.btn-icon i {
+  transition: transform 0.15s;
+  font-size: 16px;
+  color: var(--color-neutral);
+}
+.btn-icon:hover i {
+  transform: scale(1.2);
+  color: var(--color-neutral-dark);
+}
+.btn-icon.button-active:hover i {
+  transform: scale(1.2);
+  color: var(--color-danger);
 }
 
 .button-primary {
@@ -537,10 +559,15 @@ table.base-table .btn-delete {
   background-color: #ffffff;
   padding: 12px var(--padding-horizontal-base);
   border-radius: var(--border-radius-base);
+  border: 1px solid var(--color-divider);
   box-shadow: var(--shadow-soft);
 }
 .user-info .user-data {
-  display: none;
+  transition: opacity 0.2s ease-in;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  position: absolute;
   color: var(--color-neutral-dark);
   background-color: #ffffff;
   padding: 12px var(--padding-horizontal-base);
@@ -556,8 +583,9 @@ table.base-table .btn-delete {
   z-index: 10;
 }
 .user-info:hover > .user-data {
-  display: block;
-  position: absolute;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
   margin-top: 40px;
 }
 

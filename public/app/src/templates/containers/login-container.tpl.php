@@ -2,6 +2,16 @@
 
 $message = $params['message'] ?? '';
 ?>
+
+<section class="notification-wrapper">
+    <div class="icon-wrapper icon-notification" id="notification">
+        <i class="fa-solid fa-bell"></i>
+    </div>
+    <section class="notification-container">
+
+    </section>
+</section>
+
 <section class="login-container">
     <form class="base-form component" id="login-form">
         <div class="form-messages-container">
@@ -24,14 +34,16 @@ $message = $params['message'] ?? '';
 </section>
 
 <script type="module">
-  import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
-  
+import {
+    ComponentFunctions
+} from '/assets/js/ComponentFunctions.js';
+
 //   window.addEventListener('DOMContentLoaded', () => {
-    ComponentFunctions.attachJsonRpcInputTrigger({
-      triggerSelector: '#login-form .form-actions .form-button.submit',
-      containerSelector: '#login-form',
-      method: 'auth.login',
-      endpoint: '/api/login'
-    });
+ComponentFunctions.attachJsonRpcInputTrigger({
+    triggerSelector: '#login-form .form-actions .form-button.submit',
+    containerSelector: '#login-form',
+    method: 'auth.login',
+    endpoint: '/api/login'
+});
 //   });
 </script>

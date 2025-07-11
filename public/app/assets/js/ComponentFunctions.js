@@ -1,5 +1,5 @@
 import { JsonRpcTransport } from './JsonRpcTransport.js';
-import { NotificationManager } from '/assets/js/NotificationManager.js';
+import { NotificationManager } from './NotificationManager.js';
 
 const ComponentFunctionsNotification = new NotificationManager({
     containerSelector: '.notification-container',

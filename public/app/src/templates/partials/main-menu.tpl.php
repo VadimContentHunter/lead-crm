@@ -1,7 +1,4 @@
 <?php
-    $login = $login ?? '';
-    $role = $role ?? '---';
-    $space = $space ?? '---';
     $menuItems = $menuItems ?? [];
 ?>
 
@@ -15,14 +12,6 @@
         </div>
         <p>CRM</p>
     </header>
-
-    <section class="user-info">
-        <div class="user-data">
-            <p>Логин: <span><?= htmlspecialchars($login) ?></span></p>
-            <p>Роль: <span><?= htmlspecialchars($role) ?></span></p>
-            <p>Пространство: <span><?= htmlspecialchars($space) ?></span></p>
-        </div>
-    </section>
 
     <nav class="list-main-menu top-menu">
         <?php foreach ($menuItems as $item) : ?>

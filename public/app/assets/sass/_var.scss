@@ -1,5 +1,12 @@
 $border-radius-base: 16px;
 
+// Отступы
+$padding-vertical-base: 8px; // стандартный отступ по вертикали (top / bottom)
+$padding-horizontal-base: 16px; // стандартный отступ по горизонтали (left / right)
+
+$margin-vertical-base: 8px; // стандартный внешний отступ по вертикали
+$margin-horizontal-base: 16px; // стандартный внешний отступ по горизонтали
+
 // Цвета
 $color-background: #fbfdff; // Основной фон
 $color-primary: #007bff; // Главный цвет
@@ -39,9 +46,15 @@ $shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.08);
 
 // CSS переменные
 :root {
+    --padding-vertical-base: #{$padding-vertical-base};
+    --padding-horizontal-base: #{$padding-horizontal-base};
+    --margin-vertical-base: #{$margin-vertical-base};
+    --margin-horizontal-base: #{$margin-horizontal-base};
+
     --font-size-base: #{$font-size-base};
     --font-size-heading: #{$font-size-heading};
     --font-size-subheading: #{$font-size-subheading};
+
     --border-radius-base: #{$border-radius-base};
     --shadow-soft: #{$shadow-soft};
     --font-size-small: #{$font-size-small};
@@ -74,8 +87,9 @@ $shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.08);
     align-items: center;
 
     i {
-        color: var(--color-neutral)
+        color: var(--color-neutral);
     }
+
     // color: green;
 }
 

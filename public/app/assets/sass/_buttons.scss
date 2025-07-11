@@ -2,7 +2,7 @@
 
 // Общий стиль кнопки
 .btn-default {
-    padding: 0.5em 1em;
+    padding: var(--padding-vertical-base) var(--padding-horizontal-base);
     font-size: var(--font-size-base);
     border-radius: var(--border-radius-base);
     cursor: pointer;
@@ -26,7 +26,7 @@
     background-color: transparent;
     color: var(--color-primary);
     border-color: var(--color-primary);
-    
+
     &:hover {
         color: #fff;
         background-color: var(--color-primary);

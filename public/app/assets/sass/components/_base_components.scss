@@ -1,7 +1,8 @@
+@use "sass:math";
 @use '../var';
 
 $gap: 20px;
-$paddingY: $gap / 2;
+$paddingY: math.div($gap, 2);
 
 .content-area {
     width: 100%;

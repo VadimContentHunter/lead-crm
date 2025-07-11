@@ -40,32 +40,6 @@
         }
     }
 
-    .user-info {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-
-        .user-data {
-            border-radius: var(--border-radius-base);
-            padding: 12px 32px;
-
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            background-color: #f9f9f9;
-
-            &>p {
-                font-size: var(--font-size-base);
-                font-weight: 400;
-                color: #757575;
-
-                &>span {
-                    font-weight: bold;
-                }
-            }
-        }
-    }
-
     .list-main-menu {
         display: flex;
         flex-direction: column;

@@ -367,6 +367,13 @@ class SecurityAppContext implements IAppContext, ISecurity
      */
     public function getLayout(array $components = []): TemplateBundle
     {
+
+        $variables = $components + [
+            'login' => $this->thisUser?->login ?? '---',
+            'role' => $this->thisRole?->name ?? '---',
+            'space' => $this->thisSpace?->name ?? '---',
+        ];
+
         return (new TemplateBundle(
             templatePath: 'layout.tpl.php',
             variables: [
@@ -402,15 +409,12 @@ class SecurityAppContext implements IAppContext, ISecurity
                 templatePath: 'partials/main-menu.tpl.php',
                 partialsContainer: 'main_menu',
                 variables: [
-                    'login' => $this->thisUser?->login ?? '---',
-                    'role' => $this->thisRole?->name ?? '---',
-                    'space' => $this->thisSpace?->name ?? '---',
                     'menuItems' => $this->getMenuItems()
                 ]
             )))
             ->addPartial((new TemplateBundle(
                 templatePath: 'partials/content.tpl.php',
-                variables: $components,
+                variables: $variables,
                 partialsContainer: 'content_container'
             )))
         );

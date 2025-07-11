@@ -1,4 +1,8 @@
 :root {
+  --padding-vertical-base: 8px;
+  --padding-horizontal-base: 16px;
+  --margin-vertical-base: 8px;
+  --margin-horizontal-base: 16px;
   --font-size-base: 14px;
   --font-size-heading: 24px;
   --font-size-subheading: 18px;
@@ -335,7 +339,7 @@ table.base-table .btn-delete {
 }
 
 .btn-default {
-  padding: 0.5em 1em;
+  padding: var(--padding-vertical-base) var(--padding-horizontal-base);
   font-size: var(--font-size-base);
   border-radius: var(--border-radius-base);
   cursor: pointer;
@@ -466,27 +470,6 @@ table.base-table .btn-delete {
   font-size: 28px;
   font-weight: bold;
 }
-.main-menu .user-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.main-menu .user-info .user-data {
-  border-radius: var(--border-radius-base);
-  padding: 12px 32px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  background-color: #f9f9f9;
-}
-.main-menu .user-info .user-data > p {
-  font-size: var(--font-size-base);
-  font-weight: 400;
-  color: #757575;
-}
-.main-menu .user-info .user-data > p > span {
-  font-weight: bold;
-}
 .main-menu .list-main-menu {
   display: flex;
   flex-direction: column;
@@ -535,11 +518,47 @@ table.base-table .btn-delete {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
+  align-items: center;
+  gap: 24px;
 }
 
 .main-content {
   flex: 1;
   padding: 20px 20px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.user-info > p {
+  color: var(--color-neutral-dark);
+  background-color: #ffffff;
+  padding: 12px var(--padding-horizontal-base);
+  border-radius: var(--border-radius-base);
+  box-shadow: var(--shadow-soft);
+}
+.user-info .user-data {
+  display: none;
+  color: var(--color-neutral-dark);
+  background-color: #ffffff;
+  padding: 12px var(--padding-horizontal-base);
+  border-radius: var(--border-radius-base);
+  box-shadow: var(--shadow-soft);
+}
+.user-info:hover > p {
+  cursor: pointer;
+  position: relative;
+  color: #fff;
+  background-color: var(--color-primary);
+  padding: 12px calc(var(--padding-horizontal-base) + 8px);
+  z-index: 10;
+}
+.user-info:hover > .user-data {
+  display: block;
+  position: absolute;
+  margin-top: 40px;
 }
 
 .footer-content {

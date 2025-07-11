@@ -20,11 +20,6 @@ class TestController
 {
     private IUserManagement $userManagement;
 
-    // private HandleAccessRole $handleAccessRole;
-    private IHandleAccessSpace $handleAccessSpace;
-
-    private IHandleAccessRole $handleAccessRole;
-
     private TemplateRenderer $renderer;
 
     private HeaderManager $headers;
@@ -39,8 +34,6 @@ class TestController
         $this->renderer->setHeaders($this->headers);
 
         $this->userManagement = $appContext->getUserManagement();
-        $this->handleAccessSpace = $appContext->getHandleAccessSpace();
-        $this->handleAccessRole = $appContext->getHandleAccessRole();
 
         $this->showPage(['components' => [
             (new TemplateBundle(

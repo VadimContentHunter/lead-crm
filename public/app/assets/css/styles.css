@@ -278,6 +278,7 @@ table.base-table tbody tr:not(:first-child):hover {
   min-width: 200px;
   max-width: 100%;
   box-shadow: var(--shadow-soft);
+  pointer-events: all;
   opacity: 1;
   transition: opacity 2s ease-in;
 }
@@ -605,12 +606,12 @@ table.base-table tbody tr:not(:first-child):hover {
 }
 
 .right-sidebar {
+  display: none;
   padding: 90px 40px;
   overflow-y: auto;
   background-color: #fff;
   border-radius: var(--border-radius-base);
   box-shadow: var(--shadow-soft);
-  display: flex;
   flex-direction: column;
   /* align-content: center; */
   align-items: center;

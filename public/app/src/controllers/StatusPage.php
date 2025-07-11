@@ -59,7 +59,7 @@ class StatusPage
         ]);
     }
 
-    public function showAllStatusPage(): void
+    public function getTableStatusComponent(): TemplateBundle
     {
         $headers = $this->statusManagement->get()->executeColumnNames()->getArray();
         $rows = $this->statusManagement->get()->executeAllMapped(function (Status $status) {
@@ -87,17 +87,21 @@ class StatusPage
         );
 
         $tableFacade = new TableFacade(new TableTransformer(),  new TableDecorator());
+        return (new TemplateBundle(
+            templatePath: 'containers/average-in-line-component.tpl.php',
+            variables: [
+                'component' => $tableFacade->renderTable($input)->asHtml(),
+                'methodSend' => 'status.delete',
+                'endpointSend' => '/api/statuses'
+            ]
+        ));
+    }
 
+    public function showAllStatusPage(): void
+    {
         $this->showPage([
             'components' => [
-                (new TemplateBundle(
-                    templatePath: 'containers/average-in-line-component.tpl.php',
-                    variables: [
-                        'component' => $tableFacade->renderTable($input)->asHtml(),
-                        'methodSend' => 'status.delete',
-                        'endpointSend' => '/api/statuses'
-                    ]
-                ))
+                $this->getTableStatusComponent()
             ]
         ]);
     }

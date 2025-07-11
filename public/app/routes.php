@@ -24,6 +24,7 @@ use crm\src\controllers\API\SourceController;
 use crm\src\controllers\API\StatusController;
 use crm\src\controllers\API\CommentController;
 use crm\src\controllers\API\DepositController;
+use crm\src\controllers\P2pPage;
 use crm\src\services\RouteHandler\entities\Route;
 
 /**
@@ -174,6 +175,12 @@ function loadRoutes(PDO $pdo, IAppContext $appContext, LoggerInterface $logger =
         ),
 
         // PAGES-OTHER
+
+        new Route(
+            pattern: '^/p2p/?$',
+            className: P2pPage::class,
+            extraData: [$appContext]
+        ),
 
         new Route(
             pattern: '^/login/?$',

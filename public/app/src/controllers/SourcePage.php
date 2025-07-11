@@ -64,7 +64,7 @@ class SourcePage
         ]);
     }
 
-    public function showAllSourcePage(): void
+    public function getTableSourceComponent(): TemplateBundle
     {
         $headers = $this->sourceManagement->get()->executeColumnNames()->getArray();
         $rows = $this->sourceManagement->get()->executeAllMapped(function (Source $source) {
@@ -92,17 +92,23 @@ class SourcePage
         );
 
         $tableFacade = new TableFacade(new TableTransformer(),  new TableDecorator());
+        return (new TemplateBundle(
+            templatePath: 'containers/average-in-line-component.tpl.php',
+            variables: [
+                'component' => $tableFacade->renderTable($input)->asHtml(),
+                'methodSend' => 'source.delete',
+                'endpointSend' => '/api/sources'
+            ]
+        ));
+    }
+
+    public function showAllSourcePage(): void
+    {
+
 
         $this->showPage([
             'components' => [
-                (new TemplateBundle(
-                    templatePath: 'containers/average-in-line-component.tpl.php',
-                    variables: [
-                        'component' => $tableFacade->renderTable($input)->asHtml(),
-                        'methodSend' => 'source.delete',
-                        'endpointSend' => '/api/sources'
-                    ]
-                ))
+                $this->getTableSourceComponent()
             ]
         ]);
     }

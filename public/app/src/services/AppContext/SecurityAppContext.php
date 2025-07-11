@@ -364,9 +364,13 @@ class SecurityAppContext implements IAppContext, ISecurity
 
     /**
      * @param array<string,mixed> $components
+     * @param array<string,mixed> $overlay_items
      */
-    public function getLayout(array $components = []): TemplateBundle
-    {
+    public function getLayout(
+        array $components = [],
+        array $overlay_items = [],
+        string|TemplateBundle $rightSidebar = ''
+    ): TemplateBundle {
 
         $variables = $components + [
             'login' => $this->thisUser?->login ?? '---',
@@ -377,10 +381,9 @@ class SecurityAppContext implements IAppContext, ISecurity
         return (new TemplateBundle(
             templatePath: 'layout.tpl.php',
             variables: [
-                // 'body_js' => [
-                //     '/assets/js/app.js',
-                //     '/assets/js/NotificationManager.js'
-                // ]
+                'module_scripts' => [
+                    '/assets/js/app.js',
+                ]
             ],
             partialsContainer: 'content'
         ))
@@ -405,7 +408,11 @@ class SecurityAppContext implements IAppContext, ISecurity
         ->addPartial(
             (new TemplateBundle(
                 templatePath: 'containers/page-container.tpl.php',
-                partialsContainer: 'main_container'
+                partialsContainer: 'main_container',
+                variables: [
+                    'overlay_content' => $rightSidebar,
+                    'overlay_items' => $overlay_items,
+                ]
             ))->addPartial((new TemplateBundle(
                 templatePath: 'partials/main-menu.tpl.php',
                 partialsContainer: 'main_menu',
@@ -418,6 +425,13 @@ class SecurityAppContext implements IAppContext, ISecurity
                 variables: $variables,
                 partialsContainer: 'content_container'
             )))
+            // ->addPartial((new TemplateBundle(
+            //     templatePath: 'containers/right-sidebar.tpl.php',
+            //     partialsContainer: 'overlay_content',
+            //     variables: [
+            //         'content' => $rightSidebar
+            //     ]
+            // )))
         );
     }
 

@@ -142,7 +142,7 @@ class LeadPage
         ]);
     }
 
-    public function showAllLeadPage(): void
+    public function getTableStatusComponent(): TemplateBundle
     {
         $sourcesList = $this->sourceManagement->get()->executeAllMapped(function (Source $source) {
             return SourceMapper::toArray($source);
@@ -175,13 +175,6 @@ class LeadPage
             )),
             $this->balanceManagement->get()->executeColumnNames()->getArray()
         ));
-
-        // Убираем возможные дубликаты
-        // $headers = array_values(array_unique(array_merge(
-        //     LeadMapper::toFlatViewArray($this->leadManagement->get()->executeColumnNames()->getArray()),
-        //     // $this->leadManagement->get()->executeColumnNames()->getArray(),
-        //     $this->balanceManagement->get()->executeColumnNames()->getArray()
-        // )));
 
         $input = new TableRenderInput(
             header: $headers,
@@ -222,29 +215,34 @@ class LeadPage
 
         $tableFacade = new TableFacade(new TableTransformer(),  new TableDecorator());
 
+        return (new TemplateBundle(
+            templatePath: 'containers/average-in-line-component.tpl.php',
+            variables: [
+                'component' => $tableFacade->renderFilteredTable($input)->asHtml(),
+                'filterPanel' => (new TemplateBundle(
+                    templatePath: 'partials/filtersLead.tpl.php',
+                    variables: [
+                        'sortColumns' => $headers,
+                        'sourcesList' => $sourcesList,
+                        'statusesList' => $statusesList,
+                        'managersList' => $managersList,
+                        'selectedData' => [],
+                    ]
+                )),
+                'controlPanel' => (new TemplateBundle(
+                    templatePath: 'partials/panelStatusesSources.tpl.php',
+                )),
+                'methodSend' => 'lead.delete',
+                'endpointSend' => '/api/leads'
+            ]
+        ));
+    }
+
+    public function showAllLeadPage(): void
+    {
         $this->showPage([
             'components' => [
-                (new TemplateBundle(
-                    templatePath: 'containers/average-in-line-component.tpl.php',
-                    variables: [
-                        'component' => $tableFacade->renderFilteredTable($input)->asHtml(),
-                        'filterPanel' => (new TemplateBundle(
-                            templatePath: 'partials/filtersLead.tpl.php',
-                            variables: [
-                                'sortColumns' => $headers,
-                                'sourcesList' => $sourcesList,
-                                'statusesList' => $statusesList,
-                                'managersList' => $managersList,
-                                'selectedData' => [],
-                            ]
-                        )),
-                        'controlPanel' => (new TemplateBundle(
-                            templatePath: 'partials/panelStatusesSources.tpl.php',
-                        )),
-                        'methodSend' => 'lead.delete',
-                        'endpointSend' => '/api/leads'
-                    ]
-                ))
+                $this->getTableStatusComponent()
             ]
         ]);
     }

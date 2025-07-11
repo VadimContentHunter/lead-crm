@@ -9,6 +9,19 @@
     border: 1px solid transparent;
 }
 
+.btn-panel {
+    @extend .btn-default;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+
+    i {
+        font-size: 16px;
+    }
+}
+
 .btn-icon {
     padding: 4px 8px;
     border-radius: var(--border-radius-base);

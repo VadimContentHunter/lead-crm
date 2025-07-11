@@ -238,6 +238,9 @@ class LeadPage
                                 'selectedData' => [],
                             ]
                         )),
+                        'controlPanel' => (new TemplateBundle(
+                            templatePath: 'partials/panelStatusesSources.tpl.php',
+                        )),
                         'methodSend' => 'lead.delete',
                         'endpointSend' => '/api/leads'
                     ]

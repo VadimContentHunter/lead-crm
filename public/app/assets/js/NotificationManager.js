@@ -5,7 +5,8 @@ export class NotificationManager {
         this.timeout = timeout;
         this.timeOpacity = timeOpacity;
         this.queue = [];
-        this.hasActiveDelete = false;
+        this.objHasActiveDelete = null;
+        this.timers = new Map();
     }
 
     /**
@@ -13,17 +14,35 @@ export class NotificationManager {
      */
     add(message, type = 'info') {
         const item = this._createNotification(message, type);
+        item.id = Date.now() + Math.random();
+        item.addEventListener('mouseenter', () => {
+            item._isHovered = true;
+
+            if (item._isHiding) {
+                item.classList.remove('hide');
+                item._isHiding = false;
+            }
+
+            this.stopTimer(item);
+        });
+        item.addEventListener('mouseleave', () => {
+            item._isHovered = false;
+            this.startTimer(item);
+        });
         this.queue.push(item);
         this._processQueue();
         this._showNotification();
     }
 
     _processQueue() {
-        if (this.queue.length > 0 && this.hasActiveDelete === false) {
-            const item = this.queue[0];
-
+        if (this.queue.length > 0 && this.objHasActiveDelete === null) {
             this._showNotification();
-            this._removeNotification(item);
+            const item = this.queue[0];
+            this.objHasActiveDelete = item;
+            this.startTimer(item);
+
+
+            // this._removeNotification(item);
         }
     }
 
@@ -38,21 +57,55 @@ export class NotificationManager {
     }
 
     async _removeNotification(notification) {
-        if (this.hasActiveDelete === false) {
-            this.hasActiveDelete = true;
-            // setTimeout(() => {
-                await this._delay(this.timeout);
-                notification.classList.add('hide');
-                await this._delay(this.timeOpacity);
+        this.stopTimer(notification);
 
-                this.container.removeChild(notification);
-                this.queue.splice(0, 1);
-                this.hasActiveDelete = false;
+        notification.classList.add('hide');
+        notification._isHiding = true;
+        await this._delay(this.timeOpacity);
 
-                this._processQueue();
-            // }, this.timeout);
+        // Если пользователь навёл курсор, удаление отменяется
+        if (notification._isHovered) {
+            notification.classList.remove('hide');
+            notification._isHiding = false;
+            this.startTimer(notification); // Запускаем таймер заново
+            return;
+        }
+
+        this.container.removeChild(notification);
+        this.queue = this.queue.filter(el => el !== notification);
+        this.objHasActiveDelete = null;
+
+        this._processQueue();
+        // }, this.timeout);
+        // }
+    }
+
+    // Запуск таймера для конкретного элемента
+    startTimer(el) {
+        if (Number(el.id) <= 0 || this.objHasActiveDelete?.id !== el.id)
+            return;
+
+        if (el._isHovered) return;
+
+        this.stopTimer(el);
+        const timerId = setTimeout(async () => {
+            // notification.classList.add('hide');
+            // await this._delay(this.timeOpacity);
+
+            this._removeNotification(el)
+        }, this.timeout); // 2 секунды
+        this.timers.set(el, timerId);
+    }
+
+    // Остановка таймера
+    stopTimer(el) {
+        if (this.timers.has(el)) {
+            clearTimeout(this.timers.get(el));
+            this.timers.delete(el);
+            // this.objHasActiveDelete = null;
         }
     }
+
 
     /**
      * Вспомогательная задержка
@@ -73,6 +126,37 @@ export class NotificationManager {
                 <i class="fa-solid fa-xmark"></i>
             </button>
         `;
+
+        // Находим кнопку
+        const closeButton = notify.querySelector('.notify-close');
+
+        // Вешаем обработчик удаления
+        closeButton.addEventListener('click', () => {
+            this.forceRemoveNotification(notify);
+        });
+
         return notify;
     }
+
+    forceRemoveNotification(notification) {
+        this.stopTimer(notification); // Останавливаем таймер, если есть
+
+        // Удаляем из DOM, если он там есть
+        if (this.container.contains(notification)) {
+            this.container.removeChild(notification);
+        }
+
+        // Убираем из очереди
+        this.queue = this.queue.filter(el => el !== notification);
+
+        // Если удаляемый был активным, сбрасываем активное удаление
+        if (this.objHasActiveDelete === notification) {
+            this.objHasActiveDelete = null;
+            this._processQueue(); // Запускаем обработку очереди
+        } else {
+            this._showNotification();
+        }
+    }
+
+
 }

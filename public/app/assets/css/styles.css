@@ -282,6 +282,9 @@ table.base-table .btn-delete {
 .notify.hidden, .notify.hide {
   opacity: 0;
 }
+.notify:hover {
+  cursor: pointer;
+}
 
 .notify-info {
   background-color: var(--color-notify-info);

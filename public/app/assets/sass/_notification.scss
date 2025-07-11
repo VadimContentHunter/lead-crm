@@ -49,6 +49,10 @@
     &.hidden, &.hide {
         opacity: 0;
     }
+
+    &:hover {
+        cursor: pointer;
+    }
 }
 
 // Варианты состояний

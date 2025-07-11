@@ -22,7 +22,7 @@
 
     &:hover {
         i {
-            transform: scale(1.2);
+            transform: scale(1.7);
             color: var(--color-neutral-dark);
         }
     }
@@ -30,8 +30,21 @@
     &.button-active {
         &:hover {
             i {
-                transform: scale(1.2);
+                // transform: scale(2);
                 color: var(--color-danger);
+            }
+        }
+    }
+
+    &.button-action {
+        i {
+            color: var(--color-primary);
+        }
+
+        &:hover {
+            i {
+                // transform: scale(1.2);
+                color: var(--color-primary-dark);
             }
         }
     }

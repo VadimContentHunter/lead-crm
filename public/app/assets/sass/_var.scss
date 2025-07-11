@@ -26,12 +26,15 @@ $font-size-subheading: 18px; // Вторичный заголовок или п�
 $font-size-small: 12px; // Маленький текст (подписи, вспомогательные элементы)
 
 // Цвета для уведомлений
-$color-notify-info: #f5f5f5;
-$color-notify-success: #e6f4ea;
-$color-notify-danger: #fcebea;
-$color-notify-info-text: #333333;
-$color-notify-success-text: #2d5935;
-$color-notify-danger-text: #842029;
+$color-notify-info: #f9f9f9;
+$color-notify-info-text: #757575;
+
+$color-notify-success: #e0ffe5;
+$color-notify-success-text: #007c3c;
+
+$color-notify-danger: #ffe0e0;
+$color-notify-danger-text: #a10000;
+
 
 $shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.08);
 $shadow-soft-left: -2px 0 10px rgba(0, 0, 0, 0.08); // Тень слева

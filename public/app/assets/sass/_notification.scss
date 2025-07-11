@@ -59,20 +59,22 @@
 .notify-info {
     background-color: var(--color-notify-info);
     color: var(--color-notify-info-text);
-    border: 1px solid var(--color-notify-info-text);
+    border: 1px solid #ddd;
 }
 
 .notify-success {
     background-color: var(--color-notify-success);
     color: var(--color-notify-success-text);
-    border: 1px solid var(--color-notify-success-text);
+    border: 1px solid #aaffb8;
 }
 
 .notify-danger {
     background-color: var(--color-notify-danger);
     color: var(--color-notify-danger-text);
-    border: 1px solid var(--color-notify-danger-text);
+    border: 1px solid #ffaaaa;
 }
+
+
 
 // Кнопка закрытия
 .notify-close {

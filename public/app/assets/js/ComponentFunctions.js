@@ -369,16 +369,17 @@ export const ComponentFunctions = {
     },
 
     /**
-     * Вешает обработчик на все кнопки и отправляет данные из соседнего input.
-     *
-     * @param {Object} options
-     * @param {string} options.containerSelector - Контейнер, в котором искать кнопки и инпуты.
-     * @param {string} options.buttonSelector - Селектор кнопок, на которые вешается обработчик.
-     * @param {string} options.inputSelector - Селектор для поиска инпута рядом с кнопкой.
-     * @param {string[]} [options.attributes=['value', 'data-row-id']] - Какие атрибуты брать из input.
-     * @param {string} options.method - Метод JSON-RPC.
-     * @param {string} [options.endpoint='/api/'] - Эндпоинт для отправки.
-     */
+ * Вешает обработчик на все кнопки и отправляет данные из связанного input, ища родителя по кастомному селектору.
+ *
+ * @param {Object} options
+ * @param {string} options.containerSelector - Основной контейнер.
+ * @param {string} options.buttonSelector - Селектор кнопок.
+ * @param {string} options.inputSelector - Селектор для поиска input внутри родителя.
+ * @param {string[]} [options.attributes=['value', 'data-row-id']] - Какие атрибуты брать из input.
+ * @param {string} options.method - Метод JSON-RPC.
+ * @param {string} [options.endpoint='/api/'] - Эндпоинт для отправки.
+ * @param {string} [options.searchRootSelector='tr'] - До какого родителя искать (например, 'tr', 'td', 'div.row').
+ */
     attachInputButtonTrigger({
         containerSelector,
         buttonSelector,
@@ -386,6 +387,7 @@ export const ComponentFunctions = {
         attributes = ['value', 'data-row-id'],
         method,
         endpoint = '/api/',
+        searchRootSelector = 'tr',
     }) {
         const container = document.querySelector(containerSelector);
         if (!container) {
@@ -402,8 +404,9 @@ export const ComponentFunctions = {
             button.addEventListener('click', (event) => {
                 event.preventDefault();
 
-                const input = button.closest('td, th, div, span')?.querySelector(inputSelector) ||
-                    button.parentElement?.querySelector(inputSelector);
+                // Ищем родителя до заданного уровня
+                const searchRoot = button.closest(searchRootSelector);
+                const input = searchRoot?.querySelector(inputSelector);
 
                 if (!input) {
                     console.warn('[attachInputButtonTrigger] Не найден связанный input');
@@ -437,6 +440,48 @@ export const ComponentFunctions = {
                 transport.send(data);
             });
         }
+    },
+
+
+    /**
+     * Следит за изменениями input'ов и вызывает callback при изменении значения и потере фокуса.
+     *
+     * @param {Object} options
+     * @param {string} options.inputSelector - Селектор для поиска input элементов.
+     * @param {function} options.onChange - Коллбэк при изменении значения: (oldValue, newValue, inputElement).
+     * @param {function} [options.onBlur] - Коллбэк при потере фокуса: (inputElement, previousValue).
+     */
+    watchInputValueChange({ inputSelector, onChange, onBlur }) {
+        const inputs = document.querySelectorAll(inputSelector);
+
+        for (const input of inputs) {
+            const previous = { value: input.value }; // Объект для ссылки на значение
+
+            const checkChange = () => {
+                if (input.value !== previous.value) {
+                    if (typeof onChange === 'function') {
+                        onChange(previous.value, input.value, input);
+                    }
+                    previous.value = input.value;
+                }
+            };
+
+            input.addEventListener('input', checkChange);
+            input.addEventListener('change', checkChange);
+
+            if (typeof onBlur === 'function') {
+                input.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        input.value = previous.value;
+                        onBlur?.(input, previous);
+                    }, 200);
+                });
+            }
+        }
     }
+
+
+
+
 
 };

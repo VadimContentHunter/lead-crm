@@ -51,10 +51,12 @@ class TableCellRenderer
         $row_id = $cell['row_id'] ?? null;
 
         return <<<HTML
-            <input type="{$type}" name="{$name}" value="{$value}" new-value="{$value}" data-row-id="{$row_id}" class="edit-row-input">
-            <button type="button" class="btn-icon button-active edit-row-button" >
-                <i class="fa-solid fa-trash"></i>
-            </button>
+            <input type="{$type}" name="{$name}" value="{$value}" old-value="{$value}" data-row-id="{$row_id}" class="edit-row-input">
+            
+            <div class="cell-actions-wrapper">
+                <button type="button" class="btn-icon button-action edit-row-button" ><i class="fa-solid fa-check"></i></button>
+            </div>
+            
         HTML;
     }
 

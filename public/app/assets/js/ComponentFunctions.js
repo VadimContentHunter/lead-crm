@@ -3,17 +3,46 @@ import { NotificationManager } from '/assets/js/NotificationManager.js';
 
 const ComponentFunctionsNotification = new NotificationManager({
     containerSelector: '.notification-container',
-    maxVisible: 2,
+    maxVisible: 4,
     timeout: 5000,
     timeOpacity: 2000
 });
 
 const onErrorDefaultFunction = (error) => {
-    ComponentFunctionsNotification.add(error.message ?? 'Неизвестная ошибка', 'danger');
+    let message;
+
+    if (typeof error === 'string') {
+        message = error;
+    } else if (error instanceof Error) {
+        message = error.message || 'Неизвестная ошибка';
+    } else if (error && typeof error.message === 'string') {
+        message = error.message;
+    } else {
+        message = 'Неизвестная ошибка';
+    }
+
+    ComponentFunctionsNotification.add(message, 'danger');
 }
 
 const onSuccessDefaultFunction = (message) => {
     ComponentFunctionsNotification.add(message ?? 'Успех!', 'success');
+}
+
+
+function processingMessage(message, type = 'info') {
+    if (type === 'error') {
+        if (typeof onErrorDefaultFunction !== 'function') {
+            console.log('[JsonRpc] Ошибки:', message);
+            return;
+        }
+        onErrorDefaultFunction(message);
+    } else if (type === 'success') {
+        if (typeof onSuccessDefaultFunction !== 'function') {
+            console.log('[JsonRpc] Успех:', message);
+            return;
+        }
+        onSuccessDefaultFunction(message);
+    }
 }
 
 /**
@@ -59,26 +88,8 @@ export const ComponentFunctions = {
             onContentUpdate: () => { }, // заглушка
             onData: (payload) => {
                 const messages = Array.isArray(payload) ? payload : [];
-
-                let container =
-                    form.querySelector('.form-messages-container') ||
-                    document.getElementById('global-messages-container');
-
-                container.innerHTML = '';
                 for (const msg of messages) {
-                    if (msg.type === 'error') {
-                        if (typeof onErrorDefaultFunction !== 'function') {
-                            console.log('[JsonRpc] Ошибки:', msg.message);
-                            return;
-                        }
-                        onErrorDefaultFunction(msg.message);
-                    } else if(msg.type === 'success') {
-                        if (typeof onSuccessDefaultFunction !== 'function') {
-                            console.log('[JsonRpc] Успех:', messages);
-                            return;
-                        }
-                        onSuccessDefaultFunction(msg.message);
-                    }
+                    processingMessage(msg.message, msg.type);
                 }
             },
             onError: onErrorDefaultFunction
@@ -139,25 +150,11 @@ export const ComponentFunctions = {
                 }
 
                 const messages = Array.isArray(payload) ? payload : [];
-                let messageBox =
-                    container.querySelector('.form-messages-container') ||
-                    document.getElementById('global-messages-container');
-
-                if (!messageBox) {
-                    console.log('[JsonRpc] Сообщения:', messages);
-                    return;
-                }
-
-                messageBox.innerHTML = '';
                 for (const msg of messages) {
                     if (msg.type === 'redirect') {
                         continue;
                     }
-
-                    const div = document.createElement('div');
-                    div.className = 'form-message' + (msg.type && msg.type !== 'info' ? ` ${msg.type}` : '');
-                    div.innerHTML = `<p>${msg.message}</p>`;
-                    messageBox.appendChild(div);
+                    processingMessage(msg.message, msg.type);
                 }
 
                 const redirect = messages.find((msg) => msg.type === 'redirect');
@@ -288,22 +285,8 @@ export const ComponentFunctions = {
                     return;
                 }
 
-                const messages = Array.isArray(payload) ? payload : [];
-                let messageBox =
-                    container.querySelector('.form-messages-container') ||
-                    document.getElementById('global-messages-container');
-
-                if (!messageBox) {
-                    console.log('[JsonRpc] Сообщения:', messages);
-                    return;
-                }
-
-                messageBox.innerHTML = '';
                 for (const msg of messages) {
-                    const div = document.createElement('div');
-                    div.className = 'form-message' + (msg.type && msg.type !== 'info' ? ` ${msg.type}` : '');
-                    div.innerHTML = `<p>${msg.message}</p>`;
-                    messageBox.appendChild(div);
+                    processingMessage(msg.message, msg.type);
                 }
             },
             onError: (error) => {
@@ -367,8 +350,6 @@ export const ComponentFunctions = {
                     console.warn('[Delete Trigger] Не найден row_id для удаления');
                     return;
                 }
-
-                const container = trigger.closest(`[${containerSelectorAttribute}]`);
 
                 const transport = new JsonRpcTransport(method, {
                     endpoint,

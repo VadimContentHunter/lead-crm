@@ -230,7 +230,7 @@ class LeadPage
                     ]
                 )),
                 'controlPanel' => (new TemplateBundle(
-                    templatePath: 'partials/panelStatusesSources.tpl.php',
+                    templatePath: 'partials/controlPanel.tpl.php',
                 )),
                 'methodSend' => 'lead.delete',
                 'endpointSend' => '/api/leads'

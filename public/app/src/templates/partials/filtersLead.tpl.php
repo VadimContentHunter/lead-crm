@@ -128,7 +128,7 @@ $search = $selectedData['search'] ?? '';
         method: 'lead.filter.table',
         endpoint: '/api/leads',
         callbackOnData: (response) => {
-            ComponentFunctions.replaceLeadTable(response, '[table-r-id]');
+            ComponentFunctions.replaceLeadTable(response, '[table-r-id="lead-table-1"]');
         }
     });
 
@@ -138,7 +138,7 @@ $search = $selectedData['search'] ?? '';
         method: 'lead.filter.table.clear',
         endpoint: '/api/leads',
         callbackOnData: (response) => {
-            ComponentFunctions.replaceLeadTable(response, '[table-r-id]');
+            ComponentFunctions.replaceLeadTable(response, '[table-r-id="lead-table-1"]');
         },
     });
 

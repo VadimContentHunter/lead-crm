@@ -1,9 +1,10 @@
 :root {
-  --font-size-base: 16px;
+  --font-size-base: 14px;
   --font-size-heading: 24px;
   --font-size-subheading: 18px;
   --border-radius-base: 16px;
   --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.08);
+  --font-size-small: 12px;
   --color-background: #fbfdff;
   --color-primary: #007bff;
   --color-primary-dark: #0056b3;
@@ -12,7 +13,7 @@
   --color-danger: #dc3545;
   --color-danger-dark: #a71d2a;
   --color-neutral: #ccc;
-  --color-neutral-light: #d1d1d1;
+  --color-neutral-dark: #acacac;
   --color-notify-info: #f5f5f5;
   --color-notify-success: #e6f4ea;
   --color-notify-danger: #fcebea;
@@ -236,6 +237,17 @@ table.base-table .btn-delete {
   flex-wrap: wrap;
   justify-content: center;
 }
+.lead-filter .form-group label,
+.user-filter .form-group label {
+  font-size: 12px;
+  color: var(--color-neutral-dark);
+}
+.lead-filter .form-group input::placeholder,
+.user-filter .form-group input::placeholder {
+  font-size: 12px;
+  color: var(--color-neutral-dark);
+}
+
 .icon-notification {
   width: auto;
   height: auto;

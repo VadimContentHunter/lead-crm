@@ -40,8 +40,8 @@ $search = $selectedData['search'] ?? '';
     </div>
 
     <div class="form-actions">
-        <button type="button" class="form-button submit">Применить</button>
-        <button type="reset" class="form-button reset">Сбросить</button>
+        <button type="button" class="btn-default button-primary submit">Применить</button>
+        <button type="reset" class="btn-default button-secondary reset">Сбросить</button>я
     </div>
 </form>
 

@@ -8,5 +8,17 @@
     flex-wrap: wrap;
     justify-content: center;
 
-    .form-group {}
+    .form-group {
+        label {
+            font-size: 12px;
+            color: var(--color-neutral-dark);
+        }
+
+        input {
+            &::placeholder {
+                font-size: 12px;
+                color: var(--color-neutral-dark);
+            }
+        }
+    }
 }

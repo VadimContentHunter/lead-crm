@@ -19,20 +19,6 @@ $dir = $selectedData['dir'] ?? 'asc';
 $search = $selectedData['search'] ?? '';
 ?>
 
-<!-- <th>ID</th>
-<th>Contact</th>
-<th>Name</th>
-<th>Manager</th>
-<th>Status</th>
-<th>Source</th>
-<th>Potential</th>
-<th>Balance</th>
-<th>Drained</th>
-<th>Address</th>
-<th>Edit</th>
-<th>Drain</th> -->
-
-
 <form class="base-form lead-filter" lead-filter-id>
     <div class="form-group">
         <label>Поиск</label>
@@ -128,8 +114,8 @@ $search = $selectedData['search'] ?? '';
     </div>
 
     <div class="form-actions">
-        <button type="button" class="form-button submit">Применить</button>
-        <button type="reset" class="form-button reset">Сбросить</button>
+        <button type="button" class="btn-default button-primary submit">Применить</button>
+        <button type="reset" class="btn-default button-secondary reset">Сбросить</button>
     </div>
 </form>
 

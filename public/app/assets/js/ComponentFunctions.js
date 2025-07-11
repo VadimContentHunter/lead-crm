@@ -1,4 +1,20 @@
 import { JsonRpcTransport } from './JsonRpcTransport.js';
+import { NotificationManager } from '/assets/js/NotificationManager.js';
+
+const ComponentFunctionsNotification = new NotificationManager({
+    containerSelector: '.notification-container',
+    maxVisible: 2,
+    timeout: 5000,
+    timeOpacity: 2000
+});
+
+const onErrorDefaultFunction = (error) => {
+    ComponentFunctionsNotification.add(error.message ?? 'Неизвестная ошибка', 'danger');
+}
+
+const onSuccessDefaultFunction = (message) => {
+    ComponentFunctionsNotification.add(message ?? 'Успех!', 'success');
+}
 
 /**
  * Функции, связанные с компонентами интерфейса.
@@ -48,22 +64,24 @@ export const ComponentFunctions = {
                     form.querySelector('.form-messages-container') ||
                     document.getElementById('global-messages-container');
 
-                if (!container) {
-                    console.log('[JsonRpc] Сообщения:', messages);
-                    return;
-                }
-
                 container.innerHTML = '';
                 for (const msg of messages) {
-                    const div = document.createElement('div');
-                    div.className = 'form-message' + (msg.type && msg.type !== 'info' ? ` ${msg.type}` : '');
-                    div.innerHTML = `<p>${msg.message}</p>`;
-                    container.appendChild(div);
+                    if (msg.type === 'error') {
+                        if (typeof onErrorDefaultFunction !== 'function') {
+                            console.log('[JsonRpc] Ошибки:', msg.message);
+                            return;
+                        }
+                        onErrorDefaultFunction(msg.message);
+                    } else if(msg.type === 'success') {
+                        if (typeof onSuccessDefaultFunction !== 'function') {
+                            console.log('[JsonRpc] Успех:', messages);
+                            return;
+                        }
+                        onSuccessDefaultFunction(msg.message);
+                    }
                 }
             },
-            onError: (error) => {
-                console.error('[JsonRpcTransport] Ошибка:', error.message);
-            }
+            onError: onErrorDefaultFunction
         });
 
         trigger.addEventListener('click', (e) => {
@@ -101,7 +119,7 @@ export const ComponentFunctions = {
         method,
         endpoint = '/api',
         callbackOnData = null,
-        callbackOnError = null,
+        callbackOnError = onErrorDefaultFunction,
     }) {
         const trigger = document.querySelector(triggerSelector);
         const container = document.querySelector(containerSelector);
@@ -132,7 +150,7 @@ export const ComponentFunctions = {
 
                 messageBox.innerHTML = '';
                 for (const msg of messages) {
-                    if(msg.type === 'redirect'){
+                    if (msg.type === 'redirect') {
                         continue;
                     }
 
@@ -144,7 +162,7 @@ export const ComponentFunctions = {
 
                 const redirect = messages.find((msg) => msg.type === 'redirect');
                 if (redirect) {
-                    setTimeout(() => {}, 1000);
+                    setTimeout(() => { }, 1000);
                     window.location.href = redirect.url || '/';
                 }
             },
@@ -185,7 +203,7 @@ export const ComponentFunctions = {
         dataAttr = 'data-rpc-data',
         endpointAttr = 'data-rpc-endpoint',
         onData = (payload) => console.log('[JsonRpc] Ответ:', payload),
-        onError = (err) => console.error('[JsonRpc] Ошибка:', err),
+        onError = onErrorDefaultFunction,
         onContentUpdate = () => { }
     }) {
         const trigger = document.querySelector(triggerSelector);
@@ -250,7 +268,7 @@ export const ComponentFunctions = {
             method,
             endpoint = '/api',
             callbackOnData = null,
-            callbackOnError = null,
+            callbackOnError = onErrorDefaultFunction,
         } = config;
 
         const triggers = document.querySelectorAll(triggerSelector);
@@ -359,6 +377,7 @@ export const ComponentFunctions = {
                         ComponentFunctions.replaceLeadTable(payload, '[table-r-id]');
                     },
                     onError: (error) => {
+                        onErrorDefaultFunction(error);
                         console.error('[JsonRpcTransport] Ошибка:', error.message);
                     }
                 });
@@ -366,7 +385,77 @@ export const ComponentFunctions = {
                 transport.send({ rowId });
             });
         }
-    }
+    },
 
+    /**
+     * Вешает обработчик на все кнопки и отправляет данные из соседнего input.
+     *
+     * @param {Object} options
+     * @param {string} options.containerSelector - Контейнер, в котором искать кнопки и инпуты.
+     * @param {string} options.buttonSelector - Селектор кнопок, на которые вешается обработчик.
+     * @param {string} options.inputSelector - Селектор для поиска инпута рядом с кнопкой.
+     * @param {string[]} [options.attributes=['value', 'data-row-id']] - Какие атрибуты брать из input.
+     * @param {string} options.method - Метод JSON-RPC.
+     * @param {string} [options.endpoint='/api/'] - Эндпоинт для отправки.
+     */
+    attachInputButtonTrigger({
+        containerSelector,
+        buttonSelector,
+        inputSelector,
+        attributes = ['value', 'data-row-id'],
+        method,
+        endpoint = '/api/',
+    }) {
+        const container = document.querySelector(containerSelector);
+        if (!container) {
+            console.warn(`[attachInputButtonTrigger] Контейнер ${containerSelector} не найден`);
+            return;
+        }
+
+        const buttons = container.querySelectorAll(buttonSelector);
+
+        for (const button of buttons) {
+            if (button.dataset.bound) continue;
+            button.dataset.bound = 'true';
+
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+
+                const input = button.closest('td, th, div, span')?.querySelector(inputSelector) ||
+                    button.parentElement?.querySelector(inputSelector);
+
+                if (!input) {
+                    console.warn('[attachInputButtonTrigger] Не найден связанный input');
+                    return;
+                }
+
+                const data = {};
+                for (const attr of attributes) {
+                    if (attr === 'value') {
+                        data[attr] = input.value ?? null;
+                    } else if (attr.startsWith('data-')) {
+                        const datasetKey = attr.slice(5).replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+                        data[attr] = input.dataset[datasetKey] ?? null;
+                    } else {
+                        data[attr] = input.getAttribute(attr);
+                    }
+                }
+
+                const transport = new JsonRpcTransport(method, {
+                    endpoint,
+                    onContentUpdate: () => { },
+                    onData: (payload) => {
+                        ComponentFunctions.replaceLeadTable(payload, '[table-r-id]');
+                    },
+                    onError: (error) => {
+                        onErrorDefaultFunction(error);
+                        console.error('[JsonRpcTransport] Ошибка:', error.message);
+                    },
+                });
+
+                transport.send(data);
+            });
+        }
+    }
 
 };

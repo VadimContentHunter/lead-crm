@@ -24,8 +24,22 @@
         });
     }
 
+    function attachEditInputTrigger() {
+       ComponentFunctions.attachInputButtonTrigger({
+            containerSelector: '[table-r-id]',
+            buttonSelector: 'td .edit-row-button',
+            inputSelector: 'input.edit-row-input',
+            attributes: ['value', 'data-row-id', 'new-value'],
+            method: 'lead.edit.cell',
+            endpoint: '/api/leads',
+        }); 
+    }
+
     // Первый запуск для уже существующих элементов
     attachDeleteTrigger();
+
+    // Первый запуск для уже существующих элементов
+    attachEditInputTrigger();
 
     // Следим за изменениями в контейнере [table-r-id]
     const targetNode = document.querySelector('[table-r-id]');
@@ -36,6 +50,7 @@
             for (const mutation of mutationsList) {
                 if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
                     attachDeleteTrigger();
+                    attachEditInputTrigger();
                     break; // один раз достаточно
                 }
             }

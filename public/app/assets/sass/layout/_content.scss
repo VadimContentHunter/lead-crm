@@ -1,6 +1,7 @@
 @use '../var';
 
 .content-container {
+    position: relative;
     flex: 1;
     // background-color: burlywood;
     width: 100%;
@@ -15,6 +16,9 @@
         position: sticky;
         top: 0;
         padding: 20px 20px;
+        z-index: 100;
+        pointer-events: none; // Все события проходят сквозь него на элементы, расположенные под ним.
+
         display: flex;
         flex-direction: row;
         justify-content: flex-end;
@@ -25,6 +29,7 @@
 }
 
 .main-content {
+    position: relative;
     flex: 1;
     padding: 20px 20px;
 }
@@ -47,7 +52,7 @@
         transition: opacity 0.2s ease-in;
         opacity: 0;
         visibility: hidden;
-        pointer-events: none;
+        // pointer-events: none;
         // display: none;
         position: absolute;
         color: var(--color-neutral-dark);

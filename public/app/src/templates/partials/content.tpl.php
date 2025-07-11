@@ -17,6 +17,7 @@ if (!isset($components) || !is_array($components)) {
 ?>
 
 <div class="content-container">
+
     <!-- Меню внутри контента -->
     <aside class="header-content">
         <section class="user-info">
@@ -24,13 +25,13 @@ if (!isset($components) || !is_array($components)) {
             <div class="user-data">
                 <p>Роль: <span><?= htmlspecialchars($role) ?></span></p>
                 <p>Пространство: <span><?= htmlspecialchars($space) ?></span></p>
-            </div>  
+            </div>
         </section>
         <div class="icon-wrapper icon-notification" id="notification">
             <i class="fa-solid fa-bell"></i>
         </div>
         <section class="notification-container">
-            
+
         </section>
     </aside>
 
@@ -39,13 +40,16 @@ if (!isset($components) || !is_array($components)) {
         <?= implode("\n", $components) ?>
     </main>
 
+
     <footer class="footer-content">
         &copy; <?= date('Y') ?> CRM Обменка
     </footer>
 </div>
 
 <script type="module">
-import { NotificationManager } from '/assets/js/NotificationManager.js';
+import {
+    NotificationManager
+} from '/assets/js/NotificationManager.js';
 
 const notifier = new NotificationManager({
     containerSelector: '.notification-container',

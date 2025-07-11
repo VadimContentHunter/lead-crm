@@ -1,0 +1,14 @@
+@use '../var';
+
+.right-sidebar {
+    padding: 90px 40px;
+    overflow-y: auto;
+    background-color: #fff;
+    border-radius: var(--border-radius-base);
+    box-shadow: var(--shadow-soft);
+
+    display: flex;
+    flex-direction: column;
+    /* align-content: center; */
+    align-items: center;
+}

@@ -4,12 +4,14 @@
 @use './base-filter';
 @use './notification';
 @use './buttons';
+@use './overlays';
 @use './login-container';
 @use './layout/page';
 @use './layout/menu';
 @use './layout/content';
 @use './layout/footer';
 @use './layout/control-panel';
+@use './layout/right-sidebar';
 @use './components/base_components';
 @use './components/error-component';
 

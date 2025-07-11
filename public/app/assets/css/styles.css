@@ -134,16 +134,18 @@ table.base-table tbody tr:first-child {
   font-weight: 600;
   color: #fff;
 }
+table.base-table tbody tr:first-child td {
+  border: 1px solid var(--color-primary);
+}
 table.base-table tbody tr:first-child td:last-child {
-  border: none;
-  border-radius: 0 var(--border-radius-base) 0 0;
+  border-radius: 0 10px 0 0;
   background-color: rgba(0, 123, 255, 0.4588235294);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
 }
 table.base-table tbody tr td {
   position: relative;
-  padding: 9px 16px;
+  padding: 10px 16px;
   border-bottom: 1px solid var(--color-divider);
   white-space: nowrap;
   vertical-align: middle;
@@ -399,6 +401,19 @@ table.base-table tbody tr:not(:first-child):hover {
   background-color: var(--color-divider-dark);
 }
 
+.overlay-content {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--border-radius-base);
+  background-color: rgba(240, 248, 255, 0.6196078431);
+  z-index: 50;
+  justify-content: flex-end;
+}
+
 .login-container {
   height: 100vh;
   width: 100%;
@@ -429,13 +444,13 @@ table.base-table tbody tr:not(:first-child):hover {
 }
 
 .page-container {
+  position: relative;
   height: 100vh;
   width: 100%;
   max-width: 1200px;
   overflow: hidden;
   display: flex;
   flex-direction: row;
-  gap: 16px;
 }
 
 .main-menu {
@@ -507,6 +522,7 @@ table.base-table tbody tr:not(:first-child):hover {
 }
 
 .content-container {
+  position: relative;
   flex: 1;
   width: 100%;
   overflow-y: auto;
@@ -517,6 +533,8 @@ table.base-table tbody tr:not(:first-child):hover {
   position: sticky;
   top: 0;
   padding: 20px 20px;
+  z-index: 100;
+  pointer-events: none;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
@@ -525,6 +543,7 @@ table.base-table tbody tr:not(:first-child):hover {
 }
 
 .main-content {
+  position: relative;
   flex: 1;
   padding: 20px 20px;
 }
@@ -546,7 +565,6 @@ table.base-table tbody tr:not(:first-child):hover {
   transition: opacity 0.2s ease-in;
   opacity: 0;
   visibility: hidden;
-  pointer-events: none;
   position: absolute;
   color: var(--color-neutral-dark);
   background-color: #ffffff;
@@ -584,6 +602,18 @@ table.base-table tbody tr:not(:first-child):hover {
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
+}
+
+.right-sidebar {
+  padding: 90px 40px;
+  overflow-y: auto;
+  background-color: #fff;
+  border-radius: var(--border-radius-base);
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  /* align-content: center; */
+  align-items: center;
 }
 
 .content-area {

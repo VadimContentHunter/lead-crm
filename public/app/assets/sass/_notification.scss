@@ -42,6 +42,13 @@
     min-width: 200px;
     max-width: 100%;
     box-shadow: var(--shadow-soft);
+
+    opacity: 1;
+    transition: opacity 2.0s ease-in;
+
+    &.hidden, &.hide {
+        opacity: 0;
+    }
 }
 
 // Варианты состояний

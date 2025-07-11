@@ -371,7 +371,8 @@ class SecurityAppContext implements IAppContext, ISecurity
             templatePath: 'layout.tpl.php',
             variables: [
                 'body_js' => [
-                    '/assets/js/app.js'
+                    '/assets/js/app.js',
+                    '/assets/js/NotificationManager.js'
                 ]
             ],
             partialsContainer: 'content'

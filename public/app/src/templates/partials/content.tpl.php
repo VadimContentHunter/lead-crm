@@ -19,24 +19,7 @@ if (!isset($components) || !is_array($components)) {
             <i class="fa-solid fa-bell"></i>
         </div>
         <section class="notification-container">
-            <div class="notify notify-info">
-                <span class="text">Это просто текстовое уведомление</span>
-                <button class="notify-close" type="button">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="notify notify-success">
-                <span class="text">Действие выполнено успешно</span>
-                <button class="notify-close" type="button">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="notify notify-danger">
-                <span class="text">Произошла ошибка при выполнении</span>
-                <button class="notify-close" type="button">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
+            
 
         </section>
     </aside>
@@ -50,3 +33,22 @@ if (!isset($components) || !is_array($components)) {
         &copy; <?= date('Y') ?> CRM Обменка
     </footer>
 </div>
+
+<script type="module">
+import { NotificationManager } from '/assets/js/NotificationManager.js';
+
+const notifier = new NotificationManager({
+    containerSelector: '.notification-container',
+    maxVisible: 2,
+    timeout: 2000,
+    timeOpacity: 2000
+});
+
+// Пример генерации уведомлений
+notifier.add('Уведомление 1', 'info');
+notifier.add('Уведомление 2', 'success');
+notifier.add('Уведомление 3', 'danger');
+notifier.add('Уведомление 4', 'info');
+notifier.add('Уведомление 5', 'success'); // Появится, когда освободится место
+notifier.add('Уведомление 6', 'danger');
+</script>

@@ -276,6 +276,11 @@ table.base-table .btn-delete {
   min-width: 200px;
   max-width: 100%;
   box-shadow: var(--shadow-soft);
+  opacity: 1;
+  transition: opacity 2s ease-in;
+}
+.notify.hidden, .notify.hide {
+  opacity: 0;
 }
 
 .notify-info {

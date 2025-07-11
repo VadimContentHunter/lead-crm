@@ -12,10 +12,11 @@ class TableTransformer implements ITableTransformer
 
         foreach ($rows as $row) {
             $transformedRow = [];
+            $row_id = $row['id'] ?? 0;
 
             foreach ($header as $columnName) {
                 $value = $row[$columnName] ?? '';
-                $transformedRow[] = $this->transformCell($columnName, $value);
+                $transformedRow[] = $this->transformCell($columnName, $value, $row_id);
             }
 
             $result[] = $transformedRow;
@@ -24,13 +25,14 @@ class TableTransformer implements ITableTransformer
         return $result;
     }
 
-    protected function transformCell(string $column, mixed $value): mixed
+    protected function transformCell(string $column, mixed $value, ?int $row_id = null): mixed
     {
         if ($value === null) {
             return '';
         }
 
         return match ($column) {
+            'full_name', 'login' => ['type' => 'text', 'name' => $column, 'value' => $value, 'row_id' => $row_id ?? 0],
             // 'username', 'login' => ['type' => 'text', 'name' => $column, 'value' => $value],
             // 'age' => ['type' => 'number', 'name' => $column, 'value' => $value],
             // 'status' => [
@@ -59,9 +61,10 @@ class TableTransformer implements ITableTransformer
         $filteredRows = [];
         foreach ($rows as $row) {
             $filteredRow = [];
+            $row_id = $row['id'] ?? 0;
             foreach ($allowedColumns as $column) {
                 $value = $row[$column] ?? null; // если нет значения — подставляем null
-                $filteredRow[] = $this->transformCell($column, $value);
+                $filteredRow[] = $this->transformCell($column, $value, $row_id);
             }
             $filteredRows[] = $filteredRow;
         }

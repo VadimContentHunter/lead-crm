@@ -124,6 +124,8 @@ table.base-table {
   overflow-x: auto;
   border: 1px solid #eee;
   z-index: 10;
+  display: flex;
+  flex-direction: column;
 }
 table.base-table tbody tr:first-child {
   background-color: var(--color-primary);
@@ -171,64 +173,18 @@ table.base-table tbody tr td:last-child {
 table.base-table tbody tr:not(:first-child):hover {
   background-color: #fafafa;
 }
-table.base-table .btn-table-action,
-table.base-table .btn-delete {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-  padding: 4px 6px;
-  margin-right: 4px;
-  transition: transform 0.15s;
-}
-table.base-table .btn-table-action:hover,
-table.base-table .btn-delete:hover {
-  transform: scale(1.2);
-}
-table.base-table .btn-table-action {
-  color: #007bff;
-}
-table.base-table .btn-delete {
-  color: #dc3545;
-}
 
-.base-table {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
+.base-table tr td:focus-within input,
+.base-table tr td:focus-within select {
+  border-color: var(--color-primary);
 }
-.base-table .table-header,
-.base-table .table-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 8px;
-  padding: 8px 0;
-}
-.base-table .table-header.table-header,
-.base-table .table-row.table-header {
-  font-weight: 600;
-  border-bottom: 1px solid #ccc;
-}
-.base-table .table-header:hover,
-.base-table .table-row:hover {
-  background-color: #83c1ff;
-}
-.base-table .table-cell {
+.base-table tr td input,
+.base-table tr td select {
   padding: 6px 8px;
-  background: #f9f9f9;
-  border-radius: var(--border-radius-base);
-}
-.base-table .table-cell input,
-.base-table .table-cell select {
-  width: 100%;
-  padding: 6px 8px;
-  font-size: var(--font-size-base, 16px);
-  border: 1px solid #ccc;
-  border-radius: var(--border-radius-base);
-  background-color: #fff;
+  border-bottom: 1px solid transparent;
   appearance: none;
 }
-.base-table .table-cell select {
+.base-table tr td select {
   background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg fill='%23333' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 7l3-3 3 3m0 6l-3 3-3-3'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 8px center;

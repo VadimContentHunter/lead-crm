@@ -48,8 +48,9 @@ class TableCellRenderer
         $type = htmlspecialchars($cell['type']);
         $name = htmlspecialchars($cell['name']);
         $value = htmlspecialchars($cell['value'] ?? '');
+        $row_id = $cell['row_id'] ?? null;
 
-        return "<input type=\"$type\" name=\"$name\" value=\"$value\">";
+        return "<input type=\"$type\" name=\"$name\" value=\"$value\" data-row-id=\"$row_id\">";
     }
 
     /**

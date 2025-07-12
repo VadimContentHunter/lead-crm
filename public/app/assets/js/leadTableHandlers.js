@@ -9,6 +9,9 @@ function attachDeleteTrigger() {
         endpoint: endPoint,
         onData: (payload) => {
             ComponentFunctions.replaceLeadTable(payload, '[table-r-id="lead-table-1"]');
+            if (payload?.messages?.length > 0) {
+                ComponentFunctions.processMessagesArray(payload.messages);
+            }
         },
     });
 }

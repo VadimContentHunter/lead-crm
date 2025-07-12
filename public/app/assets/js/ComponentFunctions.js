@@ -29,7 +29,7 @@ const onSuccessDefaultFunction = (message) => {
 }
 
 
-function processingMessage(message, type = 'info') {
+export function processingMessage(message, type = 'info') {
     if (type === 'error') {
         if (typeof onErrorDefaultFunction !== 'function') {
             console.log('[JsonRpc] Ошибки:', message);
@@ -45,6 +45,7 @@ function processingMessage(message, type = 'info') {
     }
 }
 
+
 /**
  * Функции, связанные с компонентами интерфейса.
  * Все объединены в единый объект.
@@ -55,6 +56,23 @@ function processingMessage(message, type = 'info') {
  * ComponentFunctions.attachJsonRpcFormTrigger({...});
  */
 export const ComponentFunctions = {
+
+    processMessagesArray(messages = []) {
+        if (!Array.isArray(messages)) {
+            console.warn('[JsonRpc] Ожидался массив сообщений');
+            return;
+        }
+
+        messages.forEach(({ message, type }) => {
+            if (typeof message !== 'string' || typeof type !== 'string') {
+                console.warn('[JsonRpc] Некорректный формат сообщения:', { message, type });
+                return;
+            }
+
+            processingMessage(message, type);
+        });
+    },
+
     /**
      * Показывает сообщение в консоль (или alert)
      * @param {{ message: string, alert?: boolean }} payload

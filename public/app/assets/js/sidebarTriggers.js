@@ -40,11 +40,19 @@ function onClickOutside(element, callback, excludeElements = []) {
 
 document.addEventListener('DOMContentLoaded', function () {
     const notificationContainer = document.querySelector('.notification-container');
+    // document.body.style.overflow = 'hidden';
+    const toggleScroll = (shouldHide) => {
+        const contentContainerElement = document.querySelector('.content-container');
+        if (contentContainerElement instanceof HTMLElement) {
+            contentContainerElement.style.overflow = shouldHide ? 'hidden' : '';
+        }
+    };
 
     const buttonSource = document.querySelector('#sources-btn');
     bindButtonToContainer(buttonSource, '.overlay-content', function (container) {
         if (container instanceof HTMLElement) {
             container.style = 'display: flex;';
+            toggleScroll(true);
 
             const rightSidebar = container.querySelector('.right-sidebar.source-menu-id');
             if (rightSidebar instanceof HTMLElement) {
@@ -54,6 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const removeListener = onClickOutside(rightSidebar, () => {
                     rightSidebar.style.display = 'none';
                     container.style.display = 'none';
+                    toggleScroll(false);
 
                     removeListener();
                 }, [buttonSource, notificationContainer]);
@@ -67,6 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
     bindButtonToContainer('#statuses-btn', '.overlay-content', function (container) {
         if (container instanceof HTMLElement) {
             container.style = 'display: flex;';
+            toggleScroll(true);
 
             const rightSidebar = container.querySelector('.right-sidebar.status-menu-id');
             if (rightSidebar instanceof HTMLElement) {
@@ -75,6 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const removeListener = onClickOutside(rightSidebar, () => {
                     rightSidebar.style.display = 'none';
                     container.style.display = 'none';
+                    toggleScroll(false);
 
                     removeListener();
                 }, [buttonStatus, notificationContainer]);

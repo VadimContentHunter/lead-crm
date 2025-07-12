@@ -24,8 +24,8 @@ function attachDeleteTrigger() {
         triggerSelector: '[table-r-id="status-table-1"] .btn-delete.btn-row-table',
         method: 'status.delete',
         endpoint: endPoint,
-        onData: (payload) => {
-            ComponentFunctions.replaceTable(payload, '[table-r-id="status-table-1"]');
+        callbackOnData: (payload) => {
+             ComponentFunctions.replaceTable(payload, '[table-r-id="status-table-1"]');
         },
     });
 }

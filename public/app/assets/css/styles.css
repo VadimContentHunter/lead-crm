@@ -55,6 +55,7 @@
 .base-form {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 16px;
 }
 .base-form .form-group {
@@ -611,6 +612,7 @@ table.base-table tbody tr:not(:first-child):hover {
   display: none;
   padding: 90px 40px;
   overflow-y: auto;
+  overflow-x: hidden;
   background-color: #fff;
   border-radius: var(--border-radius-base);
   box-shadow: var(--shadow-soft);
@@ -626,6 +628,7 @@ table.base-table tbody tr:not(:first-child):hover {
 }
 
 .component-wrapper-line {
+  width: 100%;
   padding: 10px 0px;
   display: flex;
   flex-direction: row;
@@ -640,6 +643,14 @@ table.base-table tbody tr:not(:first-child):hover {
   width: auto;
   height: auto;
   /* height: 100%; */
+  max-width: 400px;
+}
+
+.component-wrapper-side-bar {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
   max-width: 400px;
 }
 

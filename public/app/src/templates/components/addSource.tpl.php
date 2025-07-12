@@ -4,7 +4,7 @@
 
 <section class="component-wrapper-line">
 
-    <section class="component-wrapper">
+    <section class="component-wrapper-side-bar">
         <form class="base-form component" id="add-source-form">
             <div class="form-messages-container">
                 <div class="form-message">

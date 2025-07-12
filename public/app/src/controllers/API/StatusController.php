@@ -134,6 +134,9 @@ class StatusController
         }
     }
 
+    /**
+     * @param array<string,mixed> $resultMetadata
+     */
     public function getFormatTable(array $resultMetadata = []): void
     {
         $this->rpc->replyData(array_merge(

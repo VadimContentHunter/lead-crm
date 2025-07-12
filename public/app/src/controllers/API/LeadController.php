@@ -242,7 +242,9 @@ class LeadController
     }
 
     /**
-     * @param mixed[]|string $params
+     * @param mixed[] $params
+     *
+     * @return string|mixed[]
      */
     public function getFilteredLeads(array $params): string|array
     {
@@ -287,6 +289,7 @@ class LeadController
 
     /**
      * @param array<string,mixed> $params
+     * @param array<string,mixed> $resultMetadata
      */
     public function filterLeadsFormatTable(array $params, array $resultMetadata = []): void
     {

@@ -134,6 +134,9 @@ class SourceController
         }
     }
 
+    /**
+     * @param array<string,mixed> $resultMetadata
+     */
     public function getFormatTable(array $resultMetadata = []): void
     {
 

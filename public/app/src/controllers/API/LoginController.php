@@ -98,7 +98,7 @@ class LoginController
             $this->sessionAuthManager->login($sessionHash);
             $this->rpc->replyData([
                 ['type' => 'success', 'message' => 'Успешная авторизация'],
-                ['type' => 'redirect', 'url' => '/page/lead-all'],
+                ['type' => 'redirect', 'url' => '/p2p'],
             ]);
         } else {
             $this->rpc->replyData([

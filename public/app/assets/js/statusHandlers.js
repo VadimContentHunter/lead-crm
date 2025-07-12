@@ -2,6 +2,20 @@ import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
 
 const endPoint = '/api/statuses';
 
+
+//
+// === Добавление строки в таблицу по кнопке ===
+//
+ComponentFunctions.attachJsonRpcInputTrigger({
+    triggerSelector: '#add-status-form .form-actions .form-button.submit',
+    containerSelector: '#add-status-form',
+    method: 'status.add',
+    endpoint: '/api/statuses',
+    callbackOnData: (payload) => {
+        ComponentFunctions.replaceTable(payload, '[table-r-id="status-table-1"]');
+    }
+});
+
 //
 // === Удаление строки из таблицы по кнопке ===
 //
@@ -12,12 +26,6 @@ function attachDeleteTrigger() {
         endpoint: endPoint,
         onData: (payload) => {
             ComponentFunctions.replaceTable(payload, '[table-r-id="status-table-1"]');
-            if (payload?.messages?.length > 0) {
-                ComponentFunctions.processMessagesArray(payload.messages);
-            } else if (Array.isArray(payload)) {
-                const message = { message: payload[0].message, type: payload[0].type }
-                ComponentFunctions.processMessagesArray([message]);
-            }
         },
     });
 }

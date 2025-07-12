@@ -259,7 +259,6 @@ table.base-table tbody tr:not(:first-child):hover {
   right: 20px;
   top: 88px;
   max-width: 400px;
-  height: 400px;
   display: flex;
   /* background: antiquewhite; */
   flex-direction: column;

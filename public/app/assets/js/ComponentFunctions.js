@@ -356,8 +356,9 @@ export const ComponentFunctions = {
      *
      * @param {any} response Ответ от сервера с полем table (строкой HTML)
      * @param {string} tableWrapperSelector CSS-селектор обёртки
+     * @param {boolean} outputError Выводить сообщение об отсутствии данных или ошибке
      */
-    replaceTable(response, tableWrapperSelector = '.table-wrapper') {
+    replaceTable(response, tableWrapperSelector = '', outputError = false) {
         const wrapper = document.querySelector(tableWrapperSelector);
         if (!wrapper) {
             console.warn('[ComponentFunctions] Обёртка таблицы не найдена:', tableWrapperSelector);
@@ -366,7 +367,7 @@ export const ComponentFunctions = {
 
         if (response && typeof response.table === 'string') {
             wrapper.innerHTML = response.table;
-        } else {
+        } else if (outputError) {
             wrapper.innerHTML = `<p class="no-data-message">Данные не найдены или произошла ошибка при загрузке.</p>`;
         }
     },

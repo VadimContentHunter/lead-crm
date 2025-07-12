@@ -54,7 +54,7 @@ $search = $selectedData['search'] ?? '';
         method: 'user.filter.table',
         endpoint: '/api/users',
         callbackOnData: (response) => {
-            ComponentFunctions.replaceLeadTable(response, '[table-r-id]');
+            ComponentFunctions.replaceTable(response, '[table-r-id]');
         }
     });
 
@@ -64,7 +64,7 @@ $search = $selectedData['search'] ?? '';
         method: 'user.filter.table.clear',
         endpoint: '/api/users',
         callbackOnData: (response) => {
-            ComponentFunctions.replaceLeadTable(response, '[table-r-id]');
+            ComponentFunctions.replaceTable(response, '[table-r-id]');
         },
     });
 

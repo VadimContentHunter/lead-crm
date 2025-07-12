@@ -90,10 +90,12 @@ class StatusController
             $executeResult = $this->statusManagement->create()->execute($params['title']);
             $title =  $executeResult->getTitle() ?? 'неизвестный статус';
             if ($executeResult->isSuccess()) {
-                $this->rpc->replyData([
-                    ['type' => 'success', 'message' => 'Статус успешно добавлен'],
-                    ['type' => 'info', 'message' => "Добавленный статус: <b>{$title}</b>"]
-                ]);
+                $this->getFormatTable([
+                    'messages' => [
+                        ['type' => 'success', 'message' => 'Статус успешно добавлен'],
+                        ['type' => 'info', 'message' => "Добавленный статус: <b>{$title}</b>"]
+                    ]
+                 ]);
             } else {
                 $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
                 $this->rpc->replyData([

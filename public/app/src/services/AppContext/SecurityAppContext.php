@@ -378,7 +378,7 @@ class SecurityAppContext implements IAppContext, ISecurity
                     '/assets/js/sidebarTriggers.js',
                     '/assets/js/leadTableHandlers.js',
                     '/assets/js/sourceHandlers.js',
-                    '/assets/js/statusTableHandlers.js'
+                    '/assets/js/statusHandlers.js'
                 ]
             ],
             partialsContainer: 'content'

@@ -1,9 +1,5 @@
 <?php
 
-$login = $login ?? '';
-$role = $role ?? '---';
-$space = $space ?? '---';
-
 // Гарантируем безопасность переменной $components
 if (!isset($components) || !is_array($components)) {
     $components = [];
@@ -20,13 +16,6 @@ if (!isset($components) || !is_array($components)) {
 
     <!-- Меню внутри контента -->
     <aside class="header-content">
-        <section class="user-info">
-            <p>Логин: <span><?= htmlspecialchars($login) ?></span></p>
-            <div class="user-data">
-                <p>Роль: <span><?= htmlspecialchars($role) ?></span></p>
-                <p>Пространство: <span><?= htmlspecialchars($space) ?></span></p>
-            </div>
-        </section>
         <div class="icon-wrapper icon-notification" id="notification">
             <i class="fa-solid fa-bell"></i>
         </div>

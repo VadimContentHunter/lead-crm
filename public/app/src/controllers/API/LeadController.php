@@ -2,36 +2,20 @@
 
 namespace crm\src\controllers\API;
 
-use PDO;
 use Throwable;
-use Psr\Log\NullLogger;
-use Psr\Log\LoggerInterface;
+use crm\src\controllers\LeadPage;
+use crm\src\services\LeadCommentService;
 use crm\src\services\AppContext\ISecurity;
 use crm\src\services\AppContext\IAppContext;
-use crm\src\services\TableRenderer\TableFacade;
-use crm\src\_common\adapters\LeadValidatorAdapter;
-use crm\src\services\TableRenderer\TableDecorator;
-use crm\src\_common\repositories\BalanceRepository;
-use crm\src\services\TableRenderer\TableRenderInput;
-use crm\src\services\TableRenderer\TableTransformer;
-use crm\src\_common\adapters\BalanceValidatorAdapter;
 use crm\src\components\LeadManagement\_entities\Lead;
 use crm\src\components\LeadManagement\LeadManagement;
 use crm\src\components\BalanceManagement\BalanceManagement;
-use crm\src\components\CommentManagement\_entities\Comment;
-use crm\src\components\CommentManagement\CommentManagement;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
-use crm\src\_common\repositories\LeadRepository\LeadRepository;
-use crm\src\components\LeadManagement\_common\DTOs\LeadFilterDto;
 use crm\src\components\LeadManagement\_common\mappers\LeadMapper;
-use crm\src\_common\repositories\LeadRepository\LeadSourceRepository;
-use crm\src\_common\repositories\LeadRepository\LeadStatusRepository;
 use crm\src\components\Security\_exceptions\JsonRpcSecurityException;
 use crm\src\components\LeadManagement\_common\mappers\LeadInputMapper;
 use crm\src\components\BalanceManagement\_common\mappers\BalanceMapper;
 use crm\src\components\LeadManagement\_common\mappers\LeadFilterMapper;
-use crm\src\_common\repositories\LeadRepository\LeadAccountManagerRepository;
-use crm\src\services\LeadCommentService;
 
 class LeadController
 {
@@ -42,6 +26,8 @@ class LeadController
     private JsonRpcServerFacade $rpc;
 
     private LeadCommentService $leadCommentService;
+
+    private LeadPage $leadPage;
 
     /**
      * @var array<string,callable>
@@ -58,6 +44,8 @@ class LeadController
         $this->rpc = $this->appContext->getJsonRpcServerFacade();
 
         $this->leadCommentService = $this->appContext->getLeadCommentService();
+
+        $this->leadPage = new LeadPage($this->appContext);
 
         $this->initMethodMap();
         $this->init();
@@ -240,7 +228,11 @@ class LeadController
         if ($executeResult->isSuccess()) {
             // $this->leadCommentService->logDelete($executeResult->getLead());
             $this->leadCommentService->sendComment((int)$id, 'Лид удалён (ID: ' . (int)$id . ')');
-            $this->filterLeadsFormatTable([]);
+            $this->filterLeadsFormatTable([], [
+                'messages' => [
+                    ['type' => 'success', 'message' => 'Лид (ID: ' . (int)$id . ') был успешно удалён']
+                ]
+            ]);
         } else {
             $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
             $this->rpc->replyData([
@@ -250,38 +242,9 @@ class LeadController
     }
 
     /**
-     * @param array<string, mixed> $params
+     * @param mixed[]|string $params
      */
-    public function filterLeads(array $params): void
-    {
-        $executeResult = $this->leadManagement->get()->filtered(LeadFilterMapper::fromArray($params));
-        if ($executeResult->isSuccess()) {
-            // $balance = $this->balanceManagement->get()->getByLeadId($executeResult->getArray()[0]['id']);
-            $leadBalanceItem = $executeResult->getValidMappedList(function (array $lead) {
-                $balance = $this->balanceManagement
-                    ->get()
-                    ->getByLeadId($lead['id'] ?? 0)
-                    ->first()
-                    ->mapData([BalanceMapper::class, 'toArray']);
-
-                return array_merge($lead, $balance ?? []);
-            });
-
-            $this->rpc->replyData([
-                ['type' => 'success', 'leads' => $leadBalanceItem->getArray()]
-            ]);
-        } else {
-            $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
-            $this->rpc->replyData([
-                ['type' => 'error', 'message' => 'Ошибка при фильтрации. Причина: ' . $errorMsg]
-            ]);
-        }
-    }
-
-    /**
-     * @param array<string,mixed> $params
-     */
-    public function filterLeadsFormatTable(array $params): void
+    public function getFilteredLeads(array $params): string|array
     {
         $executeResult = $this->leadManagement->get()->filteredWithHydrate(LeadFilterMapper::fromArray($params));
         if ($executeResult->isSuccess()) {
@@ -292,68 +255,56 @@ class LeadController
                     ->getByLeadId($newLead['id'] ?? 0)
                     ->first()
                     ->mapData([BalanceMapper::class, 'toArray']);
-                unset($balance['id']);
+                    unset($balance['id']);
                 return array_merge($newLead, $balance ?? []);
             });
 
-            $headers = array_merge(
-                array_keys(LeadMapper::toFlatViewArray(
-                    $this->leadManagement->get()->executeColumnNames()->getArray()
-                )),
-                $this->balanceManagement->get()->executeColumnNames()->getArray()
-            );
-            // $headers = array_values(array_unique(array_merge(
-            //     $this->leadManagement->get()->executeColumnNames()->getArray(),
-            //     $this->balanceManagement->get()->executeColumnNames()->getArray()
-            // )));
+            return $leadBalanceItems->getArray();
+        }
+        $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
+        return $errorMsg;
+    }
 
-            $input = new TableRenderInput(
-                header: $headers,
-                rows: $leadBalanceItems->getArray(),
-                attributes: ['id' => 'lead-table-1', 'data-module' => 'leads'],
-                classes: ['base-table'],
-                hrefButton: '/page/lead-edit',
-                allowedColumns: [
-                    'id',
-                    'contact',
-                    'full_name',
-                    'account_manager',
-                    'groupName',
-                    'address',
-                    'source',
-                    'status',
-                    'current',
-                    'drain',
-                    'potential',
-                ],
-                renameMap: [
-                    'full_name' => 'Полное имя',
-                    'account_manager' => 'Менеджер',
-                    'groupName' => 'Группа',
-                    'contact' => 'Контакт',
-                    'address' => 'Адрес',
-                    'source' => 'Источник',
-                    'status' => 'Статус',
-                    'current' => 'Текущие',
-                    'drain' => 'Потери',
-                    'potential' => 'Потенциал',
-                ],
-                attributesWrapper: [
-                    'table-r-id' => 'user-table-1'
-                ],
-                classesWrapper: ['table-wrapper'],
-            );
+    /**
+     * @param array<string,mixed> $params
+     * @param array<string,mixed> $resultMetadata
+     */
+    public function filterLeads(array $params, array $resultMetadata = []): void
+    {
+        $result = $this->getFilteredLeads($params);
+        if (is_array($result)) {
+            $this->rpc->replyData([array_merge(
+                ['type' => 'success', 'leads' => $result],
+                $resultMetadata
+            )]);
+        }
 
-            $tableFacade = new TableFacade(new TableTransformer(),  new TableDecorator());
-            $this->rpc->replyData([
-                'type' => 'success',
-                'table' => $tableFacade->renderFilteredTable($input)->asHtml()
-            ]);
+        $this->rpc->replyData([array_merge(
+            ['type' => 'error', 'message' => "Ошибка при фильтрации. Причина: " . $result],
+            $resultMetadata
+        )]);
+    }
+
+    /**
+     * @param array<string,mixed> $params
+     */
+    public function filterLeadsFormatTable(array $params, array $resultMetadata = []): void
+    {
+        $executeResult = $this->leadManagement->get()->filteredWithHydrate(LeadFilterMapper::fromArray($params));
+        if ($executeResult->isSuccess()) {
+            $this->rpc->replyData(array_merge(
+                [
+                    'type' => 'success',
+                    'table' => $this->leadPage->getRenderTable($executeResult)
+                ],
+                $resultMetadata
+            ));
         } else {
             $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
-            $this->rpc->replyData([
-                ['type' => 'error', 'message' => 'Ошибка при фильтрации. Причина: ' . $errorMsg]
-            ]);
+            $this->rpc->replyData([array_merge(
+                ['type' => 'error', 'message' => "Ошибка при фильтрации. Причина: " . $errorMsg],
+                $resultMetadata
+            )]);
         }
     }
 }

@@ -346,27 +346,27 @@ table.base-table tbody tr:not(:first-child):hover {
   font-size: 16px;
 }
 
-.btn-icon {
+.btn-row-table {
   padding: 4px 8px;
   border-radius: var(--border-radius-base);
   cursor: pointer;
 }
-.btn-icon i {
+.btn-row-table i {
   transition: transform 0.15s;
   font-size: 16px;
   color: var(--color-neutral);
 }
-.btn-icon:hover i {
+.btn-row-table:hover i {
   transform: scale(1.7);
   color: var(--color-neutral-dark);
 }
-.btn-icon.button-active:hover i {
+.btn-row-table.button-active:hover i {
   color: var(--color-danger);
 }
-.btn-icon.button-action i {
+.btn-row-table.button-action i {
   color: var(--color-primary);
 }
-.btn-icon.button-action:hover i {
+.btn-row-table.button-action:hover i {
   color: var(--color-primary-dark);
 }
 

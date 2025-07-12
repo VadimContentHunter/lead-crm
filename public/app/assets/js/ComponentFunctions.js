@@ -329,10 +329,10 @@ export const ComponentFunctions = {
 
     attachDeleteTrigger({
         triggerSelector,
-        containerSelectorAttribute,
         method,
-        endpoint = '/api/' }
-    ) {
+        endpoint = '/api/',
+        onData = (payload) => console.log('[JsonRpc] Ответ:', payload),
+    }) {
         const triggers = document.querySelectorAll(triggerSelector);
 
         for (const trigger of triggers) {
@@ -354,9 +354,7 @@ export const ComponentFunctions = {
                 const transport = new JsonRpcTransport(method, {
                     endpoint,
                     onContentUpdate: () => { },
-                    onData: (payload) => {
-                        ComponentFunctions.replaceLeadTable(payload, '[table-r-id]');
-                    },
+                    onData: onData,
                     onError: (error) => {
                         onErrorDefaultFunction(error);
                         console.error('[JsonRpcTransport] Ошибка:', error.message);

@@ -371,18 +371,12 @@ class SecurityAppContext implements IAppContext, ISecurity
         array $overlay_items = [],
         string|TemplateBundle $rightSidebar = ''
     ): TemplateBundle {
-
-        $variables = $components + [
-            'login' => $this->thisUser?->login ?? '---',
-            'role' => $this->thisRole?->name ?? '---',
-            'space' => $this->thisSpace?->name ?? '---',
-        ];
-
         return (new TemplateBundle(
             templatePath: 'layout.tpl.php',
             variables: [
                 'module_scripts' => [
-                    '/assets/js/app.js',
+                    '/assets/js/sidebarTriggers.js',
+                    '/assets/js/leadTableHandlers.js'
                 ]
             ],
             partialsContainer: 'content'
@@ -417,12 +411,15 @@ class SecurityAppContext implements IAppContext, ISecurity
                 templatePath: 'partials/main-menu.tpl.php',
                 partialsContainer: 'main_menu',
                 variables: [
-                    'menuItems' => $this->getMenuItems()
+                    'menuItems' => $this->getMenuItems(),
+                    'login' => $this->thisUser?->login ?? '---',
+                    'role' => $this->thisRole?->name ?? '---',
+                    'space' => $this->thisSpace?->name ?? '---',
                 ]
             )))
             ->addPartial((new TemplateBundle(
                 templatePath: 'partials/content.tpl.php',
-                variables: $variables,
+                variables: $components,
                 partialsContainer: 'content_container'
             )))
             // ->addPartial((new TemplateBundle(
@@ -456,39 +453,39 @@ class SecurityAppContext implements IAppContext, ISecurity
                 'href' => '/page/user-all',
                 'icon' => 'fa-solid fa-house',
             ],
-            [
-                'name' => 'Добавить статус',
-                'href' => '/page/status-add',
-                'icon' => 'fa-solid fa-house',
-            ],
-            [
-                'name' => 'Статусы',
-                'href' => '/page/status-all',
-                'icon' => 'fa-solid fa-house',
-            ],
-            [
-                'name' => 'Добавить источник',
-                'href' => '/page/source-add',
-                'icon' => 'fa-solid fa-house',
-            ],
-            [
-                'name' => 'Источники',
-                'href' => '/page/source-all',
-                'icon' => 'fa-solid fa-house',
-            ],
+            // [
+            //     'name' => 'Добавить статус',
+            //     'href' => '/page/status-add',
+            //     'icon' => 'fa-solid fa-house',
+            // ],
+            // [
+            //     'name' => 'Статусы',
+            //     'href' => '/page/status-all',
+            //     'icon' => 'fa-solid fa-house',
+            // ],
+            // [
+            //     'name' => 'Добавить источник',
+            //     'href' => '/page/source-add',
+            //     'icon' => 'fa-solid fa-house',
+            // ],
+            // [
+            //     'name' => 'Источники',
+            //     'href' => '/page/source-all',
+            //     'icon' => 'fa-solid fa-house',
+            // ],
             [
                 'name' => 'Добавить лида',
                 'href' => '/page/lead-add',
                 'icon' => 'fa-solid fa-house',
             ],
             [
-                'name' => 'Все лиды P2P',
-                'href' => '/page/lead-all',
+                'name' => 'P2P',
+                'href' => '/p2p',
                 'icon' => 'fa-solid fa-house',
             ],
             [
-                'name' => 'Все лиды (Инвестка)',
-                'href' => '/page/lead-all',
+                'name' => 'Инвестка',
+                'href' => '/investka',
                 'icon' => 'fa-solid fa-house',
             ],
         ];

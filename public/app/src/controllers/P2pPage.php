@@ -39,7 +39,7 @@ class P2pPage
         $this->show(
             components: [
                 'components' => [
-                    $this->leadPage->getTableStatusComponent()
+                    $this->leadPage->getTableLeadComponent()
                 ]
             ],
             overlay_items: $this->getSidebar()

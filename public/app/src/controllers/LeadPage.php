@@ -47,6 +47,7 @@ use crm\src\components\LeadManagement\_common\mappers\LeadMapper;
 use crm\src\components\UserManagement\_common\mappers\UserMapper;
 use crm\src\_common\repositories\LeadRepository\LeadSourceRepository;
 use crm\src\_common\repositories\LeadRepository\LeadStatusRepository;
+use crm\src\components\LeadManagement\_common\interfaces\ILeadResult;
 use crm\src\components\SourceManagement\_common\mappers\SourceMapper;
 use crm\src\components\StatusManagement\_common\mappers\StatusMapper;
 use crm\src\components\BalanceManagement\_common\mappers\BalanceMapper;
@@ -142,29 +143,21 @@ class LeadPage
         ]);
     }
 
-    public function getTableStatusComponent(): TemplateBundle
+    public function getRenderTable(ILeadResult $leadResult): string
     {
-        $sourcesList = $this->sourceManagement->get()->executeAllMapped(function (Source $source) {
-            return SourceMapper::toArray($source);
-        })->getArray();
+        if (!$leadResult->isSuccess()) {
+            return '';
+        }
 
-        $statusesList = $this->statusManagement->get()->executeAllMapped(function (Status $status) {
-            return StatusMapper::toArray($status);
-        })->getArray();
-
-        $managersList = $this->userManagement->get()->executeAllMapped(function (User $user) {
-            return UserMapper::toArray($user);
-        })->getArray();
-
-        $leadBalanceItems = $this->leadManagement->get()->all()->mapEach(function (Lead|array $lead) {
-                $newLead = LeadMapper::toFlatViewArray($lead);
-                $balance = $this->balanceManagement
-                    ->get()
-                    ->getByLeadId($newLead['id'] ?? 0)
-                    ->first()
-                    ->mapData([BalanceMapper::class, 'toArray']);
-                unset($balance['id']);
-                return array_merge($newLead, $balance ?? []);
+        $leadBalanceItems = $leadResult->mapEach(function (Lead|array $lead) {
+            $newLead = LeadMapper::toFlatViewArray($lead);
+            $balance = $this->balanceManagement
+                ->get()
+                ->getByLeadId($newLead['id'] ?? 0)
+                ->first()
+                ->mapData([BalanceMapper::class, 'toArray']);
+            unset($balance['id']);
+            return array_merge($newLead, $balance ?? []);
         });
 
 
@@ -215,10 +208,37 @@ class LeadPage
 
         $tableFacade = new TableFacade(new TableTransformer(),  new TableDecorator());
 
+        return $tableFacade->renderFilteredTable($input)->asHtml();
+    }
+
+    public function getTableLeadComponent(): TemplateBundle
+    {
+         // Берём ключи ассоциативного массива + элементы индексного массива
+        $headers = array_unique(array_merge(
+            array_keys(LeadMapper::toFlatViewArray(
+                $this->leadManagement->get()->executeColumnNames()->getArray()
+            )),
+            $this->balanceManagement->get()->executeColumnNames()->getArray()
+        ));
+
+        $sourcesList = $this->sourceManagement->get()->executeAllMapped(function (Source $source) {
+            return SourceMapper::toArray($source);
+        })->getArray();
+
+        $statusesList = $this->statusManagement->get()->executeAllMapped(function (Status $status) {
+            return StatusMapper::toArray($status);
+        })->getArray();
+
+        $managersList = $this->userManagement->get()->executeAllMapped(function (User $user) {
+            return UserMapper::toArray($user);
+        })->getArray();
+
+        $leads = $this->leadManagement->get()->all();
+
         return (new TemplateBundle(
             templatePath: 'containers/average-in-line-component.tpl.php',
             variables: [
-                'component' => $tableFacade->renderFilteredTable($input)->asHtml(),
+                'component' => $this->getRenderTable($leads),
                 'filterPanel' => (new TemplateBundle(
                     templatePath: 'partials/filtersLead.tpl.php',
                     variables: [
@@ -232,8 +252,6 @@ class LeadPage
                 'controlPanel' => (new TemplateBundle(
                     templatePath: 'partials/controlPanel.tpl.php',
                 )),
-                'methodSend' => 'lead.delete',
-                'endpointSend' => '/api/leads'
             ]
         ));
     }
@@ -242,7 +260,7 @@ class LeadPage
     {
         $this->showPage([
             'components' => [
-                $this->getTableStatusComponent()
+                $this->getTableLeadComponent()
             ]
         ]);
     }

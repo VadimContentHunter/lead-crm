@@ -54,7 +54,7 @@ class TableCellRenderer
             <input type="{$type}" name="{$name}" value="{$value}" old-value="{$value}" data-row-id="{$row_id}" class="edit-row-input">
             
             <div class="cell-actions-wrapper">
-                <button type="button" class="btn-icon button-action edit-row-button" ><i class="fa-solid fa-check"></i></button>
+                <button type="button" class="btn-row-table button-action edit-row-button" ><i class="fa-solid fa-check"></i></button>
             </div>
             
         HTML;

@@ -50,8 +50,8 @@ class TableDecorator
     {
         return <<<HTML
             <input type="hidden" name="row_id" value="{$id}">
-            <a href="{$href}/{$id}" class="btn-icon" data-id="{$id}"><i class="fa-solid fa-pen"></i></a>
-            <button type="button" class="btn-icon button-active" data-id="{$id}" href="{$hrefDel}/{$id}"><i class="fa-solid fa-trash"></i></button>
+            <a href="{$href}/{$id}" class="btn-row-table" data-id="{$id}"><i class="fa-solid fa-pen"></i></a>
+            <button type="button" class="btn-row-table button-active btn-delete" data-id="{$id}" href="{$hrefDel}/{$id}"><i class="fa-solid fa-trash"></i></button>
         HTML;
     }
 }

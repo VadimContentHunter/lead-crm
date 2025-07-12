@@ -1,11 +1,6 @@
 <?php
 
-$asides = [
-    ['content' => 'Контент первого блока', 'classNameId' => 'first-class'],
-    ['content' => 'Контент второго блока', 'classNameId' => 'second-class'],
-    ['content' => 'Контент третьего блока', 'classNameId' => 'third-class'],
-    // Добавляйте сюда другие элементы массива по необходимости
-];
+$asides = $asides ?? [];
 
 foreach ($asides as $aside) {
     $content = $aside['content'] ?? '';

@@ -71,6 +71,9 @@ class P2pPage
         }
     }
 
+    /**
+     * @return TemplateBundle[]
+     */
     public function getSidebar(): array
     {
         $statusSidebar = (new TemplateBundle(

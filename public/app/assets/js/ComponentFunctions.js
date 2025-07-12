@@ -24,10 +24,6 @@ const onErrorDefaultFunction = (error) => {
     ComponentFunctionsNotification.add(message, 'danger');
 }
 
-const onSuccessDefaultFunction = (message) => {
-    ComponentFunctionsNotification.add(message ?? 'Успех!', 'success');
-}
-
 
 export function processingMessage(message, type = 'info') {
     if (type === 'error') {
@@ -37,11 +33,55 @@ export function processingMessage(message, type = 'info') {
         }
         onErrorDefaultFunction(message);
     } else if (type === 'success') {
-        if (typeof onSuccessDefaultFunction !== 'function') {
+        if (typeof ComponentFunctionsNotification.add !== 'function') {
             console.log('[JsonRpc] Успех:', message);
             return;
         }
-        onSuccessDefaultFunction(message);
+        ComponentFunctionsNotification.add(message ?? 'Успех!', 'success');
+    } else if (type === 'info') {
+        if (typeof ComponentFunctionsNotification.add !== 'function') {
+            console.log('[JsonRpc] Информация:', message);
+            return;
+        }
+        ComponentFunctionsNotification.add(message ?? 'Информация', 'info');
+    }
+}
+
+
+export function processingPayload(payload) {
+    if (typeof payload?.message === 'string') {
+        const type = payload.type ?? 'info';
+        processingMessage(payload.message, type);
+        return;
+    }
+
+    if (typeof payload?.type === 'redirect') {
+        setTimeout(() => { }, 1000);
+        window.location.href = redirect.url || '/';
+        return;
+    }
+
+    if (payload?.messages?.length > 0) {
+        ComponentFunctions.processMessagesArray(payload.messages);
+        return;
+    }
+
+    if (Array.isArray(payload)) {
+        for (const msg of payload) {
+            if (msg.type === 'redirect') {
+                continue;
+            }
+            if (typeof msg?.message === 'string') {
+                const type = msg.type ?? 'info';
+                processingMessage(msg.message, type);
+            }
+        }
+
+        const redirect = payload.find((msg) => msg.type === 'redirect');
+        if (redirect) {
+            setTimeout(() => { }, 1000);
+            window.location.href = redirect.url || '/';
+        }
     }
 }
 
@@ -164,22 +204,10 @@ export const ComponentFunctions = {
             onData: (payload) => {
                 if (typeof callbackOnData === 'function') {
                     callbackOnData(payload);
-                    return;
+                    // return;
                 }
 
-                const messages = Array.isArray(payload) ? payload : [];
-                for (const msg of messages) {
-                    if (msg.type === 'redirect') {
-                        continue;
-                    }
-                    processingMessage(msg.message, msg.type);
-                }
-
-                const redirect = messages.find((msg) => msg.type === 'redirect');
-                if (redirect) {
-                    setTimeout(() => { }, 1000);
-                    window.location.href = redirect.url || '/';
-                }
+                processingPayload(payload);
             },
             onError: (error) => {
                 if (typeof callbackOnError === 'function') {
@@ -300,12 +328,10 @@ export const ComponentFunctions = {
             onData: (payload) => {
                 if (typeof callbackOnData === 'function') {
                     callbackOnData(payload);
-                    return;
+                    // return;
                 }
 
-                for (const msg of messages) {
-                    processingMessage(msg.message, msg.type);
-                }
+                processingPayload(payload);
             },
             onError: (error) => {
                 if (typeof callbackOnError === 'function') {
@@ -349,7 +375,7 @@ export const ComponentFunctions = {
         triggerSelector,
         method,
         endpoint = '/api/',
-        onData = (payload) => console.log('[JsonRpc] Ответ:', payload),
+        callbackOnData = (payload) => console.log('[JsonRpc] Ответ:', payload),
     }) {
         const triggers = document.querySelectorAll(triggerSelector);
 
@@ -372,7 +398,14 @@ export const ComponentFunctions = {
                 const transport = new JsonRpcTransport(method, {
                     endpoint,
                     onContentUpdate: () => { },
-                    onData: onData,
+                    onData: (payload) => {
+                        if (typeof callbackOnData === 'function') {
+                            callbackOnData(payload);
+                            // return;
+                        }
+
+                        processingPayload(payload);
+                    },
                     onError: (error) => {
                         onErrorDefaultFunction(error);
                         console.error('[JsonRpcTransport] Ошибка:', error.message);
@@ -446,6 +479,7 @@ export const ComponentFunctions = {
                     onContentUpdate: () => { },
                     onData: (payload) => {
                         ComponentFunctions.replaceTable(payload, '[table-r-id]');
+                        processingPayload(payload);
                     },
                     onError: (error) => {
                         onErrorDefaultFunction(error);

@@ -90,14 +90,16 @@ class SourceController
             $executeResult = $this->sourceManagement->create()->execute($params['title']);
             $title =  $executeResult->getTitle() ?? 'неизвестный источник';
             if ($executeResult->isSuccess()) {
-                $this->rpc->replyData([
-                    ['type' => 'success', 'message' => 'Источник успешно добавлен'],
-                    ['type' => 'info', 'message' => "Добавленный источник: <b>{$title}</b>"]
+                $this->getFormatTable([
+                    'messages' => [
+                        ['type' => 'success', 'message' => 'Источник успешно добавлен'],
+                        ['type' => 'info', 'message' => "Добавленный источник: <b>{$title}</b>"]
+                    ]
                 ]);
             } else {
                 $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
                 $this->rpc->replyData([
-                ['type' => 'error', 'message' => 'Источник не добавлен. Причина: ' . $errorMsg]
+                    ['type' => 'error', 'message' => 'Источник не добавлен. Причина: ' . $errorMsg]
                 ]);
             }
         } else {

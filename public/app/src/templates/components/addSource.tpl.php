@@ -24,14 +24,3 @@
         </form>
     </section>
 </section>
-
-<script type="module">
-  import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
-
-  ComponentFunctions.attachJsonRpcInputTrigger({
-      triggerSelector: '#add-source-form .form-actions .form-button.submit',
-      containerSelector: '#add-source-form',
-      method: 'source.add',
-      endpoint: '/api/sources'
-  });
-</script>

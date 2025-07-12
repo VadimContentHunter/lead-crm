@@ -331,7 +331,7 @@ export const ComponentFunctions = {
      * @param {any} response Ответ от сервера с полем table (строкой HTML)
      * @param {string} tableWrapperSelector CSS-селектор обёртки
      */
-    replaceLeadTable(response, tableWrapperSelector = '.table-wrapper') {
+    replaceTable(response, tableWrapperSelector = '.table-wrapper') {
         const wrapper = document.querySelector(tableWrapperSelector);
         if (!wrapper) {
             console.warn('[ComponentFunctions] Обёртка таблицы не найдена:', tableWrapperSelector);
@@ -445,7 +445,7 @@ export const ComponentFunctions = {
                     endpoint,
                     onContentUpdate: () => { },
                     onData: (payload) => {
-                        ComponentFunctions.replaceLeadTable(payload, '[table-r-id]');
+                        ComponentFunctions.replaceTable(payload, '[table-r-id]');
                     },
                     onError: (error) => {
                         onErrorDefaultFunction(error);

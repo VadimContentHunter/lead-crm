@@ -47,7 +47,7 @@ class DeleteLead
     public function byId(int $id): ILeadResult
     {
         try {
-            $deletedId = $this->repository->deleteById($id);
+            $deletedId = $this->repository->deleteById($id) ?? -1;
 
             if ($deletedId < 0) {
                 return LeadResult::failure(

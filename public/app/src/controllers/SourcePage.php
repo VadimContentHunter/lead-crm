@@ -20,6 +20,7 @@ use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\components\SourceManagement\_entities\Source;
 use crm\src\components\SourceManagement\SourceManagement;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
+use crm\src\components\SourceManagement\_common\interfaces\ISourceResult;
 
 class SourcePage
 {
@@ -39,8 +40,6 @@ class SourcePage
      */
     public function showPage(array $components): void
     {
-        // $renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
-        // $layout = (new TemplateBundle(templatePath: 'components/addUser.tpl.php'));
         $headers = new HeaderManager();
         $headers->set('Content-Type', 'text/html; charset=utf-8');
         $this->renderer->setHeaders($headers);
@@ -64,7 +63,7 @@ class SourcePage
         ]);
     }
 
-    public function getTableSourceComponent(): TemplateBundle
+    public function getRenderTable(): string
     {
         $headers = $this->sourceManagement->get()->executeColumnNames()->getArray();
         $rows = $this->sourceManagement->get()->executeAllMapped(function (Source $source) {
@@ -92,10 +91,15 @@ class SourcePage
         );
 
         $tableFacade = new TableFacade(new TableTransformer(),  new TableDecorator());
+        return $tableFacade->renderTable($input)->asHtml();
+    }
+
+    public function getTableSourceComponent(): TemplateBundle
+    {
         return (new TemplateBundle(
             templatePath: 'containers/average-in-line-component.tpl.php',
             variables: [
-                'component' => $tableFacade->renderTable($input)->asHtml(),
+                'component' => $this->getRenderTable(),
                 'methodSend' => 'source.delete',
                 'endpointSend' => '/api/sources'
             ]
@@ -104,8 +108,6 @@ class SourcePage
 
     public function showAllSourcePage(): void
     {
-
-
         $this->showPage([
             'components' => [
                 $this->getTableSourceComponent()

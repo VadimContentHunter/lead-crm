@@ -6,6 +6,7 @@ use PDO;
 use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
+use crm\src\controllers\StatusPage;
 use crm\src\services\AppContext\ISecurity;
 use crm\src\services\AppContext\IAppContext;
 use crm\src\services\TableRenderer\TableFacade;
@@ -23,6 +24,8 @@ use crm\src\components\StatusManagement\_common\interfaces\IStatusManagement;
 
 class StatusController
 {
+    private StatusPage $statusPage;
+
     private IStatusManagement $statusManagement;
 
     private JsonRpcServerFacade $rpc;
@@ -35,6 +38,7 @@ class StatusController
     public function __construct(
         private IAppContext $appContext,
     ) {
+        $this->statusPage = new StatusPage($this->appContext);
         $this->statusManagement = $this->appContext->getStatusManagement();
         $this->rpc = $this->appContext->getJsonRpcServerFacade();
 
@@ -117,7 +121,11 @@ class StatusController
 
         $executeResult = $this->statusManagement->delete()->executeById((int)$id);
         if ($executeResult->isSuccess()) {
-            $this->getFormatTable();
+            $this->getFormatTable([
+                'messages' => [
+                    ['type' => 'success', 'message' => 'Статус (ID: ' . (int)$id . ') был успешно удалён']
+                ]
+            ]);
         } else {
             $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
             $this->rpc->replyData([
@@ -126,37 +134,14 @@ class StatusController
         }
     }
 
-    public function getFormatTable(): void
+    public function getFormatTable(array $resultMetadata = []): void
     {
-        $headers = $this->statusManagement->get()->executeColumnNames()->getArray();
-        $rows = $this->statusManagement->get()->executeAllMapped(function (Status $status) {
-            return [
-            'id' => $status->id,
-            'title' => $status->title,
-            ];
-        })->getArray();
-
-        $input = new TableRenderInput(
-            header: $headers,
-            rows: $rows,
-            attributes: ['id' => 'status-table-1', 'data-module' => 'statuses'],
-            classes: ['base-table'],
-            hrefButton: '/page/status-edit',
-            hrefButtonDel: '/page/status-delete',
-            attributesWrapper: [
-                'table-r-id' => 'status-table-1'
+        $this->rpc->replyData(array_merge(
+            [
+                'type' => 'success',
+                'table' => $this->statusPage->getRenderTable(),
             ],
-            allowedColumns: [
-                'id',
-                'title',
-            ],
-            renameMap: [],
-        );
-
-        $tableFacade = new TableFacade(new TableTransformer(),  new TableDecorator());
-        $this->rpc->replyData([
-            'type' => 'success',
-            'table' => $tableFacade->renderFilteredTable($input)->asHtml()
-        ]);
+            $resultMetadata
+        ));
     }
 }

@@ -27,9 +27,9 @@ class DeleteSource
     public function executeById(int $id): ISourceResult
     {
         try {
-            $deletedId = $this->sourceRepository->deleteById($id);
+            $deletedId = $this->sourceRepository->deleteById($id) ?? -1;
 
-            if ($deletedId === null) {
+            if ($deletedId < 0) {
                 return SourceResult::failure(
                     new SourceManagementException("Источник с ID {$id} не найден или не удалён")
                 );

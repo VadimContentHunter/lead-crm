@@ -1,19 +1,22 @@
 import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
 
-const endPoint = '/api/leads';
+const endPoint = '/api/statuses';
 
 //
 // === Удаление строки из таблицы по кнопке ===
 //
 function attachDeleteTrigger() {
     ComponentFunctions.attachDeleteTrigger({
-        triggerSelector: '[table-r-id="lead-table-1"] .btn-delete.btn-row-table',
-        method: 'lead.delete',
+        triggerSelector: '[table-r-id="status-table-1"] .btn-delete.btn-row-table',
+        method: 'status.delete',
         endpoint: endPoint,
         onData: (payload) => {
-            ComponentFunctions.replaceTable(payload, '[table-r-id="lead-table-1"]');
+            ComponentFunctions.replaceTable(payload, '[table-r-id="status-table-1"]');
             if (payload?.messages?.length > 0) {
                 ComponentFunctions.processMessagesArray(payload.messages);
+            } else if (Array.isArray(payload)) {
+                const message = { message: payload[0].message, type: payload[0].type }
+                ComponentFunctions.processMessagesArray([message]);
             }
         },
     });
@@ -24,12 +27,12 @@ function attachDeleteTrigger() {
 //
 function attachInputButtonTrigger() {
     ComponentFunctions.attachInputButtonTrigger({
-        containerSelector: '[table-r-id="lead-table-1"]',
+        containerSelector: '[table-r-id="status-table-1"]',
         buttonSelector: 'td .edit-row-button',
         inputSelector: 'input.edit-row-input',
         searchRootSelector: 'td',
         attributes: ['value', 'data-row-id'],
-        method: 'lead.edit.cell',
+        method: 'status.edit.cell',
         endpoint: endPoint,
     });
 }
@@ -39,7 +42,7 @@ function attachInputButtonTrigger() {
 //
 function watchInputValueChange() {
     ComponentFunctions.watchInputValueChange({
-        inputSelector: '[table-r-id="lead-table-1"] input.edit-row-input',
+        inputSelector: '[table-r-id="status-table-1"] input.edit-row-input',
         onChange: (oldValue, newValue, inputElement) => {
             const container = inputElement.closest('td');
             const wrapper = container?.querySelector('.cell-actions-wrapper');
@@ -75,9 +78,9 @@ watchInputValueChange();
 //
 // === Наблюдение за появлением новых элементов в DOM и повторное навешивание обработчиков ===
 //
-const targetNode = document.querySelector('[table-r-id="lead-table-1"]');
+const targetNode = document.querySelector('[table-r-id="status-table-1"]');
 if (!targetNode) {
-    console.warn('Container [table-r-id="lead-table-1"] not found');
+    console.warn('Container [table-r-id="status-table-1"] not found');
 } else {
     const observer = new MutationObserver((mutationsList) => {
         for (const mutation of mutationsList) {

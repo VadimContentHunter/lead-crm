@@ -100,12 +100,12 @@ class LeadRepository implements ILeadRepository
     public function deleteById(int $id): ?int
     {
         $query = (new QueryBuilder())
-        ->table($this->getTableName())
-        ->where('id = :id')
-        ->delete(['id' => $id]);
+            ->table($this->getTableName())
+            ->where('id = :id')
+            ->delete(['id' => $id]);
 
         $result = $this->repository->executeQuery($query);
-        return $result->isSuccess() ? $id : null;
+        return ($result->getInt() ?? -1) >= 0 ? $id : null;
     }
 
     public function getById(int $id): ?Lead

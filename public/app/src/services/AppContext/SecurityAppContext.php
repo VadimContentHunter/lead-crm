@@ -376,7 +376,9 @@ class SecurityAppContext implements IAppContext, ISecurity
             variables: [
                 'module_scripts' => [
                     '/assets/js/sidebarTriggers.js',
-                    '/assets/js/leadTableHandlers.js'
+                    '/assets/js/leadTableHandlers.js',
+                    '/assets/js/sourceTableHandlers.js',
+                    '/assets/js/statusTableHandlers.js'
                 ]
             ],
             partialsContainer: 'content'

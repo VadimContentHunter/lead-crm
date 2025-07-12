@@ -6,6 +6,7 @@ use PDO;
 use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
+use crm\src\controllers\SourcePage;
 use crm\src\services\AppContext\ISecurity;
 use crm\src\services\AppContext\IAppContext;
 use crm\src\services\TableRenderer\TableFacade;
@@ -25,6 +26,8 @@ class SourceController
 
     private JsonRpcServerFacade $rpc;
 
+    private SourcePage $sourcePage;
+
     /**
      * @var array<string,callable>
      */
@@ -33,6 +36,8 @@ class SourceController
     public function __construct(
         private IAppContext $appContext
     ) {
+        $this->sourcePage = new SourcePage($this->appContext);
+
         $this->sourceManagement = $this->appContext->getSourceManagement();
 
         $this->rpc = $this->appContext->getJsonRpcServerFacade();
@@ -116,7 +121,11 @@ class SourceController
 
         $source = $this->sourceManagement->delete()->executeById((int)$id);
         if ($source->isSuccess()) {
-            $this->getFormatTable();
+            $this->getFormatTable([
+                'messages' => [
+                    ['type' => 'success', 'message' => 'Источник (ID: ' . (int)$id . ') был успешно удалён']
+                ]
+            ]);
         } else {
             $errorMsg = $source->getError()?->getMessage() ?? 'неизвестная ошибка';
             $this->rpc->replyData([
@@ -125,37 +134,15 @@ class SourceController
         }
     }
 
-    public function getFormatTable(): void
+    public function getFormatTable(array $resultMetadata = []): void
     {
-        $headers = $this->sourceManagement->get()->executeColumnNames()->getArray();
-        $rows = $this->sourceManagement->get()->executeAllMapped(function (Source $source) {
-            return [
-                'id' => $source->id,
-                'title' => $source->title,
-            ];
-        })->getArray();
 
-        $input = new TableRenderInput(
-            header: $headers,
-            rows: $rows,
-            attributes: ['id' => 'source-table-1', 'data-module' => 'sources'],
-            classes: ['base-table'],
-            hrefButton: '/page/source-edit',
-            hrefButtonDel: '/page/source-delete',
-            attributesWrapper: [
-                'table-r-id' => 'source-table-1'
+        $this->rpc->replyData(array_merge(
+            [
+                'type' => 'success',
+                'table' => $this->sourcePage->getRenderTable(),
             ],
-            allowedColumns: [
-                'id',
-                'title',
-            ],
-            renameMap: [],
-        );
-
-        $tableFacade = new TableFacade(new TableTransformer(),  new TableDecorator());
-        $this->rpc->replyData([
-            'type' => 'success',
-            'table' => $tableFacade->renderFilteredTable($input)->asHtml()
-        ]);
+            $resultMetadata
+        ));
     }
 }

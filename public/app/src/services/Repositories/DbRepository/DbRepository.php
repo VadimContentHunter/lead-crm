@@ -150,14 +150,12 @@ class DbRepository implements IRepository
     protected function executeDelete(string $table, array $conditions, array $data, array $bindings = []): int
     {
         $data = array_map([$this, 'sanitizeValue'], $data);
-
         $sql = "DELETE FROM $table " . $this->buildWhereClause($conditions);
-
         $stmt = $this->pdo->prepare($sql);
-
         $params = !empty($bindings) ? $bindings : $data;
 
-        return $stmt->execute($params) ? (int)($params['id'] ?? 0) : -1;
+        $res = $stmt->execute($params) && $stmt->rowCount() > 0;
+        return $res ? (int)($params['id'] ?? 0) : -1;
     }
 
 

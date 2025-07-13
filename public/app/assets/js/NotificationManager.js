@@ -132,7 +132,9 @@ export class NotificationManager {
 
         // Вешаем обработчик удаления
         closeButton.addEventListener('click', () => {
-            this.forceRemoveNotification(notify);
+            setTimeout(() => {
+                this.forceRemoveNotification(notify);
+            }, 1);
         });
 
         return notify;

@@ -1,0 +1,30 @@
+@use '../var';
+
+.confirm-dialog {
+    width: 400px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    box-shadow: var(--shadow-soft);
+
+    .confirm-dialog__title {
+        h2 {
+            font-size: var(--font-size-heading);
+            color: var(--color-neutral-dark);
+        }
+    }
+
+    .confirm-dialog__message {
+        p {
+            // color: var(--color-text);
+        }
+    }
+
+    .confirm-dialog__buttons {
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+    }
+}

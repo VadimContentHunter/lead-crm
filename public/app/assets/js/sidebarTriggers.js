@@ -40,7 +40,8 @@ function onClickOutside(element, callback, excludeElements = []) {
 
 document.addEventListener('DOMContentLoaded', function () {
     const notificationContainer = document.querySelector('.notification-container');
-    // document.body.style.overflow = 'hidden';
+    const overlayMain = document.querySelector('.overlay-main');
+    
     const toggleScroll = (shouldHide) => {
         const contentContainerElement = document.querySelector('.content-container');
         if (contentContainerElement instanceof HTMLElement) {
@@ -65,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     toggleScroll(false);
 
                     removeListener();
-                }, [buttonSource, notificationContainer]);
+                }, [buttonSource, notificationContainer, overlayMain]);
 
             }
         }
@@ -88,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     toggleScroll(false);
 
                     removeListener();
-                }, [buttonStatus, notificationContainer]);
+                }, [buttonStatus, notificationContainer, overlayMain]);
             }
         }
     });
@@ -109,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     toggleScroll(false);
 
                     removeListener();
-                }, [buttonLead, notificationContainer]);
+                }, [buttonLead, notificationContainer, overlayMain]);
             }
         }
     });

@@ -1,4 +1,5 @@
 import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
+import { ConfirmDialog } from '/assets/js/ConfirmDialog.js';
 
 const endPoint = '/api/leads';
 
@@ -26,12 +27,13 @@ function attachDeleteTriggerLead() {
         endpoint: endPoint,
         callbackOnData: (payload) => {
             ComponentFunctions.replaceTable(payload, '[table-r-id="lead-table-1"]');
-            if (payload?.messages?.length > 0) {
-                ComponentFunctions.processMessagesArray(payload.messages);
-            }
+        },
+        beforeSendCallback: async (trigger, rowId) => {
+            return await ConfirmDialog.show('Удаление', `Удалить элемент #${rowId}?`, '.overlay-main');
         },
     });
 }
+
 
 //
 // === Редактирование значения ячейки по кнопке внутри строки ===

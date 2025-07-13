@@ -1,4 +1,5 @@
 import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
+import { ConfirmDialog } from '/assets/js/ConfirmDialog.js';
 
 const endPoint = '/api/sources';
 
@@ -14,7 +15,7 @@ ComponentFunctions.attachJsonRpcInputTrigger({
     endpoint: endPoint,
     callbackOnData: (payload) => {
         ComponentFunctions.replaceTable(payload, '[table-r-id="source-table-1"]');
-    }
+    },
 });
 
 
@@ -28,6 +29,9 @@ function attachDeleteTriggerSource() {
         endpoint: endPoint,
         callbackOnData: (payload) => {
             ComponentFunctions.replaceTable(payload, '[table-r-id="source-table-1"]');
+        },
+        beforeSendCallback: async (trigger, rowId) => {
+            return await ConfirmDialog.show('Удаление', `Удалить элемент #${rowId}?`, '.overlay-main');
         },
     });
 }

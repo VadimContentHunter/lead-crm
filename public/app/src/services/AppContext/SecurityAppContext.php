@@ -393,10 +393,9 @@ class SecurityAppContext implements IAppContext, ISecurity
                     '/assets/css/styles.css',
                     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css'
                 ],
-                'js' => [
-                    // '/assets/js/NotificationManager.js'
-                    // '/assets/js/JsonRpcResponseHandler.js',
-                    // '/assets/js/JsonRpcClient.js'
+                'module_scripts' => [
+                    '/assets/js/NotificationManager.js',
+                    '/assets/js/ConfirmDialog.js'
                 ]
             ],
             partialsContainer: 'head'
@@ -408,6 +407,11 @@ class SecurityAppContext implements IAppContext, ISecurity
                 variables: [
                     'overlay_content' => $rightSidebar,
                     'overlay_items' => $overlay_items,
+                    // 'overlay_main_content' => (new TemplateBundle(
+                    //     templatePath: 'components/confirmDialog.tpl.php',
+                    //     partialsContainer: 'overlay_main_content',
+                    //     variables: []
+                    // )),
                 ]
             ))->addPartial((new TemplateBundle(
                 templatePath: 'partials/main-menu.tpl.php',
@@ -424,13 +428,6 @@ class SecurityAppContext implements IAppContext, ISecurity
                 variables: $components,
                 partialsContainer: 'content_container'
             )))
-            // ->addPartial((new TemplateBundle(
-            //     templatePath: 'containers/right-sidebar.tpl.php',
-            //     partialsContainer: 'overlay_content',
-            //     variables: [
-            //         'content' => $rightSidebar
-            //     ]
-            // )))
         );
     }
 
@@ -475,11 +472,11 @@ class SecurityAppContext implements IAppContext, ISecurity
             //     'href' => '/page/source-all',
             //     'icon' => 'fa-solid fa-house',
             // ],
-            [
-                'name' => 'Добавить лида',
-                'href' => '/page/lead-add',
-                'icon' => 'fa-solid fa-house',
-            ],
+            // [
+            //     'name' => 'Добавить лида',
+            //     'href' => '/page/lead-add',
+            //     'icon' => 'fa-solid fa-house',
+            // ],
             [
                 'name' => 'P2P',
                 'href' => '/p2p',

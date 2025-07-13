@@ -2,6 +2,7 @@
 $title = $title ?? 'CRM Обменка';
 $css = $css ?? [];
 $js = $js ?? [];
+$module_scripts = $module_scripts ?? [];
 ?>
 
 <meta charset="UTF-8">
@@ -14,4 +15,8 @@ $js = $js ?? [];
 
 <?php foreach ($js as $src) : ?>
     <script src="<?= htmlspecialchars($src) ?>" defer></script>
+<?php endforeach; ?>
+
+<?php foreach ($module_scripts as $src) : ?>
+    <script src="<?= htmlspecialchars($src) ?>" type="module"></script>
 <?php endforeach; ?>

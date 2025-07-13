@@ -1,4 +1,5 @@
 import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
+import { ConfirmDialog } from '/assets/js/ConfirmDialog.js';
 
 const endPoint = '/api/statuses';
 
@@ -13,7 +14,7 @@ ComponentFunctions.attachJsonRpcInputTrigger({
     endpoint: endPoint,
     callbackOnData: (payload) => {
         ComponentFunctions.replaceTable(payload, '[table-r-id="status-table-1"]');
-    }
+    },
 });
 
 //
@@ -26,6 +27,9 @@ function attachDeleteTriggerStatus() {
         endpoint: endPoint,
         callbackOnData: (payload) => {
              ComponentFunctions.replaceTable(payload, '[table-r-id="status-table-1"]');
+        },
+        beforeSendCallback: async (trigger, rowId) => {
+            return await ConfirmDialog.show('Удаление', `Удалить элемент #${rowId}?`, '.overlay-main');
         },
     });
 }

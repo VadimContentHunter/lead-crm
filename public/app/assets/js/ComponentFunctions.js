@@ -372,10 +372,11 @@ export const ComponentFunctions = {
         }
     },
 
-    attachDeleteTrigger({
-        triggerSelector,
+     attachDeleteTrigger({
+    triggerSelector,
         method,
         endpoint = '/api/',
+        beforeSendCallback = async () => { },
         callbackOnData = (payload) => console.log('[JsonRpc] Ответ:', payload),
     }) {
         const triggers = document.querySelectorAll(triggerSelector);
@@ -384,7 +385,7 @@ export const ComponentFunctions = {
             if (trigger.dataset.bound) continue; // защита от повторного добавления
             trigger.dataset.bound = 'true';
 
-            trigger.addEventListener('click', (event) => {
+            trigger.addEventListener('click', async (event) => {
                 event.preventDefault();
 
                 // Ищем ближайший input[name="row_id"] среди родителей и соседей
@@ -393,6 +394,18 @@ export const ComponentFunctions = {
 
                 if (!rowId) {
                     console.warn('[Delete Trigger] Не найден row_id для удаления');
+                    return;
+                }
+
+                // 👇 Ожидаем beforeSendCallback
+                try {
+                    const result = await beforeSendCallback(trigger, rowId);
+                    if (result === false) {
+                        console.log('[Delete Trigger] beforeSendCallback отменил удаление');
+                        return;
+                    }
+                } catch (e) {
+                    console.warn('[Delete Trigger] beforeSendCallback выбросил ошибку:', e);
                     return;
                 }
 

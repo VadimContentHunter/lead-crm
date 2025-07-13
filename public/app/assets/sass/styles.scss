@@ -14,6 +14,7 @@
 @use './layout/right-sidebar';
 @use './components/base_components';
 @use './components/error-component';
+@use './components/confirm-dialog';
 
 body {
     font-family: 'Inter', sans-serif;

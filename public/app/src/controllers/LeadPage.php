@@ -96,7 +96,7 @@ class LeadPage
     /**
      * @param array<string, mixed> $components
      */
-    public function showPage(array $components): void
+    public function showPage(array $components, array $overlay_items = [], string|TemplateBundle $rightSidebar = ''): void
     {
         // $renderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
         // $layout = (new TemplateBundle(templatePath: 'components/addUser.tpl.php'));
@@ -104,10 +104,17 @@ class LeadPage
         $headers->set('Content-Type', 'text/html; charset=utf-8');
         $this->renderer->setHeaders($headers);
 
+        $scripts = [
+            '/assets/js/sidebarTriggers.js',
+            '/assets/js/leadEditHandlers.js',
+        ];
+
         try {
             // Успешный ответ
             $headers->setResponseCode(200);
-            echo $this->renderer->renderBundle($this->appContext->getLayout($components));
+            echo $this->renderer->renderBundle(
+                $this->appContext->getLayout($components, $overlay_items, $rightSidebar, $scripts)
+            );
         } catch (Throwable $e) {
             // Внутренняя ошибка — HTTP 500
             $headers->setResponseCode(500);
@@ -290,10 +297,6 @@ class LeadPage
             return UserMapper::toArray($user);
         })->getArray();
 
-        $commentsResult = $this->commentManagement->get()->executeAllMapped(function (Comment $comment) {
-            return $comment->comment;
-        })->getArray();
-
         $selectedData = [
           'sourceId' => $leadResult->getSourceId(),
           'statusId' => $leadResult->getStatusId(),
@@ -307,44 +310,75 @@ class LeadPage
         $this->showPage([
             'components' => [
                 (new TemplateBundle(
+                    templatePath: 'containers/edit-lead-wrapper.tpl.php',
+                    partialsContainer: 'deposit',
+                    variables: [
+                        'controlPanel' => (new TemplateBundle(
+                            templatePath: 'partials/controlPanelEditLead.tpl.php',
+                        )),
+                        'components' => [
+                            (new TemplateBundle(
+                                templatePath: 'components/editLeadMainForm.tpl.php',
+                                variables: [
+                                'leadId' => $leadId,
+                                'sourcesTitle' => $sourcesTitle,
+                                'statusesTitle' => $statusesTitle,
+                                'managersLogin' => $managersLogin,
+                                'selectedData' => $selectedData,
+                                'fullName' => $leadResult->getFullName(),
+                                'contact' => $leadResult->getContact(),
+                                'address' => $leadResult->getAddress(),
+                                ]
+                            )),
+                            (new TemplateBundle(
+                                templatePath: 'components/editLeadBalanceForm.tpl.php',
+                                variables: [
+                                'current' => $balanceResult->getCurrent() ?? 0,
+                                'drain' => $balanceResult->getDrain() ?? 0,
+                                'potential' => $balanceResult->getPotential() ?? 0,
+                                'leadId' => $balanceResult->getLeadId() ?? $leadId,
+                                'id' => $balanceResult->getId() ?? 0
+                                ]
+                            )),
+                            (new TemplateBundle(
+                                templatePath: 'components/editLeadDepositForm.tpl.php',
+                                variables: [
+                                'sum' =>  $depositResult->getSum() ?? 0,
+                                'txid' =>  $depositResult->getTxId() ?? '',
+                                'leadId' => $depositResult->getLeadId() ?? $leadId,
+                                ]
+                            )),
+                        ]
+                    ],
+                )),
+
+            ]
+        ], $this->getSidebar($leadId));
+    }
+
+     /**
+      * @return TemplateBundle[]
+      */
+    public function getSidebar(string|int $leadId): array
+    {
+        $commentsResult = $this->commentManagement->get()->executeAllMapped(function (Comment $comment) {
+            return $comment->comment;
+        })->getArray();
+
+        $commentsSideBar = (new TemplateBundle(
+            templatePath: 'containers/wrapperSideBar.tpl.php',
+            variables: [
+                'classId' => 'history-menu-id',
+                'addPanel' => (new TemplateBundle(
                     templatePath: 'components/editLeadComentsForm.tpl.php',
                     variables: [
                         'comments' => $commentsResult,
                         'leadId' => $leadId,
                     ]
                 )),
-                (new TemplateBundle(
-                    templatePath: 'components/editLeadMainForm.tpl.php',
-                    variables: [
-                        'leadId' => $leadId,
-                        'sourcesTitle' => $sourcesTitle,
-                        'statusesTitle' => $statusesTitle,
-                        'managersLogin' => $managersLogin,
-                        'selectedData' => $selectedData,
-                        'fullName' => $leadResult->getFullName(),
-                        'contact' => $leadResult->getContact(),
-                        'address' => $leadResult->getAddress(),
-                    ]
-                )),
-                (new TemplateBundle(
-                    templatePath: 'components/editLeadBalanceForm.tpl.php',
-                    variables: [
-                        'current' => $balanceResult->getCurrent() ?? 0,
-                        'drain' => $balanceResult->getDrain() ?? 0,
-                        'potential' => $balanceResult->getPotential() ?? 0,
-                        'leadId' => $balanceResult->getLeadId() ?? $leadId,
-                        'id' => $balanceResult->getId() ?? 0
-                    ]
-                )),
-                (new TemplateBundle(
-                    templatePath: 'components/editLeadDepositForm.tpl.php',
-                    variables: [
-                        'sum' =>  $depositResult->getSum() ?? 0,
-                        'txid' =>  $depositResult->getTxId() ?? '',
-                        'leadId' => $depositResult->getLeadId() ?? $leadId,
-                    ]
-                )),
             ]
-        ]);
+        ));
+
+        return [$commentsSideBar];
     }
 }

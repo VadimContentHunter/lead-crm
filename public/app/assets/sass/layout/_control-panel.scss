@@ -11,3 +11,8 @@
     gap: 16px;
     flex-wrap: wrap;
 }
+
+.control-panel-left {
+    @extend .control-panel-default;
+    justify-content: flex-start;
+}

@@ -617,7 +617,7 @@ table.base-table tbody tr:not(:first-child):hover {
   justify-content: center;
 }
 
-.control-panel-default {
+.control-panel-default, .control-panel-left {
   width: 100%;
   margin-bottom: 40px;
   display: flex;
@@ -628,9 +628,14 @@ table.base-table tbody tr:not(:first-child):hover {
   flex-wrap: wrap;
 }
 
+.control-panel-left {
+  justify-content: flex-start;
+}
+
 .right-sidebar {
   display: none;
   padding: 90px 40px;
+  max-width: 700px;
   overflow-y: auto;
   overflow-x: hidden;
   background-color: #fff;
@@ -657,13 +662,18 @@ table.base-table tbody tr:not(:first-child):hover {
   gap: 20px;
 }
 
-.component-wrapper {
+.component-wrapper, .component-wrapper-full {
   display: flex;
   flex-direction: column;
   width: auto;
   height: auto;
   /* height: 100%; */
   max-width: 400px;
+}
+
+.component-wrapper-full {
+  width: 100%;
+  max-width: none;
 }
 
 .component-wrapper-side-bar {

@@ -136,4 +136,25 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    const buttonHistory = document.querySelector('#history-btn');
+    bindButtonToContainer('#history-btn', '.overlay-content', function (container) {
+        if (container instanceof HTMLElement) {
+            container.style = 'display: flex;';
+            toggleScroll(true);
+
+            const rightSidebar = container.querySelector('.right-sidebar.history-menu-id');
+            if (rightSidebar instanceof HTMLElement) {
+                rightSidebar.style = 'display: flex;';
+
+                const removeListener = onClickOutside(rightSidebar, () => {
+                    rightSidebar.style.display = 'none';
+                    container.style.display = 'none';
+                    toggleScroll(false);
+
+                    removeListener();
+                }, [buttonHistory, notificationContainer, overlayMain]);
+            }
+        }
+    });
+
 });

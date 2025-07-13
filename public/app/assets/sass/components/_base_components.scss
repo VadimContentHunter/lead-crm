@@ -31,6 +31,12 @@ $paddingY: math.div($gap, 2);
     max-width: 400px;
 }
 
+.component-wrapper-full {
+    @extend .component-wrapper;
+    width: 100%;
+    max-width: none;
+}
+
 .component-wrapper-side-bar {
     display: flex;
     flex-direction: column;

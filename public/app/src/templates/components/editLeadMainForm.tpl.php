@@ -12,14 +12,14 @@
 
 <section class="component-wrapper">
     <h2>Общие сведения лида</h2>
-    <form class="base-form edit-lead-form" lead-form-id>
+    <div class="edit-lead-form" lead-form-id>
         <input type="text" name="leadId" value="<?= $leadId ?>" hidden>
         <div class="form-messages-container">
             <div class="form-message">
                 <p>Введите данные, что бы создать лида.</p>
             </div>
         </div>
-        <form class="base-form component">
+        <form class="form-stretch component">
             <div class="form-group">
                 <label>Полное имя *</label>
                 <input type="text" name="fullName" value="<?= $fullName ?>">
@@ -89,23 +89,5 @@
                 <button type="reset" class="form-button">Сбросить</button>
             </div>
         </form>
+    </div>
 </section>
-
-<script type="module">
-    import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
-                        
-    ComponentFunctions.attachJsonRpcInputTrigger({
-        triggerSelector: '.edit-lead-form[lead-form-id] .form-actions .submit',
-        containerSelector: '.edit-lead-form[lead-form-id]',
-        method: 'lead.edit',
-        endpoint: '/api/leads'
-    });
-//   window.addEventListener('DOMContentLoaded', () => {
-    // ComponentFunctions.attachJsonRpcInputTrigger({
-    //   triggerSelector: '#edit-lead-form .form-actions .form-button.submit',
-    //   containerSelector: '#edit-lead-form',
-    //   method: 'lead.add',
-    //   endpoint: '/api/leads'
-    // });
-//   });
-</script>

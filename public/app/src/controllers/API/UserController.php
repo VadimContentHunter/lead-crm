@@ -145,7 +145,7 @@ class UserController
         }
 
         $space = $this->handleAccessSpace->getSpaceById($params['space_id'] ?? 0);
-        if ($space === null && $params['space_id'] !== null) {
+        if ($space === null && ($params['space_id'] !== null && (int)$params['space_id'] !== 0)) {
             $this->rpc->replyData([
                 ['type' => 'error', 'message' => 'Пространство не выбрано.']
             ]);

@@ -319,7 +319,8 @@ class UserController
     }
 
     /**
-     * @param array<string, mixed> $params
+     * @param array<string,mixed> $params
+     * @param array<string,mixed> $resultMetadata
      */
     public function filterUsers(array $params, array $resultMetadata = []): void
     {
@@ -339,7 +340,8 @@ class UserController
     }
 
     /**
-     * @param array<string, mixed> $params
+     * @param array<string,mixed> $params
+     * @param array<string,mixed> $resultMetadata
      */
     public function filterUsersFormatTable(array $params, array $resultMetadata = []): void
     {

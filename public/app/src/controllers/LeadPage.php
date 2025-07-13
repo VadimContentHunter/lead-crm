@@ -94,7 +94,8 @@ class LeadPage
     }
 
     /**
-     * @param array<string, mixed> $components
+     * @param array<string,mixed> $components
+     * @param array<string,mixed> $overlay_items
      */
     public function showPage(array $components, array $overlay_items = [], string|TemplateBundle $rightSidebar = ''): void
     {

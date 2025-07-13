@@ -79,11 +79,13 @@ interface IAppContext
     /**
      * @param array<string,mixed> $components
      * @param array<string,mixed> $overlay_items
+     * @param string[] $bodyScripts
      */
     public function getLayout(
         array $components = [],
         array $overlay_items = [],
-        string|TemplateBundle $rightSidebar = ''
+        string|TemplateBundle $rightSidebar = '',
+        array $bodyScripts = []
     ): TemplateBundle;
 
     public function packComponentWrapperLine(TemplateBundle $component): TemplateBundle;

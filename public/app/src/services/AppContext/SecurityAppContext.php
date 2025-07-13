@@ -365,6 +365,7 @@ class SecurityAppContext implements IAppContext, ISecurity
     /**
      * @param array<string,mixed> $components
      * @param array<string,mixed> $overlay_items
+     * @param string[] $bodyScripts
      */
     public function getLayout(
         array $components = [],

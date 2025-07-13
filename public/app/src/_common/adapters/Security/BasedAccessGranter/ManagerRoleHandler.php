@@ -21,10 +21,12 @@ use crm\src\components\Security\_handlers\HandleAccessSpace;
 use crm\src\components\Security\_exceptions\SecurityException;
 use crm\src\_common\repositories\LeadRepository\LeadRepository;
 use crm\src\components\LeadManagement\_common\DTOs\LeadFilterDto;
+use crm\src\components\UserManagement\_common\DTOs\UserFilterDto;
 use crm\src\components\UserManagement\_common\mappers\UserMapper;
 use crm\src\components\Security\_common\DTOs\AccessFullContextDTO;
 use crm\src\components\LeadManagement\_common\DTOs\AccountManagerDto;
 use crm\src\components\Security\_exceptions\JsonRpcSecurityException;
+use crm\src\components\UserManagement\_common\mappers\UserFilterMapper;
 use crm\src\components\Security\_common\mappers\AccessFullContextMapper;
 use crm\src\components\LeadManagement\_common\interfaces\ILeadRepository;
 use crm\src\components\Security\_common\interfaces\IAccessRoleRepository;
@@ -66,6 +68,14 @@ class ManagerRoleHandler implements IRoleAccessHandler
 
         if ($target instanceof UserController) {
             return $this->handleUserController($context, $target, $methodName, $args);
+        }
+
+        if ($target instanceof GetUser && $methodName === 'filtered') {
+            $userLogin = $this->userRepository->getById($context->userId)?->login;
+            $userFilterDto = $args[0] instanceof UserFilterDto ? $args[0] : UserFilterMapper::fromArray($args[0] ?? []);
+            $userFilterDto->login = $userLogin ?? $userFilterDto->login ?? '';
+
+            return $target->filtered($userFilterDto);
         }
 
         if ($target instanceof UserPage && $methodName === 'showEditUserPage') {

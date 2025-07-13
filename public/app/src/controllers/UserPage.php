@@ -26,6 +26,7 @@ use crm\src\components\Security\_common\interfaces\IHandleAccessRole;
 use crm\src\components\UserManagement\_common\interfaces\IUserResult;
 use crm\src\components\Security\_common\interfaces\IHandleAccessSpace;
 use crm\src\components\UserManagement\_common\interfaces\IUserManagement;
+use crm\src\components\UserManagement\_common\mappers\UserMapper;
 
 class UserPage
 {
@@ -194,7 +195,10 @@ class UserPage
         }
 
         $headers = $this->userManagement->get()->executeColumnNames()->getArray();
-        $rows = $userResult->getArray();
+        $rows = $userResult->mapEach(function (User|array $user) {
+            $user = is_array($user) ? $user : UserMapper::toArray($user);
+            return $user;
+        })->getArray();
 
         $input = new TableRenderInput(
             header: $headers,

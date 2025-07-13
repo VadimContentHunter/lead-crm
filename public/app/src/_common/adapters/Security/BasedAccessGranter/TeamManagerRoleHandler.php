@@ -65,7 +65,7 @@ class TeamManagerRoleHandler implements IRoleAccessHandler
         if ($target instanceof HandleAccessRole && $methodName === 'getAllExceptRoles') {
             return $this->roleRepository->getAllByColumnValues('name', [
                         RoleNames::MANAGER->value,
-                        RoleNames::TEAM_MANAGER->value
+                        // RoleNames::TEAM_MANAGER->value
                     ]);
         }
 
@@ -298,7 +298,8 @@ class TeamManagerRoleHandler implements IRoleAccessHandler
             return UserResult::success($allowedUsers);
         }
 
-        return UserResult::success([]);
+        $allowedUsers = $this->userRepository->getAllByColumnValues('id', $allowedUserIds);
+        return UserResult::success($allowedUsers);
     }
 
     /**
@@ -306,47 +307,6 @@ class TeamManagerRoleHandler implements IRoleAccessHandler
      */
     private function handleUserController(AccessFullContextDTO $context, UserController $target, string $method, array $args): mixed
     {
-        // if (in_array($method, ['deleteUser', 'deleteUserById', 'editUser'], true)) {
-        //     throw new JsonRpcSecurityException("Менеджер не может {$this->actionLabel($method)} пользователей.");
-        // }
-
-        // if (in_array($method, ['filterUsers', 'filterUsersFormatTable'], true)) {
-        //     $allowedContexts = $this->contextRepository->getAllBySpaceId($context->spaceId ?? 0);
-        //     $allowedUserIds = array_map(fn($c) => $c->userId, $allowedContexts);
-
-        //     $userLogin = $this->userRepository->getById($context->userId)?->login;
-        //     $argSearch = $args[0]['search'] ?? '';
-
-        //     $login = $userLogin ?? '--';
-        //     $search = $argSearch === '' ? $login : $argSearch;
-
-        //     $isAllowed = false;
-        //     if (in_array($context->userId, $allowedUserIds, true)) {
-        //         $isAllowed = true;
-        //     }
-        //     if (is_numeric($search) && in_array((int)$search, $allowedUserIds, true)) {
-        //         $isAllowed = true;
-        //     }
-        //     if ($search === $login) {
-        //         $isAllowed = true;
-        //     }
-
-        //     if (!$isAllowed) {
-        //         throw new JsonRpcSecurityException("Недостаточно прав для поиска пользователей вне вашего пространства.");
-        //     }
-
-        //     // Получаем всех пользователей по разрешённым userId
-        //     $allowedUsers = $this->userRepository->getAllByColumnValues('id', $allowedUserIds);
-
-        //     // Например, преобразуем их в массивы для вывода
-        //     $result = array_map(fn($user) => UserMapper::toArray($user), $allowedUsers);
-
-        //     // Передаём результат в фильтр
-        //     $target->filterUsersFormatTable(['users' => $result, 'login' => $login, 'search' => $search]);
-        //     // Возврата не требуется
-        // }
-
-
         if ($method === 'createUser') {
             $role_id = $args[0]['role_id'] ?? null;
             $space_id = $args[0]['space_id'] ?? null;

@@ -20,6 +20,7 @@ use crm\src\components\Security\_common\interfaces\IAccessSpaceRepository;
 use crm\src\_common\adapters\Security\BasedAccessGranter\ManagerRoleHandler;
 use crm\src\components\Security\_exceptions\AuthenticationRequiredException;
 use crm\src\_common\adapters\Security\BasedAccessGranter\TeamManagerRoleHandler;
+use crm\src\components\LeadManagement\_common\interfaces\ILeadRepository;
 use crm\src\components\Security\_common\interfaces\IAccessContextRepository;
 
 class BasedAccessGranter implements IAccessGranter
@@ -34,19 +35,22 @@ class BasedAccessGranter implements IAccessGranter
         private IAccessRoleRepository $roleRepository,
         private IAccessSpaceRepository $spaceRepository,
         private IUserRepository $userRepository,
+        private ILeadRepository $leadRepository
     ) {
         $this->roleHandlers = [
             new ManagerRoleHandler(
                 // $this->contextRepository,
                 $this->roleRepository,
                 $this->spaceRepository,
-                $this->userRepository
+                $this->userRepository,
+                $this->leadRepository
             ),
             new TeamManagerRoleHandler(
                 $this->contextRepository,
                 $this->roleRepository,
                 $this->spaceRepository,
-                $this->userRepository
+                $this->userRepository,
+                $this->leadRepository
             ),
         // в будущем другие обработчики ролей
         ];

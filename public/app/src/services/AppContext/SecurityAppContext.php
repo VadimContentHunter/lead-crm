@@ -131,7 +131,8 @@ class SecurityAppContext implements IAppContext, ISecurity
             $this->accessContextRepository,
             $this->accessRoleRepository,
             $this->accessSpaceRepository,
-            $this->userRepository
+            $this->userRepository,
+            new LeadRepository($pdo, $logger)
         );
         $this->handleAccessSpace = new SecureHandleAccessSpace(
             $this->accessSpaceRepository,

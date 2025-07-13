@@ -53,7 +53,8 @@ $routeHandler = new RouteHandler(
         $appContext->accessContextRepository,
         $appContext->accessRoleRepository,
         $appContext->accessSpaceRepository,
-        $appContext->userRepository
+        $appContext->userRepository,
+        $appContext->getLeadRepository(),
     ),
     accessContext: $appContext->thisAccessContext,
     logger: $logger

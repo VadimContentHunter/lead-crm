@@ -2,6 +2,7 @@
 
 namespace crm\src\_common\adapters\Security\BasedAccessGranter;
 
+use crm\src\controllers\LeadPage;
 use crm\src\controllers\UserPage;
 use crm\src\controllers\SourcePage;
 use crm\src\controllers\StatusPage;
@@ -12,6 +13,7 @@ use crm\src\controllers\API\SourceController;
 use crm\src\controllers\API\StatusController;
 use crm\src\components\LeadManagement\GetLead;
 use crm\src\components\UserManagement\GetUser;
+use crm\src\components\LeadManagement\_entities\Lead;
 use crm\src\components\Security\_entities\AccessSpace;
 use crm\src\components\Security\_entities\AccessContext;
 use crm\src\components\Security\_handlers\HandleAccessRole;
@@ -23,10 +25,12 @@ use crm\src\components\UserManagement\_common\DTOs\UserFilterDto;
 use crm\src\components\UserManagement\_common\mappers\UserMapper;
 use crm\src\components\Security\_common\DTOs\AccessFullContextDTO;
 use crm\src\components\UserManagement\_common\adapters\UserResult;
+use crm\src\components\LeadManagement\_common\DTOs\AccountManagerDto;
 use crm\src\components\Security\_exceptions\JsonRpcSecurityException;
 use crm\src\components\UserManagement\_common\interfaces\IUserResult;
 use crm\src\components\UserManagement\_common\mappers\UserFilterMapper;
 use crm\src\components\Security\_common\mappers\AccessFullContextMapper;
+use crm\src\components\LeadManagement\_common\interfaces\ILeadRepository;
 use crm\src\components\Security\_common\interfaces\IAccessRoleRepository;
 use crm\src\components\UserManagement\_common\interfaces\IUserRepository;
 use crm\src\components\Security\_common\interfaces\IAccessSpaceRepository;
@@ -39,7 +43,8 @@ class TeamManagerRoleHandler implements IRoleAccessHandler
         private IAccessContextRepository $contextRepository,
         private IAccessRoleRepository $roleRepository,
         private IAccessSpaceRepository $spaceRepository,
-        private IUserRepository $userRepository
+        private IUserRepository $userRepository,
+        private ILeadRepository $leadRepository
     ) {
     }
 
@@ -132,11 +137,29 @@ class TeamManagerRoleHandler implements IRoleAccessHandler
             return $res;
         }
 
-
         if ($target instanceof LeadRepository && $methodName === 'getFilteredLeads') {
             $filter = $args[0] instanceof LeadFilterDto ? $args[0] : new LeadFilterDto();
             // $filter->manager = (string)$context->userId;
             return $this->getFilteredLeads($target, $filter, AccessFullContextMapper::toAccessContext($context));
+        }
+
+        if ($target instanceof LeadPage && $methodName === 'showEditLeadPage') {
+            $leadId = $args[0] ?? null;
+            $lead = $this->leadRepository->getById($leadId);
+            if (
+                $lead instanceof Lead
+                && $lead->accountManager instanceof AccountManagerDto
+                && $lead->accountManager->id !== null
+                && $lead->accountManager->id > 0
+            ) {
+                $leadAccountManagerId = $lead->accountManager->id;
+                $contexts = $this->contextRepository->getAllByColumnValues('space_id', [$context->getSpaceId() ?? 0]);
+                $userIds = array_map(fn($c) => $c->userId, $contexts);
+                if (in_array((int)$leadAccountManagerId, $userIds, true)) {
+                    return $target->$methodName(...$args);
+                }
+            }
+            throw new SecurityException("У вас нет прав на редактирование данного лида.");
         }
 
         return $target->$methodName(...$args);

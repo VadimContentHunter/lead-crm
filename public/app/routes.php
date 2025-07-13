@@ -106,7 +106,7 @@ function loadRoutes(PDO $pdo, IAppContext $appContext, LoggerInterface $logger =
         ),
 
         new Route(
-            pattern: '^/page/user-all/?$',
+            pattern: '^/users/?$',
             className: UserPage::class,
             methodName: 'showAllUserPage',
             extraData: [$appContext]

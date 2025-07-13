@@ -2,6 +2,7 @@
 
 .confirm-dialog {
     width: 400px;
+    padding: 0px 0px 20px 0px;
 
     display: flex;
     flex-direction: column;
@@ -10,9 +11,17 @@
     box-shadow: var(--shadow-soft);
 
     .confirm-dialog__title {
+        padding: 10px 16px;
+        width: 100%;
+        background: var(--color-primary);
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
         h2 {
-            font-size: var(--font-size-heading);
-            color: var(--color-neutral-dark);
+            font-size: var(--font-size-base);
+            color: #ffffff;
         }
     }
 

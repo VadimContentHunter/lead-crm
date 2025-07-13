@@ -7,6 +7,7 @@ use DateTime;
 use Throwable;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
+use crm\src\controllers\UserPage;
 use crm\src\components\Security\RoleNames;
 use crm\src\services\AppContext\ISecurity;
 use crm\src\services\AppContext\IAppContext;
@@ -50,6 +51,8 @@ class UserController
 
     private IHandleAccessSpace $handleAccessSpace;
 
+    private UserPage $userPage;
+
     /**
      * @var array<string, callable>
      */
@@ -58,6 +61,7 @@ class UserController
     public function __construct(
         private IAppContext $appContext,
     ) {
+        $this->userPage = new UserPage($this->appContext);
         $this->userManagement = $this->appContext->getUserManagement();
         $this->handleAccessContext = $this->appContext->getHandleAccessContext();
         $this->handleAccessRole = $this->appContext->getHandleAccessRole();
@@ -208,7 +212,7 @@ class UserController
             $this->handleAccessContext->delAccessById($accessContext->id ?? 0);
             $this->deleteUserById($user->getId() ?? 0);
             $this->rpc->replyData([
-            ['type' => 'error', 'message' => 'Не удалось выдать доступ пользователю. (2)']
+                ['type' => 'error', 'message' => 'Не удалось выдать доступ пользователю. (2)']
             ]);
         }
 
@@ -216,14 +220,17 @@ class UserController
         $login = $user->getLogin() ?? 'неизвестный логин';
         $roleName = $role->name ?? 'нет';
         $spaceName = $space?->name ?? 'нет';
-        $this->rpc->replyData([
-        ['type' => 'success', 'message' => 'Пользователь добавлен'],
-            ['type' => 'info', 'message' => <<<HTML
-                    Добавленный пользователь:
-                    <br>Логин: <b>{$login}</b>
-                    <br>Роль: <b>{$roleName}</b>
-                    <br>Пространство: <b>{$spaceName}</b>
-                HTML
+
+        $this->filterUsersFormatTable([], [
+            'messages' => [
+                ['type' => 'success', 'message' => 'Пользователь добавлен'],
+                ['type' => 'info', 'message' => <<<HTML
+                        Добавленный пользователь:
+                        <br>Логин: <b>{$login}</b>
+                        <br>Роль: <b>{$roleName}</b>
+                        <br>Пространство: <b>{$spaceName}</b>
+                    HTML
+                ]
             ]
         ]);
     }
@@ -298,7 +305,11 @@ class UserController
 
         $executeResult = $this->userManagement->delete()->executeById((int)$id);
         if ($executeResult->isSuccess()) {
-            $this->filterUsersFormatTable([]);
+            $this->filterUsersFormatTable([], [
+                'messages' => [
+                    ['type' => 'success', 'message' => 'Пользователь (ID: ' . (int)$id . ') был успешно удалён']
+                ]
+            ]);
         } else {
             $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
             $this->rpc->replyData([
@@ -310,69 +321,53 @@ class UserController
     /**
      * @param array<string, mixed> $params
      */
-    public function filterUsers(array $params): void
+    public function filterUsers(array $params, array $resultMetadata = []): void
     {
         $executeResult = $this->userManagement->get()->filtered(UserFilterMapper::fromArray($params));
         if ($executeResult->isSuccess()) {
-            $this->rpc->replyData([
-                ['type' => 'success', 'leads' => $executeResult->getArray()]
-            ]);
+            $this->rpc->replyData([array_merge(
+                ['type' => 'success', 'leads' => $executeResult->getArray()],
+                $resultMetadata
+            )]);
         } else {
             $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
-            $this->rpc->replyData([
-                ['type' => 'error', 'message' => 'Ошибка при фильтрации. Причина: ' . $errorMsg]
-            ]);
+            $this->rpc->replyData([array_merge(
+                ['type' => 'error', 'message' => 'Ошибка при фильтрации. Причина: ' . $errorMsg],
+                $resultMetadata
+            )]);
         }
     }
 
     /**
      * @param array<string, mixed> $params
      */
-    public function filterUsersFormatTable(array $params): void
+    public function filterUsersFormatTable(array $params, array $resultMetadata = []): void
     {
         $executeResult = $this->userManagement->get()->filtered(UserFilterMapper::fromArray($params));
         if ($executeResult->isSuccess()) {
-            $headers = $this->userManagement->get()->executeColumnNames()->getArray();
-            $rows = $executeResult->mapEach(function (User|array $user) {
-                $userData = is_object($user) ? UserMapper::toArray($user) : $user;
-                return [
-                    'id' => $userData['id'],
-                    'login' => $userData['login'],
-                    'password_hash' => '',
-                ];
-            })->getArray();
+            // $rows = $executeResult->mapEach(function (User|array $user) {
+            //     $userData = is_object($user) ? UserMapper::toArray($user) : $user;
+            //     return [
+            //         'id' => $userData['id'],
+            //         'login' => $userData['login'],
+            //         'password_hash' => '',
+            //     ];
+            // })->getArray();
 
-            $input = new TableRenderInput(
-                header: $headers,
-                rows: $rows,
-                attributes: ['id' => 'user-table-1', 'data-module' => 'users'],
-                classes: ['base-table'],
-                hrefButton: '/page/user-edit',
-                hrefButtonDel: '/page/user-delete',
-                attributesWrapper: [
-                    'table-r-id' => 'user-table-1'
-                ],
-                allowedColumns: [
-                    'id',
-                    'login',
-                    'password_hash',
-                ],
-                renameMap: [
-                    'password_hash' => 'Пароль',
-                ],
-                classesWrapper: ['table-wrapper'],
-            );
 
-            $tableFacade = new TableFacade(new TableTransformer(),  new TableDecorator());
-            $this->rpc->replyData([
-                'type' => 'success',
-                'table' => $tableFacade->renderFilteredTable($input)->asHtml()
-            ]);
+            $this->rpc->replyData(array_merge(
+                [
+                    'type' => 'success',
+                    'table' => $this->userPage->getRenderTable($executeResult),
+                ],
+                $resultMetadata
+            ));
         } else {
             $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';
-            $this->rpc->replyData([
-                ['type' => 'error', 'message' => 'Ошибка при фильтрации. Причина: ' . $errorMsg]
-            ]);
+            $this->rpc->replyData(array_merge([
+                ['type' => 'error', 'message' => 'Ошибка при фильтрации. Причина: ' . $errorMsg],
+                $resultMetadata
+            ]));
         }
     }
 }

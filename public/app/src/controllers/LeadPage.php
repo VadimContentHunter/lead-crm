@@ -250,7 +250,7 @@ class LeadPage
                     ]
                 )),
                 'controlPanel' => (new TemplateBundle(
-                    templatePath: 'partials/controlPanel.tpl.php',
+                    templatePath: 'partials/controlPanelP2p.tpl.php',
                 )),
             ]
         ));

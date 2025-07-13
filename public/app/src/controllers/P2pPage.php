@@ -63,10 +63,19 @@ class P2pPage
         $headers->set('Content-Type', 'text/html; charset=utf-8');
         $this->renderer->setHeaders($headers);
 
+        $scripts = [
+            '/assets/js/sidebarTriggers.js',
+            '/assets/js/leadHandlers.js',
+            '/assets/js/sourceHandlers.js',
+            '/assets/js/statusHandlers.js',
+        ];
+
         try {
             // Успешный ответ
             $headers->setResponseCode(200);
-            echo $this->renderer->renderBundle($this->appContext->getLayout($components, $overlay_items, $rightSidebar));
+            echo $this->renderer->renderBundle(
+                $this->appContext->getLayout($components, $overlay_items, $rightSidebar, $scripts)
+            );
         } catch (Throwable $e) {
             // Внутренняя ошибка — HTTP 500
             $headers->setResponseCode(500);

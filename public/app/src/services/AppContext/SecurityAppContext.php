@@ -369,17 +369,20 @@ class SecurityAppContext implements IAppContext, ISecurity
     public function getLayout(
         array $components = [],
         array $overlay_items = [],
-        string|TemplateBundle $rightSidebar = ''
+        string|TemplateBundle $rightSidebar = '',
+        array $bodyScripts = []
     ): TemplateBundle {
         return (new TemplateBundle(
             templatePath: 'layout.tpl.php',
             variables: [
-                'module_scripts' => [
-                    '/assets/js/sidebarTriggers.js',
-                    '/assets/js/leadHandlers.js',
-                    '/assets/js/sourceHandlers.js',
-                    '/assets/js/statusHandlers.js'
-                ]
+                'module_scripts' => $bodyScripts
+                // 'module_scripts' => [
+                //     '/assets/js/sidebarTriggers.js',
+                //     '/assets/js/leadHandlers.js',
+                //     '/assets/js/sourceHandlers.js',
+                //     '/assets/js/statusHandlers.js',
+                //     '/assets/js/userHandlers.js',
+                // ]
             ],
             partialsContainer: 'content'
         ))
@@ -442,14 +445,14 @@ class SecurityAppContext implements IAppContext, ISecurity
                 'href' => '/test',
                 'icon' => 'fa-solid fa-house',
             ],
-            [
-                'name' => 'Добавить пользователя',
-                'href' => '/page/user-add',
-                'icon' => 'fa-solid fa-house',
-            ],
+            // [
+            //     'name' => 'Добавить пользователя',
+            //     'href' => '/page/user-add',
+            //     'icon' => 'fa-solid fa-house',
+            // ],
             [
                 'name' => 'Все пользователя',
-                'href' => '/page/user-all',
+                'href' => '/users',
                 'icon' => 'fa-solid fa-house',
             ],
             // [

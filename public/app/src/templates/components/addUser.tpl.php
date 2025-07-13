@@ -10,7 +10,7 @@ $spaces = $spaces ?? [];
 <!-- <section class="component-wrapper-line"> -->
 
     <section class="component-wrapper">
-        <form class="base-form component" id="add-user-form">
+        <form class="form-stretch component" id="add-user-form">
             <div class="form-messages-container">
                 <div class="form-message">
                     <p>Введите свои учётные данные.</p>
@@ -61,16 +61,3 @@ $spaces = $spaces ?? [];
         </form>
     </section>
 <!-- </section> -->
-
-<script type="module">
-  import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
-  
-//   window.addEventListener('DOMContentLoaded', () => {
-    ComponentFunctions.attachJsonRpcInputTrigger({
-      triggerSelector: '#add-user-form .form-actions .form-button.submit',
-      containerSelector: '#add-user-form',
-      method: 'user.add',
-      endpoint: '/api/users'
-    });
-//   });
-</script>

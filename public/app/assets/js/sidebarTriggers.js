@@ -115,4 +115,25 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    const buttonAddUser = document.querySelector('#add-user-btn');
+    bindButtonToContainer('#add-user-btn', '.overlay-content', function (container) {
+        if (container instanceof HTMLElement) {
+            container.style = 'display: flex;';
+            toggleScroll(true);
+
+            const rightSidebar = container.querySelector('.right-sidebar.add-user-menu-id');
+            if (rightSidebar instanceof HTMLElement) {
+                rightSidebar.style = 'display: flex;';
+
+                const removeListener = onClickOutside(rightSidebar, () => {
+                    rightSidebar.style.display = 'none';
+                    container.style.display = 'none';
+                    toggleScroll(false);
+
+                    removeListener();
+                }, [buttonAddUser, notificationContainer, overlayMain]);
+            }
+        }
+    });
+
 });

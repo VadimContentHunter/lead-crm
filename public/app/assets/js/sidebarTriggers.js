@@ -93,4 +93,25 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    const buttonLead = document.querySelector('#add-lead-btn');
+    bindButtonToContainer('#add-lead-btn', '.overlay-content', function (container) {
+        if (container instanceof HTMLElement) {
+            container.style = 'display: flex;';
+            toggleScroll(true);
+
+            const rightSidebar = container.querySelector('.right-sidebar.lead-menu-id');
+            if (rightSidebar instanceof HTMLElement) {
+                rightSidebar.style = 'display: flex;';
+
+                const removeListener = onClickOutside(rightSidebar, () => {
+                    rightSidebar.style.display = 'none';
+                    container.style.display = 'none';
+                    toggleScroll(false);
+
+                    removeListener();
+                }, [buttonLead, notificationContainer]);
+            }
+        }
+    });
+
 });

@@ -119,17 +119,19 @@ class LeadController
                 $statusTitle = $executeResult->getStatusTitle() ?? 'не указан статус';
                 $accountManagerLogin = $executeResult->getAccountManagerLogin() ?? 'не указан менеджер';
 
-                $this->rpc->replyData([
-                    ['type' => 'success', 'message' => 'Лид успешно добавлен'],
-                    ['type' => 'info', 'message' => <<<HTML
-                            Добавленный Лид:
-                            <br> полное имя: <b>{$fullName}</b>
-                            <br> контакт: <b>{$contact}</b>
-                            <br> адрес: <b>{$address}</b>
-                            <br> источник: <b>{$sourceTitle}</b>
-                            <br> статус: <b>{$statusTitle}</b>
-                            <br> менеджер: <b>{$accountManagerLogin}</b>
-                        HTML
+                $this->filterLeadsFormatTable([], [
+                    'messages' => [
+                        ['type' => 'success', 'message' => 'Лид успешно добавлен'],
+                        ['type' => 'info', 'message' => <<<HTML
+                                Добавленный Лид:
+                                <br> полное имя: <b>{$fullName}</b>
+                                <br> контакт: <b>{$contact}</b>
+                                <br> адрес: <b>{$address}</b>
+                                <br> источник: <b>{$sourceTitle}</b>
+                                <br> статус: <b>{$statusTitle}</b>
+                                <br> менеджер: <b>{$accountManagerLogin}</b>
+                            HTML
+                        ]
                     ]
                 ]);
             } else {

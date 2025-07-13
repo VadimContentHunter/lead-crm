@@ -78,3 +78,17 @@
         }
     }
 }
+
+.form-stretch {
+    @extend .base-form;
+
+    .base-form,
+    .form-group,
+    .form-actions,
+    input,
+    select,
+    textarea,
+    label {
+        width: 100%;
+    }
+}

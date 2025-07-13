@@ -59,11 +59,11 @@ class LeadPage
 {
     private LeadManagement $leadManagement;
 
-    private SourceManagement $sourceManagement;
+    public SourceManagement $sourceManagement;
 
-    private IStatusManagement $statusManagement;
+    public IStatusManagement $statusManagement;
 
-    private IUserManagement $userManagement;
+    public IUserManagement $userManagement;
 
     private BalanceManagement $balanceManagement;
 

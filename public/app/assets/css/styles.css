@@ -52,26 +52,28 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-.base-form {
+.base-form, .form-stretch {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
 }
-.base-form .form-group {
+.base-form .form-group, .form-stretch .form-group {
   display: flex;
   flex-direction: column;
   gap: 4px;
   align-items: flex-start;
 }
-.base-form .form-group label {
+.base-form .form-group label, .form-stretch .form-group label {
   font-size: var(--font-size-subheading);
   font-weight: 500;
   color: #333;
 }
-.base-form .form-group input,
+.base-form .form-group input, .form-stretch .form-group input,
 .base-form .form-group select,
-.base-form .form-group textarea {
+.form-stretch .form-group select,
+.base-form .form-group textarea,
+.form-stretch .form-group textarea {
   padding: 10px 12px;
   border: 1px solid #ccc;
   border-radius: var(--border-radius-base);
@@ -79,25 +81,27 @@
   font-family: inherit;
   transition: border-color 0.2s;
 }
-.base-form .form-group input:focus,
+.base-form .form-group input:focus, .form-stretch .form-group input:focus,
 .base-form .form-group select:focus,
-.base-form .form-group textarea:focus {
+.form-stretch .form-group select:focus,
+.base-form .form-group textarea:focus,
+.form-stretch .form-group textarea:focus {
   border-color: #007bff;
   outline: none;
 }
-.base-form .form-group textarea {
+.base-form .form-group textarea, .form-stretch .form-group textarea {
   resize: vertical;
   max-height: 250px;
   min-height: 140px;
 }
-.base-form .form-actions {
+.base-form .form-actions, .form-stretch .form-actions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
   padding-top: 16px;
   align-items: center;
 }
-.base-form .form-actions .form-button {
+.base-form .form-actions .form-button, .form-stretch .form-actions .form-button {
   padding: 10px 20px;
   font-size: var(--font-size-base);
   font-weight: 500;
@@ -107,14 +111,24 @@
   color: #fff;
   cursor: pointer;
 }
-.base-form .form-actions .form-button:hover {
+.base-form .form-actions .form-button:hover, .form-stretch .form-actions .form-button:hover {
   background-color: #0056b3;
 }
-.base-form .form-actions .form-button:last-child {
+.base-form .form-actions .form-button:last-child, .form-stretch .form-actions .form-button:last-child {
   background-color: #6c757d;
 }
-.base-form .form-actions .form-button:last-child:hover {
+.base-form .form-actions .form-button:last-child:hover, .form-stretch .form-actions .form-button:last-child:hover {
   background-color: #5a6268;
+}
+
+.form-stretch .base-form, .form-stretch .form-stretch,
+.form-stretch .form-group,
+.form-stretch .form-actions,
+.form-stretch input,
+.form-stretch select,
+.form-stretch textarea,
+.form-stretch label {
+  width: 100%;
 }
 
 table.base-table {

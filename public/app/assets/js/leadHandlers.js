@@ -2,15 +2,29 @@ import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
 
 const endPoint = '/api/leads';
 
+
+//
+// === Добавление строки в таблицу по кнопке ===
+//
+ComponentFunctions.attachJsonRpcInputTrigger({
+    triggerSelector: '#add-lead-form .form-actions .form-button.submit',
+    containerSelector: '#add-lead-form',
+    method: 'lead.add',
+    endpoint: endPoint,
+    callbackOnData: (payload) => {
+        ComponentFunctions.replaceTable(payload, '[table-r-id="lead-table-1"]');
+    }
+});
+
 //
 // === Удаление строки из таблицы по кнопке ===
 //
-function attachDeleteTrigger() {
+function attachDeleteTriggerLead() {
     ComponentFunctions.attachDeleteTrigger({
         triggerSelector: '[table-r-id="lead-table-1"] .btn-delete.btn-row-table',
         method: 'lead.delete',
         endpoint: endPoint,
-        onData: (payload) => {
+        callbackOnData: (payload) => {
             ComponentFunctions.replaceTable(payload, '[table-r-id="lead-table-1"]');
             if (payload?.messages?.length > 0) {
                 ComponentFunctions.processMessagesArray(payload.messages);
@@ -22,7 +36,7 @@ function attachDeleteTrigger() {
 //
 // === Редактирование значения ячейки по кнопке внутри строки ===
 //
-function attachInputButtonTrigger() {
+function attachInputButtonTriggerLead() {
     ComponentFunctions.attachInputButtonTrigger({
         containerSelector: '[table-r-id="lead-table-1"]',
         buttonSelector: 'td .edit-row-button',
@@ -37,7 +51,7 @@ function attachInputButtonTrigger() {
 //
 // === Отслеживание изменения значения в input'ах таблицы ===
 //
-function watchInputValueChange() {
+function watchInputValueChangeLead() {
     ComponentFunctions.watchInputValueChange({
         inputSelector: '[table-r-id="lead-table-1"] input.edit-row-input',
         onChange: (oldValue, newValue, inputElement) => {
@@ -68,9 +82,9 @@ function watchInputValueChange() {
 //
 // === Инициализация обработчиков для уже существующих элементов таблицы ===
 //
-attachDeleteTrigger();
-attachInputButtonTrigger();
-watchInputValueChange();
+attachDeleteTriggerLead();
+attachInputButtonTriggerLead();
+watchInputValueChangeLead();
 
 //
 // === Наблюдение за появлением новых элементов в DOM и повторное навешивание обработчиков ===
@@ -82,9 +96,9 @@ if (!targetNode) {
     const observer = new MutationObserver((mutationsList) => {
         for (const mutation of mutationsList) {
             if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                attachDeleteTrigger();
-                attachInputButtonTrigger();
-                watchInputValueChange();
+                attachDeleteTriggerLead();
+                attachInputButtonTriggerLead();
+                watchInputValueChangeLead();
                 break; // один раз достаточно
             }
         }

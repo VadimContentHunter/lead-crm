@@ -24,7 +24,7 @@ use crm\src\components\SourceManagement\_common\interfaces\ISourceResult;
 
 class SourcePage
 {
-    private SourceManagement $sourceManagement;
+    public SourceManagement $sourceManagement;
 
     private TemplateRenderer $renderer;
 

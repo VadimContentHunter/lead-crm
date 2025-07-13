@@ -11,7 +11,7 @@ ComponentFunctions.attachJsonRpcInputTrigger({
     triggerSelector: '#add-source-form .form-actions .form-button.submit',
     containerSelector: '#add-source-form',
     method: 'source.add',
-    endpoint: '/api/sources',
+    endpoint: endPoint,
     callbackOnData: (payload) => {
         ComponentFunctions.replaceTable(payload, '[table-r-id="source-table-1"]');
     }
@@ -21,7 +21,7 @@ ComponentFunctions.attachJsonRpcInputTrigger({
 //
 // === Удаление строки из таблицы по кнопке ===
 //
-function attachDeleteTrigger() {
+function attachDeleteTriggerSource() {
     ComponentFunctions.attachDeleteTrigger({
         triggerSelector: '[table-r-id="source-table-1"] .btn-delete.btn-row-table',
         method: 'source.delete',
@@ -35,7 +35,7 @@ function attachDeleteTrigger() {
 //
 // === Редактирование значения ячейки по кнопке внутри строки ===
 //
-function attachInputButtonTrigger() {
+function attachInputButtonTriggerSource() {
     ComponentFunctions.attachInputButtonTrigger({
         containerSelector: '[table-r-id="source-table-1"]',
         buttonSelector: 'td .edit-row-button',
@@ -50,7 +50,7 @@ function attachInputButtonTrigger() {
 //
 // === Отслеживание изменения значения в input'ах таблицы ===
 //
-function watchInputValueChange() {
+function watchInputValueChangeSource() {
     ComponentFunctions.watchInputValueChange({
         inputSelector: '[table-r-id="source-table-1"] input.edit-row-input',
         onChange: (oldValue, newValue, inputElement) => {
@@ -81,9 +81,9 @@ function watchInputValueChange() {
 //
 // === Инициализация обработчиков для уже существующих элементов таблицы ===
 //
-attachDeleteTrigger();
-attachInputButtonTrigger();
-watchInputValueChange();
+attachDeleteTriggerSource();
+attachInputButtonTriggerSource();
+watchInputValueChangeSource();
 
 //
 // === Наблюдение за появлением новых элементов в DOM и повторное навешивание обработчиков ===
@@ -95,9 +95,9 @@ if (!targetNode) {
     const observer = new MutationObserver((mutationsList) => {
         for (const mutation of mutationsList) {
             if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                attachDeleteTrigger();
-                attachInputButtonTrigger();
-                watchInputValueChange();
+                attachDeleteTriggerSource();
+                attachInputButtonTriggerSource();
+                watchInputValueChangeSource();
                 break; // один раз достаточно
             }
         }

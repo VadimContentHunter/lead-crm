@@ -17,7 +17,7 @@ use crm\src\components\StatusManagement\_common\interfaces\IStatusManagement;
 
 class StatusPage
 {
-    private IStatusManagement $statusManagement;
+    public IStatusManagement $statusManagement;
 
     private TemplateRenderer $renderer;
 

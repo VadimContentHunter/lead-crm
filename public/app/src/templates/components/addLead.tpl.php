@@ -12,7 +12,7 @@
                     <p>Введите данные, что бы создать лида.</p>
                 </div>
             </div>
-            <form class="base-form component">
+            <form class="form-stretch component">
                 <div class="form-group">
                     <label>Полное имя *</label>
                     <input type="text" name="fullName">
@@ -72,16 +72,3 @@
             </form>
     </section>
 </section>
-
-<script type="module">
-  import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
-  
-//   window.addEventListener('DOMContentLoaded', () => {
-    ComponentFunctions.attachJsonRpcInputTrigger({
-      triggerSelector: '#add-lead-form .form-actions .form-button.submit',
-      containerSelector: '#add-lead-form',
-      method: 'lead.add',
-      endpoint: '/api/leads'
-    });
-//   });
-</script>

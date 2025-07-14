@@ -6,6 +6,22 @@ use Throwable;
 
 interface IResult
 {
+    /**
+     * Создаёт успешный результат.
+     *
+     * @param  mixed $data
+     * @return static
+     */
+    public static function success(mixed $data = null): static;
+
+    /**
+     * Создаёт ошибочный результат.
+     *
+     * @param  Throwable $error
+     * @return static
+     */
+    public static function failure(Throwable $error): static;
+
     public function isSuccess(): bool;
 
     public function getInt(): ?int;
@@ -28,8 +44,8 @@ interface IResult
     /**
      * Применить callable (например, маппер) к текущим данным и вернуть результат.
      *
-     * @param  callable $mapper Функция или метод для преобразования данных
-     * @return mixed Результат преобразования, или null если данных нет
+     * @param  callable $mapper
+     * @return mixed
      */
     public function mapData(callable $mapper): mixed;
 
@@ -49,8 +65,6 @@ interface IResult
     public function mapEach(callable $mapper, bool $removeNulls = true): static;
 
     /**
-     * Применяет преобразование к данным и возвращает новый экземпляр с преобразованным значением.
-     *
      * @template T
      * @param    callable(mixed): T $mapper
      * @return   static

@@ -2,12 +2,31 @@
 
 namespace crm\src\Investments\Comment\_entities;
 
+use DateTimeImmutable;
+
+/**
+ * Комментарий, связанный с инвестиционным лидом.
+ */
 class InvComment
 {
+    /**
+     * @param string              $id      Уникальный идентификатор комментария (например, UUID)
+     * @param string              $leadUid UID лида, к которому относится комментарий
+     * @param string              $body    Текст комментария
+     * @param DateTimeImmutable|null $time    Время создания комментария (по умолчанию — текущее)
+     * @param string              $who     Имя или описание автора комментария (может быть пустым)
+     * @param string|null         $whoId   ID автора комментария (опционально, например, userId)
+     * @param int                 $option  Опциональный статус/тип комментария (по умолчанию 0)
+     */
     public function __construct(
+        public string $id,
+        public string $leadUid,
         public string $body,
-        public int $time,
-        public string $who,
+        public ?DateTimeImmutable $time = null,
+        public string $who = '',
+        public ?string $whoId = null,
+        public int $option = 0,
     ) {
+        $this->time = $time ?? new DateTimeImmutable();
     }
 }

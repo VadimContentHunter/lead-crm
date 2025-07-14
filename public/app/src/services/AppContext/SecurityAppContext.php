@@ -147,7 +147,11 @@ class SecurityAppContext implements IAppContext, ISecurity
         );
 
         $this->userManagement = new SecureUserManagement(
-            $this->userRepository,
+            new SecureUserRepository(
+                new UserRepository($pdo, $logger),
+                $this->accessGranter,
+                $this->thisAccessContext
+            ),
             new UserValidatorAdapter(),
             $this->accessGranter,
             $this->thisAccessContext

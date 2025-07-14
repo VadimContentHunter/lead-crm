@@ -5,6 +5,7 @@ namespace crm\src\_common\adapters\Security\BasedAccessGranter;
 use crm\src\controllers\LoginPage;
 use crm\src\controllers\LogoutPage;
 use crm\src\components\Security\RoleNames;
+use crm\src\controllers\API\UserController;
 use crm\src\controllers\NotFoundController;
 use crm\src\controllers\API\LoginController;
 use crm\src\controllers\BootstrapController;
@@ -14,14 +15,15 @@ use crm\src\components\Security\_exceptions\SecurityException;
 use crm\src\components\Security\_common\DTOs\AccessFullContextDTO;
 use crm\src\components\Security\_common\interfaces\IAccessGranter;
 use crm\src\components\Security\_common\mappers\AccessFullContextMapper;
+use crm\src\components\LeadManagement\_common\interfaces\ILeadRepository;
 use crm\src\components\Security\_common\interfaces\IAccessRoleRepository;
 use crm\src\components\UserManagement\_common\interfaces\IUserRepository;
+use crm\src\_common\adapters\Security\BasedAccessGranter\AdminRoleHandler;
 use crm\src\components\Security\_common\interfaces\IAccessSpaceRepository;
 use crm\src\_common\adapters\Security\BasedAccessGranter\ManagerRoleHandler;
+use crm\src\components\Security\_common\interfaces\IAccessContextRepository;
 use crm\src\components\Security\_exceptions\AuthenticationRequiredException;
 use crm\src\_common\adapters\Security\BasedAccessGranter\TeamManagerRoleHandler;
-use crm\src\components\LeadManagement\_common\interfaces\ILeadRepository;
-use crm\src\components\Security\_common\interfaces\IAccessContextRepository;
 
 class BasedAccessGranter implements IAccessGranter
 {
@@ -52,6 +54,14 @@ class BasedAccessGranter implements IAccessGranter
                 $this->userRepository,
                 $this->leadRepository
             ),
+
+            new AdminRoleHandler(
+                $this->contextRepository,
+                $this->roleRepository,
+                $this->spaceRepository,
+                $this->userRepository,
+                $this->leadRepository
+            )
         // в будущем другие обработчики ролей
         ];
     }
@@ -97,9 +107,9 @@ class BasedAccessGranter implements IAccessGranter
             throw new AuthenticationRequiredException("Роль не найдена");
         }
 
-        if (RoleNames::isAnyAdmin($role->name)) {
-            return $target->$methodName(...$args);
-        }
+        // if (RoleNames::isAnyAdmin($role->name)) {
+        //     return $target->$methodName(...$args);
+        // }
 
         $fullContext = AccessFullContextMapper::fromEntities($accessContext, $role, $space);
 
@@ -115,6 +125,7 @@ class BasedAccessGranter implements IAccessGranter
     private function isAllowedWithoutAuth(string $className): bool
     {
         return in_array($className, [
+            // UserController::class,
             LoginPage::class,
             LogoutPage::class,
             LoginController::class,
@@ -126,6 +137,7 @@ class BasedAccessGranter implements IAccessGranter
     private function isAllowedMethod(string $methodName): bool
     {
         return in_array($methodName, [
+            'getByLogin',
             'show404',
             'executeByLogin',
         ], true);

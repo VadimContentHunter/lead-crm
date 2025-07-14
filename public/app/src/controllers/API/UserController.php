@@ -176,7 +176,7 @@ class UserController
         if ($sessionHash === null) {
             $this->deleteUserById($user->getId() ?? 0);
             $this->rpc->replyData([
-            ['type' => 'error', 'message' => 'Не удалось создать сессию.']
+                ['type' => 'error', 'message' => 'Не удалось создать сессию.']
             ]);
         }
 
@@ -188,7 +188,7 @@ class UserController
             if ($space === null) {
                 $this->deleteUserById($user->getId() ?? 0);
                 $this->rpc->replyData([
-                ['type' => 'error', 'message' => 'Не удалось выдать доступ пользователю. (3)']
+                    ['type' => 'error', 'message' => 'Не удалось создать пространство.']
                 ]);
             }
         }
@@ -203,7 +203,7 @@ class UserController
         if ($accessContext === null) {
             $this->deleteUserById($user->getId() ?? 0);
             $this->rpc->replyData([
-            ['type' => 'error', 'message' => 'Не удалось выдать доступ пользователю. (1)']
+                ['type' => 'error', 'message' => 'Не удалось выдать доступ пользователю. (1)']
             ]);
         }
 
@@ -303,12 +303,29 @@ class UserController
             ]);
         }
 
+        $user = $this->userManagement->get()->executeById((int)$id)->getUser();
+        $context = $this->handleAccessContext->getAccessByUserId($user?->id ?? 0);
+        $role = $this->handleAccessRole->getRoleById($context?->roleId ?? 0);
+        $space = $this->handleAccessSpace->getSpaceById($context?->spaceId ?? 0);
+
         $executeResult = $this->userManagement->delete()->executeById((int)$id);
         if ($executeResult->isSuccess()) {
+            $messages =  [
+                ['type' => 'success', 'message' => 'Пользователь (ID: ' . (int)$id . ') был успешно удалён']
+            ];
+
+            if ($user !== null && RoleNames::isTeamManager($role->name ?? '')) {
+                $spaceName = ($user->login ?? '') . '_space';
+                if ($space !== null && $space->name === $spaceName) {
+                    if (!$this->handleAccessSpace->deleteSpace($space->id ?? 0)) {
+                        $messages[] = ['type' => 'error', 'message' => 'Пространство не удалено'];
+                    }
+                }
+            }
+
+
             $this->filterUsersFormatTable([], [
-                'messages' => [
-                    ['type' => 'success', 'message' => 'Пользователь (ID: ' . (int)$id . ') был успешно удалён']
-                ]
+                'messages' => $messages
             ]);
         } else {
             $errorMsg = $executeResult->getError()?->getMessage() ?? 'неизвестная ошибка';

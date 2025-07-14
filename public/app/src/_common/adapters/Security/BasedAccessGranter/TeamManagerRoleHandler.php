@@ -13,6 +13,8 @@ use crm\src\controllers\API\SourceController;
 use crm\src\controllers\API\StatusController;
 use crm\src\components\LeadManagement\GetLead;
 use crm\src\components\UserManagement\GetUser;
+use crm\src\_common\repositories\UserRepository;
+use crm\src\components\UserManagement\DeleteUser;
 use crm\src\components\LeadManagement\_entities\Lead;
 use crm\src\components\Security\_entities\AccessSpace;
 use crm\src\components\Security\_entities\AccessContext;
@@ -91,15 +93,15 @@ class TeamManagerRoleHandler implements IRoleAccessHandler
 
         if ($target instanceof StatusController || $target instanceof SourceController) {
             $entity = $target instanceof StatusController ? 'статусы' : 'источники';
-            $this->denyIfIn($methodName, ['createStatus', 'deleteStatus', 'createSource', 'deleteSource'], "Менеджер не может {$this->actionLabel($methodName)} {$entity}.");
+            $this->denyIfIn($methodName, ['createStatus', 'deleteStatus', 'createSource', 'deleteSource'], "Тим-Менеджер не может {$this->actionLabel($methodName)} {$entity}.");
         }
 
         if ($target instanceof StatusPage && $methodName === 'showAddStatusPage') {
-            throw new SecurityException("Менеджер не может посетить страницу создания статуса.");
+            throw new SecurityException("Тим-Менеджер не может посетить страницу создания статуса.");
         }
 
         if ($target instanceof SourcePage && $methodName === 'showAddSourcePage') {
-            throw new SecurityException("Менеджер не может посетить страницу создания источника.");
+            throw new SecurityException("Тим-Менеджер не может посетить страницу создания источника.");
         }
 
         if ($target instanceof LeadController && $methodName === 'createLead') {
@@ -162,7 +164,33 @@ class TeamManagerRoleHandler implements IRoleAccessHandler
             throw new SecurityException("У вас нет прав на редактирование данного лида.");
         }
 
+        if ($target instanceof UserRepository && $methodName === 'deleteById') {
+            $userId = $args[0];
+            if (!in_array($userId, $this->allowedUserId($context), true)) {
+                throw new JsonRpcSecurityException("Недостаточно прав для удаления этого пользователя.");
+            }
+
+            if ($userId === $context->userId) {
+                throw new JsonRpcSecurityException("Нельзя удалить себя.");
+            }
+
+            $leads = $this->leadRepository->getLeadsByManagerId((int)$userId);
+            if (count($leads) > 0) {
+                throw new JsonRpcSecurityException("Нельзя удалить пользователя, у которого есть лиды.");
+            }
+            return $target->$methodName(...$args);
+        }
+
         return $target->$methodName(...$args);
+    }
+
+    /**
+     * @return int[]
+     */
+    public function allowedUserId(AccessFullContextDTO $context): array
+    {
+        $allowedContexts = $this->contextRepository->getAllBySpaceId($context->getSpaceId() ?? 0);
+        return array_map(fn($c) => $c->userId, $allowedContexts);
     }
 
     /**

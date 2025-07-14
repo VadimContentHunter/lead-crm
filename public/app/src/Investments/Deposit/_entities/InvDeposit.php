@@ -14,15 +14,15 @@ class InvDeposit
     /**
      * @param string                 $id        Уникальный идентификатор депозита (например, UUID или числовой ID из БД)
      * @param string                 $leadId    UID лида, к которому относится депозит
-     * @param DateTimeImmutable|null $createdAt Дата и время создания депозита (по умолчанию — текущее)
      * @param float                  $sum       Сумма депозита
+     * @param DateTimeImmutable|null $createdAt Дата и время создания депозита (по умолчанию — текущее)
      * @param string                 $comment   Комментарий к депозиту (опционально)
      */
     public function __construct(
         public string $id,
         public string $leadId,
-        ?DateTimeImmutable $createdAt = null,
         public float $sum,
+        ?DateTimeImmutable $createdAt = null,
         public string $comment = '',
     ) {
         $this->createdAt = $createdAt ?? new DateTimeImmutable();

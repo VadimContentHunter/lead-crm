@@ -18,7 +18,7 @@ class AdminRoleHandler implements IRoleAccessHandler
     public function __construct(
         private IAccessContextRepository $contextRepository,
         private IAccessRoleRepository $roleRepository,
-        private IAccessSpaceRepository $spaceRepository,
+        // private IAccessSpaceRepository $spaceRepository,
         private IUserRepository $userRepository,
         private ILeadRepository $leadRepository
     ) {

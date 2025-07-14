@@ -58,7 +58,7 @@ class BasedAccessGranter implements IAccessGranter
             new AdminRoleHandler(
                 $this->contextRepository,
                 $this->roleRepository,
-                $this->spaceRepository,
+                // $this->spaceRepository,
                 $this->userRepository,
                 $this->leadRepository
             )

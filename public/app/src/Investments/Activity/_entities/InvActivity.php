@@ -13,7 +13,7 @@ class InvActivity
      * @param string                 $activityHash Уникальный хеш-идентификатор сделки
      * @param string                 $leadUid      UID лида, к которому относится сделка
      * @param DealType               $type         Тип сделки (active или closed)
-     * @param DateTimeImmutable      $openTime     Время открытия сделки
+     * @param DateTimeImmutable|null $openTime     Время открытия сделки
      * @param DateTimeImmutable|null $closeTime    Время закрытия сделки (если есть)
      * @param string                 $pair         Торговая пара (например, "BTC/USD")
      * @param float                  $openPrice    Цена при открытии
@@ -26,15 +26,17 @@ class InvActivity
         public string $activityHash,
         public string $leadUid,
         public DealType $type,
-        public DateTimeImmutable $openTime,
-        public ?DateTimeImmutable $closeTime,
+        public ?DateTimeImmutable $openTime = null,
+        public ?DateTimeImmutable $closeTime = null,
         public string $pair,
         public float $openPrice,
-        public ?float $closePrice,
+        public ?float $closePrice = null,
         public float $amount,
         public DealDirection $direction,
-        public ?float $result,
+        public ?float $result = null,
+        public ?int $id = null,
     ) {
+        $this->openTime = $openTime ?? new DateTimeImmutable();
     }
 
 

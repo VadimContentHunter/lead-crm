@@ -7,13 +7,12 @@ use crm\src\Investments\Deposit\_entities\InvDeposit;
 final class InvDepositCollection
 {
     /**
-     * @var Deposit[]
+     * @param InvDeposit[] $items
      */
-    private array $items = [];
-
-    public function __construct(array $items = [])
-    {
-        foreach ($items as $item) {
+    public function __construct(
+        private array $items = []
+    ) {
+        foreach ($this->items as $item) {
             $this->add($item);
         }
     }
@@ -29,7 +28,7 @@ final class InvDepositCollection
     }
 
     /**
-     * @return Deposit[]
+     * @return InvDeposit[]
      */
     public function all(): array
     {

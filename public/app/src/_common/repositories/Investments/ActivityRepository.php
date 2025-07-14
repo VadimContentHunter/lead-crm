@@ -41,8 +41,12 @@ class ActivityRepository extends AResultRepository implements IActivityRepositor
      */
     protected function fromArray(): callable
     {
-        return [ActivityMapper::class, 'fromDbToEntity'];
+        return function (array $data): InvActivity {
+            $dto = ActivityMapper::fromArrayToDb($data);
+            return ActivityMapper::fromDbToEntity($dto);
+        };
     }
+
 
     /**
      * Преобразует сущность в массив данных для сохранения.

@@ -15,7 +15,7 @@ interface IResultRepository
      * Сохраняет сущность и возвращает ID или ошибку.
      *
      * @param  TEntity|array<string, mixed> $entity
-     * @return IResult<int|null>
+     * @return IResult
      */
     public function save(object|array $entity): IResult;
 
@@ -23,7 +23,7 @@ interface IResultRepository
      * Обновляет сущность или часть полей по id.
      *
      * @param  object|array<string, mixed> $entityOrData
-     * @return IResult<int|null>
+     * @return IResult
      */
     public function update(object|array $entityOrData): IResult;
 
@@ -31,7 +31,7 @@ interface IResultRepository
      * Удаляет по ID.
      *
      * @param  int $id
-     * @return IResult<int|null>
+     * @return IResult
      */
     public function deleteById(int $id): IResult;
 
@@ -39,21 +39,21 @@ interface IResultRepository
      * Получает сущность по ID.
      *
      * @param  int $id
-     * @return IResult<TEntity|null>
+     * @return IResult
      */
     public function getById(int $id): IResult;
 
     /**
      * Получает все сущности.
      *
-     * @return IResult<TEntity[]>
+     * @return IResult
      */
     public function getAll(): IResult;
 
     /**
      * Получает имена всех колонок таблицы.
      *
-     * @return IResult<string[]>
+     * @return IResult
      */
     public function getColumnNames(): IResult;
 
@@ -62,7 +62,7 @@ interface IResultRepository
      *
      * @param  string $column
      * @param  array<int|string> $excludedValues
-     * @return IResult<TEntity[]>
+     * @return IResult
      */
     public function getAllExcept(string $column = '', array $excludedValues = []): IResult;
 
@@ -71,7 +71,7 @@ interface IResultRepository
      *
      * @param  string $column
      * @param  array<int|string> $values
-     * @return IResult<TEntity[]>
+     * @return IResult
      */
     public function getAllByColumnValues(string $column = '', array $values = []): IResult;
 }

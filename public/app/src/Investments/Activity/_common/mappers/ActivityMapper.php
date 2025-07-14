@@ -50,7 +50,7 @@ class ActivityMapper
             activity_hash: $entity->activityHash,
             lead_uid: $entity->leadUid,
             type: $entity->type->value,
-            open_time: $entity->openTime->format('Y-m-d H:i:s'),
+            open_time: $entity->openTime?->format('Y-m-d H:i:s') ?? (new DateTimeImmutable())->format('Y-m-d H:i:s'),
             close_time: $entity->closeTime?->format('Y-m-d H:i:s'),
             pair: self::normalizePair($entity->pair),
             open_price: $entity->openPrice,
@@ -154,6 +154,32 @@ class ActivityMapper
             'result' => $dto->result,
         ];
     }
+
+    /**
+     * Преобразует массив данных из БД в DTO.
+     *
+     * @param  array<string, mixed> $data Ассоциативный массив данных из БД.
+     * @return DbActivityDto DTO, соответствующий данным из массива.
+     */
+    public static function fromArrayToDb(array $data): DbActivityDto
+    {
+        return new DbActivityDto(
+            activity_hash: $data['activity_hash'],
+            lead_uid: $data['lead_uid'],
+            type: $data['type'],
+            open_time: $data['open_time'],
+            close_time: $data['close_time'] ?? null,
+            pair: $data['pair'],
+            open_price: (float) $data['open_price'],
+            close_price: isset($data['close_price']) ? (float) $data['close_price'] : null,
+            amount: (float) $data['amount'],
+            direction: $data['direction'],
+            result: isset($data['result']) ? (float) $data['result'] : null,
+            id: isset($data['id']) ? (int) $data['id'] : null,
+        );
+    }
+
+
 
     /**
      * Нормализует строку торговой пары (например, BTC-USDT → BTC/USDT).

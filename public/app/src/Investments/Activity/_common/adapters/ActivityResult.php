@@ -10,26 +10,6 @@ use crm\src\Investments\Activity\_common\interfaces\IActivityResult;
 
 class ActivityResult extends AResult implements IActivityResult
 {
-    /**
-     * Переопределённый фабричный метод успеха.
-     *
-     * @param  InvActivity[]|InvActivityCollection|InvActivity|int[]|null $data
-     * @return static
-     */
-    public static function success(mixed $data = null): static
-    {
-        if (is_array($data) && isset($data[0]) && $data[0] instanceof InvActivity) {
-            $data = new InvActivityCollection($data);
-        }
-
-        return new static($data, null);
-    }
-
-    public static function failure(Throwable $error): static
-    {
-        return new static(null, $error);
-    }
-
     public function getActivity(): ?InvActivity
     {
         return $this->data instanceof InvActivity ? $this->data : null;

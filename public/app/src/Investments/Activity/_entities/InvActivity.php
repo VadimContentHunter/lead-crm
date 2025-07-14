@@ -13,32 +13,32 @@ class InvActivity
      * @param string                 $activityHash Уникальный хеш-идентификатор сделки
      * @param string                 $leadUid      UID лида, к которому относится сделка
      * @param DealType               $type         Тип сделки (active или closed)
-     * @param DateTimeImmutable|null $openTime     Время открытия сделки
-     * @param DateTimeImmutable|null $closeTime    Время закрытия сделки (если есть)
      * @param string                 $pair         Торговая пара (например, "BTC/USD")
      * @param float                  $openPrice    Цена при открытии
-     * @param float|null             $closePrice   Цена при закрытии (если есть)
      * @param float                  $amount       Объём сделки
      * @param DealDirection          $direction    Направление сделки (long/short)
+     * @param DateTimeImmutable|null $openTime     Время открытия сделки (по умолчанию — текущее)
+     * @param DateTimeImmutable|null $closeTime    Время закрытия сделки (если есть)
+     * @param float|null             $closePrice   Цена при закрытии (если есть)
      * @param float|null             $result       Прибыль или убыток (если закрыта)
+     * @param int|null               $id           Уникальный ID сделки (если есть)
      */
     public function __construct(
         public string $activityHash,
         public string $leadUid,
         public DealType $type,
-        public ?DateTimeImmutable $openTime = null,
-        public ?DateTimeImmutable $closeTime = null,
         public string $pair,
         public float $openPrice,
-        public ?float $closePrice = null,
         public float $amount,
         public DealDirection $direction,
+        public ?DateTimeImmutable $openTime = null,
+        public ?DateTimeImmutable $closeTime = null,
+        public ?float $closePrice = null,
         public ?float $result = null,
         public ?int $id = null,
     ) {
         $this->openTime = $openTime ?? new DateTimeImmutable();
     }
-
 
     public function isClosed(): bool
     {
@@ -70,6 +70,11 @@ class InvActivity
         $this->result = $this->calculateResult();
     }
 
+    /**
+     * Вычисляет результат сделки (прибыль или убыток).
+     *
+     * @return float
+     */
     private function calculateResult(): float
     {
         if ($this->closePrice === null) {

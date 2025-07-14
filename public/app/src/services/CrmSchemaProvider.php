@@ -19,6 +19,9 @@ class CrmSchemaProvider extends ASchemaProvider
         );
     }
 
+    /**
+     * @return array<string,string>
+     */
     protected static function userSchemas(): array
     {
         return [
@@ -50,6 +53,9 @@ class CrmSchemaProvider extends ASchemaProvider
         ];
     }
 
+    /**
+     * @return array<string,string>
+     */
     protected static function p2pSchemas(): array
     {
         return [
@@ -85,6 +91,9 @@ class CrmSchemaProvider extends ASchemaProvider
         ];
     }
 
+    /**
+     * @return array<string,string>
+     */
     protected static function accessSchemas(): array
     {
         return [
@@ -119,6 +128,9 @@ class CrmSchemaProvider extends ASchemaProvider
         ];
     }
 
+    /**
+     * @return array<string,string>
+     */
     protected static function investmentSchemas(): array
     {
         return [

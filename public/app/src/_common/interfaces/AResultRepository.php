@@ -92,28 +92,53 @@ abstract class AResultRepository implements IResultRepository
         }
     }
 
+
+    /**
+     * Обновляет сущность или ассоциативный массив данных в репозитории.
+     *
+     * Принимает объект сущности (TEntity) или массив. Если объект не соответствует ожидаемому типу,
+     * или отсутствует поле 'id', или нет данных для обновления — возвращается IResult с ошибкой.
+     *
+     * @param  TEntity|array<string,mixed> $entityOrData
+     * @return IResult Результат обновления: ID или ошибка.
+     */
     public function update(object|array $entityOrData): IResult
     {
         try {
-            $data = is_object($entityOrData) ? $this->toArray($entityOrData) : $entityOrData;
+            if (is_object($entityOrData)) {
+                $class = $this->getEntityClass();
+
+                if (!$entityOrData instanceof $class) {
+                    return $this->wrapFailure(new \InvalidArgumentException(
+                        "Ожидался объект типа {$class}, передан " . get_class($entityOrData)
+                    ));
+                }
+
+                /**
+                 * @var TEntity $entityOrData
+                 */
+                $data = $this->toArray($entityOrData);
+            } else {
+                $data = $entityOrData;
+            }
 
             if (!isset($data['id'])) {
-                throw new \InvalidArgumentException("Поле 'id' обязательно для update()");
+                return $this->wrapFailure(new \InvalidArgumentException("Поле 'id' обязательно для update()"));
             }
 
             $id = $data['id'];
             unset($data['id']);
 
             if (empty($data)) {
-                throw new \RuntimeException("Нет данных для обновления");
+                return $this->wrapFailure(new \RuntimeException("Нет данных для обновления"));
             }
 
             $result = $this->repository->executeQuery(
                 (new QueryBuilder())
-                    ->table($this->getTableName())
-                    ->where('id = :id')
-                    ->bindings(['id' => $id])
-                    ->update($data)
+                ->table($this->getTableName())
+                ->where('id = :id')
+                ->bindings(['id' => $id])
+                ->update($data)
             )->getInt();
 
             return $this->wrapSuccess($result);
@@ -121,6 +146,7 @@ abstract class AResultRepository implements IResultRepository
             return $this->wrapFailure($e);
         }
     }
+
 
     public function deleteById(int $id): IResult
     {

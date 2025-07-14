@@ -63,7 +63,7 @@ class ActivityMapper
     }
 
     /**
-     * Преобразует входной DTO в доменную сущность InvActivity.
+     * Преобразует входной DTO в сущность.
      *
      * @param  ActivityInputDto $dto
      * @return InvActivity
@@ -121,5 +121,29 @@ class ActivityMapper
             direction: $direction,
             result: $dto->result,
         );
+    }
+
+    /**
+     * Преобразует DTO для БД в ассоциативный массив для сохранения.
+     *
+     * @param  DbActivityDto $dto
+     * @return array<string, mixed>
+     */
+    public static function fromDbToArray(DbActivityDto $dto): array
+    {
+        return [
+            'id' => $dto->id,
+            'activity_hash' => $dto->activity_hash,
+            'lead_uid' => $dto->lead_uid,
+            'type' => $dto->type,
+            'open_time' => $dto->open_time,
+            'close_time' => $dto->close_time,
+            'pair' => $dto->pair,
+            'open_price' => $dto->open_price,
+            'close_price' => $dto->close_price,
+            'amount' => $dto->amount,
+            'direction' => $dto->direction,
+            'result' => $dto->result,
+        ];
     }
 }

@@ -221,4 +221,67 @@ class ActivityMapper
 
         throw new \InvalidArgumentException("Неподдерживаемая торговая пара: $input");
     }
+
+    /**
+     * Извлекает только непустые (не null) поля из ActivityInputDto в виде массива.
+     * Полезно для обновлений, где нужно сохранить только переданные значения.
+     *
+     * @param  ActivityInputDto $dto
+     * @param  bool $strictPair Использовать строгую проверку пары
+     * @return array<string, mixed> Ассоциативный массив непустых полей
+     */
+    public static function fromInputExtractFilledFields(ActivityInputDto $dto, bool $strictPair = false): array
+    {
+        $fields = [];
+
+        if ($dto->id !== null) {
+            $fields['id'] = $dto->id;
+        }
+
+        if ($dto->activityHash !== null) {
+            $fields['activity_hash'] = $dto->activityHash;
+        }
+
+        if ($dto->leadUid !== null) {
+            $fields['lead_uid'] = $dto->leadUid;
+        }
+
+        if ($dto->type !== null) {
+            $fields['type'] = $dto->type;
+        }
+
+        if ($dto->openTime !== null) {
+            $fields['open_time'] = (new DateTimeImmutable($dto->openTime))->format('Y-m-d H:i:s');
+        }
+
+        if ($dto->closeTime !== null) {
+            $fields['close_time'] = (new DateTimeImmutable($dto->closeTime))->format('Y-m-d H:i:s');
+        }
+
+        if ($dto->pair !== null) {
+            $fields['pair'] = $strictPair ? self::strictPair($dto->pair) : self::normalizePair($dto->pair);
+        }
+
+        if ($dto->openPrice !== null) {
+            $fields['open_price'] = $dto->openPrice;
+        }
+
+        if ($dto->closePrice !== null) {
+            $fields['close_price'] = $dto->closePrice;
+        }
+
+        if ($dto->amount !== null) {
+            $fields['amount'] = $dto->amount;
+        }
+
+        if ($dto->direction !== null) {
+            $fields['direction'] = $dto->direction;
+        }
+
+        if ($dto->result !== null) {
+            $fields['result'] = $dto->result;
+        }
+
+        return $fields;
+    }
 }

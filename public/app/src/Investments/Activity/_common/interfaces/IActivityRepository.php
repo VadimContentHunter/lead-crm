@@ -3,6 +3,7 @@
 namespace crm\src\Investments\Activity\_common\interfaces;
 
 use crm\src\_common\interfaces\IRepository;
+use crm\src\_common\interfaces\IResultRepository;
 use crm\src\Investments\Activity\_entities\InvActivity;
 use crm\src\Investments\Activity\_common\interfaces\IActivityResult;
 
@@ -11,7 +12,7 @@ use crm\src\Investments\Activity\_common\interfaces\IActivityResult;
  *
  * @extends IRepository<InvActivity>
  */
-interface IActivityRepository extends IRepository
+interface IActivityRepository extends IResultRepository
 {
     /**
      * Возвращает все сделки, связанные с указанным leadId.

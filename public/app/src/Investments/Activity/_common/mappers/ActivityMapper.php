@@ -8,19 +8,18 @@ use crm\src\Investments\Activity\_entities\InvActivity;
 use crm\src\Investments\Activity\_entities\DealDirection;
 use crm\src\Investments\Activity\_common\DTOs\DbActivityDto;
 use crm\src\Investments\Activity\_common\DTOs\ActivityInputDto;
+use crm\src\Investments\Activity\_entities\TradePair;
 
-/**
- * Маппер между сущностью InvActivity и различными DTO.
- */
 class ActivityMapper
 {
     /**
      * Преобразует DTO из БД в сущность.
      *
      * @param  DbActivityDto $dto
+     * @param  bool $strictPair Использовать строгую проверку пары (default: false)
      * @return InvActivity
      */
-    public static function fromDbToEntity(DbActivityDto $dto): InvActivity
+    public static function fromDbToEntity(DbActivityDto $dto, bool $strictPair = false): InvActivity
     {
         return new InvActivity(
             activityHash: $dto->activity_hash,
@@ -28,7 +27,7 @@ class ActivityMapper
             type: DealType::from($dto->type),
             openTime: new DateTimeImmutable($dto->open_time),
             closeTime: $dto->close_time ? new DateTimeImmutable($dto->close_time) : null,
-            pair: $dto->pair,
+            pair: $strictPair ? self::strictPair($dto->pair) : self::normalizePair($dto->pair),
             openPrice: $dto->open_price,
             closePrice: $dto->close_price,
             amount: $dto->amount,
@@ -53,7 +52,7 @@ class ActivityMapper
             type: $entity->type->value,
             open_time: $entity->openTime->format('Y-m-d H:i:s'),
             close_time: $entity->closeTime?->format('Y-m-d H:i:s'),
-            pair: $entity->pair,
+            pair: self::normalizePair($entity->pair),
             open_price: $entity->openPrice,
             close_price: $entity->closePrice,
             amount: $entity->amount,
@@ -66,9 +65,10 @@ class ActivityMapper
      * Преобразует входной DTO в сущность.
      *
      * @param  ActivityInputDto $dto
+     * @param  bool $strictPair Использовать строгую проверку пары (default: false)
      * @return InvActivity
      */
-    public static function fromInputToEntity(ActivityInputDto $dto): InvActivity
+    public static function fromInputToEntity(ActivityInputDto $dto, bool $strictPair = false): InvActivity
     {
         return new InvActivity(
             activityHash: $dto->activityHash ?? uniqid('act_', true),
@@ -76,7 +76,7 @@ class ActivityMapper
             type: $dto->type ? DealType::from($dto->type) : DealType::ACTIVE,
             openTime: $dto->openTime ? new DateTimeImmutable($dto->openTime) : new DateTimeImmutable(),
             closeTime: $dto->closeTime ? new DateTimeImmutable($dto->closeTime) : null,
-            pair: $dto->pair ?? '',
+            pair: $dto->pair ? ($strictPair ? self::strictPair($dto->pair) : self::normalizePair($dto->pair)) : '',
             openPrice: $dto->openPrice ?? 0.0,
             closePrice: $dto->closePrice,
             amount: $dto->amount ?? 0.0,
@@ -90,9 +90,10 @@ class ActivityMapper
      * Преобразует входной DTO напрямую в DTO для БД.
      *
      * @param  ActivityInputDto $dto
+     * @param  bool $strictPair Использовать строгую проверку пары (default: false)
      * @return DbActivityDto
      */
-    public static function fromInputToDb(ActivityInputDto $dto): DbActivityDto
+    public static function fromInputToDb(ActivityInputDto $dto, bool $strictPair = false): DbActivityDto
     {
         $activityHash = $dto->activityHash ?? uniqid('act_', true);
         $leadUid = $dto->leadUid ?? throw new \InvalidArgumentException('leadUid is required');
@@ -107,6 +108,10 @@ class ActivityMapper
             ? (new DateTimeImmutable($dto->closeTime))->format('Y-m-d H:i:s')
             : null;
 
+        $pair = $dto->pair
+            ? ($strictPair ? self::strictPair($dto->pair) : self::normalizePair($dto->pair))
+            : '';
+
         return new DbActivityDto(
             id: $dto->id,
             activity_hash: $activityHash,
@@ -114,7 +119,7 @@ class ActivityMapper
             type: $type,
             open_time: $openTime,
             close_time: $closeTime,
-            pair: $dto->pair ?? '',
+            pair: $pair,
             open_price: $dto->openPrice ?? 0.0,
             close_price: $dto->closePrice,
             amount: $dto->amount ?? 0.0,
@@ -127,10 +132,13 @@ class ActivityMapper
      * Преобразует DTO для БД в ассоциативный массив для сохранения.
      *
      * @param  DbActivityDto $dto
+     * @param  bool $strictPair Использовать строгую проверку пары (default: false)
      * @return array<string, mixed>
      */
-    public static function fromDbToArray(DbActivityDto $dto): array
+    public static function fromDbToArray(DbActivityDto $dto, bool $strictPair = false): array
     {
+        $pair = $strictPair ? self::strictPair($dto->pair) : self::normalizePair($dto->pair);
+
         return [
             'id' => $dto->id,
             'activity_hash' => $dto->activity_hash,
@@ -138,12 +146,53 @@ class ActivityMapper
             'type' => $dto->type,
             'open_time' => $dto->open_time,
             'close_time' => $dto->close_time,
-            'pair' => $dto->pair,
+            'pair' => $pair,
             'open_price' => $dto->open_price,
             'close_price' => $dto->close_price,
             'amount' => $dto->amount,
             'direction' => $dto->direction,
             'result' => $dto->result,
         ];
+    }
+
+    /**
+     * Нормализует строку торговой пары (например, BTC-USDT → BTC/USDT).
+     *
+     * @param  string $input
+     * @return string
+     */
+    public static function normalizePair(string $input): string
+    {
+        $normalized = strtoupper(trim($input));
+        $normalized = str_replace(['-', '_', ' '], '/', $normalized);
+
+        foreach (TradePair::cases() as $case) {
+            if ($normalized === strtoupper($case->value)) {
+                return $case->value;
+            }
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * Строго валидирует, что пара входит в TradePair.
+     *
+     * @param  string $input
+     * @return string
+     *
+     * @throws \InvalidArgumentException
+     */
+    public static function strictPair(string $input): string
+    {
+        $normalized = self::normalizePair($input);
+
+        foreach (TradePair::cases() as $case) {
+            if ($normalized === $case->value) {
+                return $case->value;
+            }
+        }
+
+        throw new \InvalidArgumentException("Неподдерживаемая торговая пара: $input");
     }
 }

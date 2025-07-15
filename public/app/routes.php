@@ -1,11 +1,12 @@
 <?php
 
-use crm\src\components\BalanceManagement\_entities\Balance;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
+use crm\src\controllers\P2pPage;
 use crm\src\controllers\LeadPage;
 use crm\src\controllers\UserPage;
 use crm\src\controllers\LoginPage;
+use crm\src\controllers\InvestPage;
 use crm\src\controllers\LogoutPage;
 use crm\src\controllers\SourcePage;
 use crm\src\controllers\StatusPage;
@@ -13,7 +14,6 @@ use crm\src\controllers\HomeController;
 use crm\src\controllers\TestController;
 use crm\src\controllers\AccessDeniedPage;
 use crm\src\controllers\API\ApiController;
-use crm\src\controllers\API\BalanceController;
 use crm\src\controllers\API\LeadController;
 use crm\src\controllers\API\UserController;
 use crm\src\services\AppContext\AppContext;
@@ -22,10 +22,11 @@ use crm\src\controllers\BootstrapController;
 use crm\src\services\AppContext\IAppContext;
 use crm\src\controllers\API\SourceController;
 use crm\src\controllers\API\StatusController;
+use crm\src\controllers\API\BalanceController;
 use crm\src\controllers\API\CommentController;
 use crm\src\controllers\API\DepositController;
-use crm\src\controllers\P2pPage;
 use crm\src\services\RouteHandler\entities\Route;
+use crm\src\components\BalanceManagement\_entities\Balance;
 
 /**
  * @return Route[]
@@ -119,46 +120,7 @@ function loadRoutes(PDO $pdo, IAppContext $appContext, LoggerInterface $logger =
             extraData: [$appContext]
         ),
 
-        // PAGES-STATUS
-
-        new Route(
-            pattern: '^/page/status-add/?$',
-            className: StatusPage::class,
-            methodName: 'showAddStatusPage',
-            extraData: [$appContext]
-        ),
-
-        new Route(
-            pattern: '^/page/status-all/?$',
-            className: StatusPage::class,
-            methodName: 'showAllStatusPage',
-            extraData: [$appContext]
-        ),
-
-        // PAGES-SOURCE
-
-        new Route(
-            pattern: '^/page/source-add/?$',
-            className: SourcePage::class,
-            methodName: 'showAddSourcePage',
-            extraData: [$appContext]
-        ),
-
-        new Route(
-            pattern: '^/page/source-all/?$',
-            className: SourcePage::class,
-            methodName: 'showAllSourcePage',
-            extraData: [$appContext]
-        ),
-
         // PAGES-LEAD
-
-        new Route(
-            pattern: '^/page/lead-add/?$',
-            className: LeadPage::class,
-            methodName: 'showAddLeadPage',
-            extraData: [$appContext]
-        ),
 
         new Route(
             pattern: '^/page/lead-all/?$',
@@ -175,6 +137,12 @@ function loadRoutes(PDO $pdo, IAppContext $appContext, LoggerInterface $logger =
         ),
 
         // PAGES-OTHER
+
+        new Route(
+            pattern: '^/invest/?$',
+            className: InvestPage::class,
+            extraData: [$appContext]
+        ),
 
         new Route(
             pattern: '^/p2p/?$',

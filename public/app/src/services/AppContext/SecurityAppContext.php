@@ -492,8 +492,8 @@ class SecurityAppContext implements IAppContext, ISecurity
                 'icon' => 'fa-solid fa-house',
             ],
             [
-                'name' => 'Инвестка',
-                'href' => '/investka',
+                'name' => 'Инвестиции',
+                'href' => '/invest',
                 'icon' => 'fa-solid fa-house',
             ],
         ];

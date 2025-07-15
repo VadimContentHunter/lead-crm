@@ -8,9 +8,9 @@ namespace Domain\Investment\DTOs;
 class DbInvStatusDto
 {
     public function __construct(
-        public ?int $id = null,
         public string $code,
         public string $label,
+        public ?int $id = null,
     ) {
     }
 }

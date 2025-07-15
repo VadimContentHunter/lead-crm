@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\Investments\Balance\_common\DTOs;
+namespace crm\src\Investments\InvBalance\_common\DTOs;
 
 /**
  * DTO для работы с БД: баланс инвестиционного лида.

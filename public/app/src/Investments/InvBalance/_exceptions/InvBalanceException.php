@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\Investments\Balance\_exceptions;
+namespace crm\src\Investments\InvBalance\_exceptions;
 
 use RuntimeException;
 

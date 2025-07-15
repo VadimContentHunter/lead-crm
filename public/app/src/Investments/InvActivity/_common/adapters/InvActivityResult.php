@@ -3,16 +3,16 @@
 namespace crm\src\Investments\InvActivity\_common\adapters;
 
 use Throwable;
-use crm\src\Investments\InvActivity\_entities\InvInvActivity;
-use crm\src\Investments\InvActivity\_common\InvInvActivityCollection;
+use crm\src\Investments\InvActivity\_entities\InvActivity;
+use crm\src\Investments\InvActivity\_common\InvActivityCollection;
 use crm\src\_common\interfaces\AResult;
 use crm\src\Investments\InvActivity\_common\interfaces\IInvActivityResult;
 
 class InvActivityResult extends AResult implements IInvActivityResult
 {
-    public function getInvActivity(): ?InvInvActivity
+    public function getInvActivity(): ?InvActivity
     {
-        return $this->data instanceof InvInvActivity ? $this->data : null;
+        return $this->data instanceof InvActivity ? $this->data : null;
     }
 
     public function getHash(): ?string
@@ -40,10 +40,10 @@ class InvActivityResult extends AResult implements IInvActivityResult
         return $this->getInvActivity()?->id;
     }
 
-    public function getCollection(): InvInvActivityCollection
+    public function getCollection(): InvActivityCollection
     {
-        return $this->data instanceof InvInvActivityCollection
+        return $this->data instanceof InvActivityCollection
             ? $this->data
-            : new InvInvActivityCollection([]);
+            : new InvActivityCollection([]);
     }
 }

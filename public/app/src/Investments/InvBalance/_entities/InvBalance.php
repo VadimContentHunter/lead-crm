@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\Investments\Balance\_entities;
+namespace crm\src\Investments\InvBalance\_entities;
 
 /**
  * Баланс инвестиционного лида.

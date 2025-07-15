@@ -7,7 +7,7 @@ use DateTimeImmutable;
 /**
  * Класс-сущность инвестиционной сделки.
  */
-class InvInvActivity
+class InvActivity
 {
     /**
      * @param string                 $InvActivityHash Уникальный хеш-идентификатор сделки

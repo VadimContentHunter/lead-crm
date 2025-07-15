@@ -3,8 +3,8 @@
 namespace crm\src\Investments\InvActivity\_common\interfaces;
 
 use crm\src\_common\interfaces\IResult;
-use crm\src\Investments\InvActivity\_entities\InvInvActivity;
-use crm\src\Investments\InvActivity\_common\InvInvActivityCollection;
+use crm\src\Investments\InvActivity\_entities\InvActivity;
+use crm\src\Investments\InvActivity\_common\InvActivityCollection;
 
 /**
  * Результат операций с инвестиционной сделкой или их коллекцией.
@@ -12,14 +12,14 @@ use crm\src\Investments\InvActivity\_common\InvInvActivityCollection;
 interface IInvActivityResult extends IResult
 {
     /**
-     * @return InvInvActivity|null
+     * @return InvActivity|null
      */
-    public function getInvActivity(): ?InvInvActivity;
+    public function getInvActivity(): ?InvActivity;
 
     /**
-     * @return InvInvActivityCollection|null
+     * @return InvActivityCollection|null
      */
-    public function getCollection(): ?InvInvActivityCollection;
+    public function getCollection(): ?InvActivityCollection;
 
     /**
      * @return string|null

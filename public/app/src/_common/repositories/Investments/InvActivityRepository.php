@@ -6,7 +6,7 @@ use crm\src\_common\repositories\AResultRepository;
 use crm\src\Investments\InvActivity\_mappers\InvActivityMapper;
 use crm\src\Investments\InvActivity\_common\DTOs\DbInvActivityDto;
 use crm\src\services\Repositories\QueryBuilder\QueryBuilder;
-use crm\src\Investments\InvActivity\_common\InvInvActivityCollection;
+use crm\src\Investments\InvActivity\_common\InvActivityCollection;
 use crm\src\Investments\InvActivity\_common\adapters\InvActivityResult;
 use crm\src\Investments\InvActivity\_common\interfaces\IInvActivityResult;
 use crm\src\Investments\InvActivity\_common\interfaces\IInvActivityRepository;
@@ -56,7 +56,7 @@ class InvActivityRepository extends AResultRepository implements IInvActivityRep
                 $dtoList
             );
 
-            return InvActivityResult::success(new InvInvActivityCollection($entities));
+            return InvActivityResult::success(new InvActivityCollection($entities));
         } catch (\Throwable $e) {
             return InvActivityResult::failure($e);
         }
@@ -78,7 +78,7 @@ class InvActivityRepository extends AResultRepository implements IInvActivityRep
                 $dtoList
             );
 
-            return InvActivityResult::success(new InvInvActivityCollection($entities));
+            return InvActivityResult::success(new InvActivityCollection($entities));
         } catch (\Throwable $e) {
             return InvActivityResult::failure($e);
         }
@@ -100,7 +100,7 @@ class InvActivityRepository extends AResultRepository implements IInvActivityRep
                 $dtoList
             );
 
-            return InvActivityResult::success(new InvInvActivityCollection($entities));
+            return InvActivityResult::success(new InvActivityCollection($entities));
         } catch (\Throwable $e) {
             return InvActivityResult::failure($e);
         }

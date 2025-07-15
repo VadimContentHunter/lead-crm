@@ -7,10 +7,10 @@ use crm\src\Investments\InvActivity\_mappers\InvActivityMapper;
 use crm\src\Investments\InvActivity\_common\DTOs\InvActivityInputDto;
 use crm\src\Investments\InvActivity\_common\DTOs\DbInvActivityDto;
 use crm\src\Investments\InvActivity\_common\adapters\InvActivityResult;
-use crm\src\Investments\InvActivity\_exceptions\InvInvActivityException;
+use crm\src\Investments\InvActivity\_exceptions\InvActivityException;
 use crm\src\Investments\InvActivity\_common\interfaces\IInvActivityResult;
 use crm\src\Investments\InvActivity\_common\interfaces\IInvActivityRepository;
-use crm\src\Investments\InvActivity\_entities\InvInvActivity;
+use crm\src\Investments\InvActivity\_entities\InvActivity;
 
 /**
  * Сервис управления инвестиционными сделками.
@@ -39,7 +39,7 @@ class ManageInvActivity
             $validation = $this->validator->validate($input);
             if (!$validation->isValid()) {
                 return InvActivityResult::failure(
-                    new InvInvActivityException('Ошибка валидации: ' . implode('; ', $validation->getErrors()))
+                    new InvActivityException('Ошибка валидации: ' . implode('; ', $validation->getErrors()))
                 );
             }
 
@@ -48,7 +48,7 @@ class ManageInvActivity
 
             if (!$result->isSuccess()) {
                 return InvActivityResult::failure(
-                    $result->getError() ?? new InvInvActivityException("Ошибка сохранения сделки")
+                    $result->getError() ?? new InvActivityException("Ошибка сохранения сделки")
                 );
             }
 
@@ -74,13 +74,13 @@ class ManageInvActivity
     {
         try {
             if (!$input->id) {
-                return InvActivityResult::failure(new InvInvActivityException("ID обязателен для обновления"));
+                return InvActivityResult::failure(new InvActivityException("ID обязателен для обновления"));
             }
 
             $validation = $this->validator->validate($input, ignoreFields: ['leadUid']);
             if (!$validation->isValid()) {
                 return InvActivityResult::failure(
-                    new InvInvActivityException('Ошибка валидации: ' . implode('; ', $validation->getErrors()))
+                    new InvActivityException('Ошибка валидации: ' . implode('; ', $validation->getErrors()))
                 );
             }
 
@@ -89,7 +89,7 @@ class ManageInvActivity
 
             if (!$result->isSuccess()) {
                 return InvActivityResult::failure(
-                    $result->getError() ?? new InvInvActivityException("Ошибка при обновлении сделки")
+                    $result->getError() ?? new InvActivityException("Ошибка при обновлении сделки")
                 );
             }
 
@@ -109,14 +109,14 @@ class ManageInvActivity
     {
         try {
             if ($id <= 0) {
-                return InvActivityResult::failure(new InvInvActivityException("Некорректный ID для удаления"));
+                return InvActivityResult::failure(new InvActivityException("Некорректный ID для удаления"));
             }
 
             $result = $this->repository->deleteById($id);
 
             if (!$result->isSuccess()) {
                 return InvActivityResult::failure(
-                    $result->getError() ?? new InvInvActivityException("Ошибка при удалении сделки")
+                    $result->getError() ?? new InvActivityException("Ошибка при удалении сделки")
                 );
             }
 

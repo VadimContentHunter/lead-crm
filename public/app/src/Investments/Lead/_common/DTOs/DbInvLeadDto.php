@@ -18,7 +18,7 @@ class DbInvLeadDto
      * @param bool        $visible
      * @param int|null    $sourceId
      * @param int|null    $statusId
-     * @param int|null    $balanceId
+     * @param int|null    $InvBalanceId
      */
     public function __construct(
         public string $uid,
@@ -31,7 +31,7 @@ class DbInvLeadDto
         public bool $visible = true,
         public ?int $sourceId = null,
         public ?int $statusId = null,
-        public ?int $balanceId = null,
+        public ?int $InvBalanceId = null,
     ) {
     }
 }

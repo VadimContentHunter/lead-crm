@@ -1,12 +1,12 @@
 <?php
 
-namespace crm\src\Investments\Balance\_mappers;
+namespace crm\src\Investments\InvBalance\_mappers;
 
-use crm\src\Investments\Balance\_entities\InvBalance;
-use crm\src\Investments\Balance\_common\DTOs\DbInvBalanceDto;
-use crm\src\Investments\Balance\_common\DTOs\InputInvBalanceDto;
+use crm\src\Investments\InvBalance\_entities\InvBalance;
+use crm\src\Investments\InvBalance\_common\DTOs\DbInvBalanceDto;
+use crm\src\Investments\InvBalance\_common\DTOs\InputInvBalanceDto;
 
-class BalanceMapper
+class InvBalanceMapper
 {
     /**
      * Преобразует DTO из БД в сущность.

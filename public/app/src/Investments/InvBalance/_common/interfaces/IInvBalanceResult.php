@@ -1,19 +1,19 @@
 <?php
 
-namespace crm\src\Investments\Balance\_common\interfaces;
+namespace crm\src\Investments\InvBalance\_common\interfaces;
 
 use crm\src\_common\interfaces\IResult;
-use crm\src\Investments\Balance\_entities\InvBalance;
+use crm\src\Investments\InvBalance\_entities\InvBalance;
 
 /**
  * Результат операций с инвестиционным балансом.
  */
-interface IBalanceResult extends IResult
+interface IInvBalanceResult extends IResult
 {
     /**
      * @return InvBalance|null
      */
-    public function getBalance(): ?InvBalance;
+    public function getInvBalance(): ?InvBalance;
 
     /**
      * @return string|null

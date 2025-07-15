@@ -53,7 +53,7 @@ class InvLeadMapper
             visible: $entity->visible,
             sourceId: $entity->source?->id ?? null,
             statusId: $entity->status?->id ?? null,
-            balanceId: null
+            InvBalanceId: null
         );
     }
 
@@ -101,7 +101,7 @@ class InvLeadMapper
             visible: $dto->visible ?? true,
             sourceId: $dto->sourceId,
             statusId: $dto->statusId,
-            balanceId: null
+            InvBalanceId: null
         );
     }
 
@@ -124,7 +124,7 @@ class InvLeadMapper
             'visible' => $dto->visible,
             'source_id' => $dto->sourceId,
             'status_id' => $dto->statusId,
-            'balance_id' => $dto->balanceId,
+            'InvBalance_id' => $dto->InvBalanceId,
         ];
     }
 
@@ -147,7 +147,7 @@ class InvLeadMapper
             visible: (bool) ($data['visible'] ?? true),
             sourceId: isset($data['source_id']) ? (int) $data['source_id'] : null,
             statusId: isset($data['status_id']) ? (int) $data['status_id'] : null,
-            balanceId: isset($data['balance_id']) ? (int) $data['balance_id'] : null
+            InvBalanceId: isset($data['InvBalance_id']) ? (int) $data['InvBalance_id'] : null
         );
     }
 

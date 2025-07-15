@@ -1,26 +1,26 @@
 <?php
 
-namespace crm\src\Investments\Balance;
+namespace crm\src\Investments\InvBalance;
 
 use crm\src\_common\interfaces\IValidation;
-use crm\src\Investments\Balance\_mappers\BalanceMapper;
-use crm\src\Investments\Balance\_common\DTOs\InputInvBalanceDto;
-use crm\src\Investments\Balance\_exceptions\InvBalanceException;
-use crm\src\Investments\Balance\_common\interfaces\IBalanceResult;
-use crm\src\Investments\Balance\_common\interfaces\IBalanceRepository;
-use crm\src\Investments\Balance\_common\adapters\BalanceResult;
+use crm\src\Investments\InvBalance\_mappers\InvBalanceMapper;
+use crm\src\Investments\InvBalance\_common\DTOs\InputInvBalanceDto;
+use crm\src\Investments\InvBalance\_exceptions\InvBalanceException;
+use crm\src\Investments\InvBalance\_common\interfaces\IInvBalanceResult;
+use crm\src\Investments\InvBalance\_common\interfaces\IInvBalanceRepository;
+use crm\src\Investments\InvBalance\_common\adapters\InvBalanceResult;
 
 /**
  * Сервис управления инвестиционным балансом.
  */
-class ManageBalance
+class ManageInvBalance
 {
     /**
-     * @param IBalanceRepository $repository
+     * @param IInvBalanceRepository $repository
      * @param IValidation $validator
      */
     public function __construct(
-        private IBalanceRepository $repository,
+        private IInvBalanceRepository $repository,
         private IValidation $validator,
     ) {
     }
@@ -29,32 +29,32 @@ class ManageBalance
      * Создание нового баланса.
      *
      * @param  InputInvBalanceDto $input
-     * @return IBalanceResult
+     * @return IInvBalanceResult
      */
-    public function create(InputInvBalanceDto $input): IBalanceResult
+    public function create(InputInvBalanceDto $input): IInvBalanceResult
     {
         try {
             $validation = $this->validator->validate($input);
             if (!$validation->isValid()) {
-                return BalanceResult::failure(
+                return InvBalanceResult::failure(
                     new InvBalanceException('Ошибка валидации: ' . implode('; ', $validation->getErrors()))
                 );
             }
 
-            $dto = BalanceMapper::fromInputToDb($input);
+            $dto = InvBalanceMapper::fromInputToDb($input);
             $result = $this->repository->save($dto);
 
             if (!$result->isSuccess()) {
-                return BalanceResult::failure(
+                return InvBalanceResult::failure(
                     $result->getError() ?? new InvBalanceException("Ошибка сохранения баланса")
                 );
             }
 
-            $entity = BalanceMapper::fromDbToEntity($dto);
+            $entity = InvBalanceMapper::fromDbToEntity($dto);
 
-            return BalanceResult::success($entity);
+            return InvBalanceResult::success($entity);
         } catch (\Throwable $e) {
-            return BalanceResult::failure($e);
+            return InvBalanceResult::failure($e);
         }
     }
 
@@ -62,34 +62,34 @@ class ManageBalance
      * Обновление баланса по lead_uid.
      *
      * @param  InputInvBalanceDto $input
-     * @return IBalanceResult
+     * @return IInvBalanceResult
      */
-    public function updateByLeadUid(InputInvBalanceDto $input): IBalanceResult
+    public function updateByLeadUid(InputInvBalanceDto $input): IInvBalanceResult
     {
         try {
             if (empty($input->leadUid)) {
-                return BalanceResult::failure(new InvBalanceException("leadUid обязателен для обновления"));
+                return InvBalanceResult::failure(new InvBalanceException("leadUid обязателен для обновления"));
             }
 
             $validation = $this->validator->validate($input);
             if (!$validation->isValid()) {
-                return BalanceResult::failure(
+                return InvBalanceResult::failure(
                     new InvBalanceException('Ошибка валидации: ' . implode('; ', $validation->getErrors()))
                 );
             }
 
-            $updateData = BalanceMapper::fromInputExtractFilledFields($input);
+            $updateData = InvBalanceMapper::fromInputExtractFilledFields($input);
             $result = $this->repository->update($updateData);
 
             if (!$result->isSuccess()) {
-                return BalanceResult::failure(
+                return InvBalanceResult::failure(
                     $result->getError() ?? new InvBalanceException("Ошибка при обновлении баланса")
                 );
             }
 
-            return BalanceResult::success($updateData);
+            return InvBalanceResult::success($updateData);
         } catch (\Throwable $e) {
-            return BalanceResult::failure($e);
+            return InvBalanceResult::failure($e);
         }
     }
 
@@ -97,26 +97,26 @@ class ManageBalance
      * Удаление баланса по lead_uid.
      *
      * @param  string $leadUid
-     * @return IBalanceResult
+     * @return IInvBalanceResult
      */
-    public function deleteByLeadUid(string $leadUid): IBalanceResult
+    public function deleteByLeadUid(string $leadUid): IInvBalanceResult
     {
         try {
             if (empty($leadUid)) {
-                return BalanceResult::failure(new InvBalanceException("leadUid обязателен для удаления"));
+                return InvBalanceResult::failure(new InvBalanceException("leadUid обязателен для удаления"));
             }
 
             $result = $this->repository->deleteByLeadUid($leadUid);
 
             if (!$result->isSuccess()) {
-                return BalanceResult::failure(
+                return InvBalanceResult::failure(
                     $result->getError() ?? new InvBalanceException("Ошибка при удалении баланса")
                 );
             }
 
-            return BalanceResult::success($leadUid);
+            return InvBalanceResult::success($leadUid);
         } catch (\Throwable $e) {
-            return BalanceResult::failure($e);
+            return InvBalanceResult::failure($e);
         }
     }
 }

@@ -1,30 +1,30 @@
 <?php
 
-namespace crm\src\Investments\Balance\_common\interfaces;
+namespace crm\src\Investments\InvBalance\_common\interfaces;
 
 use crm\src\_common\interfaces\IResultRepository;
-use crm\src\Investments\Balance\_common\DTOs\DbInvBalanceDto;
+use crm\src\Investments\InvBalance\_common\DTOs\DbInvBalanceDto;
 
 /**
  * Интерфейс репозитория инвестиционного баланса.
  *
  * @extends IResultRepository<DbInvBalanceDto>
  */
-interface IBalanceRepository extends IResultRepository
+interface IInvBalanceRepository extends IResultRepository
 {
     /**
      * Возвращает баланс по leadUid.
      *
      * @param  string $leadUid
-     * @return IBalanceResult
+     * @return IInvBalanceResult
      */
-    public function getByLeadUid(string $leadUid): IBalanceResult;
+    public function getByLeadUid(string $leadUid): IInvBalanceResult;
 
     /**
      * Удаляет баланс по leadUid.
      *
      * @param  string $leadUid
-     * @return IBalanceResult
+     * @return IInvBalanceResult
      */
-    public function deleteByLeadUid(string $leadUid): IBalanceResult;
+    public function deleteByLeadUid(string $leadUid): IInvBalanceResult;
 }

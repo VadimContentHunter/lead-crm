@@ -4,7 +4,7 @@ namespace crm\src\Investments\InvActivity\_mappers;
 
 use DateTimeImmutable;
 use crm\src\Investments\InvActivity\_entities\DealType;
-use crm\src\Investments\InvActivity\_entities\InvInvActivity;
+use crm\src\Investments\InvActivity\_entities\InvActivity;
 use crm\src\Investments\InvActivity\_entities\DealDirection;
 use crm\src\Investments\InvActivity\_common\DTOs\DbInvActivityDto;
 use crm\src\Investments\InvActivity\_common\DTOs\InvActivityInputDto;
@@ -17,11 +17,11 @@ class InvActivityMapper
      *
      * @param  DbInvActivityDto $dto
      * @param  bool $strictPair Использовать строгую проверку пары (default: false)
-     * @return InvInvActivity
+     * @return InvActivity
      */
-    public static function fromDbToEntity(DbInvActivityDto $dto, bool $strictPair = false): InvInvActivity
+    public static function fromDbToEntity(DbInvActivityDto $dto, bool $strictPair = false): InvActivity
     {
-        return new InvInvActivity(
+        return new InvActivity(
             InvActivityHash: $dto->InvActivity_hash,
             leadUid: $dto->lead_uid,
             type: DealType::from($dto->type),
@@ -40,10 +40,10 @@ class InvActivityMapper
     /**
      * Преобразует сущность в DTO для БД.
      *
-     * @param  InvInvActivity $entity
+     * @param  InvActivity $entity
      * @return DbInvActivityDto
      */
-    public static function fromEntityToDb(InvInvActivity $entity): DbInvActivityDto
+    public static function fromEntityToDb(InvActivity $entity): DbInvActivityDto
     {
         return new DbInvActivityDto(
             id: $entity->id,
@@ -66,11 +66,11 @@ class InvActivityMapper
      *
      * @param  InvActivityInputDto $dto
      * @param  bool $strictPair Использовать строгую проверку пары (default: false)
-     * @return InvInvActivity
+     * @return InvActivity
      */
-    public static function fromInputToEntity(InvActivityInputDto $dto, bool $strictPair = false): InvInvActivity
+    public static function fromInputToEntity(InvActivityInputDto $dto, bool $strictPair = false): InvActivity
     {
-        return new InvInvActivity(
+        return new InvActivity(
             InvActivityHash: $dto->InvActivityHash ?? uniqid('act_', true),
             leadUid: $dto->leadUid ?? throw new \InvalidArgumentException('leadUid is required'),
             type: $dto->type ? DealType::from($dto->type) : DealType::ACTIVE,

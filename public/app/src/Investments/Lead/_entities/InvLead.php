@@ -6,10 +6,10 @@ use DateTimeImmutable;
 use crm\src\Investments\Lead\_entities\SimpleInvLead;
 use crm\src\Investments\Source\_entities\InvSource;
 use crm\src\Investments\Status\_entities\InvStatus;
-use crm\src\Investments\Balance\_entities\InvBalance;
+use crm\src\Investments\InvBalance\_entities\InvBalance;
 use crm\src\Investments\Comment\_common\InvCommentCollection;
 use crm\src\Investments\Deposit\_common\InvDepositCollection;
-use crm\src\Investments\InvActivity\_common\InvInvActivityCollection;
+use crm\src\Investments\InvActivity\_common\InvActivityCollection;
 
 /**
  * Полная инвестиционная модель лида, включающая связанные данные: баланс, депозиты, сделки, комментарии.
@@ -27,9 +27,9 @@ class InvLead extends SimpleInvLead
      * @param bool                  $visible        Видимость лида (по умолчанию true)
      * @param InvSource|null        $source         Источник лида (например, Binance, Bybit)
      * @param InvStatus|null        $status         Текущий статус лида (например, "work", "lost")
-     * @param InvBalance|null       $balance        Объект баланса клиента
+     * @param InvBalance|null       $InvBalance     Объект баланса клиента
      * @param InvDepositCollection  $deposits       Коллекция депозитов клиента
-     * @param InvInvActivityCollection $activities     Коллекция инвестиционных сделок
+     * @param InvActivityCollection $activities     Коллекция инвестиционных сделок
      * @param InvCommentCollection  $comments       Коллекция комментариев по лиду
      */
     public function __construct(
@@ -43,9 +43,9 @@ class InvLead extends SimpleInvLead
         bool $visible = true,
         ?InvSource $source = null,
         ?InvStatus $status = null,
-        public ?InvBalance $balance = null,
+        public ?InvBalance $InvBalance = null,
         public InvDepositCollection $deposits = new InvDepositCollection(),
-        public InvInvActivityCollection $activities = new InvInvActivityCollection(),
+        public InvActivityCollection $activities = new InvActivityCollection(),
         public InvCommentCollection $comments = new InvCommentCollection(),
     ) {
         parent::__construct(
@@ -61,6 +61,6 @@ class InvLead extends SimpleInvLead
             $status
         );
 
-        $this->balance = $this->balance ?? new InvBalance(leadUid: $uid);
+        $this->InvBalance = $this->InvBalance ?? new InvBalance(leadUid: $uid);
     }
 }

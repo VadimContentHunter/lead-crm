@@ -1,15 +1,15 @@
 <?php
 
-namespace crm\src\Investments\Activity\_common\DTOs;
+namespace crm\src\Investments\InvActivity\_common\DTOs;
 
 /**
  * DTO для хранения сделки в базе данных.
  * Используется для передачи данных между слоем хранения и доменной сущностью.
  */
-class DbActivityDto
+class DbInvActivityDto
 {
     /**
-     * @param string      $activity_hash Уникальный хеш сделки
+     * @param string      $InvActivity_hash Уникальный хеш сделки
      * @param string      $lead_uid      UID лида, к которому привязана сделка
      * @param string      $type          Тип сделки: 'active' или 'closed'
      * @param string      $open_time     Время открытия сделки (формат: Y-m-d H:i:s)
@@ -23,7 +23,7 @@ class DbActivityDto
      * @param int|null    $id            Уникальный числовой идентификатор сделки в базе (если есть)
      */
     public function __construct(
-        public string $activity_hash,
+        public string $InvActivity_hash,
         public string $lead_uid,
         public string $type,
         public string $open_time,

@@ -1,16 +1,16 @@
 <?php
 
-namespace crm\src\Investments\Activity\_entities;
+namespace crm\src\Investments\InvActivity\_entities;
 
 use DateTimeImmutable;
 
 /**
  * Класс-сущность инвестиционной сделки.
  */
-class InvActivity
+class InvInvActivity
 {
     /**
-     * @param string                 $activityHash Уникальный хеш-идентификатор сделки
+     * @param string                 $InvActivityHash Уникальный хеш-идентификатор сделки
      * @param string                 $leadUid      UID лида, к которому относится сделка
      * @param DealType               $type         Тип сделки (active или closed)
      * @param string                 $pair         Торговая пара (например, "BTC/USD")
@@ -24,7 +24,7 @@ class InvActivity
      * @param int|null               $id           Уникальный ID сделки (если есть)
      */
     public function __construct(
-        public string $activityHash,
+        public string $InvActivityHash,
         public string $leadUid,
         public DealType $type,
         public string $pair,

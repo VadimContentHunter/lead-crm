@@ -6,9 +6,9 @@ use crm\src\services\Validator;
 use crm\src\_common\interfaces\AValidatorAdapter;
 
 /**
- * Валидатор для ActivityInputDto.
+ * Валидатор для InvInvActivityInputDto.
  */
-class ActivityValidatorAdapter extends AValidatorAdapter
+class InvInvActivityValidatorAdapter extends AValidatorAdapter
 {
     protected function buildValidator(): Validator
     {

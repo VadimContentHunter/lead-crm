@@ -1,25 +1,25 @@
 <?php
 
-namespace crm\src\Investments\Activity\_common\interfaces;
+namespace crm\src\Investments\InvActivity\_common\interfaces;
 
 use crm\src\_common\interfaces\IResult;
-use crm\src\Investments\Activity\_entities\InvActivity;
-use crm\src\Investments\Activity\_common\InvActivityCollection;
+use crm\src\Investments\InvActivity\_entities\InvInvActivity;
+use crm\src\Investments\InvActivity\_common\InvInvActivityCollection;
 
 /**
  * Результат операций с инвестиционной сделкой или их коллекцией.
  */
-interface IActivityResult extends IResult
+interface IInvActivityResult extends IResult
 {
     /**
-     * @return InvActivity|null
+     * @return InvInvActivity|null
      */
-    public function getActivity(): ?InvActivity;
+    public function getInvActivity(): ?InvInvActivity;
 
     /**
-     * @return InvActivityCollection|null
+     * @return InvInvActivityCollection|null
      */
-    public function getCollection(): ?InvActivityCollection;
+    public function getCollection(): ?InvInvActivityCollection;
 
     /**
      * @return string|null

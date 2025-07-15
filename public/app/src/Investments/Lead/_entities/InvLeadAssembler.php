@@ -4,7 +4,7 @@ namespace crm\src\Investments\Lead\_entities;
 
 // use crm\src\Investments\Balance\_repositories\InvBalanceRepository;
 // use crm\src\Investments\Deposit\_repositories\InvDepositRepository;
-// use crm\src\Investments\Activity\_repositories\InvActivityRepository;
+// use crm\src\Investments\InvActivity\_repositories\InvInvActivityRepository;
 // use crm\src\Investments\Comment\_repositories\InvCommentRepository;
 
 // class InvLeadAssembler
@@ -12,7 +12,7 @@ namespace crm\src\Investments\Lead\_entities;
 //     public function __construct(
 //         private InvBalanceRepository $balanceRepo,
 //         private InvDepositRepository $depositRepo,
-//         private InvActivityRepository $activityRepo,
+//         private InvInvActivityRepository $InvActivityRepo,
 //         private InvCommentRepository $commentRepo
 //     ) {
 //     }
@@ -32,7 +32,7 @@ namespace crm\src\Investments\Lead\_entities;
 //             visible: $data['visible'] ?? true,
 //             balance: $this->balanceRepo->getByLeadUid($data['uid']),
 //             deposits: $this->depositRepo->getByLeadUid($data['uid']),
-//             activities: $this->activityRepo->getByLeadUid($data['uid']),
+//             activities: $this->InvActivityRepo->getByLeadUid($data['uid']),
 //             comments: $this->commentRepo->getByLeadUid($data['uid']),
 //         );
 //     }

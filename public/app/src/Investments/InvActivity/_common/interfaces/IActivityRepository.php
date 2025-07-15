@@ -1,17 +1,17 @@
 <?php
 
-namespace crm\src\Investments\Activity\_common\interfaces;
+namespace crm\src\Investments\InvActivity\_common\interfaces;
 
 use crm\src\_common\interfaces\IResultRepository;
-use crm\src\Investments\Activity\_common\DTOs\DbActivityDto;
-use crm\src\Investments\Activity\_common\interfaces\IActivityResult;
+use crm\src\Investments\InvActivity\_common\DTOs\DbInvActivityDto;
+use crm\src\Investments\InvActivity\_common\interfaces\IInvActivityResult;
 
 /**
  * Интерфейс репозитория инвестиционных сделок.
  *
- * @extends IResultRepository<DbActivityDto>
+ * @extends IResultRepository<DbInvActivityDto>
  */
-interface IActivityRepository extends IResultRepository
+interface IInvActivityRepository extends IResultRepository
 {
     /**
      * Возвращает все сделки, связанные с указанным leadUid.
@@ -19,31 +19,31 @@ interface IActivityRepository extends IResultRepository
      * @param  string $leadUid Уникальный
      *                         идентификатор, например
      *                         "928123456"
-     * @return IActivityResult
+     * @return IInvActivityResult
      */
-    public function getAllByLeadUid(string $leadUid): IActivityResult;
+    public function getAllByLeadUid(string $leadUid): IInvActivityResult;
 
     /**
      * Удаляет все сделки по leadUid.
      *
      * @param  string $leadUid
-     * @return IActivityResult Содержит массив ID или ошибку
+     * @return IInvActivityResult Содержит массив ID или ошибку
      */
-    public function deleteAllByLeadUid(string $leadUid): IActivityResult;
+    public function deleteAllByLeadUid(string $leadUid): IInvActivityResult;
 
     /**
      * Возвращает все активные сделки по leadUid.
      *
      * @param  string $leadUid
-     * @return IActivityResult
+     * @return IInvActivityResult
      */
-    public function getAllActiveByLeadUid(string $leadUid): IActivityResult;
+    public function getAllActiveByLeadUid(string $leadUid): IInvActivityResult;
 
     /**
      * Возвращает все закрытые сделки по leadUid.
      *
      * @param  string $leadUid
-     * @return IActivityResult
+     * @return IInvActivityResult
      */
-    public function getAllClosedByLeadUid(string $leadUid): IActivityResult;
+    public function getAllClosedByLeadUid(string $leadUid): IInvActivityResult;
 }

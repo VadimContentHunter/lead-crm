@@ -1,16 +1,16 @@
 <?php
 
-namespace crm\src\Investments\Activity\_common\DTOs;
+namespace crm\src\Investments\InvActivity\_common\DTOs;
 
 /**
  * Входной DTO для создания или обновления инвестиционной сделки.
  * Все поля опциональны и допускают null.
  */
-class ActivityInputDto
+class InvActivityInputDto
 {
     /**
      * @param int|null    $id           Идентификатор сделки (если обновляется)
-     * @param string|null $activityHash Уникальный хеш сделки
+     * @param string|null $InvActivityHash Уникальный хеш сделки
      * @param string|null $leadUid      UID лида
      * @param string|null $type         Тип сделки: 'active' или 'closed'
      * @param string|null $openTime     Время открытия (строка формата 'Y-m-d H:i:s')
@@ -24,7 +24,7 @@ class ActivityInputDto
      */
     public function __construct(
         public ?int $id = null,
-        public ?string $activityHash = null,
+        public ?string $InvActivityHash = null,
         public ?string $leadUid = null,
         public ?string $type = null,
         public ?string $openTime = null,

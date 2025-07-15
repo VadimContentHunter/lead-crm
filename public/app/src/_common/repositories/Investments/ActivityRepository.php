@@ -3,20 +3,20 @@
 namespace crm\src\_common\repositories\Investments;
 
 use crm\src\_common\repositories\AResultRepository;
-use crm\src\Investments\Activity\_mappers\ActivityMapper;
-use crm\src\Investments\Activity\_common\DTOs\DbActivityDto;
+use crm\src\Investments\InvActivity\_mappers\InvActivityMapper;
+use crm\src\Investments\InvActivity\_common\DTOs\DbInvActivityDto;
 use crm\src\services\Repositories\QueryBuilder\QueryBuilder;
-use crm\src\Investments\Activity\_common\InvActivityCollection;
-use crm\src\Investments\Activity\_common\adapters\ActivityResult;
-use crm\src\Investments\Activity\_common\interfaces\IActivityResult;
-use crm\src\Investments\Activity\_common\interfaces\IActivityRepository;
+use crm\src\Investments\InvActivity\_common\InvInvActivityCollection;
+use crm\src\Investments\InvActivity\_common\adapters\InvActivityResult;
+use crm\src\Investments\InvActivity\_common\interfaces\IInvActivityResult;
+use crm\src\Investments\InvActivity\_common\interfaces\IInvActivityRepository;
 
 /**
- * Репозиторий для инвестиционных сделок (activity).
+ * Репозиторий для инвестиционных сделок (InvActivity).
  *
- * @extends AResultRepository<DbActivityDto>
+ * @extends AResultRepository<DbInvActivityDto>
  */
-class ActivityRepository extends AResultRepository implements IActivityRepository
+class InvActivityRepository extends AResultRepository implements IInvActivityRepository
 {
     protected function getTableName(): string
     {
@@ -25,44 +25,44 @@ class ActivityRepository extends AResultRepository implements IActivityRepositor
 
     protected function getEntityClass(): string
     {
-        return DbActivityDto::class;
+        return DbInvActivityDto::class;
     }
 
     protected function fromArray(): callable
     {
-        return fn(array $data): DbActivityDto => ActivityMapper::fromArrayToDb($data);
+        return fn(array $data): DbInvActivityDto => InvActivityMapper::fromArrayToDb($data);
     }
 
     protected function toArray(object $entity): array
     {
         /**
- * @var DbActivityDto $entity
+ * @var DbInvActivityDto $entity
 */
-        return ActivityMapper::fromDbToArray($entity);
+        return InvActivityMapper::fromDbToArray($entity);
     }
 
     protected function getResultClass(): string
     {
-        return ActivityResult::class;
+        return InvActivityResult::class;
     }
 
-    public function getAllByLeadUid(string $leadUid): IActivityResult
+    public function getAllByLeadUid(string $leadUid): IInvActivityResult
     {
         try {
             $dtoList = $this->getAllByColumnValues('lead_uid', [$leadUid])->getArray();
 
             $entities = array_map(
-                fn(DbActivityDto $dto) => ActivityMapper::fromDbToEntity($dto),
+                fn(DbInvActivityDto $dto) => InvActivityMapper::fromDbToEntity($dto),
                 $dtoList
             );
 
-            return ActivityResult::success(new InvActivityCollection($entities));
+            return InvActivityResult::success(new InvInvActivityCollection($entities));
         } catch (\Throwable $e) {
-            return ActivityResult::failure($e);
+            return InvActivityResult::failure($e);
         }
     }
 
-    public function getAllActiveByLeadUid(string $leadUid): IActivityResult
+    public function getAllActiveByLeadUid(string $leadUid): IInvActivityResult
     {
         try {
             $dtoList = $this->repository->executeQuery(
@@ -74,17 +74,17 @@ class ActivityRepository extends AResultRepository implements IActivityRepositor
             )->getValidMappedList($this->fromArray());
 
             $entities = array_map(
-                fn(DbActivityDto $dto) => ActivityMapper::fromDbToEntity($dto),
+                fn(DbInvActivityDto $dto) => InvActivityMapper::fromDbToEntity($dto),
                 $dtoList
             );
 
-            return ActivityResult::success(new InvActivityCollection($entities));
+            return InvActivityResult::success(new InvInvActivityCollection($entities));
         } catch (\Throwable $e) {
-            return ActivityResult::failure($e);
+            return InvActivityResult::failure($e);
         }
     }
 
-    public function getAllClosedByLeadUid(string $leadUid): IActivityResult
+    public function getAllClosedByLeadUid(string $leadUid): IInvActivityResult
     {
         try {
             $dtoList = $this->repository->executeQuery(
@@ -96,17 +96,17 @@ class ActivityRepository extends AResultRepository implements IActivityRepositor
             )->getValidMappedList($this->fromArray());
 
             $entities = array_map(
-                fn(DbActivityDto $dto) => ActivityMapper::fromDbToEntity($dto),
+                fn(DbInvActivityDto $dto) => InvActivityMapper::fromDbToEntity($dto),
                 $dtoList
             );
 
-            return ActivityResult::success(new InvActivityCollection($entities));
+            return InvActivityResult::success(new InvInvActivityCollection($entities));
         } catch (\Throwable $e) {
-            return ActivityResult::failure($e);
+            return InvActivityResult::failure($e);
         }
     }
 
-    public function deleteAllByLeadUid(string $leadUid): IActivityResult
+    public function deleteAllByLeadUid(string $leadUid): IInvActivityResult
     {
         try {
             $collection = $this->getAllByLeadUid($leadUid)->getCollection();
@@ -114,7 +114,7 @@ class ActivityRepository extends AResultRepository implements IActivityRepositor
             $ids = array_filter(array_map(fn($entity) => $entity->id, $entities));
 
             if (empty($ids)) {
-                return ActivityResult::success([]);
+                return InvActivityResult::success([]);
             }
 
             $placeholders = implode(', ', array_map(fn($i) => ":id_$i", array_keys($ids)));
@@ -126,9 +126,9 @@ class ActivityRepository extends AResultRepository implements IActivityRepositor
             $sql = sprintf("DELETE FROM %s WHERE id IN (%s)", $this->getTableName(), $placeholders);
             $this->repository->executeSql($sql, $params);
 
-            return ActivityResult::success($ids);
+            return InvActivityResult::success($ids);
         } catch (\Throwable $e) {
-            return ActivityResult::failure($e);
+            return InvActivityResult::failure($e);
         }
     }
 }

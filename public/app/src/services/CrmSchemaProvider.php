@@ -147,7 +147,7 @@ class CrmSchemaProvider extends ASchemaProvider
             'inv_activities' => <<<SQL
                 CREATE TABLE activities (
                     id INT AUTO_INCREMENT PRIMARY KEY,
-                    activity_hash VARCHAR(64) NOT NULL UNIQUE,
+                    InvActivity_hash VARCHAR(64) NOT NULL UNIQUE,
                     lead_uid VARCHAR(64) NOT NULL,
                     type ENUM('active', 'closed') NOT NULL,
                     open_time DATETIME NOT NULL,

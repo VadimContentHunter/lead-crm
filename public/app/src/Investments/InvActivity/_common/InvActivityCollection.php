@@ -1,23 +1,23 @@
 <?php
 
-namespace crm\src\Investments\Activity\_common;
+namespace crm\src\Investments\InvActivity\_common;
 
-use crm\src\Investments\Activity\_entities\InvActivity;
-use crm\src\Investments\Activity\_entities\DealType;
+use crm\src\Investments\InvActivity\_entities\InvInvActivity;
+use crm\src\Investments\InvActivity\_entities\DealType;
 
 /**
- * Коллекция инвестиционных сделок (InvActivity).
+ * Коллекция инвестиционных сделок (InvInvActivity).
  * Позволяет управлять списком сделок и фильтровать их по состоянию.
  */
-final class InvActivityCollection
+final class InvInvActivityCollection
 {
     /**
-     * @var InvActivity[] $items Массив сделок
+     * @var InvInvActivity[] $items Массив сделок
      */
     private array $items = [];
 
     /**
-     * @param InvActivity[] $items Изначальный список сделок
+     * @param InvInvActivity[] $items Изначальный список сделок
      */
     public function __construct(array $items = [])
     {
@@ -29,38 +29,38 @@ final class InvActivityCollection
     /**
      * Добавляет сделку в коллекцию.
      *
-     * @param  InvActivity $activity Сделка для добавления
+     * @param  InvInvActivity $InvActivity Сделка для добавления
      * @return void
      */
-    public function add(InvActivity $activity): void
+    public function add(InvInvActivity $InvActivity): void
     {
-        $this->items[] = $activity;
+        $this->items[] = $InvActivity;
     }
 
     /**
      * Возвращает список всех активных сделок.
      *
-     * @return InvActivity[]
+     * @return InvInvActivity[]
      */
     public function getActive(): array
     {
-        return array_filter($this->items, fn(InvActivity $a) => $a->type === DealType::ACTIVE);
+        return array_filter($this->items, fn(InvInvActivity $a) => $a->type === DealType::ACTIVE);
     }
 
     /**
      * Возвращает список всех закрытых сделок.
      *
-     * @return InvActivity[]
+     * @return InvInvActivity[]
      */
     public function getClosed(): array
     {
-        return array_filter($this->items, fn(InvActivity $a) => $a->type === DealType::CLOSED);
+        return array_filter($this->items, fn(InvInvActivity $a) => $a->type === DealType::CLOSED);
     }
 
     /**
      * Возвращает все сделки (и активные, и закрытые).
      *
-     * @return InvActivity[]
+     * @return InvInvActivity[]
      */
     public function getAll(): array
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\Investments\Activity\_entities;
+namespace crm\src\Investments\InvActivity\_entities;
 
 enum DealType: string
 {

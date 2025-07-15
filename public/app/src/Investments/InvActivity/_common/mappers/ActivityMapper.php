@@ -1,28 +1,28 @@
 <?php
 
-namespace crm\src\Investments\Activity\_mappers;
+namespace crm\src\Investments\InvActivity\_mappers;
 
 use DateTimeImmutable;
-use crm\src\Investments\Activity\_entities\DealType;
-use crm\src\Investments\Activity\_entities\InvActivity;
-use crm\src\Investments\Activity\_entities\DealDirection;
-use crm\src\Investments\Activity\_common\DTOs\DbActivityDto;
-use crm\src\Investments\Activity\_common\DTOs\ActivityInputDto;
-use crm\src\Investments\Activity\_entities\TradePair;
+use crm\src\Investments\InvActivity\_entities\DealType;
+use crm\src\Investments\InvActivity\_entities\InvInvActivity;
+use crm\src\Investments\InvActivity\_entities\DealDirection;
+use crm\src\Investments\InvActivity\_common\DTOs\DbInvActivityDto;
+use crm\src\Investments\InvActivity\_common\DTOs\InvActivityInputDto;
+use crm\src\Investments\InvActivity\_entities\TradePair;
 
-class ActivityMapper
+class InvActivityMapper
 {
     /**
      * Преобразует DTO из БД в сущность.
      *
-     * @param  DbActivityDto $dto
+     * @param  DbInvActivityDto $dto
      * @param  bool $strictPair Использовать строгую проверку пары (default: false)
-     * @return InvActivity
+     * @return InvInvActivity
      */
-    public static function fromDbToEntity(DbActivityDto $dto, bool $strictPair = false): InvActivity
+    public static function fromDbToEntity(DbInvActivityDto $dto, bool $strictPair = false): InvInvActivity
     {
-        return new InvActivity(
-            activityHash: $dto->activity_hash,
+        return new InvInvActivity(
+            InvActivityHash: $dto->InvActivity_hash,
             leadUid: $dto->lead_uid,
             type: DealType::from($dto->type),
             openTime: new DateTimeImmutable($dto->open_time),
@@ -40,14 +40,14 @@ class ActivityMapper
     /**
      * Преобразует сущность в DTO для БД.
      *
-     * @param  InvActivity $entity
-     * @return DbActivityDto
+     * @param  InvInvActivity $entity
+     * @return DbInvActivityDto
      */
-    public static function fromEntityToDb(InvActivity $entity): DbActivityDto
+    public static function fromEntityToDb(InvInvActivity $entity): DbInvActivityDto
     {
-        return new DbActivityDto(
+        return new DbInvActivityDto(
             id: $entity->id,
-            activity_hash: $entity->activityHash,
+            InvActivity_hash: $entity->InvActivityHash,
             lead_uid: $entity->leadUid,
             type: $entity->type->value,
             open_time: $entity->openTime?->format('Y-m-d H:i:s') ?? (new DateTimeImmutable())->format('Y-m-d H:i:s'),
@@ -64,14 +64,14 @@ class ActivityMapper
     /**
      * Преобразует входной DTO в сущность.
      *
-     * @param  ActivityInputDto $dto
+     * @param  InvActivityInputDto $dto
      * @param  bool $strictPair Использовать строгую проверку пары (default: false)
-     * @return InvActivity
+     * @return InvInvActivity
      */
-    public static function fromInputToEntity(ActivityInputDto $dto, bool $strictPair = false): InvActivity
+    public static function fromInputToEntity(InvActivityInputDto $dto, bool $strictPair = false): InvInvActivity
     {
-        return new InvActivity(
-            activityHash: $dto->activityHash ?? uniqid('act_', true),
+        return new InvInvActivity(
+            InvActivityHash: $dto->InvActivityHash ?? uniqid('act_', true),
             leadUid: $dto->leadUid ?? throw new \InvalidArgumentException('leadUid is required'),
             type: $dto->type ? DealType::from($dto->type) : DealType::ACTIVE,
             openTime: $dto->openTime ? new DateTimeImmutable($dto->openTime) : new DateTimeImmutable(),
@@ -89,13 +89,13 @@ class ActivityMapper
     /**
      * Преобразует входной DTO напрямую в DTO для БД.
      *
-     * @param  ActivityInputDto $dto
+     * @param  InvActivityInputDto $dto
      * @param  bool $strictPair Использовать строгую проверку пары (default: false)
-     * @return DbActivityDto
+     * @return DbInvActivityDto
      */
-    public static function fromInputToDb(ActivityInputDto $dto, bool $strictPair = false): DbActivityDto
+    public static function fromInputToDb(InvActivityInputDto $dto, bool $strictPair = false): DbInvActivityDto
     {
-        $activityHash = $dto->activityHash ?? uniqid('act_', true);
+        $InvActivityHash = $dto->InvActivityHash ?? uniqid('act_', true);
         $leadUid = $dto->leadUid ?? throw new \InvalidArgumentException('leadUid is required');
         $type = $dto->type ?? DealType::ACTIVE->value;
         $direction = $dto->direction ?? DealDirection::LONG->value;
@@ -112,9 +112,9 @@ class ActivityMapper
             ? ($strictPair ? self::strictPair($dto->pair) : self::normalizePair($dto->pair))
             : '';
 
-        return new DbActivityDto(
+        return new DbInvActivityDto(
             id: $dto->id,
-            activity_hash: $activityHash,
+            InvActivity_hash: $InvActivityHash,
             lead_uid: $leadUid,
             type: $type,
             open_time: $openTime,
@@ -131,17 +131,17 @@ class ActivityMapper
     /**
      * Преобразует DTO для БД в ассоциативный массив для сохранения.
      *
-     * @param  DbActivityDto $dto
+     * @param  DbInvActivityDto $dto
      * @param  bool $strictPair Использовать строгую проверку пары (default: false)
      * @return array<string, mixed>
      */
-    public static function fromDbToArray(DbActivityDto $dto, bool $strictPair = false): array
+    public static function fromDbToArray(DbInvActivityDto $dto, bool $strictPair = false): array
     {
         $pair = $strictPair ? self::strictPair($dto->pair) : self::normalizePair($dto->pair);
 
         return [
             'id' => $dto->id,
-            'activity_hash' => $dto->activity_hash,
+            'InvActivity_hash' => $dto->InvActivity_hash,
             'lead_uid' => $dto->lead_uid,
             'type' => $dto->type,
             'open_time' => $dto->open_time,
@@ -159,12 +159,12 @@ class ActivityMapper
      * Преобразует массив данных из БД в DTO.
      *
      * @param  array<string, mixed> $data Ассоциативный массив данных из БД.
-     * @return DbActivityDto DTO, соответствующий данным из массива.
+     * @return DbInvActivityDto DTO, соответствующий данным из массива.
      */
-    public static function fromArrayToDb(array $data): DbActivityDto
+    public static function fromArrayToDb(array $data): DbInvActivityDto
     {
-        return new DbActivityDto(
-            activity_hash: $data['activity_hash'],
+        return new DbInvActivityDto(
+            InvActivity_hash: $data['InvActivity_hash'],
             lead_uid: $data['lead_uid'],
             type: $data['type'],
             open_time: $data['open_time'],
@@ -223,14 +223,14 @@ class ActivityMapper
     }
 
     /**
-     * Извлекает только непустые (не null) поля из ActivityInputDto в виде массива.
+     * Извлекает только непустые (не null) поля из InvActivityInputDto в виде массива.
      * Полезно для обновлений, где нужно сохранить только переданные значения.
      *
-     * @param  ActivityInputDto $dto
+     * @param  InvActivityInputDto $dto
      * @param  bool $strictPair Использовать строгую проверку пары
      * @return array<string, mixed> Ассоциативный массив непустых полей
      */
-    public static function fromInputExtractFilledFields(ActivityInputDto $dto, bool $strictPair = false): array
+    public static function fromInputExtractFilledFields(InvActivityInputDto $dto, bool $strictPair = false): array
     {
         $fields = [];
 
@@ -238,8 +238,8 @@ class ActivityMapper
             $fields['id'] = $dto->id;
         }
 
-        if ($dto->activityHash !== null) {
-            $fields['activity_hash'] = $dto->activityHash;
+        if ($dto->InvActivityHash !== null) {
+            $fields['InvActivity_hash'] = $dto->InvActivityHash;
         }
 
         if ($dto->leadUid !== null) {

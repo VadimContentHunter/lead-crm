@@ -134,43 +134,17 @@ class CrmSchemaProvider extends ASchemaProvider
     protected static function investmentSchemas(): array
     {
         return [
-            // 'balances' => <<<SQL
-            //     CREATE TABLE balances (
-            //         id INT AUTO_INCREMENT PRIMARY KEY,
-            //         lead_id INT NOT NULL UNIQUE,
-            //         current DOUBLE(10,2) NOT NULL DEFAULT 0.00,
-            //         drain DOUBLE(10,2) NOT NULL DEFAULT 0.00,
-            //         potential DOUBLE(10,2) NOT NULL DEFAULT 0.00,
-            //         CONSTRAINT fk_balance_lead FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
-            //     );
-            // SQL,
+            'inv_balances' => <<<SQL
+                CREATE TABLE inv_balances (
+                    lead_uid VARCHAR(64) NOT NULL PRIMARY KEY,
+                    current DOUBLE(10,2) NOT NULL DEFAULT 0.00,
+                    deposit DOUBLE(10,2) NOT NULL DEFAULT 0.00,
+                    potation DOUBLE(10,2) NOT NULL DEFAULT 0.00,
+                    active DOUBLE(10,2) NOT NULL DEFAULT 0.00
+                );
+            SQL,
 
-            // 'deposits' => <<<SQL
-            //     CREATE TABLE deposits (
-            //         id INT AUTO_INCREMENT PRIMARY KEY,
-            //         lead_id INT NOT NULL,
-            //         tx_id VARCHAR(256) NOT NULL DEFAULT '',
-            //         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            //         sum DOUBLE(10,2) NOT NULL DEFAULT 0.00,
-            //         CONSTRAINT fk_deposit_lead FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
-            //     );
-            // SQL,
-
-            // 'comments' => <<<SQL
-            //     CREATE TABLE comments (
-            //         id INT AUTO_INCREMENT PRIMARY KEY,
-            //         comment TEXT NOT NULL,
-            //         user_id INT NULL,
-            //         lead_id INT NOT NULL,
-            //         deposit_id INT NULL DEFAULT NULL,
-            //         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            //         CONSTRAINT fk_comment_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-            //         CONSTRAINT fk_comment_lead FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE,
-            //         CONSTRAINT fk_comment_deposit FOREIGN KEY (deposit_id) REFERENCES deposits(id) ON DELETE SET NULL
-            //     );
-            // SQL,
-
-            'activities' => <<<SQL
+            'inv_activities' => <<<SQL
                 CREATE TABLE activities (
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     activity_hash VARCHAR(64) NOT NULL UNIQUE,

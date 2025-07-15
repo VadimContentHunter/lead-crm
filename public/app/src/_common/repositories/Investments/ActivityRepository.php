@@ -25,7 +25,7 @@ class ActivityRepository extends AResultRepository implements IActivityRepositor
      */
     protected function getTableName(): string
     {
-        return 'activities';
+        return 'inv_activities';
     }
 
     /**

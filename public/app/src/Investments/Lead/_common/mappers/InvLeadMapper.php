@@ -44,7 +44,7 @@ class InvLeadMapper
     {
         return new DbInvLeadDto(
             uid: $entity->uid,
-            createdAt: $entity->createdAt->format('Y-m-d H:i:s'),
+            createdAt: $entity->createdAt?->format('Y-m-d H:i:s') ?? (new DateTimeImmutable())->format('Y-m-d H:i:s'),
             contact: $entity->contact,
             phone: $entity->phone,
             email: $entity->email,
@@ -160,6 +160,10 @@ class InvLeadMapper
     public static function fromInputExtractFilledFields(InvLeadInputDto $dto): array
     {
         $fields = [];
+
+        if ($dto->uid !== null) {
+            $fields['uid'] = $dto->uid;
+        }
 
         if ($dto->contact !== null) {
             $fields['contact'] = $dto->contact;

@@ -114,4 +114,49 @@ class InvLeadRepository extends AResultRepository implements IInvLeadRepository
         // Преобразуем int → string, потому что UID — строка
         return $this->deleteByUid((string) $id);
     }
+
+    public function update(object|array $entityOrData): IInvLeadResult
+    {
+        try {
+            if (is_object($entityOrData)) {
+                $class = $this->getEntityClass();
+
+                if (!$entityOrData instanceof $class) {
+                    return $this->wrapFailure(new \InvalidArgumentException(
+                        "Ожидался объект типа {$class}, передан " . get_class($entityOrData)
+                    ));
+                }
+
+                /**
+                 * @var TEntity $entityOrData
+                */
+                $data = $this->toArray($entityOrData);
+            } else {
+                $data = $entityOrData;
+            }
+
+            if (!isset($data['uid'])) {
+                return $this->wrapFailure(new \InvalidArgumentException("Поле 'uid' обязательно для update()"));
+            }
+
+            $uid = $data['uid'];
+            unset($data['uid']);
+
+            if (empty($data)) {
+                return $this->wrapFailure(new \RuntimeException("Нет данных для обновления"));
+            }
+
+            $result = $this->repository->executeQuery(
+                (new QueryBuilder())
+                ->table($this->getTableName())
+                ->where('uid = :uid')
+                ->bindings(['uid' => $uid])
+                ->update($data)
+            )->getInt();
+
+            return $this->wrapSuccess($result);
+        } catch (\Throwable $e) {
+            return $this->wrapFailure($e);
+        }
+    }
 }

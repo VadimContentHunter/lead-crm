@@ -9,6 +9,7 @@ namespace crm\src\Investments\Lead\_dto;
 class InvLeadInputDto
 {
     /**
+     * @param string|null $uid            Уникальный идентификатор (928...)
      * @param string|null $contact        Контактное лицо
      * @param string|null $phone          Телефон клиента
      * @param string|null $email          Email клиента
@@ -19,6 +20,7 @@ class InvLeadInputDto
      * @param int|null    $statusId       ID статуса
      */
     public function __construct(
+        public ?string $uid = null,
         public ?string $contact = null,
         public ?string $phone = null,
         public ?string $email = null,

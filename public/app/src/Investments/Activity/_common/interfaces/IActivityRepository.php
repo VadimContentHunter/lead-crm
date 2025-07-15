@@ -2,15 +2,14 @@
 
 namespace crm\src\Investments\Activity\_common\interfaces;
 
-use crm\src\_common\interfaces\IRepository;
 use crm\src\_common\interfaces\IResultRepository;
-use crm\src\Investments\Activity\_entities\InvActivity;
+use crm\src\Investments\Activity\_common\DTOs\DbActivityDto;
 use crm\src\Investments\Activity\_common\interfaces\IActivityResult;
 
 /**
- * Интерфейс репозитория для работы с инвестиционными сделками.
+ * Интерфейс репозитория инвестиционных сделок.
  *
- * @extends IRepository<InvActivity>
+ * @extends IResultRepository<DbActivityDto>
  */
 interface IActivityRepository extends IResultRepository
 {

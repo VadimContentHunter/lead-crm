@@ -5,11 +5,12 @@ namespace crm\src\Investments\Comment\_common\DTOs;
 class InvCommentInputDto
 {
     public function __construct(
-        public string $leadUid,
-        public string $body,
-        public ?string $who = '',
+        public ?string $leadUid = null,
+        public ?string $body = null,
+        public ?string $who = null,
         public ?string $whoId = null,
-        public int $option = 0,
+        public ?int $option = null,
+        public ?int $id = null,
     ) {
     }
 }

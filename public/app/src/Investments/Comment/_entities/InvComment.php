@@ -10,7 +10,7 @@ use DateTimeImmutable;
 class InvComment
 {
     /**
-     * @param string              $id      Уникальный идентификатор комментария (например, UUID)
+     * @param int|null            $id      Уникальный идентификатор комментария (может отсутствовать при создании)
      * @param string              $leadUid UID лида, к которому относится комментарий
      * @param string              $body    Текст комментария
      * @param DateTimeImmutable|null $time    Время создания комментария (по умолчанию — текущее)
@@ -19,13 +19,13 @@ class InvComment
      * @param int                 $option  Опциональный статус/тип комментария (по умолчанию 0)
      */
     public function __construct(
-        public string $id,
         public string $leadUid,
         public string $body,
         public ?DateTimeImmutable $time = null,
         public string $who = '',
         public ?string $whoId = null,
         public int $option = 0,
+        public ?int $id = null,
     ) {
         $this->time = $time ?? new DateTimeImmutable();
     }

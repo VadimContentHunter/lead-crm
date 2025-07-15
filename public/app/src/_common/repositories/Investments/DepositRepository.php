@@ -10,6 +10,11 @@ use crm\src\Investments\Deposit\_mappers\InvDepositMapper;
 use crm\src\Investments\Deposit\_common\InvDepositCollection;
 use crm\src\Investments\Deposit\_common\adapters\DepositResult;
 
+/**
+ * Репозиторий для депозитов.
+ *
+ * @extends AResultRepository<DbInvDepositDto>
+ */
 class DepositRepository extends AResultRepository implements IDepositRepository
 {
     protected function getTableName(): string

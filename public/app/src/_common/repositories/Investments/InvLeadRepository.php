@@ -118,32 +118,29 @@ class InvLeadRepository extends AResultRepository implements IInvLeadRepository
     public function update(object|array $entityOrData): IInvLeadResult
     {
         try {
-            if (is_object($entityOrData)) {
-                $class = $this->getEntityClass();
+            $data = [];
 
-                if (!$entityOrData instanceof $class) {
-                    return $this->wrapFailure(new \InvalidArgumentException(
-                        "Ожидался объект типа {$class}, передан " . get_class($entityOrData)
+            if (is_object($entityOrData)) {
+                if (!$entityOrData instanceof DbInvLeadDto) {
+                    return InvLeadResult::failure(new \InvalidArgumentException(
+                        "Ожидался объект типа " . DbInvLeadDto::class . ", передан " . get_class($entityOrData)
                     ));
                 }
 
-                /**
-                 * @var TEntity $entityOrData
-                */
                 $data = $this->toArray($entityOrData);
-            } else {
+            } elseif (is_array($entityOrData)) {
                 $data = $entityOrData;
             }
 
-            if (!isset($data['uid'])) {
-                return $this->wrapFailure(new \InvalidArgumentException("Поле 'uid' обязательно для update()"));
+            if (!isset($data['uid']) || !is_string($data['uid']) || trim($data['uid']) === '') {
+                return InvLeadResult::failure(new \InvalidArgumentException("Поле 'uid' обязательно для update()"));
             }
 
             $uid = $data['uid'];
             unset($data['uid']);
 
             if (empty($data)) {
-                return $this->wrapFailure(new \RuntimeException("Нет данных для обновления"));
+                return InvLeadResult::failure(new \RuntimeException("Нет данных для обновления"));
             }
 
             $result = $this->repository->executeQuery(
@@ -154,9 +151,9 @@ class InvLeadRepository extends AResultRepository implements IInvLeadRepository
                 ->update($data)
             )->getInt();
 
-            return $this->wrapSuccess($result);
+            return InvLeadResult::success($uid);
         } catch (\Throwable $e) {
-            return $this->wrapFailure($e);
+            return InvLeadResult::failure($e);
         }
     }
 }

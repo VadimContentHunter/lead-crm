@@ -3,7 +3,7 @@
 namespace crm\src\Investments\Status\_common\interfaces;
 
 use crm\src\_common\interfaces\IResult;
-use Domain\Investment\InvStatus;
+use crm\src\Investments\Status\_entities\InvStatus;
 
 /**
  * Результат операций со статусом инвестиции или их коллекцией.

@@ -2,9 +2,9 @@
 
 namespace crm\src\Investments\Status\_mappers;
 
-use Domain\Investment\InvStatus;
 use Domain\Investment\DTOs\DbInvStatusDto;
 use Domain\Investment\DTOs\InvStatusInputDto;
+use crm\src\Investments\Status\_entities\InvStatus;
 
 /**
  * Маппер для преобразования между сущностями статуса и DTO.

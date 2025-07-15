@@ -3,7 +3,7 @@
 namespace crm\src\Investments\Status\_common\adapters;
 
 use crm\src\_common\interfaces\AResult;
-use Domain\Investment\InvStatus;
+use crm\src\Investments\Status\_entities\InvStatus;
 use crm\src\Investments\Status\_common\interfaces\IStatusResult;
 
 /**

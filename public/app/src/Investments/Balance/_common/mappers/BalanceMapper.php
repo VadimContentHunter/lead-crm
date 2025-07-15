@@ -10,6 +10,9 @@ class BalanceMapper
 {
     /**
      * Преобразует DTO из БД в сущность.
+     *
+     * @param  DbInvBalanceDto $dto
+     * @return InvBalance
      */
     public static function fromDbToEntity(DbInvBalanceDto $dto): InvBalance
     {
@@ -24,6 +27,9 @@ class BalanceMapper
 
     /**
      * Преобразует сущность в DTO для БД.
+     *
+     * @param  InvBalance $entity
+     * @return DbInvBalanceDto
      */
     public static function fromEntityToDb(InvBalance $entity): DbInvBalanceDto
     {
@@ -38,6 +44,9 @@ class BalanceMapper
 
     /**
      * Преобразует входной DTO в сущность.
+     *
+     * @param  InputInvBalanceDto $dto
+     * @return InvBalance
      */
     public static function fromInputToEntity(InputInvBalanceDto $dto): InvBalance
     {
@@ -52,6 +61,9 @@ class BalanceMapper
 
     /**
      * Преобразует входной DTO напрямую в DTO для БД.
+     *
+     * @param  InputInvBalanceDto $dto
+     * @return DbInvBalanceDto
      */
     public static function fromInputToDb(InputInvBalanceDto $dto): DbInvBalanceDto
     {
@@ -65,7 +77,10 @@ class BalanceMapper
     }
 
     /**
-     * Преобразует DTO для БД в ассоциативный массив для сохранения.
+     * Преобразует DTO для БД в ассоциативный массив для сохранения в базу данных.
+     *
+     * @param  DbInvBalanceDto $dto
+     * @return array<string, float|string>
      */
     public static function fromDbToArray(DbInvBalanceDto $dto): array
     {
@@ -79,7 +94,10 @@ class BalanceMapper
     }
 
     /**
-     * Преобразует массив данных из БД в DTO.
+     * Преобразует ассоциативный массив данных из БД в DTO.
+     *
+     * @param  array<string, mixed> $data
+     * @return DbInvBalanceDto
      */
     public static function fromArrayToDb(array $data): DbInvBalanceDto
     {
@@ -94,6 +112,10 @@ class BalanceMapper
 
     /**
      * Извлекает только непустые (не null) поля из InputInvBalanceDto в виде массива.
+     * Полезно для обновлений, где нужно сохранить только переданные значения.
+     *
+     * @param  InputInvBalanceDto $dto
+     * @return array<string, float|string>
      */
     public static function fromInputExtractFilledFields(InputInvBalanceDto $dto): array
     {

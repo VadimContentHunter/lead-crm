@@ -253,9 +253,7 @@ abstract class AResultRepository implements IResultRepository
      * @param string $column Имя колонки таблицы (например, 'lead_uid')
      * @param array<int, scalar> $values Список значений, по которым искать (например, ['uid_1', 'uid_2'])
      *
-     * @template TDto of object
-     *
-     * @return IResult<TDto[]> Результат, содержащий массив DTO (например, DbInvBalanceDto[])
+     * @return IResult Результат, содержащий массив DTO в ->getArray()
      */
     public function getAllByColumnValues(string $column = '', array $values = []): IResult
     {

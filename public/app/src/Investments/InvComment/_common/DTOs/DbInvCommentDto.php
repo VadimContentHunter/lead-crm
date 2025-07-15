@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\Investments\Comment\_common\DTOs;
+namespace crm\src\Investments\InvComment\_common\DTOs;
 
 class DbInvCommentDto
 {

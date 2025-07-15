@@ -7,7 +7,7 @@ use crm\src\Investments\Lead\_entities\SimpleInvLead;
 use crm\src\Investments\Source\_entities\InvSource;
 use crm\src\Investments\Status\_entities\InvStatus;
 use crm\src\Investments\InvBalance\_entities\InvBalance;
-use crm\src\Investments\Comment\_common\InvCommentCollection;
+use crm\src\Investments\InvComment\_common\InvCommentCollection;
 use crm\src\Investments\Deposit\_common\InvDepositCollection;
 use crm\src\Investments\InvActivity\_common\InvActivityCollection;
 
@@ -30,7 +30,7 @@ class InvLead extends SimpleInvLead
      * @param InvBalance|null       $InvBalance     Объект баланса клиента
      * @param InvDepositCollection  $deposits       Коллекция депозитов клиента
      * @param InvActivityCollection $activities     Коллекция инвестиционных сделок
-     * @param InvCommentCollection  $comments       Коллекция комментариев по лиду
+     * @param InvCommentCollection  $InvComments    Коллекция комментариев по лиду
      */
     public function __construct(
         string $uid,
@@ -46,7 +46,7 @@ class InvLead extends SimpleInvLead
         public ?InvBalance $InvBalance = null,
         public InvDepositCollection $deposits = new InvDepositCollection(),
         public InvActivityCollection $activities = new InvActivityCollection(),
-        public InvCommentCollection $comments = new InvCommentCollection(),
+        public InvCommentCollection $InvComments = new InvCommentCollection(),
     ) {
         parent::__construct(
             $uid,

@@ -1,20 +1,20 @@
 <?php
 
-namespace crm\src\Investments\Comment\_common\interfaces;
+namespace crm\src\Investments\InvComment\_common\interfaces;
 
 use crm\src\_common\interfaces\IResult;
-use crm\src\Investments\Comment\_entities\InvComment;
-use crm\src\Investments\Comment\_common\InvCommentCollection;
+use crm\src\Investments\InvComment\_entities\InvComment;
+use crm\src\Investments\InvComment\_common\InvCommentCollection;
 
 /**
  * Результат операций с инвестиционным комментарием или их коллекцией.
  */
-interface ICommentResult extends IResult
+interface IInvCommentResult extends IResult
 {
     /**
      * @return InvComment|null
      */
-    public function getComment(): ?InvComment;
+    public function getInvComment(): ?InvComment;
 
     /**
      * @return InvCommentCollection|null

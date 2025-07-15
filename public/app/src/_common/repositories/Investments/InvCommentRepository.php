@@ -3,24 +3,24 @@
 namespace crm\src\_common\repositories\Investments;
 
 use crm\src\_common\repositories\AResultRepository;
-use crm\src\Investments\Comment\_mappers\CommentMapper;
-use crm\src\Investments\Comment\_common\DTOs\DbInvCommentDto;
+use crm\src\Investments\InvComment\_mappers\InvCommentMapper;
+use crm\src\Investments\InvComment\_common\DTOs\DbInvCommentDto;
 use crm\src\services\Repositories\QueryBuilder\QueryBuilder;
-use crm\src\Investments\Comment\_common\InvCommentCollection;
-use crm\src\Investments\Comment\_common\adapters\CommentResult;
-use crm\src\Investments\Comment\_common\interfaces\ICommentResult;
-use crm\src\Investments\Comment\_common\interfaces\ICommentRepository;
+use crm\src\Investments\InvComment\_common\InvCommentCollection;
+use crm\src\Investments\InvComment\_common\adapters\InvCommentResult;
+use crm\src\Investments\InvComment\_common\interfaces\IInvCommentResult;
+use crm\src\Investments\InvComment\_common\interfaces\IInvCommentRepository;
 
 /**
  * Репозиторий для комментариев к инвестициям.
  *
  * @extends AResultRepository<DbInvCommentDto>
  */
-class CommentRepository extends AResultRepository implements ICommentRepository
+class InvCommentRepository extends AResultRepository implements IInvCommentRepository
 {
     protected function getTableName(): string
     {
-        return 'inv_comments';
+        return 'inv_InvComments';
     }
 
     protected function getEntityClass(): string
@@ -30,7 +30,7 @@ class CommentRepository extends AResultRepository implements ICommentRepository
 
     protected function fromArray(): callable
     {
-        return fn(array $data): DbInvCommentDto => CommentMapper::fromArrayToDb($data);
+        return fn(array $data): DbInvCommentDto => InvCommentMapper::fromArrayToDb($data);
     }
 
     protected function toArray(object $entity): array
@@ -38,31 +38,31 @@ class CommentRepository extends AResultRepository implements ICommentRepository
         /**
  * @var DbInvCommentDto $entity
 */
-        return CommentMapper::fromDbToArray($entity);
+        return InvCommentMapper::fromDbToArray($entity);
     }
 
     protected function getResultClass(): string
     {
-        return CommentResult::class;
+        return InvCommentResult::class;
     }
 
-    public function getAllByLeadUid(string $leadUid): ICommentResult
+    public function getAllByLeadUid(string $leadUid): IInvCommentResult
     {
         try {
             $dtoList = $this->getAllByColumnValues('lead_uid', [$leadUid])->getArray();
 
             $entities = array_map(
-                fn(DbInvCommentDto $dto) => CommentMapper::fromDbToEntity($dto),
+                fn(DbInvCommentDto $dto) => InvCommentMapper::fromDbToEntity($dto),
                 $dtoList
             );
 
-            return CommentResult::success(new InvCommentCollection($entities));
+            return InvCommentResult::success(new InvCommentCollection($entities));
         } catch (\Throwable $e) {
-            return CommentResult::failure($e);
+            return InvCommentResult::failure($e);
         }
     }
 
-    public function deleteAllByLeadUid(string $leadUid): ICommentResult
+    public function deleteAllByLeadUid(string $leadUid): IInvCommentResult
     {
         try {
             $collection = $this->getAllByLeadUid($leadUid)->getCollection();
@@ -70,7 +70,7 @@ class CommentRepository extends AResultRepository implements ICommentRepository
             $ids = array_filter(array_map(fn($entity) => $entity->id, $entities));
 
             if (empty($ids)) {
-                return CommentResult::success([]);
+                return InvCommentResult::success([]);
             }
 
             $placeholders = implode(', ', array_map(fn($i) => ":id_$i", array_keys($ids)));
@@ -82,29 +82,29 @@ class CommentRepository extends AResultRepository implements ICommentRepository
             $sql = sprintf("DELETE FROM %s WHERE id IN (%s)", $this->getTableName(), $placeholders);
             $this->repository->executeSql($sql, $params);
 
-            return CommentResult::success($ids);
+            return InvCommentResult::success($ids);
         } catch (\Throwable $e) {
-            return CommentResult::failure($e);
+            return InvCommentResult::failure($e);
         }
     }
 
-    public function getAllByWhoId(string $whoId): ICommentResult
+    public function getAllByWhoId(string $whoId): IInvCommentResult
     {
         try {
             $dtoList = $this->getAllByColumnValues('who_id', [$whoId])->getArray();
 
             $entities = array_map(
-                fn(DbInvCommentDto $dto) => CommentMapper::fromDbToEntity($dto),
+                fn(DbInvCommentDto $dto) => InvCommentMapper::fromDbToEntity($dto),
                 $dtoList
             );
 
-            return CommentResult::success(new InvCommentCollection($entities));
+            return InvCommentResult::success(new InvCommentCollection($entities));
         } catch (\Throwable $e) {
-            return CommentResult::failure($e);
+            return InvCommentResult::failure($e);
         }
     }
 
-    public function getByLeadUidAndOption(string $leadUid, int $option): ICommentResult
+    public function getByLeadUidAndOption(string $leadUid, int $option): IInvCommentResult
     {
         try {
             $dtoList = $this->repository->executeQuery(
@@ -116,13 +116,13 @@ class CommentRepository extends AResultRepository implements ICommentRepository
             )->getValidMappedList($this->fromArray());
 
             $entities = array_map(
-                fn(DbInvCommentDto $dto) => CommentMapper::fromDbToEntity($dto),
+                fn(DbInvCommentDto $dto) => InvCommentMapper::fromDbToEntity($dto),
                 $dtoList
             );
 
-            return CommentResult::success(new InvCommentCollection($entities));
+            return InvCommentResult::success(new InvCommentCollection($entities));
         } catch (\Throwable $e) {
-            return CommentResult::failure($e);
+            return InvCommentResult::failure($e);
         }
     }
 }

@@ -1,20 +1,20 @@
 <?php
 
-namespace crm\src\Investments\Comment;
+namespace crm\src\Investments\InvComment;
 
 use crm\src\_common\interfaces\IValidation;
-use crm\src\Investments\Comment\_mappers\CommentMapper;
-use crm\src\Investments\Comment\_common\DTOs\InvCommentInputDto;
-use crm\src\Investments\Comment\_common\DTOs\DbInvCommentDto;
-use crm\src\Investments\Comment\_common\adapters\CommentResult;
-use crm\src\Investments\Comment\_exceptions\InvCommentException;
-use crm\src\Investments\Comment\_common\interfaces\ICommentResult;
-use crm\src\Investments\Comment\_common\interfaces\ICommentRepository;
+use crm\src\Investments\InvComment\_mappers\InvCommentMapper;
+use crm\src\Investments\InvComment\_common\DTOs\InvCommentInputDto;
+use crm\src\Investments\InvComment\_common\DTOs\DbInvCommentDto;
+use crm\src\Investments\InvComment\_common\adapters\InvCommentResult;
+use crm\src\Investments\InvComment\_exceptions\InvCommentException;
+use crm\src\Investments\InvComment\_common\interfaces\IInvCommentResult;
+use crm\src\Investments\InvComment\_common\interfaces\IInvCommentRepository;
 
-class ManageComment
+class ManageInvComment
 {
     public function __construct(
-        private ICommentRepository $repository,
+        private IInvCommentRepository $repository,
         private IValidation $validator,
     ) {
     }
@@ -23,23 +23,23 @@ class ManageComment
      * Создание нового комментария.
      *
      * @param  InvCommentInputDto $input
-     * @return ICommentResult
+     * @return IInvCommentResult
      */
-    public function create(InvCommentInputDto $input): ICommentResult
+    public function create(InvCommentInputDto $input): IInvCommentResult
     {
         try {
             $validation = $this->validator->validate($input);
             if (!$validation->isValid()) {
-                return CommentResult::failure(
+                return InvCommentResult::failure(
                     new InvCommentException('Ошибка валидации: ' . implode('; ', $validation->getErrors()))
                 );
             }
 
-            $dto = CommentMapper::fromInputToDb($input);
+            $dto = InvCommentMapper::fromInputToDb($input);
             $result = $this->repository->save($dto);
 
             if (!$result->isSuccess()) {
-                return CommentResult::failure(
+                return InvCommentResult::failure(
                     $result->getError() ?? new InvCommentException("Ошибка сохранения комментария")
                 );
             }
@@ -48,11 +48,11 @@ class ManageComment
              * @var DbInvCommentDto $saved
              */
             $saved = $dto;
-            $entity = CommentMapper::fromDbToEntity($saved);
+            $entity = InvCommentMapper::fromDbToEntity($saved);
 
-            return CommentResult::success($entity);
+            return InvCommentResult::success($entity);
         } catch (\Throwable $e) {
-            return CommentResult::failure($e);
+            return InvCommentResult::failure($e);
         }
     }
 
@@ -60,34 +60,34 @@ class ManageComment
      * Обновление комментария по ID.
      *
      * @param  InvCommentInputDto $input
-     * @return ICommentResult
+     * @return IInvCommentResult
      */
-    public function updateById(InvCommentInputDto $input): ICommentResult
+    public function updateById(InvCommentInputDto $input): IInvCommentResult
     {
         try {
             if (empty($input->id)) {
-                return CommentResult::failure(new InvCommentException("ID обязателен для обновления"));
+                return InvCommentResult::failure(new InvCommentException("ID обязателен для обновления"));
             }
 
             $validation = $this->validator->validate($input, ignoreFields: ['leadUid']);
             if (!$validation->isValid()) {
-                return CommentResult::failure(
+                return InvCommentResult::failure(
                     new InvCommentException('Ошибка валидации: ' . implode('; ', $validation->getErrors()))
                 );
             }
 
-            $updateData = CommentMapper::fromInputExtractFilledFields($input);
+            $updateData = InvCommentMapper::fromInputExtractFilledFields($input);
             $result = $this->repository->update($updateData);
 
             if (!$result->isSuccess()) {
-                return CommentResult::failure(
+                return InvCommentResult::failure(
                     $result->getError() ?? new InvCommentException("Ошибка при обновлении комментария")
                 );
             }
 
-            return CommentResult::success($updateData);
+            return InvCommentResult::success($updateData);
         } catch (\Throwable $e) {
-            return CommentResult::failure($e);
+            return InvCommentResult::failure($e);
         }
     }
 
@@ -95,26 +95,26 @@ class ManageComment
      * Удаление комментария по ID.
      *
      * @param  int $id
-     * @return ICommentResult
+     * @return IInvCommentResult
      */
-    public function deleteById(int $id): ICommentResult
+    public function deleteById(int $id): IInvCommentResult
     {
         try {
             if ($id <= 0) {
-                return CommentResult::failure(new InvCommentException("Некорректный ID для удаления"));
+                return InvCommentResult::failure(new InvCommentException("Некорректный ID для удаления"));
             }
 
             $result = $this->repository->deleteById($id);
 
             if (!$result->isSuccess()) {
-                return CommentResult::failure(
+                return InvCommentResult::failure(
                     $result->getError() ?? new InvCommentException("Ошибка при удалении комментария")
                 );
             }
 
-            return CommentResult::success($id);
+            return InvCommentResult::success($id);
         } catch (\Throwable $e) {
-            return CommentResult::failure($e);
+            return InvCommentResult::failure($e);
         }
     }
 }

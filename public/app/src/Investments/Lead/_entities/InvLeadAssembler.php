@@ -5,7 +5,7 @@ namespace crm\src\Investments\Lead\_entities;
 // use crm\src\Investments\InvBalance\_repositories\InvBalanceRepository;
 // use crm\src\Investments\Deposit\_repositories\InvDepositRepository;
 // use crm\src\Investments\InvActivity\_repositories\InvActivityRepository;
-// use crm\src\Investments\Comment\_repositories\InvCommentRepository;
+// use crm\src\Investments\InvComment\_repositories\InvCommentRepository;
 
 // class InvLeadAssembler
 // {
@@ -13,7 +13,7 @@ namespace crm\src\Investments\Lead\_entities;
 //         private InvBalanceRepository $InvBalanceRepo,
 //         private InvDepositRepository $depositRepo,
 //         private InvActivityRepository $InvActivityRepo,
-//         private InvCommentRepository $commentRepo
+//         private InvCommentRepository $InvCommentRepo
 //     ) {
 //     }
 
@@ -33,7 +33,7 @@ namespace crm\src\Investments\Lead\_entities;
 //             InvBalance: $this->InvBalanceRepo->getByLeadUid($data['uid']),
 //             deposits: $this->depositRepo->getByLeadUid($data['uid']),
 //             activities: $this->InvActivityRepo->getByLeadUid($data['uid']),
-//             comments: $this->commentRepo->getByLeadUid($data['uid']),
+//             InvComments: $this->InvCommentRepo->getByLeadUid($data['uid']),
 //         );
 //     }
 // }

@@ -1,13 +1,13 @@
 <?php
 
-namespace crm\src\Investments\Comment\_mappers;
+namespace crm\src\Investments\InvComment\_mappers;
 
 use DateTimeImmutable;
-use crm\src\Investments\Comment\_entities\InvComment;
-use crm\src\Investments\Comment\_common\DTOs\DbInvCommentDto;
-use crm\src\Investments\Comment\_common\DTOs\InvCommentInputDto;
+use crm\src\Investments\InvComment\_entities\InvComment;
+use crm\src\Investments\InvComment\_common\DTOs\DbInvCommentDto;
+use crm\src\Investments\InvComment\_common\DTOs\InvCommentInputDto;
 
-class CommentMapper
+class InvCommentMapper
 {
     /**
      * Преобразует DTO из БД в сущность.

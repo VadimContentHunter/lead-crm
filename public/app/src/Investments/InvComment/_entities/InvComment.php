@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\Investments\Comment\_entities;
+namespace crm\src\Investments\InvComment\_entities;
 
 use DateTimeImmutable;
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace crm\src\Investments\Comment\_common;
+namespace crm\src\Investments\InvComment\_common;
 
-use crm\src\Investments\Comment\_entities\InvComment;
+use crm\src\Investments\InvComment\_entities\InvComment;
 
 /**
  * Коллекция комментариев к инвестиционному лиду.
@@ -27,12 +27,12 @@ final class InvCommentCollection
     /**
      * Добавляет комментарий в коллекцию.
      *
-     * @param  InvComment $comment Комментарий для добавления
+     * @param  InvComment $InvComment Комментарий для добавления
      * @return void
      */
-    public function add(InvComment $comment): void
+    public function add(InvComment $InvComment): void
     {
-        $this->items[] = $comment;
+        $this->items[] = $InvComment;
     }
 
     /**

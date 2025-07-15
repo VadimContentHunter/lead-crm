@@ -1,47 +1,47 @@
 <?php
 
-namespace crm\src\Investments\Comment\_common\interfaces;
+namespace crm\src\Investments\InvComment\_common\interfaces;
 
 use crm\src\_common\interfaces\IResultRepository;
-use crm\src\Investments\Comment\_common\DTOs\DbInvCommentDto;
+use crm\src\Investments\InvComment\_common\DTOs\DbInvCommentDto;
 
 /**
  * Интерфейс репозитория комментариев к инвестициям.
  *
  * @extends IResultRepository<DbInvCommentDto>
  */
-interface ICommentRepository extends IResultRepository
+interface IInvCommentRepository extends IResultRepository
 {
     /**
      * Возвращает все комментарии, связанные с указанным leadUid.
      *
      * @param  string $leadUid
-     * @return ICommentResult
+     * @return IInvCommentResult
      */
-    public function getAllByLeadUid(string $leadUid): ICommentResult;
+    public function getAllByLeadUid(string $leadUid): IInvCommentResult;
 
     /**
      * Удаляет все комментарии по leadUid.
      *
      * @param  string $leadUid
-     * @return ICommentResult Содержит массив ID или ошибку
+     * @return IInvCommentResult Содержит массив ID или ошибку
      */
-    public function deleteAllByLeadUid(string $leadUid): ICommentResult;
+    public function deleteAllByLeadUid(string $leadUid): IInvCommentResult;
 
     /**
      * Возвращает комментарии, оставленные конкретным пользователем.
      *
      * @param  string $whoId
-     * @return ICommentResult
+     * @return IInvCommentResult
      */
-    public function getAllByWhoId(string $whoId): ICommentResult;
+    public function getAllByWhoId(string $whoId): IInvCommentResult;
 
     /**
      * Возвращает комментарии по leadUid с учётом типа (option).
      *
      * @param  string $leadUid
      * @param  int $option
-     * @return ICommentResult
+     * @return IInvCommentResult
      */
-    public function getByLeadUidAndOption(string $leadUid, int $option): ICommentResult;
+    public function getByLeadUidAndOption(string $leadUid, int $option): IInvCommentResult;
 }

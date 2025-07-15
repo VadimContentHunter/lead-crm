@@ -14,34 +14,36 @@ use crm\src\Investments\Activity\_common\interfaces\IActivityResult;
 interface IActivityRepository extends IResultRepository
 {
     /**
-     * Возвращает все сделки, связанные с указанным leadId.
+     * Возвращает все сделки, связанные с указанным leadUid.
      *
-     * @param  int $leadId
+     * @param  string $leadUid Уникальный
+     *                         идентификатор, например
+     *                         "928123456"
      * @return IActivityResult
      */
-    public function getAllByLeadId(int $leadId): IActivityResult;
+    public function getAllByLeadUid(string $leadUid): IActivityResult;
 
     /**
-     * Удаляет все сделки по leadId.
+     * Удаляет все сделки по leadUid.
      *
-     * @param  int $leadId
+     * @param  string $leadUid
      * @return IActivityResult Содержит массив ID или ошибку
      */
-    public function deleteAllByLeadId(int $leadId): IActivityResult;
+    public function deleteAllByLeadUid(string $leadUid): IActivityResult;
 
     /**
-     * Возвращает все активные сделки по leadId.
+     * Возвращает все активные сделки по leadUid.
      *
-     * @param  int $leadId
+     * @param  string $leadUid
      * @return IActivityResult
      */
-    public function getAllActiveByLeadId(int $leadId): IActivityResult;
+    public function getAllActiveByLeadUid(string $leadUid): IActivityResult;
 
     /**
-     * Возвращает все закрытые сделки по leadId.
+     * Возвращает все закрытые сделки по leadUid.
      *
-     * @param  int $leadId
+     * @param  string $leadUid
      * @return IActivityResult
      */
-    public function getAllClosedByLeadId(int $leadId): IActivityResult;
+    public function getAllClosedByLeadUid(string $leadUid): IActivityResult;
 }

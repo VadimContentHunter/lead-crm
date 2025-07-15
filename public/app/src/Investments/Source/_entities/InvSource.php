@@ -6,7 +6,7 @@ class InvSource
 {
     public function __construct(
         public string $code,       // bybit, binance, telegram и т.п.
-        public string $name,       // Человеческое название: "Bybit"
+        public string $label,       // Человеческое название: "Bybit"
     ) {
     }
 }

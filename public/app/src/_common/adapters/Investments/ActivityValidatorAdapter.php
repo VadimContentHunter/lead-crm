@@ -14,12 +14,12 @@ class ActivityValidatorAdapter extends AValidatorAdapter
     {
         $validator = new Validator();
 
-        $validator->addRule('leadUid', function ($value) {
-            if (!is_string($value) || strlen($value) < 3) {
-                return 'Поле leadUid должно быть строкой не короче 3 символов';
-            }
-            return null;
-        });
+        // $validator->addRule('leadUid', function ($value) {
+        //     if (!is_string($value) || strlen($value) < 3) {
+        //         return 'Поле leadUid должно быть строкой не короче 3 символов';
+        //     }
+        //     return null;
+        // });
 
         $validator->addRule('type', function ($value) {
             if ($value !== null && !in_array($value, ['active', 'closed'], true)) {

@@ -3,8 +3,8 @@
 namespace crm\src\_common\repositories\Investments;
 
 use crm\src\_common\repositories\AResultRepository;
-use crm\src\Investments\Activity\_entities\InvActivity;
 use crm\src\Investments\Activity\_mappers\ActivityMapper;
+use crm\src\Investments\Activity\_common\DTOs\DbActivityDto;
 use crm\src\services\Repositories\QueryBuilder\QueryBuilder;
 use crm\src\Investments\Activity\_common\InvActivityCollection;
 use crm\src\Investments\Activity\_common\adapters\ActivityResult;
@@ -14,12 +14,14 @@ use crm\src\Investments\Activity\_common\interfaces\IActivityRepository;
 /**
  * Репозиторий для инвестиционных сделок (activity).
  *
- * @extends AResultRepository<InvActivity>
+ * @extends AResultRepository<DbActivityDto>
  */
 class ActivityRepository extends AResultRepository implements IActivityRepository
 {
     /**
-     * Возвращает название таблицы.
+     * Возвращает имя таблицы для операций с базой данных.
+     *
+     * @return string
      */
     protected function getTableName(): string
     {
@@ -27,44 +29,41 @@ class ActivityRepository extends AResultRepository implements IActivityRepositor
     }
 
     /**
-     * @return class-string<InvActivity>
+     * Возвращает имя класса DTO-сущности.
+     *
+     * @return class-string<DbActivityDto>
      */
     protected function getEntityClass(): string
     {
-        return InvActivity::class;
+        return DbActivityDto::class;
     }
 
     /**
-     * Возвращает callable, преобразующий массив в сущность.
+     * Возвращает функцию, преобразующую массив данных из БД в DTO-сущность.
      *
-     * @return callable(array<string, mixed>): InvActivity
+     * @return callable(array<string, mixed>): DbActivityDto
      */
     protected function fromArray(): callable
     {
-        return function (array $data): InvActivity {
-            $dto = ActivityMapper::fromArrayToDb($data);
-            return ActivityMapper::fromDbToEntity($dto);
-        };
+        return fn(array $data): DbActivityDto => ActivityMapper::fromArrayToDb($data);
     }
 
-
     /**
-     * Преобразует сущность в массив данных для сохранения.
+     * Преобразует DTO-сущность в массив для сохранения в базу данных.
      *
-     * @param  object $entity
+     * @param  object $entity Объект типа DbActivityDto
      * @return array<string, mixed>
      */
     protected function toArray(object $entity): array
     {
         /**
-         * @var InvActivity $entity
-         */
-        $dto = ActivityMapper::fromEntityToDb($entity);
-        return ActivityMapper::fromDbToArray($dto);
+ * @var DbActivityDto $entity
+*/
+        return ActivityMapper::fromDbToArray($entity);
     }
 
     /**
-     * Возвращает класс результата.
+     * Возвращает имя класса, реализующего обёртку результата.
      *
      * @return class-string<IActivityResult>
      */
@@ -74,31 +73,37 @@ class ActivityRepository extends AResultRepository implements IActivityRepositor
     }
 
     /**
-     * Возвращает все сделки по lead_uid.
+     * Получает все сделки, связанные с заданным lead_uid.
      *
-     * @param  int $leadId
-     * @return IActivityResult
+     * @param  int $leadId Идентификатор лида
+     * @return IActivityResult Коллекция сущностей сделок
      */
     public function getAllByLeadId(int $leadId): IActivityResult
     {
         try {
-            $activities = $this->getAllByColumnValues('lead_uid', [$leadId])->getArray();
-            return ActivityResult::success(new InvActivityCollection($activities));
+            $dtoList = $this->getAllByColumnValues('lead_uid', [$leadId])->getArray();
+
+            $entities = array_map(
+                fn(DbActivityDto $dto) => ActivityMapper::fromDbToEntity($dto),
+                $dtoList
+            );
+
+            return ActivityResult::success(new InvActivityCollection($entities));
         } catch (\Throwable $e) {
             return ActivityResult::failure($e);
         }
     }
 
     /**
-     * Возвращает все активные сделки по lead_uid.
+     * Получает все активные сделки для заданного lead_uid.
      *
-     * @param  int $leadId
-     * @return IActivityResult
+     * @param  int $leadId Идентификатор лида
+     * @return IActivityResult Коллекция активных сделок
      */
     public function getAllActiveByLeadId(int $leadId): IActivityResult
     {
         try {
-            $rows = $this->repository->executeQuery(
+            $dtoList = $this->repository->executeQuery(
                 (new QueryBuilder())
                     ->table($this->getTableName())
                     ->where('lead_uid = :lead_uid AND type = :type')
@@ -106,22 +111,27 @@ class ActivityRepository extends AResultRepository implements IActivityRepositor
                     ->select()
             )->getValidMappedList($this->fromArray());
 
-            return ActivityResult::success(new InvActivityCollection($rows));
+            $entities = array_map(
+                fn(DbActivityDto $dto) => ActivityMapper::fromDbToEntity($dto),
+                $dtoList
+            );
+
+            return ActivityResult::success(new InvActivityCollection($entities));
         } catch (\Throwable $e) {
             return ActivityResult::failure($e);
         }
     }
 
     /**
-     * Возвращает все закрытые сделки по lead_uid.
+     * Получает все закрытые сделки для заданного lead_uid.
      *
-     * @param  int $leadId
-     * @return IActivityResult
+     * @param  int $leadId Идентификатор лида
+     * @return IActivityResult Коллекция закрытых сделок
      */
     public function getAllClosedByLeadId(int $leadId): IActivityResult
     {
         try {
-            $rows = $this->repository->executeQuery(
+            $dtoList = $this->repository->executeQuery(
                 (new QueryBuilder())
                     ->table($this->getTableName())
                     ->where('lead_uid = :lead_uid AND type = :type')
@@ -129,23 +139,29 @@ class ActivityRepository extends AResultRepository implements IActivityRepositor
                     ->select()
             )->getValidMappedList($this->fromArray());
 
-            return ActivityResult::success(new InvActivityCollection($rows));
+            $entities = array_map(
+                fn(DbActivityDto $dto) => ActivityMapper::fromDbToEntity($dto),
+                $dtoList
+            );
+
+            return ActivityResult::success(new InvActivityCollection($entities));
         } catch (\Throwable $e) {
             return ActivityResult::failure($e);
         }
     }
 
     /**
-     * Удаляет все сделки по lead_uid.
+     * Удаляет все сделки, связанные с заданным lead_uid.
      *
-     * @param  int $leadId
+     * @param  int $leadId Идентификатор лида
      * @return IActivityResult Список ID удалённых сделок или ошибка
      */
     public function deleteAllByLeadId(int $leadId): IActivityResult
     {
         try {
-            $activities = $this->getAllByLeadId($leadId)->getCollection()?->getAll() ?? [];
-            $ids = array_filter(array_map(fn(InvActivity $a) => $a->id, $activities));
+            $collection = $this->getAllByLeadId($leadId)->getCollection();
+            $entities = $collection?->getAll() ?? [];
+            $ids = array_filter(array_map(fn($entity) => $entity->id, $entities));
 
             if (empty($ids)) {
                 return ActivityResult::success([]);

@@ -5,13 +5,22 @@ namespace crm\src\Investments\Activity;
 use crm\src\_common\interfaces\IValidation;
 use crm\src\Investments\Activity\_mappers\ActivityMapper;
 use crm\src\Investments\Activity\_common\DTOs\ActivityInputDto;
+use crm\src\Investments\Activity\_common\DTOs\DbActivityDto;
 use crm\src\Investments\Activity\_common\adapters\ActivityResult;
 use crm\src\Investments\Activity\_exceptions\InvActivityException;
 use crm\src\Investments\Activity\_common\interfaces\IActivityResult;
 use crm\src\Investments\Activity\_common\interfaces\IActivityRepository;
+use crm\src\Investments\Activity\_entities\InvActivity;
 
+/**
+ * Сервис управления инвестиционными сделками.
+ */
 class ManageActivity
 {
+    /**
+     * @param IActivityRepository $repository
+     * @param IValidation $validator
+     */
     public function __construct(
         private IActivityRepository $repository,
         private IValidation $validator,
@@ -20,6 +29,9 @@ class ManageActivity
 
     /**
      * Создание новой инвестиционной сделки.
+     *
+     * @param  ActivityInputDto $input
+     * @return IActivityResult
      */
     public function create(ActivityInputDto $input): IActivityResult
     {
@@ -31,12 +43,20 @@ class ManageActivity
                 );
             }
 
-            $entity = ActivityMapper::fromInputToEntity($input);
-            $result = $this->repository->save($entity);
+            $dto = ActivityMapper::fromInputToDb($input);
+            $result = $this->repository->save($dto);
 
             if (!$result->isSuccess()) {
-                return ActivityResult::failure($result->getError() ?? new InvActivityException("Ошибка сохранения сделки"));
+                return ActivityResult::failure(
+                    $result->getError() ?? new InvActivityException("Ошибка сохранения сделки")
+                );
             }
+
+            /**
+             * @var DbActivityDto $saved
+             */
+            $saved = $dto;
+            $entity = ActivityMapper::fromDbToEntity($saved);
 
             return ActivityResult::success($entity);
         } catch (\Throwable $e) {
@@ -46,6 +66,9 @@ class ManageActivity
 
     /**
      * Обновление существующей сделки.
+     *
+     * @param  ActivityInputDto $input
+     * @return IActivityResult
      */
     public function updateById(ActivityInputDto $input): IActivityResult
     {
@@ -65,7 +88,9 @@ class ManageActivity
             $result = $this->repository->update($updateData);
 
             if (!$result->isSuccess()) {
-                return ActivityResult::failure($result->getError() ?? new InvActivityException("Ошибка при обновлении сделки"));
+                return ActivityResult::failure(
+                    $result->getError() ?? new InvActivityException("Ошибка при обновлении сделки")
+                );
             }
 
             return ActivityResult::success($updateData);
@@ -76,6 +101,9 @@ class ManageActivity
 
     /**
      * Удаление сделки по ID.
+     *
+     * @param  int $id
+     * @return IActivityResult
      */
     public function deleteById(int $id): IActivityResult
     {
@@ -87,7 +115,9 @@ class ManageActivity
             $result = $this->repository->deleteById($id);
 
             if (!$result->isSuccess()) {
-                return ActivityResult::failure($result->getError() ?? new InvActivityException("Ошибка при удалении сделки"));
+                return ActivityResult::failure(
+                    $result->getError() ?? new InvActivityException("Ошибка при удалении сделки")
+                );
             }
 
             return ActivityResult::success($id);

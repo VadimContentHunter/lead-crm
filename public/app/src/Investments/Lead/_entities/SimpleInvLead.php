@@ -3,7 +3,7 @@
 namespace crm\src\Investments\Lead\_entities;
 
 use DateTimeImmutable;
-use crm\src\Investments\Source\_entities\InvSource;
+use crm\src\Investments\InvSource\_entities\InvSource;
 use crm\src\Investments\Status\_entities\InvStatus;
 
 /**

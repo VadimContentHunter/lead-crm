@@ -1,32 +1,32 @@
 <?php
 
-namespace crm\src\Investments\Source\_common\interfaces;
+namespace crm\src\Investments\InvSource\_common\interfaces;
 
 use crm\src\_common\interfaces\IResultRepository;
-use crm\src\Investments\Source\_common\DTOs\DbInvSourceDto;
-use crm\src\Investments\Source\_common\interfaces\ISourceResult;
+use crm\src\Investments\InvSource\_common\DTOs\DbInvSourceDto;
+use crm\src\Investments\InvSource\_common\interfaces\IInvSourceResult;
 
 /**
  * Интерфейс репозитория инвестиционных источников.
  *
  * @extends IResultRepository<DbInvSourceDto>
  */
-interface ISourceRepository extends IResultRepository
+interface IInvSourceRepository extends IResultRepository
 {
     /**
      * Возвращает источник по его уникальному коду.
      *
      * @param  string $code Например: "bybit", "binance",
      *                      "telegram"
-     * @return ISourceResult
+     * @return IInvSourceResult
      */
-    public function getByCode(string $code): ISourceResult;
+    public function getByCode(string $code): IInvSourceResult;
 
     /**
      * Удаляет источник по коду.
      *
      * @param  string $code
-     * @return ISourceResult
+     * @return IInvSourceResult
      */
-    public function deleteByCode(string $code): ISourceResult;
+    public function deleteByCode(string $code): IInvSourceResult;
 }

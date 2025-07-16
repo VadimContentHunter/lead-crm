@@ -1,15 +1,15 @@
 <?php
 
-namespace crm\src\Investments\Source\_mappers;
+namespace crm\src\Investments\InvSource\_mappers;
 
-use crm\src\Investments\Source\_entities\InvSource;
-use crm\src\Investments\Source\_common\DTOs\DbInvSourceDto;
-use crm\src\Investments\Source\_common\DTOs\InvSourceInputDto;
+use crm\src\Investments\InvSource\_entities\InvSource;
+use crm\src\Investments\InvSource\_common\DTOs\DbInvSourceDto;
+use crm\src\Investments\InvSource\_common\DTOs\InvSourceInputDto;
 
 /**
  * Маппер для преобразования между сущностями источника и DTO.
  */
-class SourceMapper
+class InvSourceMapper
 {
     /**
      * Преобразует DTO из БД в сущность.

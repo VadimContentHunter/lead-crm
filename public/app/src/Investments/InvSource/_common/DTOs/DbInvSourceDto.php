@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\Investments\Source\_common\DTOs;
+namespace crm\src\Investments\InvSource\_common\DTOs;
 
 /**
  * DTO для источника в базе данных.

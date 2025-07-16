@@ -3,11 +3,11 @@
 namespace crm\src\_common\repositories\Investments;
 
 use crm\src\_common\repositories\AResultRepository;
-use crm\src\Investments\Source\_mappers\SourceMapper;
-use crm\src\Investments\Source\_common\DTOs\DbInvSourceDto;
-use crm\src\Investments\Source\_common\adapters\SourceResult;
-use crm\src\Investments\Source\_common\interfaces\ISourceRepository;
-use crm\src\Investments\Source\_common\interfaces\ISourceResult;
+use crm\src\Investments\InvSource\_mappers\InvSourceMapper;
+use crm\src\Investments\InvSource\_common\DTOs\DbInvSourceDto;
+use crm\src\Investments\InvSource\_common\adapters\InvSourceResult;
+use crm\src\Investments\InvSource\_common\interfaces\IInvSourceRepository;
+use crm\src\Investments\InvSource\_common\interfaces\IInvSourceResult;
 use crm\src\services\Repositories\QueryBuilder\QueryBuilder;
 
 /**
@@ -15,7 +15,7 @@ use crm\src\services\Repositories\QueryBuilder\QueryBuilder;
  *
  * @extends AResultRepository<DbInvSourceDto>
  */
-class SourceRepository extends AResultRepository implements ISourceRepository
+class InvSourceRepository extends AResultRepository implements IInvSourceRepository
 {
     protected function getTableName(): string
     {
@@ -29,7 +29,7 @@ class SourceRepository extends AResultRepository implements ISourceRepository
 
     protected function fromArray(): callable
     {
-        return fn(array $data): DbInvSourceDto => SourceMapper::fromArrayToDb($data);
+        return fn(array $data): DbInvSourceDto => InvSourceMapper::fromArrayToDb($data);
     }
 
     protected function toArray(object $entity): array
@@ -37,15 +37,15 @@ class SourceRepository extends AResultRepository implements ISourceRepository
         /**
  * @var DbInvSourceDto $entity
 */
-        return SourceMapper::fromDbToArray($entity);
+        return InvSourceMapper::fromDbToArray($entity);
     }
 
     protected function getResultClass(): string
     {
-        return SourceResult::class;
+        return InvSourceResult::class;
     }
 
-    public function getByCode(string $code): ISourceResult
+    public function getByCode(string $code): IInvSourceResult
     {
         try {
             $dto = $this->repository->executeQuery(
@@ -64,13 +64,13 @@ class SourceRepository extends AResultRepository implements ISourceRepository
                 throw new \RuntimeException("Источник с кодом '$code' не найден.");
             }
 
-            return SourceResult::success(SourceMapper::fromDbToEntity($dto));
+            return InvSourceResult::success(InvSourceMapper::fromDbToEntity($dto));
         } catch (\Throwable $e) {
-            return SourceResult::failure($e);
+            return InvSourceResult::failure($e);
         }
     }
 
-    public function deleteByCode(string $code): ISourceResult
+    public function deleteByCode(string $code): IInvSourceResult
     {
         try {
             $dto = $this->repository->executeQuery(
@@ -90,9 +90,9 @@ class SourceRepository extends AResultRepository implements ISourceRepository
             }
 
             $this->deleteById($dto->id);
-            return SourceResult::success($dto->id);
+            return InvSourceResult::success($dto->id);
         } catch (\Throwable $e) {
-            return SourceResult::failure($e);
+            return InvSourceResult::failure($e);
         }
     }
 }

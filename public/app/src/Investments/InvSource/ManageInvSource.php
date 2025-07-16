@@ -1,24 +1,24 @@
 <?php
 
-namespace crm\src\Investments\Source;
+namespace crm\src\Investments\InvSource;
 
 use crm\src\_common\interfaces\IValidation;
-use crm\src\Investments\Source\_common\DTOs\InvSourceInputDto;
-use crm\src\Investments\Source\_common\DTOs\DbInvSourceDto;
-use crm\src\Investments\Source\_mappers\SourceMapper;
-use crm\src\Investments\Source\_common\interfaces\ISourceRepository;
-use crm\src\Investments\Source\_common\interfaces\ISourceResult;
-use crm\src\Investments\Source\_common\adapters\SourceResult;
-use crm\src\Investments\Source\_exceptions\InvSourceException;
-use crm\src\Investments\Source\_entities\InvSource;
+use crm\src\Investments\InvSource\_common\DTOs\InvSourceInputDto;
+use crm\src\Investments\InvSource\_common\DTOs\DbInvSourceDto;
+use crm\src\Investments\InvSource\_mappers\InvSourceMapper;
+use crm\src\Investments\InvSource\_common\interfaces\IInvSourceRepository;
+use crm\src\Investments\InvSource\_common\interfaces\IInvSourceResult;
+use crm\src\Investments\InvSource\_common\adapters\InvSourceResult;
+use crm\src\Investments\InvSource\_exceptions\InvSourceException;
+use crm\src\Investments\InvSource\_entities\InvSource;
 
 /**
  * Сервис управления инвестиционными источниками.
  */
-class ManageSource
+class ManageInvSource
 {
     public function __construct(
-        private ISourceRepository $repository,
+        private IInvSourceRepository $repository,
         private IValidation $validator,
     ) {
     }
@@ -27,31 +27,31 @@ class ManageSource
      * Создание нового источника.
      *
      * @param  InvSourceInputDto $input
-     * @return ISourceResult
+     * @return IInvSourceResult
      */
-    public function create(InvSourceInputDto $input): ISourceResult
+    public function create(InvSourceInputDto $input): IInvSourceResult
     {
         try {
             $validation = $this->validator->validate($input);
             if (!$validation->isValid()) {
-                return SourceResult::failure(
+                return InvSourceResult::failure(
                     new InvSourceException('Ошибка валидации: ' . implode('; ', $validation->getErrors()))
                 );
             }
 
-            $dto = SourceMapper::fromInputToDb($input);
+            $dto = InvSourceMapper::fromInputToDb($input);
             $result = $this->repository->save($dto);
 
             if (!$result->isSuccess()) {
-                return SourceResult::failure(
+                return InvSourceResult::failure(
                     $result->getError() ?? new InvSourceException("Ошибка при сохранении источника")
                 );
             }
 
-            $entity = SourceMapper::fromDbToEntity($dto);
-            return SourceResult::success($entity);
+            $entity = InvSourceMapper::fromDbToEntity($dto);
+            return InvSourceResult::success($entity);
         } catch (\Throwable $e) {
-            return SourceResult::failure($e);
+            return InvSourceResult::failure($e);
         }
     }
 
@@ -59,34 +59,34 @@ class ManageSource
      * Обновление источника по ID.
      *
      * @param  InvSourceInputDto $input
-     * @return ISourceResult
+     * @return IInvSourceResult
      */
-    public function updateById(InvSourceInputDto $input): ISourceResult
+    public function updateById(InvSourceInputDto $input): IInvSourceResult
     {
         try {
             if (!$input->id) {
-                return SourceResult::failure(new InvSourceException("ID обязателен для обновления"));
+                return InvSourceResult::failure(new InvSourceException("ID обязателен для обновления"));
             }
 
             $validation = $this->validator->validate($input);
             if (!$validation->isValid()) {
-                return SourceResult::failure(
+                return InvSourceResult::failure(
                     new InvSourceException('Ошибка валидации: ' . implode('; ', $validation->getErrors()))
                 );
             }
 
-            $updateData = SourceMapper::fromInputExtractFilledFields($input);
+            $updateData = InvSourceMapper::fromInputExtractFilledFields($input);
             $result = $this->repository->update($updateData);
 
             if (!$result->isSuccess()) {
-                return SourceResult::failure(
+                return InvSourceResult::failure(
                     $result->getError() ?? new InvSourceException("Ошибка при обновлении источника")
                 );
             }
 
-            return SourceResult::success($updateData);
+            return InvSourceResult::success($updateData);
         } catch (\Throwable $e) {
-            return SourceResult::failure($e);
+            return InvSourceResult::failure($e);
         }
     }
 
@@ -94,26 +94,26 @@ class ManageSource
      * Удаление источника по ID.
      *
      * @param  int $id
-     * @return ISourceResult
+     * @return IInvSourceResult
      */
-    public function deleteById(int $id): ISourceResult
+    public function deleteById(int $id): IInvSourceResult
     {
         try {
             if ($id <= 0) {
-                return SourceResult::failure(new InvSourceException("Некорректный ID для удаления"));
+                return InvSourceResult::failure(new InvSourceException("Некорректный ID для удаления"));
             }
 
             $result = $this->repository->deleteById($id);
 
             if (!$result->isSuccess()) {
-                return SourceResult::failure(
+                return InvSourceResult::failure(
                     $result->getError() ?? new InvSourceException("Ошибка при удалении источника")
                 );
             }
 
-            return SourceResult::success($id);
+            return InvSourceResult::success($id);
         } catch (\Throwable $e) {
-            return SourceResult::failure($e);
+            return InvSourceResult::failure($e);
         }
     }
 }

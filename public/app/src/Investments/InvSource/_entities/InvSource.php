@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\Investments\Source\_entities;
+namespace crm\src\Investments\InvSource\_entities;
 
 class InvSource
 {

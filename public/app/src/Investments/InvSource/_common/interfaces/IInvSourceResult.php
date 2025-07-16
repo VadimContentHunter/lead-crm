@@ -1,22 +1,22 @@
 <?php
 
-namespace crm\src\Investments\Source\_common\interfaces;
+namespace crm\src\Investments\InvSource\_common\interfaces;
 
 use crm\src\_common\interfaces\IResult;
-use crm\src\Investments\Source\_entities\InvSource;
-use crm\src\Investments\Source\_common\InvSourceCollection;
+use crm\src\Investments\InvSource\_entities\InvSource;
+use crm\src\Investments\InvSource\_common\InvSourceCollection;
 
 /**
  * Результат операций с инвестиционным источником или их коллекцией.
  */
-interface ISourceResult extends IResult
+interface IInvSourceResult extends IResult
 {
     /**
      * Возвращает сущность источника, если она есть.
      *
      * @return InvSource|null
      */
-    public function getSource(): ?InvSource;
+    public function getInvSource(): ?InvSource;
 
     /**
      * Уникальный идентификатор или код источника.

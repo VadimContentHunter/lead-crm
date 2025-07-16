@@ -40,7 +40,7 @@ class InvestPage
                             //     ]
                             // )),
                             'controlPanel' => (new TemplateBundle(
-                                templatePath: 'partials/controlPanelP2p.tpl.php',
+                                templatePath: 'partials/controlPanelInvest.tpl.php',
                             )),
                         ]
                     ))
@@ -63,10 +63,10 @@ class InvestPage
         $this->renderer->setHeaders($headers);
 
         $scripts = [
-            '/assets/js/sidebarTriggers.js',
-            '/assets/js/leadHandlers.js',
-            '/assets/js/sourceHandlers.js',
-            '/assets/js/statusHandlers.js',
+            '/assets/js/invest/invSidebarTriggers.js',
+            '/assets/js/invest/invLeadHandlers.js',
+            '/assets/js/invest/invSourceHandlers.js',
+            '/assets/js/invest/invStatusHandlers.js',
         ];
 
         try {
@@ -89,6 +89,21 @@ class InvestPage
      */
     public function getSidebar(): array
     {
-        return [];
+        $invLeadSideBar = (new TemplateBundle(
+            templatePath: 'containers/wrapperSideBar.tpl.php',
+            variables: [
+                'classId' => 'inv-lead-menu-id',
+                'addPanel' => (new TemplateBundle(
+                    templatePath: 'components/addInvLead.tpl.php',
+                    variables: [
+                        'sourcesTitle' => [],
+                        'statusesTitle' => [],
+                        'managersLogin' => []
+                    ]
+                )),
+            ]
+        ));
+
+        return [$invLeadSideBar];
     }
 }

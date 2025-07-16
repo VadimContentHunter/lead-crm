@@ -6,7 +6,7 @@
 ?>
 
 <section class="component-wrapper-line">
-    <section class="component-wrapper"  id="add-lead-form">
+    <section class="component-wrapper"  id="add-inv-lead-form">
             <div class="form-messages-container">
                 <div class="form-message">
                     <p>Введите данные, что бы создать лида.</p>
@@ -14,7 +14,7 @@
             </div>
             <form class="form-stretch component">
                 <div class="form-group">
-                    <label>Полное имя *</label>
+                    <label>Полное имя</label>
                     <input type="text" name="fullName">
                 </div>
 
@@ -26,6 +26,16 @@
                 <div class="form-group">
                     <label>Адрес</label>
                     <input type="text" name="address">
+                </div>
+
+                <div class="form-group">
+                    <label>Номер телефона</label>
+                    <input type="text" name="phone">
+                </div>
+
+                <div class="form-group">
+                    <label>Электронная почта</label>
+                    <input type="mail" name="email">
                 </div>
 
                 <div class="form-group">

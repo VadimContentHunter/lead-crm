@@ -181,4 +181,24 @@ final class InvestmentService
 
         return $this->manageInvSource->updateById(InvSourceMapper::fromArrayToInput($data));
     }
+
+    /**
+     * @param array<string,mixed> $data
+     */
+    public function deleteSource(array $data): IInvSourceResult
+    {
+        $id = isset($data['id']) ? (int) $data['id']
+                            : (isset($data['rowId']) ? (int) $data['rowId'] : null);
+
+        $oldData = $this->invSourceRepo->getById($id);
+        $resultDelete = $this->manageInvSource->deleteById($id);
+        if ($resultDelete->isSuccess()) {
+            $data = $oldData->getData() instanceof DbInvSourceDto
+                        ? InvSourceMapper::fromDbToEntity($oldData->getData())
+                        : null;
+            return InvSourceResult::success($data);
+        }
+
+        return InvSourceResult::failure($resultDelete->getError());
+    }
 }

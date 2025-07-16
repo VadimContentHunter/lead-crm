@@ -31,19 +31,32 @@ ComponentFunctions.attachJsonRpcInputTrigger({
 //
 // === Удаление строки из таблицы по кнопке ===
 //
-// function attachDeleteTriggerSource() {
-//     ComponentFunctions.attachDeleteTrigger({
-//         triggerSelector: '[table-r-id="inv-source-table-1"] .btn-delete.btn-row-table',
-//         method: 'source.delete',
-//         endpoint: endPoint,
-//         callbackOnData: (payload) => {
-//             ComponentFunctions.replaceTable(payload, '[table-r-id="inv-source-table-1"]');
-//         },
-//         beforeSendCallback: async (trigger, rowId) => {
-//             return await ConfirmDialog.show('Удаление', `Удалить элемент #${rowId}?`, '.overlay-main');
-//         },
-//     });
-// }
+function attachDeleteTriggerSource() {
+    ComponentFunctions.attachDeleteTrigger({
+        triggerSelector: '[table-r-id="inv-source-table-1"] .btn-delete.btn-row-table',
+        method: 'invest.source.delete',
+        endpoint: endPoint,
+        callbackOnData: (payload) => {
+            ComponentFunctions.replaceTable(payload, '[table-r-id="inv-source-table-1"]');
+            if (overlayLoader instanceof HTMLElement) {
+                overlayLoader.style.display = 'none';
+            }
+        },
+        beforeValidateCallback: async (trigger, rowId) => {
+            return await ConfirmDialog.show('Удаление', `Удалить элемент #${rowId}?`, '.overlay-main');
+        },
+        beforeSendCallback: () => {
+            if (overlayLoader instanceof HTMLElement) {
+                overlayLoader.style.display = '';
+            }
+        },
+        callbackOnError: (error) => {
+            if (overlayLoader instanceof HTMLElement) {
+                overlayLoader.style.display = 'none';
+            }
+        }
+    });
+}
 
 //
 // === Редактирование значения ячейки по кнопке внутри строки ===
@@ -110,7 +123,7 @@ function watchInputValueChangeSource() {
 //
 // === Инициализация обработчиков для уже существующих элементов таблицы ===
 //
-// attachDeleteTriggerSource();
+attachDeleteTriggerSource();
 attachInputButtonTriggerSource();
 watchInputValueChangeSource();
 
@@ -124,7 +137,7 @@ if (!targetNode) {
     const observer = new MutationObserver((mutationsList) => {
         for (const mutation of mutationsList) {
             if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                // attachDeleteTriggerSource();
+                attachDeleteTriggerSource();
                 attachInputButtonTriggerSource();
                 watchInputValueChangeSource();
                 break; // один раз достаточно

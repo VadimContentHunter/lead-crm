@@ -5,6 +5,7 @@ namespace crm\src\controllers\API\Invest;
 use Throwable;
 use crm\src\services\AppContext\ISecurity;
 use crm\src\services\AppContext\IAppContext;
+use crm\src\Investments\InvSource\_entities\InvSource;
 use crm\src\Investments\_application\InvestmentService;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\components\Security\_exceptions\JsonRpcSecurityException;
@@ -45,6 +46,7 @@ class InvSourceController
             'invest.source.add' => fn() => $secureCall->createInvSource($this->rpc->getParams()),
             'invest.source.get.table' => fn() => $secureCall->getSourceTable(),
             'invest.source.edit.cell' => fn() => $secureCall->editSourceCell($this->rpc->getParams()),
+            'invest.source.delete' => fn() => $secureCall->delete($this->rpc->getParams()),
         ];
     }
 
@@ -121,6 +123,37 @@ class InvSourceController
                 'messages' => [
                     ['type' => 'success', 'message' => 'Источник успешно обновлен'],
                     ['type' => 'info', 'message' => "Обновленный источник: {$infoData}"]
+                ]
+            ]);
+        } else {
+            $errorMessage = $result->getError()?->getMessage() ?? 'Произошла ошибка';
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Произошла ошибка: ' . $errorMessage]
+            ]);
+        }
+    }
+
+    /**
+     * @param array<string,mixed> $params
+     */
+    public function delete(array $params): void
+    {
+        $result = $this->service->deleteSource($params);
+
+        if ($result->isSuccess()) {
+            $code = $result?->getCode() ?? '---';
+            $label = $result?->getLabel() ?? '---';
+            $id = $result?->getId() ?? '---';
+
+            $info = "<br>id: <b>{$id}</b>";
+            $info .= "<br>code: <b>{$code}</b>";
+            $info .= "<br>label: <b>{$label}</b>";
+            $this->rpc->replyData([
+                'type' => 'success',
+                'table' => $this->service->getSourceTable()->getString() ?? '---',
+                'messages' => [
+                    ['type' => 'success', 'message' => 'Источник успешно удален'],
+                    ['type' => 'info', 'message' => "Удалённый источник: {$info}"]
                 ]
             ]);
         } else {

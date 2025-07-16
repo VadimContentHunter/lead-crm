@@ -377,23 +377,36 @@ export const ComponentFunctions = {
         }
     },
 
+    /**
+     * Назначает обработчик на кнопки удаления, с поддержкой валидации, действий перед отправкой и коллбеков.
+     *
+     * @param {Object} config
+     * @param {string} config.triggerSelector - Селектор кнопок удаления
+     * @param {string} config.method - JSON-RPC метод
+     * @param {string} [config.endpoint='/api/'] - Эндпоинт JSON-RPC
+     * @param {function(HTMLElement, string): Promise<boolean|void>} [config.beforeValidateCallback] - Вызывается до отправки, может отменить процесс (вернув false)
+     * @param {function(HTMLElement, string): void} [config.beforeSendCallback] - Вызывается сразу перед отправкой запроса
+     * @param {function(any): void} [config.callbackOnData] - Вызывается при успешном ответе
+     * @param {function(Error): void} [config.callbackOnError] - Вызывается при ошибке запроса
+     */
     attachDeleteTrigger({
         triggerSelector,
         method,
         endpoint = '/api/',
-        beforeSendCallback = async () => { },
+        beforeValidateCallback = async () => { },
+        beforeSendCallback = () => { },
         callbackOnData = (payload) => console.log('[JsonRpc] Ответ:', payload),
+        callbackOnError = null,
     }) {
         const triggers = document.querySelectorAll(triggerSelector);
 
         for (const trigger of triggers) {
-            if (trigger.dataset.bound) continue; // защита от повторного добавления
+            if (trigger.dataset.bound) continue;
             trigger.dataset.bound = 'true';
 
             trigger.addEventListener('click', async (event) => {
                 event.preventDefault();
 
-                // Ищем ближайший input[name="row_id"] среди родителей и соседей
                 const rowIdInput = trigger.closest('tr')?.querySelector('input[name="row_id"]');
                 const rowId = rowIdInput?.value ?? null;
 
@@ -402,16 +415,19 @@ export const ComponentFunctions = {
                     return;
                 }
 
-                // 👇 Ожидаем beforeSendCallback
                 try {
-                    const result = await beforeSendCallback(trigger, rowId);
-                    if (result === false) {
-                        console.log('[Delete Trigger] beforeSendCallback отменил удаление');
+                    const valid = await beforeValidateCallback(trigger, rowId);
+                    if (valid === false) {
+                        console.log('[Delete Trigger] beforeValidateCallback отменил удаление');
                         return;
                     }
                 } catch (e) {
-                    console.warn('[Delete Trigger] beforeSendCallback выбросил ошибку:', e);
+                    console.warn('[Delete Trigger] beforeValidateCallback выбросил ошибку:', e);
                     return;
+                }
+
+                if (typeof beforeSendCallback === 'function') {
+                    beforeSendCallback(trigger, rowId);
                 }
 
                 const transport = new JsonRpcTransport(method, {
@@ -420,14 +436,16 @@ export const ComponentFunctions = {
                     onData: (payload) => {
                         if (typeof callbackOnData === 'function') {
                             callbackOnData(payload);
-                            // return;
                         }
-
                         processingPayload(payload);
                     },
                     onError: (error) => {
                         onErrorDefaultFunction(error);
                         console.error('[JsonRpcTransport] Ошибка:', error.message);
+
+                        if (typeof callbackOnError === 'function') {
+                            callbackOnError(error);
+                        }
                     }
                 });
 
@@ -435,6 +453,7 @@ export const ComponentFunctions = {
             });
         }
     },
+
 
     /**
      * Вешает обработчик на все кнопки и отправляет данные из связанного input, ища родителя по кастомному селектору.

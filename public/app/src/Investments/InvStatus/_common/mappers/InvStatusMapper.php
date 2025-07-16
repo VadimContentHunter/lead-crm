@@ -1,10 +1,10 @@
 <?php
 
-namespace crm\src\Investments\InvStatus\_mappers;
+namespace crm\src\Investments\InvStatus\_common\mappers;
 
-use Domain\Investment\DTOs\DbInvStatusDto;
-use Domain\Investment\DTOs\InvStatusInputDto;
 use crm\src\Investments\InvStatus\_entities\InvStatus;
+use crm\src\Investments\InvStatus\_common\DTOs\DbInvStatusDto;
+use crm\src\Investments\InvStatus\_common\DTOs\InvStatusInputDto;
 
 /**
  * Маппер для преобразования между сущностями статуса и DTO.
@@ -101,6 +101,22 @@ class InvStatusMapper
             label: $data['label'],
         );
     }
+
+    /**
+     * Преобразует массив в входной DTO (InvStatusInputDto).
+     *
+     * @param  array<string, mixed> $data
+     * @return InvStatusInputDto
+     */
+    public static function fromArrayToInput(array $data): InvStatusInputDto
+    {
+        return new InvStatusInputDto(
+            code: isset($data['code']) ? (string) $data['code'] : null,
+            label: isset($data['label']) ? (string) $data['label'] : null,
+            id: isset($data['id']) ? (int) $data['id'] : null
+        );
+    }
+
 
     /**
      * Возвращает только заполненные поля из входного DTO.

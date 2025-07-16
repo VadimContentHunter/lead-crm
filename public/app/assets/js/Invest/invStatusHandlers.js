@@ -8,8 +8,8 @@ const endPoint = '/api/invest/statuses';
 // === Добавление строки в таблицу по кнопке ===
 //
 ComponentFunctions.attachJsonRpcInputTrigger({
-    triggerSelector: '#add-status-form .form-actions .form-button.submit',
-    containerSelector: '#add-status-form',
+    triggerSelector: '#add-inv-status-form .form-actions .form-button.submit',
+    containerSelector: '#add-inv-status-form',
     method: 'invest.status.add',
     endpoint: endPoint,
     callbackOnData: (payload) => {

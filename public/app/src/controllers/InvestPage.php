@@ -92,8 +92,8 @@ class InvestPage
         $invStatusSidebar = (new TemplateBundle(
             templatePath: 'containers/wrapperSideBar.tpl.php',
             variables: [
-                'classId' => 'status-menu-id',
-                'addPanel' => (new TemplateBundle(templatePath: 'components/addStatus.tpl.php')),
+                'classId' => 'inv-status-menu-id',
+                'addPanel' => (new TemplateBundle(templatePath: 'components/invest/addInvStatus.tpl.php')),
                 // 'table' => $this->statusPage->getTableStatusComponent()
             ]
         ));

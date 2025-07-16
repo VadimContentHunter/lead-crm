@@ -9,8 +9,8 @@ const endPoint = '/api/invest/sources';
 //
 
 ComponentFunctions.attachJsonRpcInputTrigger({
-    triggerSelector: '#add-source-form .form-actions .form-button.submit',
-    containerSelector: '#add-source-form',
+    triggerSelector: '#add-inv-source-form .form-actions .form-button.submit',
+    containerSelector: '#add-inv-source-form',
     method: 'invest.source.add',
     endpoint: endPoint,
     callbackOnData: (payload) => {

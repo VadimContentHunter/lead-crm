@@ -15,8 +15,14 @@ class StatusValidatorAdapter extends AValidatorAdapter
         $validator = new Validator();
 
         $validator->addRule('code', function ($value) {
-            if ($value !== null && (!is_string($value) || trim($value) === '')) {
-                return 'Поле code должно быть непустой строкой';
+            if ($value !== null) {
+                if (!is_string($value) || trim($value) === '') {
+                    return 'Поле code должно быть непустой строкой';
+                }
+
+                if (!preg_match('/^[a-z0-9_]+$/', $value)) {
+                    return 'Поле code может содержать только латинские буквы в нижнем регистре, цифры и символ "_"';
+                }
             }
             return null;
         });

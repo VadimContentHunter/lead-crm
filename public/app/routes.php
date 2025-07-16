@@ -62,6 +62,12 @@ function loadRoutes(PDO $pdo, IAppContext $appContext, LoggerInterface $logger =
         ),
 
         new Route(
+            pattern: '^/api/invest/statuses/?$',
+            className: InvestController::class,
+            extraData: [$appContext]
+        ),
+
+        new Route(
             pattern: '^/api/users/?$',
             className: UserController::class,
             extraData: [$appContext]

@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function () {
             container.style = 'display: flex;';
             toggleScroll(true);
 
-            const rightSidebar = container.querySelector('.right-sidebar.status-menu-id');
+            const rightSidebar = container.querySelector('.right-sidebar.inv-status-menu-id');
             if (rightSidebar instanceof HTMLElement) {
                 rightSidebar.style = 'display: flex;';
 

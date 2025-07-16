@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\Investment\DTOs;
+namespace crm\src\Investments\InvStatus\_common\DTOs;
 
 /**
  * DTO для входных данных при создании/редактировании статуса.

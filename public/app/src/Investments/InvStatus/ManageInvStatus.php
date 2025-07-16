@@ -3,9 +3,8 @@
 namespace crm\src\Investments\InvStatus;
 
 use crm\src\_common\interfaces\IValidation;
-use Domain\Investment\DTOs\InvStatusInputDto;
-use Domain\Investment\DTOs\DbInvStatusDto;
-use crm\src\Investments\InvStatus\_mappers\InvStatusMapper;
+use crm\src\Investments\InvStatus\_common\DTOs\InvStatusInputDto;
+use crm\src\Investments\InvStatus\_common\mappers\InvStatusMapper;
 use crm\src\Investments\InvStatus\_common\interfaces\IInvStatusRepository;
 use crm\src\Investments\InvStatus\_common\interfaces\IInvStatusResult;
 use crm\src\Investments\InvStatus\_common\adapters\InvStatusResult;
@@ -48,6 +47,7 @@ class ManageInvStatus
                 );
             }
 
+            $dto->id = $result->getInt() ?? 0;
             $entity = InvStatusMapper::fromDbToEntity($dto);
             return InvStatusResult::success($entity);
         } catch (\Throwable $e) {

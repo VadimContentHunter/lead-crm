@@ -20,3 +20,27 @@
     align-items: center;
     z-index: 100;
 }
+
+
+.overlay-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+
+    .overlay-loader {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: var(--border-radius-base);
+        background-color: var(--color-overlay);
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        i {
+            color: var(--color-primary);
+        }
+    }
+}

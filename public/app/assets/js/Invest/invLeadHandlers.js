@@ -2,6 +2,7 @@ import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
 import { ConfirmDialog } from '/assets/js/ConfirmDialog.js';
 
 const endPoint = '/api/invest/leads';
+const overlayLoader = document.querySelector('#overlay-loader');
 
 //
 // === Добавление строки в таблицу по кнопке в форме ===
@@ -11,9 +12,17 @@ ComponentFunctions.attachJsonRpcInputTrigger({
     containerSelector: '#add-inv-lead-form',
     method: 'invest.lead.add',
     endpoint: endPoint,
+    callbackBeforeSend: () => {
+        if (overlayLoader instanceof HTMLElement) {
+            overlayLoader.style.display = '';
+        }
+    },
     callbackOnData: (payload) => {
         console.log(payload);
         // ComponentFunctions.replaceTable(payload, '[table-r-id="lead-table-1"]');
+        if (overlayLoader instanceof HTMLElement) {
+            overlayLoader.style.display = 'none';
+        }
     }
 });
 
@@ -22,8 +31,16 @@ ComponentFunctions.attachJsonRpcLoadTrigger({
     method: 'invest.lead.get.form.create',
     endpoint: endPoint,
     jsonContent: { id: 0 },
+    callbackBeforeSend: () => {
+        if (overlayLoader instanceof HTMLElement) {
+            overlayLoader.style.display = '';
+        }
+    },
     callbackOnData: (payload) => {
         ComponentFunctions.fillFormFromData('#add-inv-lead-form form', payload?.data ?? []);
+        if (overlayLoader instanceof HTMLElement) {
+            overlayLoader.style.display = 'none';
+        }
     }
 });
 

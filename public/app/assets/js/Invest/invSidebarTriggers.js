@@ -41,6 +41,7 @@ function onClickOutside(element, callback, excludeElements = []) {
 document.addEventListener('DOMContentLoaded', function () {
     const notificationContainer = document.querySelector('.notification-container');
     const overlayMain = document.querySelector('.overlay-main');
+    const overlayLoader = document.querySelector('#overlay-loader');
     
     const toggleScroll = (shouldHide) => {
         const contentContainerElement = document.querySelector('.content-container');
@@ -66,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     toggleScroll(false);
 
                     removeListener();
-                }, [buttonSource, notificationContainer, overlayMain]);
+                }, [buttonSource, notificationContainer, overlayMain, overlayLoader]);
 
             }
         }
@@ -89,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     toggleScroll(false);
 
                     removeListener();
-                }, [buttonStatus, notificationContainer, overlayMain]);
+                }, [buttonStatus, notificationContainer, overlayMain, overlayLoader]);
             }
         }
     });
@@ -110,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     toggleScroll(false);
 
                     removeListener();
-                }, [buttonInvLead, notificationContainer, overlayMain]);
+                }, [buttonInvLead, notificationContainer, overlayMain, overlayLoader]);
             }
         }
     });

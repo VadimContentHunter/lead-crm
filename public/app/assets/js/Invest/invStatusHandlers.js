@@ -2,7 +2,7 @@ import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
 import { ConfirmDialog } from '/assets/js/ConfirmDialog.js';
 
 const endPoint = '/api/invest/statuses';
-
+const overlayLoader = document.querySelector('#overlay-loader');
 
 //
 // === Добавление строки в таблицу по кнопке ===
@@ -12,8 +12,16 @@ ComponentFunctions.attachJsonRpcInputTrigger({
     containerSelector: '#add-inv-status-form',
     method: 'invest.status.add',
     endpoint: endPoint,
+    callbackBeforeSend: () => {
+        if (overlayLoader instanceof HTMLElement) {
+            overlayLoader.style.display = '';
+        }
+    },
     callbackOnData: (payload) => {
         // ComponentFunctions.replaceTable(payload, '[table-r-id="status-table-1"]');
+        if (overlayLoader instanceof HTMLElement) {
+            overlayLoader.style.display = 'none';
+        }
     },
 });
 

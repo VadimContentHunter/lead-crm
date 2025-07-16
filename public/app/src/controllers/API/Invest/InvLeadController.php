@@ -109,6 +109,9 @@ class InvLeadController
         }
     }
 
+    /**
+     * @param array<string,mixed> $params
+     */
     public function getFormCreateData(array $params): void
     {
         $managersLogin = $this->appContext->getUserManagement()->get()->executeAll()

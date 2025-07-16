@@ -15,13 +15,21 @@ $overlay_items = $overlay_items ?? [];
     <section class="overlay-main">
         <?= $overlay_main_content ?>
     </section>
-
+    
     <section class="overlay-content">
-        <?php foreach ($overlay_items as $item) : ?>
-            <?= $item ?>
-        <?php endforeach; ?>
+        <div class="overlay-wrapper">
+            <div class="overlay-loader" id="overlay-loader" style="display: none;">
+                <div class="icon-wrapper-loader">
+                    <i class="fa-solid fa-spinner"></i>
+                </div>
+            </div>
 
-        <?= $overlay_content ?>
+            <?php foreach ($overlay_items as $item) : ?>
+                <?= $item ?>
+            <?php endforeach; ?>
+
+            <?= $overlay_content ?>
+        </div>
     </section>
 
     <?= $main_menu ?>

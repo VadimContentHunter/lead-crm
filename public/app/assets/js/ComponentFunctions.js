@@ -160,28 +160,30 @@ export const ComponentFunctions = {
     },
 
     /**
-     * Назначает обработку любого input-контейнера через JSON-RPC по клику на кнопку.
-     *
-     * После клика собирает данные из input, select и textarea внутри указанного контейнера
-     * и отправляет их через JSON-RPC.
-     *
-     * @param {Object} config - Конфигурация вызова
-     * @param {string} config.triggerSelector - CSS-селектор для кнопки-триггера (например, '.btn-submit')
-     * @param {string} config.containerSelector - CSS-селектор контейнера, из которого будут собираться данные
-     * @param {string} config.method - Название метода JSON-RPC
-     * @param {string} [config.endpoint='/api'] - Адрес отправки запроса
-     * @param {function(any):void} [config.callbackOnData=null] - Коллбек для обработки успешного ответа (если не передан, будут показаны сообщения в messageBox)
-     * @param {function(Error):void} [config.callbackOnError=null] - Коллбек для обработки ошибок (если не передан, ошибка выводится в консоль)
-     *
-     * @example
-     * ComponentFunctions.attachJsonRpcInputTrigger({
-     *   triggerSelector: '.btn-submit',
-     *   containerSelector: '#form-container',
-     *   method: 'lead.filter',
-     *   endpoint: '/api/leads',
-     *   callbackOnData: (data) => console.log(data),
-     * });
-     */
+ * Назначает обработку любого input-контейнера через JSON-RPC по клику на кнопку.
+ *
+ * После клика собирает данные из input, select и textarea внутри указанного контейнера
+ * и отправляет их через JSON-RPC.
+ *
+ * @param {Object} config - Конфигурация вызова
+ * @param {string} config.triggerSelector - CSS-селектор для кнопки-триггера (например, '.btn-submit')
+ * @param {string} config.containerSelector - CSS-селектор контейнера, из которого будут собираться данные
+ * @param {string} config.method - Название метода JSON-RPC
+ * @param {string} [config.endpoint='/api'] - Адрес отправки запроса
+ * @param {function(any):void} [config.callbackOnData=null] - Коллбек для обработки успешного ответа (если не передан, будут показаны сообщения в messageBox)
+ * @param {function(Error):void} [config.callbackOnError=null] - Коллбек для обработки ошибок (если не передан, ошибка выводится в консоль)
+ * @param {function():void} [config.callbackBeforeSend=null] - Коллбек, вызываемый перед отправкой запроса
+ *
+ * @example
+ * ComponentFunctions.attachJsonRpcInputTrigger({
+ *   triggerSelector: '.btn-submit',
+ *   containerSelector: '#form-container',
+ *   method: 'lead.filter',
+ *   endpoint: '/api/leads',
+ *   callbackBeforeSend: () => showLoader(),
+ *   callbackOnData: (data) => console.log(data),
+ * });
+ */
     attachJsonRpcInputTrigger({
         triggerSelector,
         containerSelector,
@@ -189,6 +191,7 @@ export const ComponentFunctions = {
         endpoint = '/api',
         callbackOnData = null,
         callbackOnError = onErrorDefaultFunction,
+        callbackBeforeSend = null,
     }) {
         const trigger = document.querySelector(triggerSelector);
         const container = document.querySelector(containerSelector);
@@ -204,9 +207,7 @@ export const ComponentFunctions = {
             onData: (payload) => {
                 if (typeof callbackOnData === 'function') {
                     callbackOnData(payload);
-                    // return;
                 }
-
                 processingPayload(payload);
             },
             onError: (error) => {
@@ -220,9 +221,13 @@ export const ComponentFunctions = {
 
         trigger.addEventListener('click', (e) => {
             e.preventDefault();
+            if (typeof callbackBeforeSend === 'function') {
+                callbackBeforeSend();
+            }
             transport.sendFromSelectorInputs(container);
         });
     },
+
 
 
     /**
@@ -545,17 +550,18 @@ export const ComponentFunctions = {
     },
 
     /**
-     * Назначает обработчик, который выполняет JSON-RPC запрос при клике на кнопку,
-     * вызывает переданный коллбек с данными и обрабатывает их через processingPayload.
-     *
-     * @param {Object} config - Конфигурация запроса
-     * @param {string} config.triggerSelector - CSS-селектор кнопки
-     * @param {string} config.method - Название метода JSON-RPC
-     * @param {string} [config.endpoint='/api'] - Адрес JSON-RPC сервера
-     * @param {Object} [config.jsonContent={}] - Данные, отправляемые в теле запроса
-     * @param {function(any):void} [config.callbackOnData] - Коллбек, вызываемый при получении данных (всегда вызывается перед обработкой)
-     * @param {function(Error):void} [config.callbackOnError] - Коллбек, вызываемый при ошибке (по умолчанию onErrorDefaultFunction)
-     */
+ * Назначает обработчик, который выполняет JSON-RPC запрос при клике на кнопку,
+ * вызывает переданный коллбек с данными и обрабатывает их через processingPayload.
+ *
+ * @param {Object} config - Конфигурация запроса
+ * @param {string} config.triggerSelector - CSS-селектор кнопки
+ * @param {string} config.method - Название метода JSON-RPC
+ * @param {string} [config.endpoint='/api'] - Адрес JSON-RPC сервера
+ * @param {Object} [config.jsonContent={}] - Данные, отправляемые в теле запроса
+ * @param {function(any):void} [config.callbackOnData] - Коллбек, вызываемый при получении данных (всегда вызывается перед обработкой)
+ * @param {function(Error):void} [config.callbackOnError] - Коллбек, вызываемый при ошибке (по умолчанию onErrorDefaultFunction)
+ * @param {function():void} [config.callbackBeforeSend] - Коллбек, вызываемый сразу после клика, до отправки запроса
+ */
     attachJsonRpcLoadTrigger({
         triggerSelector,
         method,
@@ -563,6 +569,7 @@ export const ComponentFunctions = {
         jsonContent = {},
         callbackOnData = null,
         callbackOnError = onErrorDefaultFunction,
+        callbackBeforeSend = null,
     }) {
         const trigger = document.querySelector(triggerSelector);
         if (!trigger) {
@@ -590,9 +597,13 @@ export const ComponentFunctions = {
 
         trigger.addEventListener('click', (e) => {
             e.preventDefault();
+            if (typeof callbackBeforeSend === 'function') {
+                callbackBeforeSend();
+            }
             transport.send(jsonContent);
         });
     },
+
 
     /**
      * Заполняет поля формы значениями из объекта.

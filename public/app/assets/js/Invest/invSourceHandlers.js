@@ -2,6 +2,7 @@ import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
 import { ConfirmDialog } from '/assets/js/ConfirmDialog.js';
 
 const endPoint = '/api/invest/sources';
+const overlayLoader = document.querySelector('#overlay-loader');
 
 
 //
@@ -13,8 +14,16 @@ ComponentFunctions.attachJsonRpcInputTrigger({
     containerSelector: '#add-inv-source-form',
     method: 'invest.source.add',
     endpoint: endPoint,
+    callbackBeforeSend: () => {
+        if (overlayLoader instanceof HTMLElement) {
+            overlayLoader.style.display = '';
+        }
+    },
     callbackOnData: (payload) => {
         // ComponentFunctions.replaceTable(payload, '[table-r-id="source-table-1"]');
+        if (overlayLoader instanceof HTMLElement) {
+            overlayLoader.style.display = 'none';
+        }
     },
 });
 

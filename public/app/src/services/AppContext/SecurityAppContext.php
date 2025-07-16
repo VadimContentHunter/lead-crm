@@ -32,8 +32,10 @@ use crm\src\components\UserManagement\_entities\User;
 use crm\src\_common\repositories\AccessRoleRepository;
 use crm\src\components\Security\_entities\AccessSpace;
 use crm\src\_common\repositories\AccessSpaceRepository;
+use crm\src\Investments\_application\InvestmentService;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\components\Security\_entities\AccessContext;
+use crm\src\Investments\InvDeposit\_entities\InvDeposit;
 use crm\src\_common\repositories\AccessContextRepository;
 use crm\src\components\SourceManagement\SourceManagement;
 use crm\src\components\StatusManagement\StatusManagement;
@@ -53,10 +55,17 @@ use crm\src\_common\adapters\Security\SecureBalanceRepository;
 use crm\src\_common\adapters\Security\SecureDepositRepository;
 use crm\src\_common\adapters\Security\SecureHandleAccessSpace;
 use crm\src\components\Security\_handlers\HandleAccessContext;
+use crm\src\_common\repositories\Investments\InvLeadRepository;
 use crm\src\_common\repositories\LeadRepository\LeadRepository;
 use crm\src\_common\adapters\Security\SecureLeadSourceRepository;
 use crm\src\_common\adapters\Security\SecureLeadStatusRepository;
+use crm\src\_common\repositories\Investments\InvSourceRepository;
+use crm\src\_common\repositories\Investments\InvStatusRepository;
+use crm\src\_common\repositories\Investments\InvBalanceRepository;
+use crm\src\_common\repositories\Investments\InvCommentRepository;
+use crm\src\_common\repositories\Investments\InvDepositRepository;
 use crm\src\components\Security\_common\interfaces\IAccessGranter;
+use crm\src\_common\repositories\Investments\InvActivityRepository;
 use crm\src\_common\repositories\LeadRepository\LeadSourceRepository;
 use crm\src\_common\repositories\LeadRepository\LeadStatusRepository;
 use crm\src\components\Security\_common\interfaces\IHandleAccessRole;
@@ -111,7 +120,7 @@ class SecurityAppContext implements IAppContext, ISecurity
 
     public function __construct(
         public string $projectPath,
-        PDO $pdo,
+        public PDO $pdo,
         public LoggerInterface $logger = new NullLogger()
     ) {
         $this->templateRenderer = new TemplateRenderer(baseTemplateDir: $this->projectPath . '/src/templates/');
@@ -249,6 +258,19 @@ class SecurityAppContext implements IAppContext, ISecurity
         $this->leadCommentService = new LeadCommentService(
             $this->commentManagement,
             $this->getThisUser()
+        );
+    }
+
+    public function getInvestmentService(): InvestmentService
+    {
+        return new InvestmentService(
+            invActivityRepo: new InvActivityRepository($this->pdo, $this->logger),
+            invBalanceRepo: new InvBalanceRepository($this->pdo, $this->logger),
+            invDepositRepo: new InvDepositRepository($this->pdo, $this->logger),
+            invCommentRepo: new InvCommentRepository($this->pdo, $this->logger),
+            invSourceRepo: new InvSourceRepository($this->pdo, $this->logger),
+            invStatusRepo: new InvStatusRepository($this->pdo, $this->logger),
+            invLeadRepo: new InvLeadRepository($this->pdo, $this->logger),
         );
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\Investments\InvLead\_mappers;
+namespace crm\src\Investments\InvLead\_common\mappers;
 
 use DateTimeImmutable;
 use crm\src\Investments\InvLead\_common\DTOs\DbInvLeadDto;
@@ -153,6 +153,28 @@ class InvLeadMapper
             statusId: isset($data['status_id']) ? (int) $data['status_id'] : null,
         );
     }
+
+    /**
+     * Преобразует массив в входной DTO (InvLeadInputDto).
+     *
+     * @param  array<string, mixed> $data
+     * @return InvLeadInputDto
+     */
+    public static function fromArrayToInput(array $data): InvLeadInputDto
+    {
+        return new InvLeadInputDto(
+            uid: isset($data['uid']) ? (string) $data['uid'] : null,
+            contact: isset($data['contact']) ? (string) $data['contact'] : null,
+            phone: isset($data['phone']) ? (string) $data['phone'] : null,
+            email: isset($data['email']) ? (string) $data['email'] : null,
+            fullName: isset($data['full_name']) ? (string) $data['full_name'] : null,
+            accountManagerId: isset($data['account_manager_id']) ? (int) $data['account_manager_id'] : null,
+            visible: isset($data['visible']) ? (bool) $data['visible'] : null,
+            sourceId: isset($data['source_id']) ? (int) $data['source_id'] : null,
+            statusId: isset($data['status_id']) ? (int) $data['status_id'] : null,
+        );
+    }
+
 
     /**
      * Извлекает только заполненные поля из входного DTO.

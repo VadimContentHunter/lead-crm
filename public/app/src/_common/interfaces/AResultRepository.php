@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\_common\repositories;
+namespace crm\src\_common\interfaces;
 
 use Throwable;
 use PDO;

@@ -3,7 +3,7 @@
 namespace crm\src\_common\repositories\Investments;
 
 use Domain\Investment\DTOs\DbInvStatusDto;
-use crm\src\_common\repositories\AResultRepository;
+use crm\src\_common\interfaces\AResultRepository;
 use crm\src\Investments\InvStatus\_mappers\InvStatusMapper;
 use crm\src\services\Repositories\QueryBuilder\QueryBuilder;
 use crm\src\Investments\InvStatus\_common\adapters\InvStatusResult;

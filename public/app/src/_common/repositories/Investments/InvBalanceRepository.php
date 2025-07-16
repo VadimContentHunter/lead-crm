@@ -2,7 +2,7 @@
 
 namespace crm\src\_common\repositories\Investments;
 
-use crm\src\_common\repositories\AResultRepository;
+use crm\src\_common\interfaces\AResultRepository;
 use crm\src\Investments\InvBalance\_mappers\InvBalanceMapper;
 use crm\src\Investments\InvBalance\_common\DTOs\DbInvBalanceDto;
 use crm\src\Investments\InvBalance\_common\interfaces\IInvBalanceRepository;

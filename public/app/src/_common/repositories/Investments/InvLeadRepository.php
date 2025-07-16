@@ -2,10 +2,10 @@
 
 namespace crm\src\_common\repositories\Investments;
 
-use crm\src\_common\repositories\AResultRepository;
-use crm\src\Investments\InvLead\_mappers\InvLeadMapper;
+use crm\src\_common\interfaces\AResultRepository;
 use crm\src\Investments\InvLead\_common\DTOs\DbInvLeadDto;
 use crm\src\services\Repositories\QueryBuilder\QueryBuilder;
+use crm\src\Investments\InvLead\_common\mappers\InvLeadMapper;
 use crm\src\Investments\InvLead\_common\adapters\InvLeadResult;
 use crm\src\Investments\InvLead\_common\interfaces\IInvLeadResult;
 use crm\src\Investments\InvLead\_common\interfaces\IInvLeadRepository;

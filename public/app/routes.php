@@ -20,6 +20,7 @@ use crm\src\services\AppContext\AppContext;
 use crm\src\controllers\API\LoginController;
 use crm\src\controllers\BootstrapController;
 use crm\src\services\AppContext\IAppContext;
+use crm\src\controllers\API\InvestController;
 use crm\src\controllers\API\SourceController;
 use crm\src\controllers\API\StatusController;
 use crm\src\controllers\API\BalanceController;
@@ -45,6 +46,12 @@ function loadRoutes(PDO $pdo, IAppContext $appContext, LoggerInterface $logger =
         new Route(
             pattern: '^/api/?$',
             className: ApiController::class,
+            extraData: [$appContext]
+        ),
+
+        new Route(
+            pattern: '^/api/invest/leads/?$',
+            className: InvestController::class,
             extraData: [$appContext]
         ),
 

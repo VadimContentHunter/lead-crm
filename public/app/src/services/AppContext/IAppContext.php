@@ -10,6 +10,7 @@ use crm\src\components\UserManagement\_entities\User;
 use crm\src\_common\repositories\AccessRoleRepository;
 use crm\src\components\Security\_entities\AccessSpace;
 use crm\src\_common\repositories\AccessSpaceRepository;
+use crm\src\Investments\_application\InvestmentService;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\components\Security\_entities\AccessContext;
 use crm\src\_common\repositories\AccessContextRepository;
@@ -30,6 +31,8 @@ use crm\src\components\StatusManagement\_common\interfaces\IStatusManagement;
 
 interface IAppContext
 {
+    public function getInvestmentService(): InvestmentService;
+
     public function getLeadCommentService(): LeadCommentService;
 
     public function getBalanceManagement(): BalanceManagement;

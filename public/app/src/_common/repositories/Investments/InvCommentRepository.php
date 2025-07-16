@@ -2,7 +2,7 @@
 
 namespace crm\src\_common\repositories\Investments;
 
-use crm\src\_common\repositories\AResultRepository;
+use crm\src\_common\interfaces\AResultRepository;
 use crm\src\Investments\InvComment\_mappers\InvCommentMapper;
 use crm\src\Investments\InvComment\_common\DTOs\DbInvCommentDto;
 use crm\src\services\Repositories\QueryBuilder\QueryBuilder;

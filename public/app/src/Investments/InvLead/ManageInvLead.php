@@ -4,11 +4,11 @@ namespace crm\src\Investments\InvLead;
 
 use crm\src\_common\interfaces\IValidation;
 use crm\src\Investments\InvLead\_common\DTOs\InvLeadInputDto;
-use crm\src\Investments\InvLead\_mappers\InvLeadMapper;
-use crm\src\Investments\InvLead\_common\interfaces\IInvLeadRepository;
-use crm\src\Investments\InvLead\_common\interfaces\IInvLeadResult;
-use crm\src\Investments\InvLead\_common\adapters\InvLeadResult;
 use crm\src\Investments\InvLead\_exceptions\InvLeadException;
+use crm\src\Investments\InvLead\_common\mappers\InvLeadMapper;
+use crm\src\Investments\InvLead\_common\adapters\InvLeadResult;
+use crm\src\Investments\InvLead\_common\interfaces\IInvLeadResult;
+use crm\src\Investments\InvLead\_common\interfaces\IInvLeadRepository;
 
 /**
  * Сервис управления инвестиционными лидами.
@@ -22,11 +22,47 @@ class ManageInvLead
     }
 
     /**
+     * Генерирует уникальный UID для инвестиционного лида.
+     *
+     * @param  string $prefix      Первые 3 цифры UID (например, "928")
+     * @param  int $length      Общая длина UID (по умолчанию 9)
+     * @param  int $maxAttempts Максимум попыток генерации (по умолчанию 3)
+     * @return string
+     *
+     * @throws \RuntimeException Если не удалось сгенерировать уникальный UID
+     */
+    private function generateUniqueUid(string $prefix = '928', int $length = 9, int $maxAttempts = 3): string
+    {
+        $prefixLength = strlen($prefix);
+        $randomLength = $length - $prefixLength;
+
+        if ($randomLength <= 0) {
+            throw new \InvalidArgumentException('Длина UID должна быть больше длины префикса');
+        }
+
+        for ($i = 0; $i < $maxAttempts; $i++) {
+            $min = 10 ** ($randomLength - 1);
+            $max = (10 ** $randomLength) - 1;
+            $randomPart = random_int($min, $max);
+            $uid = $prefix . $randomPart;
+
+            if ($this->repository->getByUid($uid)->isSuccess()) {
+                return $uid;
+            }
+        }
+
+        throw new \RuntimeException("Не удалось сгенерировать уникальный UID после {$maxAttempts} попыток");
+    }
+
+
+    /**
      * Создание нового лида.
      */
     public function create(InvLeadInputDto $input): IInvLeadResult
     {
         try {
+            $input->uid = $this->generateUniqueUid();
+
             if (!$input->uid) {
                 return InvLeadResult::failure(new InvLeadException("UID обязателен для создания лида"));
             }

@@ -58,11 +58,17 @@ final class InvestmentService
         return InvLeadResult::failure($resultUid->getError() ?? new \RuntimeException("Ошибка при создании лида"));
     }
 
+    /**
+     * @param array<string,mixed> $data
+     */
     public function createInvSource(array $data): IInvSourceResult
     {
         return $this->manageInvSource->create(InvSourceMapper::fromArrayToInput($data));
     }
 
+    /**
+     * @param array<string,mixed> $data
+     */
     public function createInvStatus(array $data): IInvStatusResult
     {
         return $this->manageInvStatus->create(InvStatusMapper::fromArrayToInput($data));

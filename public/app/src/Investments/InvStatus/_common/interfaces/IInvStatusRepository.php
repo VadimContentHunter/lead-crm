@@ -3,7 +3,7 @@
 namespace crm\src\Investments\InvStatus\_common\interfaces;
 
 use crm\src\_common\interfaces\IResultRepository;
-use Domain\Investment\DTOs\DbInvStatusDto;
+use crm\src\Investments\InvStatus\_common\DTOs\DbInvStatusDto;
 
 /**
  * Интерфейс репозитория инвестиционных статусов.

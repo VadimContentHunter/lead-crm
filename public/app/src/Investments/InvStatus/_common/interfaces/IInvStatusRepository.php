@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\Investments\Status\_common\interfaces;
+namespace crm\src\Investments\InvStatus\_common\interfaces;
 
 use crm\src\_common\interfaces\IResultRepository;
 use Domain\Investment\DTOs\DbInvStatusDto;
@@ -10,21 +10,21 @@ use Domain\Investment\DTOs\DbInvStatusDto;
  *
  * @extends IResultRepository<DbInvStatusDto>
  */
-interface IStatusRepository extends IResultRepository
+interface IInvStatusRepository extends IResultRepository
 {
     /**
      * Возвращает статус по его уникальному коду.
      *
      * @param  string $code Например: "work", "lost", "deal"
-     * @return IStatusResult
+     * @return IInvStatusResult
      */
-    public function getByCode(string $code): IStatusResult;
+    public function getByCode(string $code): IInvStatusResult;
 
     /**
      * Удаляет статус по коду.
      *
      * @param  string $code
-     * @return IStatusResult
+     * @return IInvStatusResult
      */
-    public function deleteByCode(string $code): IStatusResult;
+    public function deleteByCode(string $code): IInvStatusResult;
 }

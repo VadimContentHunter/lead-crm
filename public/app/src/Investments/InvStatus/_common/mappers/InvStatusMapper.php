@@ -1,15 +1,15 @@
 <?php
 
-namespace crm\src\Investments\Status\_mappers;
+namespace crm\src\Investments\InvStatus\_mappers;
 
 use Domain\Investment\DTOs\DbInvStatusDto;
 use Domain\Investment\DTOs\InvStatusInputDto;
-use crm\src\Investments\Status\_entities\InvStatus;
+use crm\src\Investments\InvStatus\_entities\InvStatus;
 
 /**
  * Маппер для преобразования между сущностями статуса и DTO.
  */
-class StatusMapper
+class InvStatusMapper
 {
     /**
      * Преобразует DTO из БД в сущность.

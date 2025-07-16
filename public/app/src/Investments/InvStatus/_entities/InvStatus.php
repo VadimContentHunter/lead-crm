@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\Investments\Status\_entities;
+namespace crm\src\Investments\InvStatus\_entities;
 
 class InvStatus
 {

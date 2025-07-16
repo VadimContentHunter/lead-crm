@@ -1,21 +1,21 @@
 <?php
 
-namespace crm\src\Investments\Status\_common\interfaces;
+namespace crm\src\Investments\InvStatus\_common\interfaces;
 
 use crm\src\_common\interfaces\IResult;
-use crm\src\Investments\Status\_entities\InvStatus;
+use crm\src\Investments\InvStatus\_entities\InvStatus;
 
 /**
  * Результат операций со статусом инвестиции или их коллекцией.
  */
-interface IStatusResult extends IResult
+interface IInvStatusResult extends IResult
 {
     /**
      * Возвращает сущность статуса, если она есть.
      *
      * @return InvStatus|null
      */
-    public function getStatus(): ?InvStatus;
+    public function getInvStatus(): ?InvStatus;
 
     /**
      * Уникальный код статуса (например, work, lost).

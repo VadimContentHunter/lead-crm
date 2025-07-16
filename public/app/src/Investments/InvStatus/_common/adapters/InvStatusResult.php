@@ -1,20 +1,20 @@
 <?php
 
-namespace crm\src\Investments\Status\_common\adapters;
+namespace crm\src\Investments\InvStatus\_common\adapters;
 
 use crm\src\_common\interfaces\AResult;
-use crm\src\Investments\Status\_entities\InvStatus;
-use crm\src\Investments\Status\_common\interfaces\IStatusResult;
+use crm\src\Investments\InvStatus\_entities\InvStatus;
+use crm\src\Investments\InvStatus\_common\interfaces\IInvStatusResult;
 
 /**
  * Адаптер результата операций со статусом инвестиции.
  */
-class StatusResult extends AResult implements IStatusResult
+class InvStatusResult extends AResult implements IInvStatusResult
 {
     /**
      * @inheritDoc
      */
-    public function getStatus(): ?InvStatus
+    public function getInvStatus(): ?InvStatus
     {
         return $this->data instanceof InvStatus ? $this->data : null;
     }
@@ -24,7 +24,7 @@ class StatusResult extends AResult implements IStatusResult
      */
     public function getCode(): ?string
     {
-        return $this->getStatus()?->code;
+        return $this->getInvStatus()?->code;
     }
 
     /**
@@ -32,7 +32,7 @@ class StatusResult extends AResult implements IStatusResult
      */
     public function getLabel(): ?string
     {
-        return $this->getStatus()?->label;
+        return $this->getInvStatus()?->label;
     }
 
     /**
@@ -40,6 +40,6 @@ class StatusResult extends AResult implements IStatusResult
      */
     public function getId(): ?int
     {
-        return $this->getStatus()?->id ?? null;
+        return $this->getInvStatus()?->id ?? null;
     }
 }

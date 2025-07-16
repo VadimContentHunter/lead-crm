@@ -4,18 +4,18 @@ namespace crm\src\_common\repositories\Investments;
 
 use Domain\Investment\DTOs\DbInvStatusDto;
 use crm\src\_common\repositories\AResultRepository;
-use crm\src\Investments\Status\_mappers\StatusMapper;
+use crm\src\Investments\InvStatus\_mappers\InvStatusMapper;
 use crm\src\services\Repositories\QueryBuilder\QueryBuilder;
-use crm\src\Investments\Status\_common\adapters\StatusResult;
-use crm\src\Investments\Status\_common\interfaces\IStatusResult;
-use crm\src\Investments\Status\_common\interfaces\IStatusRepository;
+use crm\src\Investments\InvStatus\_common\adapters\InvStatusResult;
+use crm\src\Investments\InvStatus\_common\interfaces\IInvStatusResult;
+use crm\src\Investments\InvStatus\_common\interfaces\IInvStatusRepository;
 
 /**
  * Репозиторий для инвестиционных статусов.
  *
  * @extends AResultRepository<DbInvStatusDto>
  */
-class StatusRepository extends AResultRepository implements IStatusRepository
+class InvStatusRepository extends AResultRepository implements IInvStatusRepository
 {
     protected function getTableName(): string
     {
@@ -29,7 +29,7 @@ class StatusRepository extends AResultRepository implements IStatusRepository
 
     protected function fromArray(): callable
     {
-        return fn(array $data): DbInvStatusDto => StatusMapper::fromArrayToDb($data);
+        return fn(array $data): DbInvStatusDto => InvStatusMapper::fromArrayToDb($data);
     }
 
     protected function toArray(object $entity): array
@@ -37,15 +37,15 @@ class StatusRepository extends AResultRepository implements IStatusRepository
         /**
          * @var DbInvStatusDto $entity
          */
-        return StatusMapper::fromDbToArray($entity);
+        return InvStatusMapper::fromDbToArray($entity);
     }
 
     protected function getResultClass(): string
     {
-        return StatusResult::class;
+        return InvStatusResult::class;
     }
 
-    public function getByCode(string $code): IStatusResult
+    public function getByCode(string $code): IInvStatusResult
     {
         try {
             $dto = $this->repository->executeQuery(
@@ -64,13 +64,13 @@ class StatusRepository extends AResultRepository implements IStatusRepository
                 throw new \RuntimeException("Статус с кодом '$code' не найден.");
             }
 
-            return StatusResult::success(StatusMapper::fromDbToEntity($dto));
+            return InvStatusResult::success(InvStatusMapper::fromDbToEntity($dto));
         } catch (\Throwable $e) {
-            return StatusResult::failure($e);
+            return InvStatusResult::failure($e);
         }
     }
 
-    public function deleteByCode(string $code): IStatusResult
+    public function deleteByCode(string $code): IInvStatusResult
     {
         try {
             $dto = $this->repository->executeQuery(
@@ -90,9 +90,9 @@ class StatusRepository extends AResultRepository implements IStatusRepository
             }
 
             $this->deleteById($dto->id);
-            return StatusResult::success($dto->id);
+            return InvStatusResult::success($dto->id);
         } catch (\Throwable $e) {
-            return StatusResult::failure($e);
+            return InvStatusResult::failure($e);
         }
     }
 }

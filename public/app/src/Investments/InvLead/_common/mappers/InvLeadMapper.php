@@ -8,8 +8,17 @@ use crm\src\Investments\InvLead\_common\DTOs\InvLeadInputDto;
 use crm\src\Investments\InvLead\_entities\SimpleInvLead;
 use crm\src\Investments\InvLead\_common\DTOs\InvAccountManagerDto;
 
+/**
+ * Маппер для преобразования между DTO и сущностью инвестиционного лида.
+ */
 class InvLeadMapper
 {
+    /**
+     * Преобразует DTO из базы данных в сущность SimpleInvLead.
+     *
+     * @param  DbInvLeadDto $dto
+     * @return SimpleInvLead
+     */
     public static function fromDbToEntity(DbInvLeadDto $dto): SimpleInvLead
     {
         return new SimpleInvLead(
@@ -28,6 +37,12 @@ class InvLeadMapper
         );
     }
 
+    /**
+     * Преобразует сущность SimpleInvLead в DTO для БД.
+     *
+     * @param  SimpleInvLead $entity
+     * @return DbInvLeadDto
+     */
     public static function fromEntityToDb(SimpleInvLead $entity): DbInvLeadDto
     {
         return new DbInvLeadDto(
@@ -46,6 +61,13 @@ class InvLeadMapper
         );
     }
 
+    /**
+     * Преобразует входной DTO в сущность SimpleInvLead.
+     *
+     * @param  InvLeadInputDto $dto
+     * @param  string $uid
+     * @return SimpleInvLead
+     */
     public static function fromInputToEntity(InvLeadInputDto $dto, string $uid): SimpleInvLead
     {
         $manager = $dto->accountManagerId !== null && $dto->accountManagerLogin !== null
@@ -66,6 +88,14 @@ class InvLeadMapper
         );
     }
 
+    /**
+     * Преобразует входной DTO в DTO для базы данных.
+     *
+     * @param  InvLeadInputDto $dto
+     * @param  string $uid
+     * @param  string|null $createdAt
+     * @return DbInvLeadDto
+     */
     public static function fromInputToDb(InvLeadInputDto $dto, string $uid, ?string $createdAt = null): DbInvLeadDto
     {
         return new DbInvLeadDto(
@@ -84,6 +114,12 @@ class InvLeadMapper
         );
     }
 
+    /**
+     * Преобразует DTO из БД в ассоциативный массив.
+     *
+     * @param  DbInvLeadDto $dto
+     * @return array<string, mixed>
+     */
     public static function fromDbToArray(DbInvLeadDto $dto): array
     {
         return [
@@ -102,6 +138,12 @@ class InvLeadMapper
         ];
     }
 
+    /**
+     * Преобразует массив в DTO для базы данных.
+     *
+     * @param  array<string, mixed> $data
+     * @return DbInvLeadDto
+     */
     public static function fromArrayToDb(array $data): DbInvLeadDto
     {
         return new DbInvLeadDto(
@@ -120,6 +162,12 @@ class InvLeadMapper
         );
     }
 
+    /**
+     * Извлекает только заполненные поля из входного DTO.
+     *
+     * @param  InvLeadInputDto $dto
+     * @return array<string, mixed>
+     */
     public static function fromInputExtractFilledFields(InvLeadInputDto $dto): array
     {
         $fields = [];

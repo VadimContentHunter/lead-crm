@@ -48,55 +48,71 @@ ComponentFunctions.attachJsonRpcInputTrigger({
 //
 // === Редактирование значения ячейки по кнопке внутри строки ===
 //
-// function attachInputButtonTriggerSource() {
-//     ComponentFunctions.attachInputButtonTrigger({
-//         containerSelector: '[table-r-id="inv-source-table-1"]',
-//         buttonSelector: 'td .edit-row-button',
-//         inputSelector: 'input.edit-row-input',
-//         searchRootSelector: 'td',
-//         attributes: ['value', 'data-row-id'],
-//         method: 'source.edit.cell',
-//         endpoint: endPoint,
-//     });
-// }
+function attachInputButtonTriggerSource() {
+    ComponentFunctions.attachInputButtonTrigger({
+        containerSelector: '[table-r-id="inv-source-table-1"]',
+        buttonSelector: 'td .edit-row-button',
+        inputSelector: 'input.edit-row-input',
+        searchRootSelector: 'td',
+        attributes: ['value', 'data-row-id', 'old-value', 'name'],
+        method: 'invest.source.edit.cell',
+        endpoint: endPoint,
+        callbackBeforeSend: () => {
+            if (overlayLoader instanceof HTMLElement) {
+                overlayLoader.style.display = '';
+            }
+        },
+        callbackOnData: (payload) => {
+            ComponentFunctions.replaceTable(payload, '[table-r-id="inv-source-table-1"]');
+            if (overlayLoader instanceof HTMLElement) {
+                overlayLoader.style.display = 'none';
+            }
+        },
+        callbackOnError: (error) => {
+            if (overlayLoader instanceof HTMLElement) {
+                overlayLoader.style.display = 'none';
+            }
+        }
+    });
+}
 
 //
 // === Отслеживание изменения значения в input'ах таблицы ===
 //
-// function watchInputValueChangeSource() {
-//     ComponentFunctions.watchInputValueChange({
-//         inputSelector: '[table-r-id="inv-source-table-1"] input.edit-row-input',
-//         onChange: (oldValue, newValue, inputElement) => {
-//             const container = inputElement.closest('td');
-//             const wrapper = container?.querySelector('.cell-actions-wrapper');
-//             const inputOldValue = inputElement.getAttribute("old-value") ?? null;
-//             if (inputOldValue !== newValue && wrapper) {
-//                 wrapper.style.display = 'flex';
-//             } else if (inputOldValue === newValue && wrapper) {
-//                 wrapper.style.display = '';
-//             }
-//         },
-//         onBlur: (inputElement, previous) => {
-//             const container = inputElement.closest('td');
-//             const wrapper = container?.querySelector('.cell-actions-wrapper');
-//             const oldValue = inputElement.getAttribute("old-value") ?? null;
-//             if (oldValue !== null) {
-//                 inputElement.value = oldValue;
-//                 previous.value = oldValue;
-//             }
-//             if (wrapper) {
-//                 wrapper.style.display = '';
-//             }
-//         }
-//     });
-// }
+function watchInputValueChangeSource() {
+    ComponentFunctions.watchInputValueChange({
+        inputSelector: '[table-r-id="inv-source-table-1"] input.edit-row-input',
+        onChange: (oldValue, newValue, inputElement) => {
+            const container = inputElement.closest('td');
+            const wrapper = container?.querySelector('.cell-actions-wrapper');
+            const inputOldValue = inputElement.getAttribute("old-value") ?? null;
+            if (inputOldValue !== newValue && wrapper) {
+                wrapper.style.display = 'flex';
+            } else if (inputOldValue === newValue && wrapper) {
+                wrapper.style.display = '';
+            }
+        },
+        onBlur: (inputElement, previous) => {
+            const container = inputElement.closest('td');
+            const wrapper = container?.querySelector('.cell-actions-wrapper');
+            const oldValue = inputElement.getAttribute("old-value") ?? null;
+            if (oldValue !== null) {
+                inputElement.value = oldValue;
+                previous.value = oldValue;
+            }
+            if (wrapper) {
+                wrapper.style.display = '';
+            }
+        }
+    });
+}
 
 //
 // === Инициализация обработчиков для уже существующих элементов таблицы ===
 //
 // attachDeleteTriggerSource();
-// attachInputButtonTriggerSource();
-// watchInputValueChangeSource();
+attachInputButtonTriggerSource();
+watchInputValueChangeSource();
 
 //
 // === Наблюдение за появлением новых элементов в DOM и повторное навешивание обработчиков ===
@@ -109,8 +125,8 @@ if (!targetNode) {
         for (const mutation of mutationsList) {
             if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
                 // attachDeleteTriggerSource();
-                // attachInputButtonTriggerSource();
-                // watchInputValueChangeSource();
+                attachInputButtonTriggerSource();
+                watchInputValueChangeSource();
                 break; // один раз достаточно
             }
         }

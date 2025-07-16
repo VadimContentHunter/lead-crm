@@ -46,6 +46,7 @@ class InvLeadController
         $this->methods = [
             'invest.lead.add' => fn() => $secureCall->createInvLead($this->rpc->getParams()),
             'invest.lead.get.form.create' => fn() => $secureCall->getFormCreateData($this->rpc->getParams()),
+            // 'invest.source.edit.cell' => fn() => $secureCall->editSourceCell($this->rpc->getParams()),
         ];
     }
 
@@ -147,4 +148,12 @@ class InvLeadController
             ]);
         }
     }
+
+    /**
+     * @param array<string,mixed> $params
+     */
+    // public function editSourceCell(array $params): void
+    // {
+    //     $this->service->updateSource($params);
+    // }
 }

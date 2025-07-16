@@ -44,6 +44,7 @@ class InvSourceController
         $this->methods = [
             'invest.source.add' => fn() => $secureCall->createInvSource($this->rpc->getParams()),
             'invest.source.get.table' => fn() => $secureCall->getSourceTable(),
+            'invest.source.edit.cell' => fn() => $secureCall->editSourceCell($this->rpc->getParams()),
         ];
     }
 
@@ -96,5 +97,37 @@ class InvSourceController
             'type' => 'success',
             'table' => $this->service->getSourceTable()->getString() ?? '---',
         ],);
+    }
+
+    /**
+     * @param array<string,mixed> $params
+     */
+    public function editSourceCell(array $params): void
+    {
+        $result = $this->service->updateSource($params);
+
+        if ($result->isSuccess()) {
+            $id = $result->getData()['id'] ?? '---';
+            $updatedCode = $result->getData()['code'] ?? null;
+            $updatedLabel = $result->getData()['label'] ?? null;
+
+            $infoData = "<br>id: <b>{$id}</b>";
+            $infoData .= $updatedCode !== null ? "<br>code: <b>{$updatedCode}</b>" : "";
+            $infoData .= $updatedLabel !== null ? "<br>label: <b>{$updatedLabel}</b>" : "";
+
+            $this->rpc->replyData([
+                'type' => 'success',
+                'table' => $this->service->getSourceTable()->getString() ?? '---',
+                'messages' => [
+                    ['type' => 'success', 'message' => 'Источник успешно обновлен'],
+                    ['type' => 'info', 'message' => "Обновленный источник: {$infoData}"]
+                ]
+            ]);
+        } else {
+            $errorMessage = $result->getError()?->getMessage() ?? 'Произошла ошибка';
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Произошла ошибка: ' . $errorMessage]
+            ]);
+        }
     }
 }

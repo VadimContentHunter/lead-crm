@@ -130,7 +130,7 @@ abstract class AResultRepository implements IResultRepository
                 return $this->wrapFailure(new \InvalidArgumentException("Поле 'id' обязательно для update()"));
             }
 
-            $id = $data['id'];
+            $bindings = $data;
             unset($data['id']);
 
             if (empty($data)) {
@@ -141,11 +141,15 @@ abstract class AResultRepository implements IResultRepository
                 (new QueryBuilder())
                 ->table($this->getTableName())
                 ->where('id = :id')
-                ->bindings(['id' => $id])
+                ->bindings($bindings)
                 ->update($data)
-            )->getInt();
+            );
 
-            return $this->wrapSuccess($result);
+            if (!$result->isSuccess()) {
+                return $this->wrapFailure($result->getError() ?? new \RuntimeException("Не удалось обновить"));
+            }
+
+            return $this->wrapSuccess($result->getInt());
         } catch (Throwable $e) {
             return $this->wrapFailure($e);
         }

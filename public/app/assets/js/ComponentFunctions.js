@@ -437,17 +437,20 @@ export const ComponentFunctions = {
     },
 
     /**
- * Вешает обработчик на все кнопки и отправляет данные из связанного input, ища родителя по кастомному селектору.
- *
- * @param {Object} options
- * @param {string} options.containerSelector - Основной контейнер.
- * @param {string} options.buttonSelector - Селектор кнопок.
- * @param {string} options.inputSelector - Селектор для поиска input внутри родителя.
- * @param {string[]} [options.attributes=['value', 'data-row-id']] - Какие атрибуты брать из input.
- * @param {string} options.method - Метод JSON-RPC.
- * @param {string} [options.endpoint='/api/'] - Эндпоинт для отправки.
- * @param {string} [options.searchRootSelector='tr'] - До какого родителя искать (например, 'tr', 'td', 'div.row').
- */
+     * Вешает обработчик на все кнопки и отправляет данные из связанного input, ища родителя по кастомному селектору.
+     *
+     * @param {Object} options
+     * @param {string} options.containerSelector - Основной контейнер.
+     * @param {string} options.buttonSelector - Селектор кнопок.
+     * @param {string} options.inputSelector - Селектор для поиска input внутри родителя.
+     * @param {string[]} [options.attributes=['value', 'data-row-id']] - Какие атрибуты брать из input.
+     * @param {string} options.method - Метод JSON-RPC.
+     * @param {string} [options.endpoint='/api/'] - Эндпоинт для отправки.
+     * @param {string} [options.searchRootSelector='tr'] - До какого родителя искать (например, 'tr', 'td', 'div.row').
+     * @param {function(Object):void} [options.callbackBeforeSend] - Вызывается перед отправкой запроса, получает data.
+     * @param {function(any):void} [options.callbackOnData] - Вызывается при получении ответа, до processingPayload.
+     * @param {function(any):void} [options.callbackOnError] - 
+     */
     attachInputButtonTrigger({
         containerSelector,
         buttonSelector,
@@ -456,6 +459,9 @@ export const ComponentFunctions = {
         method,
         endpoint = '/api/',
         searchRootSelector = 'tr',
+        callbackBeforeSend = null,
+        callbackOnData = (payload) => ComponentFunctions.replaceTable(payload, '[table-r-id]'),
+        callbackOnError = null,
     }) {
         const container = document.querySelector(containerSelector);
         if (!container) {
@@ -472,7 +478,6 @@ export const ComponentFunctions = {
             button.addEventListener('click', (event) => {
                 event.preventDefault();
 
-                // Ищем родителя до заданного уровня
                 const searchRoot = button.closest(searchRootSelector);
                 const input = searchRoot?.querySelector(inputSelector);
 
@@ -493,16 +498,27 @@ export const ComponentFunctions = {
                     }
                 }
 
+                if (typeof callbackBeforeSend === 'function') {
+                    callbackBeforeSend(data);
+                }
+
                 const transport = new JsonRpcTransport(method, {
                     endpoint,
                     onContentUpdate: () => { },
                     onData: (payload) => {
-                        ComponentFunctions.replaceTable(payload, '[table-r-id]');
+                        if (typeof callbackOnData === 'function') {
+                            callbackOnData(payload);
+                        }
+
                         processingPayload(payload);
                     },
                     onError: (error) => {
                         onErrorDefaultFunction(error);
                         console.error('[JsonRpcTransport] Ошибка:', error.message);
+
+                        if (typeof callbackOnError === 'function') {
+                            callbackOnError(error);
+                        }
                     },
                 });
 
@@ -510,6 +526,7 @@ export const ComponentFunctions = {
             });
         }
     },
+
 
 
     /**

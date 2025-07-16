@@ -114,9 +114,11 @@ class InvSourceMapper
     {
         return new InvSourceInputDto(
             code: isset($data['code']) ? (string) $data['code'] : null,
-            label: isset($data['label']) ? (string) $data['label'] : null
+            label: isset($data['label']) ? (string) $data['label'] : null,
+            id: isset($data['id']) ? (int) $data['id'] : null,
         );
     }
+
 
     /**
      * Возвращает только заполненные поля из входного DTO.
@@ -128,10 +130,12 @@ class InvSourceMapper
     {
         $fields = [];
 
+        if ($dto->id !== null) {
+            $fields['id'] = $dto->id;
+        }
         if ($dto->code !== null) {
             $fields['code'] = $dto->code;
         }
-
         if ($dto->label !== null) {
             $fields['label'] = $dto->label;
         }

@@ -166,7 +166,16 @@ final class InvestmentService
             new TextInputTransform(['code', 'label']),
         ];
         $tableFacade = new TableFacade(new TypedTableTransformer($typeTransformers),  new TableDecorator());
-        $a = $tableFacade->renderFilteredTable($input)->asHtml();
-        return InvSourceResult::success($a);
+        return InvSourceResult::success($tableFacade->renderFilteredTable($input)->asHtml());
+    }
+
+    public function updateSource(array $data): IInvSourceResult
+    {
+        $data['id'] = isset($data['id']) ? (int) $data['id']
+                        : (isset($data['data-row-id']) ? (int) $data['data-row-id'] : null);
+        $data['code'] = $data['name'] === "code" ? $data['value'] : null;
+        $data['label'] = $data['name'] === "label" ? $data['value'] : null;
+
+        return $this->manageInvSource->updateById(InvSourceMapper::fromArrayToInput($data));
     }
 }

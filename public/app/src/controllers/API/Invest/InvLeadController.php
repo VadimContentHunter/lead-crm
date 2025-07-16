@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\controllers\API;
+namespace crm\src\controllers\API\Invest;
 
 use Throwable;
 use crm\src\services\AppContext\ISecurity;
@@ -9,7 +9,7 @@ use crm\src\Investments\_application\InvestmentService;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
 use crm\src\components\Security\_exceptions\JsonRpcSecurityException;
 
-class InvestController
+class InvLeadController
 {
     private JsonRpcServerFacade $rpc;
 
@@ -34,7 +34,7 @@ class InvestController
     {
         if ($this->appContext instanceof ISecurity) {
             /**
-             * @var InvestController $secureCall
+             * @var InvLeadController $secureCall
              */
             $secureCall = $this->appContext->wrapWithSecurity($this);
         } else {
@@ -43,8 +43,6 @@ class InvestController
 
         $this->methods = [
             'invest.lead.add' => fn() => $secureCall->createInvLead($this->rpc->getParams()),
-            'invest.source.add' => fn() => $secureCall->createInvSource($this->rpc->getParams()),
-            'invest.status.add' => fn() => $secureCall->createInvStatus($this->rpc->getParams()),
         ];
     }
 
@@ -98,56 +96,6 @@ class InvestController
                             <br> менеджер: <b>{$accountManagerLogin}</b>
                         HTML
                     ]
-                ]
-            ]);
-        } else {
-            $errorMessage = $result->getError()?->getMessage() ?? 'Произошла ошибка';
-            $this->rpc->replyData([
-                ['type' => 'error', 'message' => 'Произошла ошибка: ' . $errorMessage]
-            ]);
-        }
-    }
-
-    /**
-     * @param array<string,mixed> $params
-     */
-    public function createInvSource(array $params): void
-    {
-        $result = $this->service->createInvSource($params);
-
-        if ($result->isSuccess()) {
-            $title = $result->getLabel() ?? '---';
-
-            $this->rpc->replyData([
-                'type' => 'success',
-                'messages' => [
-                    ['type' => 'success', 'message' => 'Источник успешно добавлен'],
-                    ['type' => 'info', 'message' => "Добавленный источник: <b>{$title}</b>"]
-                ]
-            ]);
-        } else {
-            $errorMessage = $result->getError()?->getMessage() ?? 'Произошла ошибка';
-            $this->rpc->replyData([
-                ['type' => 'error', 'message' => 'Произошла ошибка: ' . $errorMessage]
-            ]);
-        }
-    }
-
-    /**
-     * @param array<string,mixed> $params
-     */
-    public function createInvStatus(array $params): void
-    {
-        $result = $this->service->createInvStatus($params);
-
-        if ($result->isSuccess()) {
-            $title = $result->getLabel() ?? '---';
-
-            $this->rpc->replyData([
-                'type' => 'success',
-                'messages' => [
-                    ['type' => 'success', 'message' => 'Статус успешно добавлен'],
-                    ['type' => 'info', 'message' => "Добавленный статус: <b>{$title}</b>"]
                 ]
             ]);
         } else {

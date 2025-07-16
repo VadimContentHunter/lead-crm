@@ -8,26 +8,24 @@ use crm\src\controllers\UserPage;
 use crm\src\controllers\LoginPage;
 use crm\src\controllers\InvestPage;
 use crm\src\controllers\LogoutPage;
-use crm\src\controllers\SourcePage;
-use crm\src\controllers\StatusPage;
 use crm\src\controllers\HomeController;
 use crm\src\controllers\TestController;
 use crm\src\controllers\AccessDeniedPage;
 use crm\src\controllers\API\ApiController;
 use crm\src\controllers\API\LeadController;
 use crm\src\controllers\API\UserController;
-use crm\src\services\AppContext\AppContext;
 use crm\src\controllers\API\LoginController;
 use crm\src\controllers\BootstrapController;
 use crm\src\services\AppContext\IAppContext;
-use crm\src\controllers\API\InvestController;
 use crm\src\controllers\API\SourceController;
 use crm\src\controllers\API\StatusController;
 use crm\src\controllers\API\BalanceController;
 use crm\src\controllers\API\CommentController;
 use crm\src\controllers\API\DepositController;
 use crm\src\services\RouteHandler\entities\Route;
-use crm\src\components\BalanceManagement\_entities\Balance;
+use crm\src\controllers\API\Invest\InvLeadController;
+use crm\src\controllers\API\Invest\InvSourceController;
+use crm\src\controllers\API\Invest\InvStatusController;
 
 /**
  * @return Route[]
@@ -51,19 +49,19 @@ function loadRoutes(PDO $pdo, IAppContext $appContext, LoggerInterface $logger =
 
         new Route(
             pattern: '^/api/invest/leads/?$',
-            className: InvestController::class,
+            className: InvLeadController::class,
             extraData: [$appContext]
         ),
 
         new Route(
             pattern: '^/api/invest/sources/?$',
-            className: InvestController::class,
+            className: InvSourceController::class,
             extraData: [$appContext]
         ),
 
         new Route(
             pattern: '^/api/invest/statuses/?$',
-            className: InvestController::class,
+            className: InvStatusController::class,
             extraData: [$appContext]
         ),
 

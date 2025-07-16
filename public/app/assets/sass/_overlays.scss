@@ -34,6 +34,7 @@
         height: 100%;
         border-radius: var(--border-radius-base);
         background-color: var(--color-overlay);
+        z-index: 55;
 
         display: flex;
         justify-content: center;

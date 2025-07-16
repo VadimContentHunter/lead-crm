@@ -43,6 +43,7 @@ class InvSourceController
 
         $this->methods = [
             'invest.source.add' => fn() => $secureCall->createInvSource($this->rpc->getParams()),
+            'invest.source.get.table' => fn() => $secureCall->getSourceTable(),
         ];
     }
 
@@ -75,6 +76,7 @@ class InvSourceController
 
             $this->rpc->replyData([
                 'type' => 'success',
+                'table' => $this->service->getSourceTable()->getString() ?? '---',
                 'messages' => [
                     ['type' => 'success', 'message' => 'Источник успешно добавлен'],
                     ['type' => 'info', 'message' => "Добавленный источник: <b>{$title}</b>"]
@@ -86,5 +88,13 @@ class InvSourceController
                 ['type' => 'error', 'message' => 'Произошла ошибка: ' . $errorMessage]
             ]);
         }
+    }
+
+    public function getSourceTable(): void
+    {
+        $this->rpc->replyData([
+            'type' => 'success',
+            'table' => $this->service->getSourceTable()->getString() ?? '---',
+        ],);
     }
 }

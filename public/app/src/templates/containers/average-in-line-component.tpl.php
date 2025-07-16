@@ -3,8 +3,6 @@
     $component = $component ?? '';
     $controlPanel = $controlPanel ?? '';
     $filterPanel = $filterPanel ?? '';
-    $methodSend = $methodSend ?? '';
-    $endpointSend = $endpointSend ?? '';
 ?>
 
 <section class="component-wrapper-line">

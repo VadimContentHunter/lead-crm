@@ -5,6 +5,7 @@ namespace crm\src\controllers;
 use Throwable;
 use crm\src\services\AppContext\IAppContext;
 use crm\src\services\TemplateRenderer\HeaderManager;
+use crm\src\Investments\_application\InvestmentService;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 
@@ -12,10 +13,13 @@ class InvestPage
 {
     private TemplateRenderer $renderer;
 
+    private InvestmentService $service;
+
     public function __construct(
         private IAppContext $appContext
     ) {
         $this->renderer = $this->appContext->getTemplateRenderer();
+        $this->service = $this->appContext->getInvestmentService();
 
         $this->renderPage();
     }
@@ -103,7 +107,12 @@ class InvestPage
             variables: [
                 'classId' => 'inv-source-menu-id',
                 'addPanel' => (new TemplateBundle(templatePath: 'components/invest/addInvSource.tpl.php')),
-                // 'table' => $this->sourcePage->getTableSourceComponent()
+                'table' => (new TemplateBundle(
+                    templatePath: 'containers/average-in-line-component.tpl.php',
+                    variables: [
+                        'component' => $this->service->getSourceTable()->getString() ?? '',
+                    ]
+                ))
             ]
         ));
 

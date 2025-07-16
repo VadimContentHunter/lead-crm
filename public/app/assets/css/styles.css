@@ -465,6 +465,7 @@ table.base-table tbody tr:not(:first-child):hover {
   height: 100%;
   border-radius: var(--border-radius-base);
   background-color: var(--color-overlay);
+  z-index: 55;
   display: flex;
   justify-content: center;
   align-items: center;

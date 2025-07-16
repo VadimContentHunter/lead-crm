@@ -20,7 +20,7 @@ ComponentFunctions.attachJsonRpcInputTrigger({
         }
     },
     callbackOnData: (payload) => {
-        // ComponentFunctions.replaceTable(payload, '[table-r-id="source-table-1"]');
+        ComponentFunctions.replaceTable(payload, '[table-r-id="inv-source-table-1"]');
         if (overlayLoader instanceof HTMLElement) {
             overlayLoader.style.display = 'none';
         }
@@ -33,11 +33,11 @@ ComponentFunctions.attachJsonRpcInputTrigger({
 //
 // function attachDeleteTriggerSource() {
 //     ComponentFunctions.attachDeleteTrigger({
-//         triggerSelector: '[table-r-id="source-table-1"] .btn-delete.btn-row-table',
+//         triggerSelector: '[table-r-id="inv-source-table-1"] .btn-delete.btn-row-table',
 //         method: 'source.delete',
 //         endpoint: endPoint,
 //         callbackOnData: (payload) => {
-//             ComponentFunctions.replaceTable(payload, '[table-r-id="source-table-1"]');
+//             ComponentFunctions.replaceTable(payload, '[table-r-id="inv-source-table-1"]');
 //         },
 //         beforeSendCallback: async (trigger, rowId) => {
 //             return await ConfirmDialog.show('Удаление', `Удалить элемент #${rowId}?`, '.overlay-main');
@@ -50,7 +50,7 @@ ComponentFunctions.attachJsonRpcInputTrigger({
 //
 // function attachInputButtonTriggerSource() {
 //     ComponentFunctions.attachInputButtonTrigger({
-//         containerSelector: '[table-r-id="source-table-1"]',
+//         containerSelector: '[table-r-id="inv-source-table-1"]',
 //         buttonSelector: 'td .edit-row-button',
 //         inputSelector: 'input.edit-row-input',
 //         searchRootSelector: 'td',
@@ -65,7 +65,7 @@ ComponentFunctions.attachJsonRpcInputTrigger({
 //
 // function watchInputValueChangeSource() {
 //     ComponentFunctions.watchInputValueChange({
-//         inputSelector: '[table-r-id="source-table-1"] input.edit-row-input',
+//         inputSelector: '[table-r-id="inv-source-table-1"] input.edit-row-input',
 //         onChange: (oldValue, newValue, inputElement) => {
 //             const container = inputElement.closest('td');
 //             const wrapper = container?.querySelector('.cell-actions-wrapper');
@@ -101,23 +101,23 @@ ComponentFunctions.attachJsonRpcInputTrigger({
 //
 // === Наблюдение за появлением новых элементов в DOM и повторное навешивание обработчиков ===
 //
-// const targetNode = document.querySelector('[table-r-id="source-table-1"]');
-// if (!targetNode) {
-//     console.warn('Container [table-r-id="source-table-1"] not found');
-// } else {
-//     const observer = new MutationObserver((mutationsList) => {
-//         for (const mutation of mutationsList) {
-//             if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-//                 attachDeleteTriggerSource();
-//                 attachInputButtonTriggerSource();
-//                 watchInputValueChangeSource();
-//                 break; // один раз достаточно
-//             }
-//         }
-//     });
+const targetNode = document.querySelector('[table-r-id="inv-source-table-1"]');
+if (!targetNode) {
+    console.warn('Container [table-r-id="inv-source-table-1"] not found');
+} else {
+    const observer = new MutationObserver((mutationsList) => {
+        for (const mutation of mutationsList) {
+            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                // attachDeleteTriggerSource();
+                // attachInputButtonTriggerSource();
+                // watchInputValueChangeSource();
+                break; // один раз достаточно
+            }
+        }
+    });
 
-//     observer.observe(targetNode, {
-//         childList: true,
-//         subtree: true
-//     });
-// }
+    observer.observe(targetNode, {
+        childList: true,
+        subtree: true
+    });
+}

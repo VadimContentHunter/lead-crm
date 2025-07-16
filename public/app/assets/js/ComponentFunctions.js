@@ -372,8 +372,8 @@ export const ComponentFunctions = {
         }
     },
 
-     attachDeleteTrigger({
-    triggerSelector,
+    attachDeleteTrigger({
+        triggerSelector,
         method,
         endpoint = '/api/',
         beforeSendCallback = async () => { },
@@ -540,6 +540,119 @@ export const ComponentFunctions = {
                         onBlur?.(input, previous);
                     }, 200);
                 });
+            }
+        }
+    },
+
+    /**
+     * Назначает обработчик, который выполняет JSON-RPC запрос при клике на кнопку,
+     * вызывает переданный коллбек с данными и обрабатывает их через processingPayload.
+     *
+     * @param {Object} config - Конфигурация запроса
+     * @param {string} config.triggerSelector - CSS-селектор кнопки
+     * @param {string} config.method - Название метода JSON-RPC
+     * @param {string} [config.endpoint='/api'] - Адрес JSON-RPC сервера
+     * @param {Object} [config.jsonContent={}] - Данные, отправляемые в теле запроса
+     * @param {function(any):void} [config.callbackOnData] - Коллбек, вызываемый при получении данных (всегда вызывается перед обработкой)
+     * @param {function(Error):void} [config.callbackOnError] - Коллбек, вызываемый при ошибке (по умолчанию onErrorDefaultFunction)
+     */
+    attachJsonRpcLoadTrigger({
+        triggerSelector,
+        method,
+        endpoint = '/api',
+        jsonContent = {},
+        callbackOnData = null,
+        callbackOnError = onErrorDefaultFunction,
+    }) {
+        const trigger = document.querySelector(triggerSelector);
+        if (!trigger) {
+            console.warn('[ComponentFunctions] Триггер не найден:', triggerSelector);
+            return;
+        }
+
+        const transport = new JsonRpcTransport(method, {
+            endpoint,
+            onContentUpdate: () => { },
+            onData: (payload) => {
+                if (typeof callbackOnData === 'function') {
+                    callbackOnData(payload);
+                }
+                processingPayload(payload);
+            },
+            onError: (error) => {
+                if (typeof callbackOnError === 'function') {
+                    callbackOnError(error);
+                } else {
+                    onErrorDefaultFunction(error);
+                }
+            }
+        });
+
+        trigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            transport.send(jsonContent);
+        });
+    },
+
+    /**
+     * Заполняет поля формы значениями из объекта.
+     * Для <select> всегда ожидается массив опций с возможностью выбора.
+     *
+     * @param {string|HTMLFormElement} form - CSS-селектор формы или сам элемент формы
+     * @param {Object<string, any>} data - Объект, где ключ — имя поля, значение:
+     *   - string/boolean/number — для обычных input'ов
+     *   - Array<{ value: string, text?: string, selected?: boolean }> — для <select>
+     */
+    fillFormFromData(form, data) {
+        if (typeof form === 'string') {
+            form = document.querySelector(form);
+        }
+
+        if (!(form instanceof HTMLFormElement)) {
+            console.warn('[fillFormFromData] form не является HTMLFormElement или не найден по селектору');
+            return;
+        }
+
+        if (typeof data !== 'object' || data === null) {
+            console.warn('[fillFormFromData] data должен быть объектом');
+            return;
+        }
+
+        for (const [key, raw] of Object.entries(data)) {
+            const field = form.querySelector(`[name="${key}"]`);
+            if (!field) continue;
+
+            if (field.tagName === 'SELECT') {
+                if (!Array.isArray(raw)) {
+                    console.warn(`[fillFormFromData] Ожидался массив для select [name="${key}"]`);
+                    continue;
+                }
+
+                field.innerHTML = '';
+                let hasSelected = false;
+
+                for (const opt of raw) {
+                    if (typeof opt !== 'object' || opt === null || !('value' in opt)) continue;
+
+                    const option = document.createElement('option');
+                    option.value = opt.value;
+                    option.textContent = opt.text ?? opt.value;
+                    if (opt.selected) {
+                        option.selected = true;
+                        hasSelected = true;
+                    }
+
+                    field.appendChild(option);
+                }
+
+                if (!hasSelected && field.options.length > 0) {
+                    field.options[0].selected = true;
+                }
+
+            } else if (field.type === 'checkbox' || field.type === 'radio') {
+                field.checked = Boolean(raw);
+            } else {
+                field.value = raw;
             }
         }
     }

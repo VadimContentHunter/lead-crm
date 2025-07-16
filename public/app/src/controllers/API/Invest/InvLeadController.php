@@ -5,8 +5,10 @@ namespace crm\src\controllers\API\Invest;
 use Throwable;
 use crm\src\services\AppContext\ISecurity;
 use crm\src\services\AppContext\IAppContext;
+use crm\src\components\UserManagement\_entities\User;
 use crm\src\Investments\_application\InvestmentService;
 use crm\src\services\JsonRpcLowComponent\JsonRpcServerFacade;
+use crm\src\components\UserManagement\_common\mappers\UserMapper;
 use crm\src\components\Security\_exceptions\JsonRpcSecurityException;
 
 class InvLeadController
@@ -43,6 +45,7 @@ class InvLeadController
 
         $this->methods = [
             'invest.lead.add' => fn() => $secureCall->createInvLead($this->rpc->getParams()),
+            'invest.lead.get.form.create' => fn() => $secureCall->getFormCreateData($this->rpc->getParams()),
         ];
     }
 
@@ -97,6 +100,42 @@ class InvLeadController
                         HTML
                     ]
                 ]
+            ]);
+        } else {
+            $errorMessage = $result->getError()?->getMessage() ?? 'Произошла ошибка';
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Произошла ошибка: ' . $errorMessage]
+            ]);
+        }
+    }
+
+    public function getFormCreateData(array $params): void
+    {
+        $managersLogin = $this->appContext->getUserManagement()->get()->executeAll()
+            ->mapEach(function (User $user) {
+                $userArray = UserMapper::toArray($user);
+                if ($userArray['login'] === null) {
+                    return null;
+                }
+
+                return [
+                    'value' => $userArray['id'],
+                    'text' => $userArray['login'],
+                ];
+            })
+            ->getArray();
+
+        array_unshift($managersLogin, ['value' => '', 'text' => '— Выберите менеджера —', 'selected' => true]);
+        $result = $this->service->getFormCreateData(
+            $params,
+            [
+                'account_manager_id' => $managersLogin
+            ]
+        );
+        if ($result->isSuccess()) {
+            $this->rpc->replyData([
+                'type' => 'success',
+                'data' =>  $result->getData()
             ]);
         } else {
             $errorMessage = $result->getError()?->getMessage() ?? 'Произошла ошибка';

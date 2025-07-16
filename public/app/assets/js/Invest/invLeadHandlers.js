@@ -3,9 +3,8 @@ import { ConfirmDialog } from '/assets/js/ConfirmDialog.js';
 
 const endPoint = '/api/invest/leads';
 
-
 //
-// === Добавление строки в таблицу по кнопке ===
+// === Добавление строки в таблицу по кнопке в форме ===
 //
 ComponentFunctions.attachJsonRpcInputTrigger({
     triggerSelector: '#add-inv-lead-form .form-actions .form-button.submit',
@@ -14,8 +13,17 @@ ComponentFunctions.attachJsonRpcInputTrigger({
     endpoint: endPoint,
     callbackOnData: (payload) => {
         console.log(payload);
-        
         // ComponentFunctions.replaceTable(payload, '[table-r-id="lead-table-1"]');
+    }
+});
+
+ComponentFunctions.attachJsonRpcLoadTrigger({
+    triggerSelector: '#add-inv-lead-btn',
+    method: 'invest.lead.get.form.create',
+    endpoint: endPoint,
+    jsonContent: { id: 0 },
+    callbackOnData: (payload) => {
+        ComponentFunctions.fillFormFromData('#add-inv-lead-form form', payload?.data ?? []);
     }
 });
 

@@ -5,7 +5,13 @@ namespace crm\src\Investments\_application;
 use crm\src\Investments\InvLead\ManageInvLead;
 use crm\src\Investments\InvSource\ManageInvSource;
 use crm\src\Investments\InvStatus\ManageInvStatus;
+use crm\src\Investments\InvSource\_entities\InvSource;
+use crm\src\Investments\InvStatus\_entities\InvStatus;
+use crm\src\Investments\_application\adapters\InvestResult;
+use crm\src\Investments\_application\interfaces\IInvestResult;
 use crm\src\Investments\InvLead\_common\mappers\InvLeadMapper;
+use crm\src\Investments\InvSource\_common\DTOs\DbInvSourceDto;
+use crm\src\Investments\InvStatus\_common\DTOs\DbInvStatusDto;
 use crm\src\Investments\InvLead\_common\adapters\InvLeadResult;
 use crm\src\_common\adapters\Investments\SourceValidatorAdapter;
 use crm\src\_common\adapters\Investments\StatusValidatorAdapter;
@@ -72,5 +78,51 @@ final class InvestmentService
     public function createInvStatus(array $data): IInvStatusResult
     {
         return $this->manageInvStatus->create(InvStatusMapper::fromArrayToInput($data));
+    }
+
+    /**
+     * Возвращает данные для формы создания лида.
+     *
+     * @param array<string,mixed> $params
+     * @param array<string,mixed> $extraData Данные, которые нужно добавить/переопределить в итоговом массиве
+     */
+    public function getFormCreateData(array $params, array $extraData = []): IInvestResult
+    {
+        $id = $params['id'] ?? 0;
+
+        if (filter_var($id, FILTER_VALIDATE_INT) === false) {
+            return InvestResult::failure(new \RuntimeException('Неверный идентификатор'));
+        }
+
+        if ((int)$id === 0) {
+            $statuses = $this->invStatusRepo->getAll()->mapEach(
+                fn($item) => $item instanceof DbInvStatusDto
+                    ? ['value' => $item->code, 'text' => $item->label]
+                    : null
+            )->getArray();
+
+            $sources = $this->invSourceRepo->getAll()->mapEach(
+                fn($item) => $item instanceof DbInvSourceDto
+                ? ['value' => $item->code, 'text' => $item->label]
+                : null
+            )->getArray();
+
+            // Добавляем заглушки с selected => true
+            array_unshift($statuses, ['value' => '', 'text' => '— Выберите статус —', 'selected' => true]);
+            array_unshift($sources,  ['value' => '', 'text' => '— Выберите источник —', 'selected' => true]);
+
+            // Базовые данные
+            $data = [
+                'status_id' => $statuses,
+                'source_id' => $sources,
+            ];
+
+            // Объединение с внешними данными
+            $data = array_merge($data, $extraData);
+
+            return InvestResult::success($data);
+        }
+
+        return InvestResult::success();
     }
 }

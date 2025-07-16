@@ -3,7 +3,7 @@
 namespace crm\src\Investments\InvLead;
 
 use crm\src\_common\interfaces\IValidation;
-use crm\src\Investments\InvLead\_dto\InvLeadInputDto;
+use crm\src\Investments\InvLead\_common\DTOs\InvLeadInputDto;
 use crm\src\Investments\InvLead\_mappers\InvLeadMapper;
 use crm\src\Investments\InvLead\_common\interfaces\IInvLeadRepository;
 use crm\src\Investments\InvLead\_common\interfaces\IInvLeadResult;

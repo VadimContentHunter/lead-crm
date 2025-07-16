@@ -3,7 +3,7 @@
 namespace crm\src\Investments\InvLead\_common\interfaces;
 
 use crm\src\_common\interfaces\IResultRepository;
-use crm\src\Investments\InvLead\_dto\DbInvLeadDto;
+use crm\src\Investments\InvLead\_common\DTOs\DbInvLeadDto;
 
 /**
  * Интерфейс репозитория инвестиционных лидов.
@@ -27,4 +27,12 @@ interface IInvLeadRepository extends IResultRepository
      * @return IInvLeadResult
      */
     public function deleteByUid(string $uid): IInvLeadResult;
+
+    /**
+     * Возвращает всех лидов, закреплённых за аккаунт-менеджером.
+     *
+     * @param  int $managerId ID менеджера
+     * @return IInvLeadResult
+     */
+    public function getAllByAccountManagerId(int $managerId): IInvLeadResult;
 }

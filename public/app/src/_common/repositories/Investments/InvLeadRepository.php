@@ -4,11 +4,11 @@ namespace crm\src\_common\repositories\Investments;
 
 use crm\src\_common\repositories\AResultRepository;
 use crm\src\Investments\InvLead\_mappers\InvLeadMapper;
-use crm\src\Investments\InvLead\_dto\DbInvLeadDto;
-use crm\src\Investments\InvLead\_common\adapters\InvLeadResult;
-use crm\src\Investments\InvLead\_common\interfaces\IInvLeadRepository;
-use crm\src\Investments\InvLead\_common\interfaces\IInvLeadResult;
+use crm\src\Investments\InvLead\_common\DTOs\DbInvLeadDto;
 use crm\src\services\Repositories\QueryBuilder\QueryBuilder;
+use crm\src\Investments\InvLead\_common\adapters\InvLeadResult;
+use crm\src\Investments\InvLead\_common\interfaces\IInvLeadResult;
+use crm\src\Investments\InvLead\_common\interfaces\IInvLeadRepository;
 
 /**
  * Репозиторий для инвестиционных лидов.
@@ -152,6 +152,23 @@ class InvLeadRepository extends AResultRepository implements IInvLeadRepository
             )->getInt();
 
             return InvLeadResult::success($uid);
+        } catch (\Throwable $e) {
+            return InvLeadResult::failure($e);
+        }
+    }
+
+    public function getAllByAccountManagerId(int $managerId): IInvLeadResult
+    {
+        try {
+            $list = $this->repository->executeQuery(
+                (new QueryBuilder())
+                ->table($this->getTableName())
+                ->where('account_manager_id = :managerId')
+                ->bindings(['managerId' => $managerId])
+                ->select()
+            )->getValidMappedList($this->fromArray());
+
+            return InvLeadResult::success($list);
         } catch (\Throwable $e) {
             return InvLeadResult::failure($e);
         }

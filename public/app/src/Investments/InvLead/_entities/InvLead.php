@@ -3,13 +3,13 @@
 namespace crm\src\Investments\InvLead\_entities;
 
 use DateTimeImmutable;
-use crm\src\Investments\InvLead\_entities\SimpleInvLead;
 use crm\src\Investments\InvSource\_entities\InvSource;
 use crm\src\Investments\InvStatus\_entities\InvStatus;
 use crm\src\Investments\InvBalance\_entities\InvBalance;
 use crm\src\Investments\InvComment\_common\InvCommentCollection;
 use crm\src\Investments\InvDeposit\_common\InvDepositCollection;
 use crm\src\Investments\InvActivity\_common\InvActivityCollection;
+use crm\src\Investments\InvLead\_common\DTOs\InvAccountManagerDto;
 
 /**
  * Полная инвестиционная модель лида, включающая связанные данные: баланс, депозиты, сделки, комментарии.
@@ -17,20 +17,20 @@ use crm\src\Investments\InvActivity\_common\InvActivityCollection;
 class InvLead extends SimpleInvLead
 {
     /**
-     * @param string                $uid            Уникальный 9-значный идентификатор, начинается с "928"
-     * @param string                $contact        Контактное лицо или имя
-     * @param string                $phone          Телефон клиента
-     * @param string                $email          Email клиента
-     * @param string                $fullName       Полное имя клиента
+     * @param string                  $uid            Уникальный 9-значный идентификатор, начинается с "928"
+     * @param string                  $contact        Контактное лицо или имя
+     * @param string                  $phone          Телефон клиента
+     * @param string                  $email          Email клиента
+     * @param string                  $fullName       Полное имя клиента
      * @param DateTimeImmutable|null $createdAt      Время создания (если null — установится текущее)
-     * @param string                $accountManager Имя закреплённого менеджера
-     * @param bool                  $visible        Видимость лида (по умолчанию true)
-     * @param InvSource|null        $source         Источник лида (например, Binance, Bybit)
-     * @param InvStatus|null        $status         Текущий статус лида (например, "work", "lost")
-     * @param InvBalance|null       $InvBalance     Объект баланса клиента
-     * @param InvDepositCollection  $deposits       Коллекция депозитов клиента
-     * @param InvActivityCollection $activities     Коллекция инвестиционных сделок
-     * @param InvCommentCollection  $InvComments    Коллекция комментариев по лиду
+     * @param InvAccountManagerDto|null $accountManager Объект аккаунт-менеджера
+     * @param bool                    $visible        Видимость лида (по умолчанию true)
+     * @param InvSource|null          $source         Источник лида (например, Binance, Bybit)
+     * @param InvStatus|null          $status         Текущий статус лида (например, "work", "lost")
+     * @param InvBalance|null         $InvBalance     Объект баланса клиента
+     * @param InvDepositCollection    $deposits       Коллекция депозитов клиента
+     * @param InvActivityCollection   $activities     Коллекция инвестиционных сделок
+     * @param InvCommentCollection    $InvComments    Коллекция комментариев по лиду
      */
     public function __construct(
         string $uid,
@@ -39,7 +39,7 @@ class InvLead extends SimpleInvLead
         string $email = '',
         string $fullName = '',
         ?DateTimeImmutable $createdAt = null,
-        string $accountManager = '',
+        ?InvAccountManagerDto $accountManager = null,
         bool $visible = true,
         ?InvSource $source = null,
         ?InvStatus $status = null,

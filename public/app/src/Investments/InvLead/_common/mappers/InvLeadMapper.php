@@ -3,21 +3,13 @@
 namespace crm\src\Investments\InvLead\_mappers;
 
 use DateTimeImmutable;
-use crm\src\Investments\InvLead\_dto\DbInvLeadDto;
-use crm\src\Investments\InvLead\_dto\InvLeadInputDto;
+use crm\src\Investments\InvLead\_common\DTOs\DbInvLeadDto;
+use crm\src\Investments\InvLead\_common\DTOs\InvLeadInputDto;
 use crm\src\Investments\InvLead\_entities\SimpleInvLead;
+use crm\src\Investments\InvLead\_common\DTOs\InvAccountManagerDto;
 
-/**
- * Маппер для преобразования между сущностью инвестиционного лида и DTO.
- */
 class InvLeadMapper
 {
-    /**
-     * Преобразует DTO из БД в сущность.
-     *
-     * @param  DbInvLeadDto $dto
-     * @return SimpleInvLead
-     */
     public static function fromDbToEntity(DbInvLeadDto $dto): SimpleInvLead
     {
         return new SimpleInvLead(
@@ -27,19 +19,15 @@ class InvLeadMapper
             email: $dto->email,
             fullName: $dto->fullName,
             createdAt: new DateTimeImmutable($dto->createdAt),
-            accountManager: $dto->accountManager ?? '',
+            accountManager: $dto->accountManagerId !== null && $dto->accountManagerLogin !== null
+                ? new InvAccountManagerDto($dto->accountManagerId, $dto->accountManagerLogin)
+                : null,
             visible: $dto->visible,
-            source: null, // требуется подгрузка отдельно
-            status: null  // требуется подгрузка отдельно
+            source: null,
+            status: null
         );
     }
 
-    /**
-     * Преобразует сущность в DTO для БД.
-     *
-     * @param  SimpleInvLead $entity
-     * @return DbInvLeadDto
-     */
     public static function fromEntityToDb(SimpleInvLead $entity): DbInvLeadDto
     {
         return new DbInvLeadDto(
@@ -49,7 +37,8 @@ class InvLeadMapper
             phone: $entity->phone,
             email: $entity->email,
             fullName: $entity->fullName,
-            accountManager: $entity->accountManager,
+            accountManagerId: $entity->accountManager?->id,
+            accountManagerLogin: $entity->accountManager?->login,
             visible: $entity->visible,
             sourceId: $entity->source?->id ?? null,
             statusId: $entity->status?->id ?? null,
@@ -57,15 +46,12 @@ class InvLeadMapper
         );
     }
 
-    /**
-     * Преобразует входной DTO в сущность.
-     *
-     * @param  InvLeadInputDto $dto
-     * @param  string $uid
-     * @return SimpleInvLead
-     */
     public static function fromInputToEntity(InvLeadInputDto $dto, string $uid): SimpleInvLead
     {
+        $manager = $dto->accountManagerId !== null && $dto->accountManagerLogin !== null
+            ? new InvAccountManagerDto($dto->accountManagerId, $dto->accountManagerLogin)
+            : null;
+
         return new SimpleInvLead(
             uid: $uid,
             contact: $dto->contact ?? '',
@@ -73,21 +59,13 @@ class InvLeadMapper
             email: $dto->email ?? '',
             fullName: $dto->fullName ?? '',
             createdAt: new DateTimeImmutable(),
-            accountManager: $dto->accountManager ?? '',
+            accountManager: $manager,
             visible: $dto->visible ?? true,
             source: null,
             status: null
         );
     }
 
-    /**
-     * Преобразует входной DTO напрямую в DTO для БД.
-     *
-     * @param  InvLeadInputDto $dto
-     * @param  string $uid
-     * @param  string|null $createdAt
-     * @return DbInvLeadDto
-     */
     public static function fromInputToDb(InvLeadInputDto $dto, string $uid, ?string $createdAt = null): DbInvLeadDto
     {
         return new DbInvLeadDto(
@@ -97,7 +75,8 @@ class InvLeadMapper
             phone: $dto->phone ?? '',
             email: $dto->email ?? '',
             fullName: $dto->fullName ?? '',
-            accountManager: $dto->accountManager,
+            accountManagerId: $dto->accountManagerId,
+            accountManagerLogin: $dto->accountManagerLogin,
             visible: $dto->visible ?? true,
             sourceId: $dto->sourceId,
             statusId: $dto->statusId,
@@ -105,12 +84,6 @@ class InvLeadMapper
         );
     }
 
-    /**
-     * Преобразует DTO из БД в массив.
-     *
-     * @param  DbInvLeadDto $dto
-     * @return array<string, mixed>
-     */
     public static function fromDbToArray(DbInvLeadDto $dto): array
     {
         return [
@@ -120,7 +93,8 @@ class InvLeadMapper
             'phone' => $dto->phone,
             'email' => $dto->email,
             'full_name' => $dto->fullName,
-            'account_manager' => $dto->accountManager,
+            'account_manager_id' => $dto->accountManagerId,
+            'account_manager_login' => $dto->accountManagerLogin,
             'visible' => $dto->visible,
             'source_id' => $dto->sourceId,
             'status_id' => $dto->statusId,
@@ -128,12 +102,6 @@ class InvLeadMapper
         ];
     }
 
-    /**
-     * Преобразует массив из БД в DTO.
-     *
-     * @param  array<string, mixed> $data
-     * @return DbInvLeadDto
-     */
     public static function fromArrayToDb(array $data): DbInvLeadDto
     {
         return new DbInvLeadDto(
@@ -143,7 +111,8 @@ class InvLeadMapper
             phone: (string) ($data['phone'] ?? ''),
             email: (string) ($data['email'] ?? ''),
             fullName: (string) ($data['full_name'] ?? ''),
-            accountManager: $data['account_manager'] ?? null,
+            accountManagerId: isset($data['account_manager_id']) ? (int) $data['account_manager_id'] : null,
+            accountManagerLogin: $data['account_manager_login'] ?? null,
             visible: (bool) ($data['visible'] ?? true),
             sourceId: isset($data['source_id']) ? (int) $data['source_id'] : null,
             statusId: isset($data['status_id']) ? (int) $data['status_id'] : null,
@@ -151,12 +120,6 @@ class InvLeadMapper
         );
     }
 
-    /**
-     * Возвращает только заполненные поля из входного DTO.
-     *
-     * @param  InvLeadInputDto $dto
-     * @return array<string, mixed>
-     */
     public static function fromInputExtractFilledFields(InvLeadInputDto $dto): array
     {
         $fields = [];
@@ -181,8 +144,12 @@ class InvLeadMapper
             $fields['full_name'] = $dto->fullName;
         }
 
-        if ($dto->accountManager !== null) {
-            $fields['account_manager'] = $dto->accountManager;
+        if ($dto->accountManagerId !== null) {
+            $fields['account_manager_id'] = $dto->accountManagerId;
+        }
+
+        if ($dto->accountManagerLogin !== null) {
+            $fields['account_manager_login'] = $dto->accountManagerLogin;
         }
 
         if ($dto->visible !== null) {

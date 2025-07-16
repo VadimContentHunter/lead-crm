@@ -3,19 +3,19 @@
 namespace crm\src\_common\repositories\Investments;
 
 use crm\src\_common\repositories\AResultRepository;
-use crm\src\Investments\Deposit\_common\DTOs\DbInvDepositDto;
-use crm\src\Investments\Deposit\_common\interfaces\IDepositRepository;
-use crm\src\Investments\Deposit\_common\interfaces\IDepositResult;
-use crm\src\Investments\Deposit\_mappers\InvDepositMapper;
-use crm\src\Investments\Deposit\_common\InvDepositCollection;
-use crm\src\Investments\Deposit\_common\adapters\DepositResult;
+use crm\src\Investments\InvDeposit\_common\DTOs\DbInvDepositDto;
+use crm\src\Investments\InvDeposit\_common\interfaces\IInvDepositRepository;
+use crm\src\Investments\InvDeposit\_common\interfaces\IInvDepositResult;
+use crm\src\Investments\InvDeposit\_mappers\InvDepositMapper;
+use crm\src\Investments\InvDeposit\_common\InvDepositCollection;
+use crm\src\Investments\InvDeposit\_common\adapters\InvDepositResult;
 
 /**
  * Репозиторий для депозитов.
  *
  * @extends AResultRepository<DbInvDepositDto>
  */
-class DepositRepository extends AResultRepository implements IDepositRepository
+class InvDepositRepository extends AResultRepository implements IInvDepositRepository
 {
     protected function getTableName(): string
     {
@@ -47,14 +47,14 @@ class DepositRepository extends AResultRepository implements IDepositRepository
     }
 
     /**
-     * @return class-string<IDepositResult>
+     * @return class-string<IInvDepositResult>
      */
     protected function getResultClass(): string
     {
-        return DepositResult::class;
+        return InvDepositResult::class;
     }
 
-    public function getAllByUid(string $uid): IDepositResult
+    public function getAllByUid(string $uid): IInvDepositResult
     {
         try {
             $dtoList = $this->getAllByColumnValues('uid', [$uid])->getArray();
@@ -64,13 +64,13 @@ class DepositRepository extends AResultRepository implements IDepositRepository
                 $dtoList
             );
 
-            return DepositResult::success(new InvDepositCollection($entities));
+            return InvDepositResult::success(new InvDepositCollection($entities));
         } catch (\Throwable $e) {
-            return DepositResult::failure($e);
+            return InvDepositResult::failure($e);
         }
     }
 
-    public function deleteAllByUid(string $uid): IDepositResult
+    public function deleteAllByUid(string $uid): IInvDepositResult
     {
         try {
             $collection = $this->getAllByUid($uid)->getCollection();
@@ -78,7 +78,7 @@ class DepositRepository extends AResultRepository implements IDepositRepository
             $ids = array_filter(array_map(fn($entity) => $entity->id, $entities));
 
             if (empty($ids)) {
-                return DepositResult::success([]);
+                return InvDepositResult::success([]);
             }
 
             $placeholders = implode(', ', array_map(fn($i) => ":id_$i", array_keys($ids)));
@@ -90,26 +90,26 @@ class DepositRepository extends AResultRepository implements IDepositRepository
             $sql = sprintf("DELETE FROM %s WHERE id IN (%s)", $this->getTableName(), $placeholders);
             $this->repository->executeSql($sql, $params);
 
-            return DepositResult::success($ids);
+            return InvDepositResult::success($ids);
         } catch (\Throwable $e) {
-            return DepositResult::failure($e);
+            return InvDepositResult::failure($e);
         }
     }
 
-    public function getById(int $id): IDepositResult
+    public function getById(int $id): IInvDepositResult
     {
         try {
             $result = parent::getById($id);
             $dto = $result->getData();
 
             if (!$dto instanceof DbInvDepositDto) {
-                throw new \RuntimeException("Deposit with ID $id not found or invalid DTO.");
+                throw new \RuntimeException("InvDeposit with ID $id not found or invalid DTO.");
             }
 
             $entity = InvDepositMapper::fromDbToEntity($dto);
-            return DepositResult::success($entity);
+            return InvDepositResult::success($entity);
         } catch (\Throwable $e) {
-            return DepositResult::failure($e);
+            return InvDepositResult::failure($e);
         }
     }
 }

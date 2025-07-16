@@ -1,11 +1,11 @@
 <?php
 
-namespace crm\src\Investments\Deposit\_mappers;
+namespace crm\src\Investments\InvDeposit\_mappers;
 
 use DateTimeImmutable;
-use crm\src\Investments\Deposit\_entities\InvDeposit;
-use crm\src\Investments\Deposit\_common\DTOs\DbInvDepositDto;
-use crm\src\Investments\Deposit\_common\DTOs\InvDepositInputDto;
+use crm\src\Investments\InvDeposit\_entities\InvDeposit;
+use crm\src\Investments\InvDeposit\_common\DTOs\DbInvDepositDto;
+use crm\src\Investments\InvDeposit\_common\DTOs\InvDepositInputDto;
 
 class InvDepositMapper
 {

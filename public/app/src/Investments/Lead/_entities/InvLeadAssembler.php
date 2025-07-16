@@ -3,7 +3,7 @@
 namespace crm\src\Investments\Lead\_entities;
 
 // use crm\src\Investments\InvBalance\_repositories\InvBalanceRepository;
-// use crm\src\Investments\Deposit\_repositories\InvDepositRepository;
+// use crm\src\Investments\InvDeposit\_repositories\InvDepositRepository;
 // use crm\src\Investments\InvActivity\_repositories\InvActivityRepository;
 // use crm\src\Investments\InvComment\_repositories\InvCommentRepository;
 

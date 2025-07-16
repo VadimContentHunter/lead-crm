@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\Investments\Deposit\_common\DTOs;
+namespace crm\src\Investments\InvDeposit\_common\DTOs;
 
 /**
  * DTO для входящих данных по депозиту.

@@ -8,7 +8,7 @@ use crm\src\Investments\Source\_entities\InvSource;
 use crm\src\Investments\Status\_entities\InvStatus;
 use crm\src\Investments\InvBalance\_entities\InvBalance;
 use crm\src\Investments\InvComment\_common\InvCommentCollection;
-use crm\src\Investments\Deposit\_common\InvDepositCollection;
+use crm\src\Investments\InvDeposit\_common\InvDepositCollection;
 use crm\src\Investments\InvActivity\_common\InvActivityCollection;
 
 /**

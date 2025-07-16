@@ -1,35 +1,35 @@
 <?php
 
-namespace crm\src\Investments\Deposit\_common\adapters;
+namespace crm\src\Investments\InvDeposit\_common\adapters;
 
 use crm\src\_common\interfaces\AResult;
-use crm\src\Investments\Deposit\_entities\InvDeposit;
-use crm\src\Investments\Deposit\_common\InvDepositCollection;
-use crm\src\Investments\Deposit\_common\interfaces\IDepositResult;
+use crm\src\Investments\InvDeposit\_entities\InvDeposit;
+use crm\src\Investments\InvDeposit\_common\InvDepositCollection;
+use crm\src\Investments\InvDeposit\_common\interfaces\IInvDepositResult;
 
 /**
  * Адаптер результата операций с депозитом.
  */
-class DepositResult extends AResult implements IDepositResult
+class InvDepositResult extends AResult implements IInvDepositResult
 {
-    public function getDeposit(): ?InvDeposit
+    public function getInvDeposit(): ?InvDeposit
     {
         return $this->data instanceof InvDeposit ? $this->data : null;
     }
 
     public function getUid(): ?string
     {
-        return $this->getDeposit()?->uid;
+        return $this->getInvDeposit()?->uid;
     }
 
     public function getSum(): ?float
     {
-        return $this->getDeposit()?->sum;
+        return $this->getInvDeposit()?->sum;
     }
 
     public function getId(): ?int
     {
-        return $this->getDeposit()?->id;
+        return $this->getInvDeposit()?->id;
     }
 
     public function getCollection(): InvDepositCollection

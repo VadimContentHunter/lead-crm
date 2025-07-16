@@ -1,8 +1,8 @@
 <?php
 
-namespace crm\src\Investments\Deposit\_common;
+namespace crm\src\Investments\InvDeposit\_common;
 
-use crm\src\Investments\Deposit\_entities\InvDeposit;
+use crm\src\Investments\InvDeposit\_entities\InvDeposit;
 
 /**
  * Коллекция депозитов инвестиционного лида.

@@ -1,23 +1,23 @@
 <?php
 
-namespace crm\src\Investments\Deposit;
+namespace crm\src\Investments\InvDeposit;
 
 use crm\src\_common\interfaces\IValidation;
-use crm\src\Investments\Deposit\_mappers\InvDepositMapper;
-use crm\src\Investments\Deposit\_common\DTOs\InvDepositInputDto;
-use crm\src\Investments\Deposit\_common\DTOs\DbInvDepositDto;
-use crm\src\Investments\Deposit\_common\adapters\DepositResult;
-use crm\src\Investments\Deposit\_exceptions\InvDepositException;
-use crm\src\Investments\Deposit\_common\interfaces\IDepositResult;
-use crm\src\Investments\Deposit\_common\interfaces\IDepositRepository;
+use crm\src\Investments\InvDeposit\_mappers\InvDepositMapper;
+use crm\src\Investments\InvDeposit\_common\DTOs\InvDepositInputDto;
+use crm\src\Investments\InvDeposit\_common\DTOs\DbInvDepositDto;
+use crm\src\Investments\InvDeposit\_common\adapters\InvDepositResult;
+use crm\src\Investments\InvDeposit\_exceptions\InvDepositException;
+use crm\src\Investments\InvDeposit\_common\interfaces\IInvDepositResult;
+use crm\src\Investments\InvDeposit\_common\interfaces\IInvDepositRepository;
 
 /**
  * Сервис управления инвестиционными депозитами.
  */
-class ManageDeposit
+class ManageInvDeposit
 {
     public function __construct(
-        private IDepositRepository $repository,
+        private IInvDepositRepository $repository,
         private IValidation $validator,
     ) {
     }
@@ -26,14 +26,14 @@ class ManageDeposit
      * Создание нового депозита.
      *
      * @param  InvDepositInputDto $input
-     * @return IDepositResult
+     * @return IInvDepositResult
      */
-    public function create(InvDepositInputDto $input): IDepositResult
+    public function create(InvDepositInputDto $input): IInvDepositResult
     {
         try {
             $validation = $this->validator->validate($input);
             if (!$validation->isValid()) {
-                return DepositResult::failure(
+                return InvDepositResult::failure(
                     new InvDepositException('Ошибка валидации: ' . implode('; ', $validation->getErrors()))
                 );
             }
@@ -42,7 +42,7 @@ class ManageDeposit
             $result = $this->repository->save($dto);
 
             if (!$result->isSuccess()) {
-                return DepositResult::failure(
+                return InvDepositResult::failure(
                     $result->getError() ?? new InvDepositException("Ошибка сохранения депозита")
                 );
             }
@@ -53,9 +53,9 @@ class ManageDeposit
             $saved = $dto;
             $entity = InvDepositMapper::fromDbToEntity($saved);
 
-            return DepositResult::success($entity);
+            return InvDepositResult::success($entity);
         } catch (\Throwable $e) {
-            return DepositResult::failure($e);
+            return InvDepositResult::failure($e);
         }
     }
 
@@ -63,18 +63,18 @@ class ManageDeposit
      * Обновление депозита по ID.
      *
      * @param  InvDepositInputDto $input
-     * @return IDepositResult
+     * @return IInvDepositResult
      */
-    public function updateById(InvDepositInputDto $input): IDepositResult
+    public function updateById(InvDepositInputDto $input): IInvDepositResult
     {
         try {
             if (!$input->id) {
-                return DepositResult::failure(new InvDepositException("ID обязателен для обновления"));
+                return InvDepositResult::failure(new InvDepositException("ID обязателен для обновления"));
             }
 
             $validation = $this->validator->validate($input, ignoreFields: ['uid']);
             if (!$validation->isValid()) {
-                return DepositResult::failure(
+                return InvDepositResult::failure(
                     new InvDepositException('Ошибка валидации: ' . implode('; ', $validation->getErrors()))
                 );
             }
@@ -83,14 +83,14 @@ class ManageDeposit
             $result = $this->repository->update($updateData);
 
             if (!$result->isSuccess()) {
-                return DepositResult::failure(
+                return InvDepositResult::failure(
                     $result->getError() ?? new InvDepositException("Ошибка при обновлении депозита")
                 );
             }
 
-            return DepositResult::success($updateData);
+            return InvDepositResult::success($updateData);
         } catch (\Throwable $e) {
-            return DepositResult::failure($e);
+            return InvDepositResult::failure($e);
         }
     }
 
@@ -98,26 +98,26 @@ class ManageDeposit
      * Удаление депозита по ID.
      *
      * @param  int $id
-     * @return IDepositResult
+     * @return IInvDepositResult
      */
-    public function deleteById(int $id): IDepositResult
+    public function deleteById(int $id): IInvDepositResult
     {
         try {
             if ($id <= 0) {
-                return DepositResult::failure(new InvDepositException("Некорректный ID для удаления"));
+                return InvDepositResult::failure(new InvDepositException("Некорректный ID для удаления"));
             }
 
             $result = $this->repository->deleteById($id);
 
             if (!$result->isSuccess()) {
-                return DepositResult::failure(
+                return InvDepositResult::failure(
                     $result->getError() ?? new InvDepositException("Ошибка при удалении депозита")
                 );
             }
 
-            return DepositResult::success($id);
+            return InvDepositResult::success($id);
         } catch (\Throwable $e) {
-            return DepositResult::failure($e);
+            return InvDepositResult::failure($e);
         }
     }
 }

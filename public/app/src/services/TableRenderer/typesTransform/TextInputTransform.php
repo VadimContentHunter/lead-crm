@@ -11,6 +11,9 @@ class TextInputTransform implements ITypeTransform
      */
     protected array $columns;
 
+    /**
+     * @param string[] $columns
+     */
     public function __construct(array $columns)
     {
         $this->columns = $columns;

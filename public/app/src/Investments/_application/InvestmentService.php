@@ -169,6 +169,9 @@ final class InvestmentService
         return InvSourceResult::success($tableFacade->renderFilteredTable($input)->asHtml());
     }
 
+    /**
+     * @param array<string,mixed> $data
+     */
     public function updateSource(array $data): IInvSourceResult
     {
         $data['id'] = isset($data['id']) ? (int) $data['id']

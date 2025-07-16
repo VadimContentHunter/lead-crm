@@ -1,11 +1,11 @@
 <?php
 
-namespace crm\src\Investments\Lead\_mappers;
+namespace crm\src\Investments\InvLead\_mappers;
 
 use DateTimeImmutable;
-use crm\src\Investments\Lead\_dto\DbInvLeadDto;
-use crm\src\Investments\Lead\_dto\InvLeadInputDto;
-use crm\src\Investments\Lead\_entities\SimpleInvLead;
+use crm\src\Investments\InvLead\_dto\DbInvLeadDto;
+use crm\src\Investments\InvLead\_dto\InvLeadInputDto;
+use crm\src\Investments\InvLead\_entities\SimpleInvLead;
 
 /**
  * Маппер для преобразования между сущностью инвестиционного лида и DTO.

@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\Investments\Lead\_entities;
+namespace crm\src\Investments\InvLead\_entities;
 
 use DateTimeImmutable;
 use crm\src\Investments\InvSource\_entities\InvSource;

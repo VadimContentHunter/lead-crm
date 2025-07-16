@@ -3,11 +3,11 @@
 namespace crm\src\_common\repositories\Investments;
 
 use crm\src\_common\repositories\AResultRepository;
-use crm\src\Investments\Lead\_mappers\InvLeadMapper;
-use crm\src\Investments\Lead\_dto\DbInvLeadDto;
-use crm\src\Investments\Lead\_common\adapters\InvLeadResult;
-use crm\src\Investments\Lead\_common\interfaces\IInvLeadRepository;
-use crm\src\Investments\Lead\_common\interfaces\IInvLeadResult;
+use crm\src\Investments\InvLead\_mappers\InvLeadMapper;
+use crm\src\Investments\InvLead\_dto\DbInvLeadDto;
+use crm\src\Investments\InvLead\_common\adapters\InvLeadResult;
+use crm\src\Investments\InvLead\_common\interfaces\IInvLeadRepository;
+use crm\src\Investments\InvLead\_common\interfaces\IInvLeadResult;
 use crm\src\services\Repositories\QueryBuilder\QueryBuilder;
 
 /**

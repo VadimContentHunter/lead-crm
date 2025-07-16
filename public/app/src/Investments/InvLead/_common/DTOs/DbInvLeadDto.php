@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\Investments\Lead\_dto;
+namespace crm\src\Investments\InvLead\_dto;
 
 /**
  * DTO, отражающий структуру хранения инвестиционного лида в базе данных.

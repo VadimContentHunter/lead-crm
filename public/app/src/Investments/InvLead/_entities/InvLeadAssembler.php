@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\Investments\Lead\_entities;
+namespace crm\src\Investments\InvLead\_entities;
 
 // use crm\src\Investments\InvBalance\_repositories\InvBalanceRepository;
 // use crm\src\Investments\InvDeposit\_repositories\InvDepositRepository;
@@ -30,10 +30,10 @@ namespace crm\src\Investments\Lead\_entities;
 //             accountManager: $data['accountManager'],
 //             status: $data['status'],
 //             visible: $data['visible'] ?? true,
-//             InvBalance: $this->InvBalanceRepo->getByLeadUid($data['uid']),
-//             deposits: $this->depositRepo->getByLeadUid($data['uid']),
-//             activities: $this->InvActivityRepo->getByLeadUid($data['uid']),
-//             InvComments: $this->InvCommentRepo->getByLeadUid($data['uid']),
+//             InvBalance: $this->InvBalanceRepo->getByInvLeadUid($data['uid']),
+//             deposits: $this->depositRepo->getByInvLeadUid($data['uid']),
+//             activities: $this->InvActivityRepo->getByInvLeadUid($data['uid']),
+//             InvComments: $this->InvCommentRepo->getByInvLeadUid($data['uid']),
 //         );
 //     }
 // }

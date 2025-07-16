@@ -1,14 +1,14 @@
 <?php
 
-namespace crm\src\Investments\Lead;
+namespace crm\src\Investments\InvLead;
 
 use crm\src\_common\interfaces\IValidation;
-use crm\src\Investments\Lead\_dto\InvLeadInputDto;
-use crm\src\Investments\Lead\_mappers\InvLeadMapper;
-use crm\src\Investments\Lead\_common\interfaces\IInvLeadRepository;
-use crm\src\Investments\Lead\_common\interfaces\IInvLeadResult;
-use crm\src\Investments\Lead\_common\adapters\InvLeadResult;
-use crm\src\Investments\Lead\_exceptions\InvLeadException;
+use crm\src\Investments\InvLead\_dto\InvLeadInputDto;
+use crm\src\Investments\InvLead\_mappers\InvLeadMapper;
+use crm\src\Investments\InvLead\_common\interfaces\IInvLeadRepository;
+use crm\src\Investments\InvLead\_common\interfaces\IInvLeadResult;
+use crm\src\Investments\InvLead\_common\adapters\InvLeadResult;
+use crm\src\Investments\InvLead\_exceptions\InvLeadException;
 
 /**
  * Сервис управления инвестиционными лидами.

@@ -11,6 +11,7 @@ use crm\src\services\TableRenderer\TableRenderInput;
 use crm\src\services\TableRenderer\TableTransformer;
 use crm\src\Investments\InvSource\_entities\InvSource;
 use crm\src\Investments\InvStatus\_entities\InvStatus;
+use crm\src\services\TableRenderer\TypedTableTransformer;
 use crm\src\Investments\_application\adapters\InvestResult;
 use crm\src\Investments\_application\interfaces\IInvestResult;
 use crm\src\Investments\InvLead\_common\mappers\InvLeadMapper;
@@ -24,6 +25,7 @@ use crm\src\Investments\InvLead\_common\interfaces\IInvLeadResult;
 use crm\src\Investments\InvSource\_common\mappers\InvSourceMapper;
 use crm\src\Investments\InvStatus\_common\mappers\InvStatusMapper;
 use crm\src\Investments\InvSource\_common\adapters\InvSourceResult;
+use crm\src\services\TableRenderer\typesTransform\TextInputTransform;
 use crm\src\Investments\InvLead\_common\interfaces\IInvLeadRepository;
 use crm\src\Investments\InvSource\_common\interfaces\IInvSourceResult;
 use crm\src\Investments\InvStatus\_common\interfaces\IInvStatusResult;
@@ -160,7 +162,10 @@ final class InvestmentService
             renameMap: [],
         );
 
-        $tableFacade = new TableFacade(new TableTransformer(),  new TableDecorator());
+        $typeTransformers = [
+            new TextInputTransform(['code', 'label']),
+        ];
+        $tableFacade = new TableFacade(new TypedTableTransformer($typeTransformers),  new TableDecorator());
         $a = $tableFacade->renderFilteredTable($input)->asHtml();
         return InvSourceResult::success($a);
     }

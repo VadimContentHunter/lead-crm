@@ -32,7 +32,7 @@ class TableTransformer implements ITableTransformer
         }
 
         return match ($column) {
-            'full_name', 'login' => ['type' => 'text', 'name' => $column, 'value' => $value, 'row_id' => $row_id ?? 0],
+            'full_name', 'login', 'title' => ['type' => 'text', 'name' => $column, 'value' => $value, 'row_id' => $row_id ?? 0],
             // 'username', 'login' => ['type' => 'text', 'name' => $column, 'value' => $value],
             // 'age' => ['type' => 'number', 'name' => $column, 'value' => $value],
             // 'status' => [

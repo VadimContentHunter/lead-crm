@@ -31,13 +31,16 @@ final class InvestmentService
         $this->manageInvLead = new ManageInvLead($this->invLeadRepo, new InvLeadValidatorAdapter());
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function createInvLead(array $data): IInvLeadResult
     {
         $resultUid = $this->manageInvLead->create(InvLeadMapper::fromArrayToInput($data));
         if ($resultUid->isSuccess()) {
-            return $this->invLeadRepo->getByUid($resultUid->getString());
+            return $this->invLeadRepo->getByUid($resultUid->getString() ?? '');
         }
 
-        return InvLeadResult::failure($resultUid->getError());
+        return InvLeadResult::failure($resultUid->getError() ?? new \RuntimeException("Ошибка при создании лида"));
     }
 }

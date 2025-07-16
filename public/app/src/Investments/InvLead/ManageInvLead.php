@@ -36,13 +36,21 @@ class ManageInvLead
         $prefixLength = strlen($prefix);
         $randomLength = $length - $prefixLength;
 
-        if ($randomLength <= 0) {
+        if ($randomLength < 1) {
             throw new \InvalidArgumentException('Длина UID должна быть больше длины префикса');
         }
 
         for ($i = 0; $i < $maxAttempts; $i++) {
             $min = 10 ** ($randomLength - 1);
             $max = (10 ** $randomLength) - 1;
+
+            if ($min >= $max) {
+                throw new \LogicException('Минимальное значение должно быть меньше максимального при генерации UID');
+            }
+
+            /**
+             * @phpstan-ignore-next-line
+             */
             $randomPart = random_int($min, $max);
             $uid = $prefix . $randomPart;
 

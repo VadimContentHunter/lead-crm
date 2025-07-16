@@ -99,8 +99,9 @@ class InvestController
                 ]
             ]);
         } else {
+            $errorMEssage = $result->getError()?->getMessage() ?? 'Произошла ошибка';
             $this->rpc->replyData([
-                ['type' => 'error', 'message' => 'Произошла ошибка: ' . $result->getError()->getMessage()]
+                ['type' => 'error', 'message' => 'Произошла ошибка: ' . $errorMEssage]
             ]);
         }
     }

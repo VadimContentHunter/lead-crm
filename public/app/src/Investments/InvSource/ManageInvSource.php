@@ -5,7 +5,7 @@ namespace crm\src\Investments\InvSource;
 use crm\src\_common\interfaces\IValidation;
 use crm\src\Investments\InvSource\_common\DTOs\InvSourceInputDto;
 use crm\src\Investments\InvSource\_common\DTOs\DbInvSourceDto;
-use crm\src\Investments\InvSource\_mappers\InvSourceMapper;
+use crm\src\Investments\InvSource\_common\mappers\InvSourceMapper;
 use crm\src\Investments\InvSource\_common\interfaces\IInvSourceRepository;
 use crm\src\Investments\InvSource\_common\interfaces\IInvSourceResult;
 use crm\src\Investments\InvSource\_common\adapters\InvSourceResult;

@@ -89,12 +89,30 @@ class InvestPage
      */
     public function getSidebar(): array
     {
+        $invStatusSidebar = (new TemplateBundle(
+            templatePath: 'containers/wrapperSideBar.tpl.php',
+            variables: [
+                'classId' => 'status-menu-id',
+                'addPanel' => (new TemplateBundle(templatePath: 'components/addStatus.tpl.php')),
+                // 'table' => $this->statusPage->getTableStatusComponent()
+            ]
+        ));
+
+        $invSourceSideBar = (new TemplateBundle(
+            templatePath: 'containers/wrapperSideBar.tpl.php',
+            variables: [
+                'classId' => 'inv-source-menu-id',
+                'addPanel' => (new TemplateBundle(templatePath: 'components/invest/addInvSource.tpl.php')),
+                // 'table' => $this->sourcePage->getTableSourceComponent()
+            ]
+        ));
+
         $invLeadSideBar = (new TemplateBundle(
             templatePath: 'containers/wrapperSideBar.tpl.php',
             variables: [
                 'classId' => 'inv-lead-menu-id',
                 'addPanel' => (new TemplateBundle(
-                    templatePath: 'components/addInvLead.tpl.php',
+                    templatePath: 'components/invest/addInvLead.tpl.php',
                     variables: [
                         'sourcesTitle' => [],
                         'statusesTitle' => [],
@@ -104,6 +122,6 @@ class InvestPage
             ]
         ));
 
-        return [$invLeadSideBar];
+        return [$invLeadSideBar, $invStatusSidebar, $invSourceSideBar];
     }
 }

@@ -43,6 +43,8 @@ class InvestController
 
         $this->methods = [
             'invest.lead.add' => fn() => $secureCall->createInvLead($this->rpc->getParams()),
+            'invest.source.add' => fn() => $secureCall->createInvSource($this->rpc->getParams()),
+            // 'invest.status.add' => fn() => $secureCall->createInvStatus($this->rpc->getParams()),
         ];
     }
 
@@ -99,10 +101,60 @@ class InvestController
                 ]
             ]);
         } else {
-            $errorMEssage = $result->getError()?->getMessage() ?? 'Произошла ошибка';
+            $errorMessage = $result->getError()?->getMessage() ?? 'Произошла ошибка';
             $this->rpc->replyData([
-                ['type' => 'error', 'message' => 'Произошла ошибка: ' . $errorMEssage]
+                ['type' => 'error', 'message' => 'Произошла ошибка: ' . $errorMessage]
             ]);
         }
     }
+
+    /**
+     * @param array<string,mixed> $params
+     */
+    public function createInvSource(array $params): void
+    {
+        $result = $this->service->createInvSource($params);
+
+        if ($result->isSuccess()) {
+            $title = $result->getLabel() ?? '---';
+
+            $this->rpc->replyData([
+                'type' => 'success',
+                'messages' => [
+                    ['type' => 'success', 'message' => 'Лид успешно добавлен'],
+                    ['type' => 'info', 'message' => "Добавленный источник: <b>{$title}</b>"]
+                ]
+            ]);
+        } else {
+            $errorMessage = $result->getError()?->getMessage() ?? 'Произошла ошибка';
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Произошла ошибка: ' . $errorMessage]
+            ]);
+        }
+    }
+
+    /**
+     * @param array<string,mixed> $params
+     */
+    // public function createInvStatus(array $params): void
+    // {
+    //     $result = $this->service->createInvLead($params);
+
+    //     if ($result->isSuccess()) {
+    //         $title = $result->getLabel() ?? '---';
+
+    //         $this->rpc->replyData([
+    //             'type' => 'success',
+    //             'messages' => [
+    //                 ['type' => 'success', 'message' => 'Лид успешно добавлен'],
+    //                 ['type' => 'info', 'message' => "Добавленный источник: <b>{$title}</b>"]
+    //             ]
+    //         ]);
+    //     } else {
+    //         $errorMEssage = $result->getError()?->getMessage() ?? 'Произошла ошибка';
+    //         $this->rpc->replyData([
+    //             ['type' => 'error', 'message' => 'Произошла ошибка: ' . $errorMEssage]
+    //         ]);
+    //     }
+    // }
 }

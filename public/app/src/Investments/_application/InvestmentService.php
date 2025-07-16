@@ -3,11 +3,15 @@
 namespace crm\src\Investments\_application;
 
 use crm\src\Investments\InvLead\ManageInvLead;
+use crm\src\Investments\InvSource\ManageInvSource;
 use crm\src\Investments\InvLead\_common\mappers\InvLeadMapper;
 use crm\src\Investments\InvLead\_common\adapters\InvLeadResult;
+use crm\src\_common\adapters\Investments\SourceValidatorAdapter;
 use crm\src\_common\adapters\Investments\InvLeadValidatorAdapter;
 use crm\src\Investments\InvLead\_common\interfaces\IInvLeadResult;
+use crm\src\Investments\InvSource\_common\mappers\InvSourceMapper;
 use crm\src\Investments\InvLead\_common\interfaces\IInvLeadRepository;
+use crm\src\Investments\InvSource\_common\interfaces\IInvSourceResult;
 use crm\src\Investments\InvSource\_common\interfaces\IInvSourceRepository;
 use crm\src\Investments\InvStatus\_common\interfaces\IInvStatusRepository;
 use crm\src\Investments\InvBalance\_common\interfaces\IInvBalanceRepository;
@@ -19,6 +23,8 @@ final class InvestmentService
 {
     private ManageInvLead $manageInvLead;
 
+    private ManageInvSource $manageInvSource;
+
     public function __construct(
         private IInvActivityRepository $invActivityRepo,
         private IInvBalanceRepository $invBalanceRepo,
@@ -29,6 +35,7 @@ final class InvestmentService
         private IInvStatusRepository $invStatusRepo
     ) {
         $this->manageInvLead = new ManageInvLead($this->invLeadRepo, new InvLeadValidatorAdapter());
+        $this->manageInvSource = new ManageInvSource($this->invSourceRepo, new SourceValidatorAdapter());
     }
 
     /**
@@ -42,5 +49,10 @@ final class InvestmentService
         }
 
         return InvLeadResult::failure($resultUid->getError() ?? new \RuntimeException("Ошибка при создании лида"));
+    }
+
+    public function createInvSource(array $data): IInvSourceResult
+    {
+        return $this->manageInvSource->create(InvSourceMapper::fromArrayToInput($data));
     }
 }

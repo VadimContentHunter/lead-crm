@@ -1,21 +1,21 @@
 import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
 import { ConfirmDialog } from '/assets/js/ConfirmDialog.js';
 
-const endPoint = '/api/statuses';
+const endPoint = '/api/invest/statuses';
 
 
 //
 // === Добавление строки в таблицу по кнопке ===
 //
-// ComponentFunctions.attachJsonRpcInputTrigger({
-//     triggerSelector: '#add-status-form .form-actions .form-button.submit',
-//     containerSelector: '#add-status-form',
-//     method: 'status.add',
-//     endpoint: endPoint,
-//     callbackOnData: (payload) => {
-//         ComponentFunctions.replaceTable(payload, '[table-r-id="status-table-1"]');
-//     },
-// });
+ComponentFunctions.attachJsonRpcInputTrigger({
+    triggerSelector: '#add-status-form .form-actions .form-button.submit',
+    containerSelector: '#add-status-form',
+    method: 'invest.status.add',
+    endpoint: endPoint,
+    callbackOnData: (payload) => {
+        // ComponentFunctions.replaceTable(payload, '[table-r-id="status-table-1"]');
+    },
+});
 
 //
 // === Удаление строки из таблицы по кнопке ===

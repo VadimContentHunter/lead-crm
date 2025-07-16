@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\Investments\InvSource\_mappers;
+namespace crm\src\Investments\InvSource\_common\mappers;
 
 use crm\src\Investments\InvSource\_entities\InvSource;
 use crm\src\Investments\InvSource\_common\DTOs\DbInvSourceDto;
@@ -101,6 +101,20 @@ class InvSourceMapper
             code: $data['code'],
             label: $data['label'],
             id: isset($data['id']) ? (int) $data['id'] : null,
+        );
+    }
+
+    /**
+     * Преобразует массив в входной DTO (InvSourceInputDto).
+     *
+     * @param  array<string, mixed> $data
+     * @return InvSourceInputDto
+     */
+    public static function fromArrayToInput(array $data): InvSourceInputDto
+    {
+        return new InvSourceInputDto(
+            code: isset($data['code']) ? (string) $data['code'] : null,
+            label: isset($data['label']) ? (string) $data['label'] : null
         );
     }
 

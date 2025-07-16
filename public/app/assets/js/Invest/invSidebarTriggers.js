@@ -49,53 +49,53 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
-    // const buttonSource = document.querySelector('#sources-btn');
-    // bindButtonToContainer(buttonSource, '.overlay-content', function (container) {
-    //     if (container instanceof HTMLElement) {
-    //         container.style = 'display: flex;';
-    //         toggleScroll(true);
+    const buttonSource = document.querySelector('#inv-sources-btn');
+    bindButtonToContainer(buttonSource, '.overlay-content', function (container) {
+        if (container instanceof HTMLElement) {
+            container.style = 'display: flex;';
+            toggleScroll(true);
 
-    //         const rightSidebar = container.querySelector('.right-sidebar.source-menu-id');
-    //         if (rightSidebar instanceof HTMLElement) {
-    //             rightSidebar.style = 'display: flex;';
+            const rightSidebar = container.querySelector('.right-sidebar.inv-source-menu-id');
+            if (rightSidebar instanceof HTMLElement) {
+                rightSidebar.style = 'display: flex;';
 
-    //             // Добавляем обработчик с задержкой, чтобы клик по кнопке не сработал
-    //             const removeListener = onClickOutside(rightSidebar, () => {
-    //                 rightSidebar.style.display = 'none';
-    //                 container.style.display = 'none';
-    //                 toggleScroll(false);
+                // Добавляем обработчик с задержкой, чтобы клик по кнопке не сработал
+                const removeListener = onClickOutside(rightSidebar, () => {
+                    rightSidebar.style.display = 'none';
+                    container.style.display = 'none';
+                    toggleScroll(false);
 
-    //                 removeListener();
-    //             }, [buttonSource, notificationContainer, overlayMain]);
+                    removeListener();
+                }, [buttonSource, notificationContainer, overlayMain]);
 
-    //         }
-    //     }
-    // });
+            }
+        }
+    });
 
 
-    // const buttonStatus = document.querySelector('#statuses-btn');
-    // bindButtonToContainer('#statuses-btn', '.overlay-content', function (container) {
-    //     if (container instanceof HTMLElement) {
-    //         container.style = 'display: flex;';
-    //         toggleScroll(true);
+    const buttonStatus = document.querySelector('#inv-statuses-btn');
+    bindButtonToContainer(buttonStatus, '.overlay-content', function (container) {
+        if (container instanceof HTMLElement) {
+            container.style = 'display: flex;';
+            toggleScroll(true);
 
-    //         const rightSidebar = container.querySelector('.right-sidebar.status-menu-id');
-    //         if (rightSidebar instanceof HTMLElement) {
-    //             rightSidebar.style = 'display: flex;';
+            const rightSidebar = container.querySelector('.right-sidebar.status-menu-id');
+            if (rightSidebar instanceof HTMLElement) {
+                rightSidebar.style = 'display: flex;';
 
-    //             const removeListener = onClickOutside(rightSidebar, () => {
-    //                 rightSidebar.style.display = 'none';
-    //                 container.style.display = 'none';
-    //                 toggleScroll(false);
+                const removeListener = onClickOutside(rightSidebar, () => {
+                    rightSidebar.style.display = 'none';
+                    container.style.display = 'none';
+                    toggleScroll(false);
 
-    //                 removeListener();
-    //             }, [buttonStatus, notificationContainer, overlayMain]);
-    //         }
-    //     }
-    // });
+                    removeListener();
+                }, [buttonStatus, notificationContainer, overlayMain]);
+            }
+        }
+    });
 
     const buttonInvLead = document.querySelector('#add-inv-lead-btn');
-    bindButtonToContainer('#add-inv-lead-btn', '.overlay-content', function (container) {
+    bindButtonToContainer(buttonInvLead, '.overlay-content', function (container) {
         if (container instanceof HTMLElement) {
             container.style = 'display: flex;';
             toggleScroll(true);

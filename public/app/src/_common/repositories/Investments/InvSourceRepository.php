@@ -3,7 +3,7 @@
 namespace crm\src\_common\repositories\Investments;
 
 use crm\src\_common\interfaces\AResultRepository;
-use crm\src\Investments\InvSource\_mappers\InvSourceMapper;
+use crm\src\Investments\InvSource\_common\mappers\InvSourceMapper;
 use crm\src\Investments\InvSource\_common\DTOs\DbInvSourceDto;
 use crm\src\Investments\InvSource\_common\adapters\InvSourceResult;
 use crm\src\Investments\InvSource\_common\interfaces\IInvSourceRepository;

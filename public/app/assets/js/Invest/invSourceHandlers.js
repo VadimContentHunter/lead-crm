@@ -1,22 +1,22 @@
 import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
 import { ConfirmDialog } from '/assets/js/ConfirmDialog.js';
 
-const endPoint = '/api/sources';
+const endPoint = '/api/invest/sources';
 
 
 //
 // === Добавление строки в таблицу по кнопке ===
 //
 
-// ComponentFunctions.attachJsonRpcInputTrigger({
-//     triggerSelector: '#add-source-form .form-actions .form-button.submit',
-//     containerSelector: '#add-source-form',
-//     method: 'source.add',
-//     endpoint: endPoint,
-//     callbackOnData: (payload) => {
-//         ComponentFunctions.replaceTable(payload, '[table-r-id="source-table-1"]');
-//     },
-// });
+ComponentFunctions.attachJsonRpcInputTrigger({
+    triggerSelector: '#add-source-form .form-actions .form-button.submit',
+    containerSelector: '#add-source-form',
+    method: 'invest.source.add',
+    endpoint: endPoint,
+    callbackOnData: (payload) => {
+        // ComponentFunctions.replaceTable(payload, '[table-r-id="source-table-1"]');
+    },
+});
 
 
 //

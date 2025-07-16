@@ -28,8 +28,8 @@ class InvLeadMapper
             email: $dto->email,
             fullName: $dto->fullName,
             createdAt: new DateTimeImmutable($dto->createdAt),
-            accountManager: $dto->accountManagerId !== null && $dto->accountManagerLogin !== null
-                ? new InvAccountManagerDto($dto->accountManagerId, $dto->accountManagerLogin)
+            accountManager: $dto->accountManagerId !== null
+                ? new InvAccountManagerDto($dto->accountManagerId, '') // login неизвестен
                 : null,
             visible: $dto->visible,
             source: null,
@@ -53,11 +53,9 @@ class InvLeadMapper
             email: $entity->email,
             fullName: $entity->fullName,
             accountManagerId: $entity->accountManager?->id,
-            accountManagerLogin: $entity->accountManager?->login,
             visible: $entity->visible,
             sourceId: $entity->source?->id ?? null,
             statusId: $entity->status?->id ?? null,
-            InvBalanceId: null
         );
     }
 
@@ -70,8 +68,8 @@ class InvLeadMapper
      */
     public static function fromInputToEntity(InvLeadInputDto $dto, string $uid): SimpleInvLead
     {
-        $manager = $dto->accountManagerId !== null && $dto->accountManagerLogin !== null
-            ? new InvAccountManagerDto($dto->accountManagerId, $dto->accountManagerLogin)
+        $manager = $dto->accountManagerId !== null
+            ? new InvAccountManagerDto($dto->accountManagerId, '') // логин неизвестен
             : null;
 
         return new SimpleInvLead(
@@ -106,11 +104,9 @@ class InvLeadMapper
             email: $dto->email ?? '',
             fullName: $dto->fullName ?? '',
             accountManagerId: $dto->accountManagerId,
-            accountManagerLogin: $dto->accountManagerLogin,
             visible: $dto->visible ?? true,
             sourceId: $dto->sourceId,
             statusId: $dto->statusId,
-            InvBalanceId: null
         );
     }
 
@@ -130,11 +126,9 @@ class InvLeadMapper
             'email' => $dto->email,
             'full_name' => $dto->fullName,
             'account_manager_id' => $dto->accountManagerId,
-            'account_manager_login' => $dto->accountManagerLogin,
             'visible' => $dto->visible,
             'source_id' => $dto->sourceId,
             'status_id' => $dto->statusId,
-            'InvBalance_id' => $dto->InvBalanceId,
         ];
     }
 
@@ -154,11 +148,9 @@ class InvLeadMapper
             email: (string) ($data['email'] ?? ''),
             fullName: (string) ($data['full_name'] ?? ''),
             accountManagerId: isset($data['account_manager_id']) ? (int) $data['account_manager_id'] : null,
-            accountManagerLogin: $data['account_manager_login'] ?? null,
             visible: (bool) ($data['visible'] ?? true),
             sourceId: isset($data['source_id']) ? (int) $data['source_id'] : null,
             statusId: isset($data['status_id']) ? (int) $data['status_id'] : null,
-            InvBalanceId: isset($data['InvBalance_id']) ? (int) $data['InvBalance_id'] : null
         );
     }
 
@@ -194,10 +186,6 @@ class InvLeadMapper
 
         if ($dto->accountManagerId !== null) {
             $fields['account_manager_id'] = $dto->accountManagerId;
-        }
-
-        if ($dto->accountManagerLogin !== null) {
-            $fields['account_manager_login'] = $dto->accountManagerLogin;
         }
 
         if ($dto->visible !== null) {

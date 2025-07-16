@@ -134,13 +134,76 @@ class CrmSchemaProvider extends ASchemaProvider
     protected static function investmentSchemas(): array
     {
         return [
+            'inv_sources' => <<<SQL
+                CREATE TABLE inv_sources (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    code VARCHAR(64) NOT NULL UNIQUE,
+                    label VARCHAR(255) NOT NULL
+                );
+            SQL,
+
+            'inv_statuses' => <<<SQL
+                CREATE TABLE inv_statuses (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    code VARCHAR(64) NOT NULL UNIQUE,
+                    label VARCHAR(255) NOT NULL
+                );
+            SQL,
+
+            'inv_leads' => <<<SQL
+                CREATE TABLE inv_leads (
+                    uid VARCHAR(64) NOT NULL PRIMARY KEY,
+                    created_at DATETIME NOT NULL,
+                    contact VARCHAR(255) NOT NULL DEFAULT '',
+                    phone VARCHAR(64) NOT NULL DEFAULT '',
+                    email VARCHAR(255) NOT NULL DEFAULT '',
+                    full_name VARCHAR(255) NOT NULL DEFAULT '',
+                    account_manager_id INT DEFAULT NULL,
+                    visible BOOLEAN NOT NULL DEFAULT TRUE,
+                    source_id INT DEFAULT NULL,
+                    status_id INT DEFAULT NULL,
+
+                    FOREIGN KEY (account_manager_id) REFERENCES users(id) ON DELETE SET NULL,
+                    FOREIGN KEY (source_id) REFERENCES inv_sources(id) ON DELETE SET NULL,
+                    FOREIGN KEY (status_id) REFERENCES inv_statuses(id) ON DELETE SET NULL
+                );
+            SQL,
+
+
             'inv_balances' => <<<SQL
                 CREATE TABLE inv_balances (
                     lead_uid VARCHAR(64) NOT NULL PRIMARY KEY,
                     current DOUBLE(10,2) NOT NULL DEFAULT 0.00,
                     deposit DOUBLE(10,2) NOT NULL DEFAULT 0.00,
                     potation DOUBLE(10,2) NOT NULL DEFAULT 0.00,
-                    active DOUBLE(10,2) NOT NULL DEFAULT 0.00
+                    active DOUBLE(10,2) NOT NULL DEFAULT 0.00,
+
+                    FOREIGN KEY (lead_uid) REFERENCES inv_leads(uid) ON DELETE CASCADE
+                );
+            SQL,
+
+            'inv_comments' => <<<SQL
+                CREATE TABLE inv_comments (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    lead_uid VARCHAR(64) NOT NULL,
+                    body TEXT NOT NULL,
+                    time DATETIME NOT NULL,
+                    who VARCHAR(64) DEFAULT '',
+                    who_id VARCHAR(64) DEFAULT NULL,
+                    `option` INT DEFAULT 0,
+
+                    FOREIGN KEY (lead_uid) REFERENCES inv_leads(uid) ON DELETE CASCADE
+                );
+            SQL,
+
+            'inv_deposits' => <<<SQL
+                CREATE TABLE inv_deposits (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    uid VARCHAR(64) NOT NULL,
+                    sum DOUBLE(10,2) NOT NULL DEFAULT 0.00,
+                    created DATETIME NOT NULL,
+
+                    FOREIGN KEY (uid) REFERENCES inv_leads(uid) ON DELETE CASCADE
                 );
             SQL,
 
@@ -159,7 +222,8 @@ class CrmSchemaProvider extends ASchemaProvider
                     direction ENUM('long', 'short') NOT NULL,
                     result DOUBLE(10, 2) NULL,
 
-                    INDEX idx_lead_uid (lead_uid)
+                    INDEX idx_lead_uid (lead_uid),
+                    FOREIGN KEY (lead_uid) REFERENCES inv_leads(uid) ON DELETE CASCADE
                 );
             SQL,
         ];

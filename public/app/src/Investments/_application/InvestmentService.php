@@ -33,11 +33,11 @@ final class InvestmentService
 
     public function createInvLead(array $data): IInvLeadResult
     {
-        $createAction = $this->manageInvLead->create(InvLeadMapper::fromArrayToInput($data));
-        if ($createAction->isSuccess()) {
-            return InvLeadResult::success($this->invLeadRepo->getByUid($createAction->getUid() ?? ''));
+        $resultUid = $this->manageInvLead->create(InvLeadMapper::fromArrayToInput($data));
+        if ($resultUid->isSuccess()) {
+            return $this->invLeadRepo->getByUid($resultUid->getString());
         }
 
-        return InvLeadResult::failure($createAction->getError());
+        return InvLeadResult::failure($resultUid->getError());
     }
 }

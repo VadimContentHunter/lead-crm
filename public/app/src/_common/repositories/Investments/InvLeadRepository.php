@@ -57,7 +57,9 @@ class InvLeadRepository extends AResultRepository implements IInvLeadRepository
                     ->select()
             )->first()->getObjectOrNullWithMapper(
                 $this->getEntityClass(),
-                $this->fromArray()
+                fn(array $data) => empty($data)
+                    ? throw new \RuntimeException("Лид с UID '$uid' не найден.")
+                    : ($this->fromArray())($data)
             );
 
             if (!$dto) {
@@ -82,7 +84,9 @@ class InvLeadRepository extends AResultRepository implements IInvLeadRepository
                 ->select()
             )->first()->getObjectOrNullWithMapper(
                 $this->getEntityClass(),
-                $this->fromArray()
+                fn(array $data) => empty($data)
+                    ? throw new \RuntimeException("Лид с UID '$uid' не найден.")
+                    : ($this->fromArray())($data)
             );
 
             if (!$dto || !$dto->uid) {

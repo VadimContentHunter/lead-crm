@@ -80,13 +80,17 @@ abstract class AResultRepository implements IResultRepository
     {
         try {
             $data = is_object($entity) ? $this->toArray($entity) : $entity;
-            $id = $this->repository->executeQuery(
+            $resId = $this->repository->executeQuery(
                 (new QueryBuilder())
                     ->table($this->getTableName())
                     ->insert($data)
-            )->getInt();
+            );
 
-            return $this->wrapSuccess($id);
+            if ($resId->isSuccess()) {
+                return $this->wrapSuccess($resId->getInt());
+            }
+
+            return $this->wrapFailure($resId->getError() ?? new \RuntimeException("Не удалось сохранить"));
         } catch (Throwable $e) {
             return $this->wrapFailure($e);
         }

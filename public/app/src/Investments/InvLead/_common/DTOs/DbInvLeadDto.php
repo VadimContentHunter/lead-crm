@@ -32,5 +32,8 @@ class DbInvLeadDto
         public ?int $sourceId = null,
         public ?int $statusId = null,
     ) {
+        $this->accountManagerId = $accountManagerId > 0 ? $accountManagerId : null;
+        $this->sourceId = $sourceId > 0 ? $sourceId : null;
+        $this->statusId = $statusId > 0 ? $statusId : null;
     }
 }

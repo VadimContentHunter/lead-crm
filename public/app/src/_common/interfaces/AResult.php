@@ -60,6 +60,11 @@ abstract class AResult implements IResult
         return is_bool($this->data) ? $this->data : null;
     }
 
+    public function getString(): ?string
+    {
+        return is_string($this->data) ? $this->data : null;
+    }
+
     public function hasNull(): bool
     {
         return $this->data === null;

@@ -30,6 +30,8 @@ interface IResult
 
     public function getData(): mixed;
 
+    public function getString(): ?string;
+
     /**
      * @return mixed[]
      */

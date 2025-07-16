@@ -15,21 +15,35 @@ use crm\src\components\Security\_handlers\HandleAccessRole;
 use crm\src\services\Repositories\DbRepository\DbRepository;
 use crm\src\components\Security\_handlers\HandleAccessContext;
 use crm\src\components\UserManagement\_common\DTOs\UserInputDto;
+use crm\src\Investments\_services\InvestmentSchemaProvider;
 
 class BootstrapController
 {
     private DbRepository $repository;
+    private PDO $pdo;
 
     public function __construct(
         PDO $pdo,
         private LoggerInterface $logger = new NullLogger()
     ) {
-        echo "<br><br>Bootstrapping...<br>";
-        echo "Создание таблиц:<br><br>";
-        $this->logger->info('Bootstrapping...');
-        $this->logger->info('Создание таблиц:');
-
+        $this->pdo = $pdo;
         $this->repository = new DbRepository($pdo, $this->logger);
+
+        echo "<br><br>Bootstrapping...<br>";
+        $this->logger->info('Bootstrapping...');
+
+        $this->createCommonSchemas();
+        $this->createDefaultRoles();
+        $this->createSuperAdmin();
+
+        echo "<br><br>Bootstrapping завершено.<br>";
+        $this->logger->info('Bootstrapping завершено.');
+    }
+
+    private function createCommonSchemas(): void
+    {
+        echo "Создание таблиц CRM:<br><br>";
+        $this->logger->info('Создание таблиц CRM:');
 
         $schemas = [
             'users'           => 'Users',
@@ -42,84 +56,93 @@ class BootstrapController
             'access_roles'    => 'Access roles',
             'access_spaces'   => 'Access spaces',
             'access_contexts' => 'Access contexts',
+
+            'inv_sources'     => 'Investment sources',
+            'inv_statuses'    => 'Investment statuses',
+            'inv_leads'       => 'Investment leads',
+            'inv_balances'    => 'Investment balances',
+            'inv_comments'    => 'Investment comments',
+            'inv_deposits'    => 'Investment deposits',
+            'inv_activities'  => 'Investment activities',
         ];
 
-        foreach ($schemas as $schemaKey => $displayName) {
-            echo "<br>";
-            $result = $this->repository->executeSql(CrmSchemaProvider::get($schemaKey) ?? '');
-            if ($result->isSuccess()) {
-                echo "{$displayName} table created<br>";
-                $this->logger->info("{$displayName} table created");
-            } else {
-                $error = $result->getError()?->getMessage() ?? 'Неизвестная ошибка';
-                echo $error . "<br>";
-                $this->logger->error($error);
-            }
+        foreach ($schemas as $key => $name) {
+            $this->executeSchema(CrmSchemaProvider::get($key), $name);
         }
+    }
 
+    private function createDefaultRoles(): void
+    {
+        echo "<br><br>Создание ролей:<br><br>";
+        $this->logger->info('Создание ролей:');
 
-        echo "<br><br>Создание базовых моделей:<br><br>";
-        $this->logger->info('Создание базовых моделей:');
+        $handleAccessRole = new HandleAccessRole(new AccessRoleRepository($this->pdo, $this->logger));
+        foreach (['superadmin', 'admin', 'manager', 'team-manager'] as $role) {
+            $handleAccessRole->addRole($role, $role);
+            echo "<br>Создана роль: {$role}<br>";
+            $this->logger->info("Создана роль: {$role}");
+        }
+    }
 
-        $handleAccessRole = new HandleAccessRole(new AccessRoleRepository($pdo, $this->logger));
-        $handleAccessRole->addRole('superadmin', 'Superadmin');
-        echo "<br>Создана роль: superadmin<br>";
-        $this->logger->info('Создана роль: superadmin');
+    private function createSuperAdmin(): void
+    {
+        echo "<br><br>Инициализация пользователя superadmin:<br><br>";
 
-        $handleAccessRole->addRole('admin', 'admin');
-        echo "<br>Создана роль: admin<br>";
-        $this->logger->info('Создана роль: admin');
-
-        $handleAccessRole->addRole('manager', 'manager');
-        echo "<br>Создана роль: manager<br>";
-        $this->logger->info('Создана роль: manager');
-
-        $handleAccessRole->addRole('team-manager', 'team-manager');
-        echo "<br>Создана роль: team-manager<br>";
-        $this->logger->info('Создана роль: team-manager');
-
-
-        echo "<br><br>Инициализация базовых пользователей:<br><br>";
         $userManagement = new UserManagement(
-            new UserRepository($pdo, $logger),
+            new UserRepository($this->pdo, $this->logger),
             new UserValidatorAdapter()
         );
-        $userSuperAdmin = $userManagement->create()->execute(new UserInputDto(
+
+        $result = $userManagement->create()->execute(new UserInputDto(
             login: 'superadmin',
             plainPassword: 'superadmin',
             confirmPassword: 'superadmin',
         ));
 
-        if ($userSuperAdmin->isSuccess()) {
+        if ($result->isSuccess()) {
             echo "<br>Создан пользователь: superadmin<br>";
             $this->logger->info('Создан пользователь: superadmin');
 
-            $handleAccessContext = new HandleAccessContext(new AccessContextRepository($pdo, $this->logger));
-            if ($handleAccessRole->getRoleByName('superadmin') !== null) {
-                if (
-                    $handleAccessContext->createAccess(
-                        userId: $userSuperAdmin->getId() ?? 0,
-                        roleId: $handleAccessRole->getRoleByName('superadmin')->id ?? 0
-                    )
-                ) {
-                    echo "<br>Создан контекст доступа: superadmin<br>";
-                    $this->logger->info('Создан контекст доступа: superadmin');
-                } else {
-                    echo "<br>Не удалось создать контекст доступа: superadmin<br>";
-                    $this->logger->error('Не удалось создать контекст доступа: superadmin');
-                }
+            $handleAccessRole = new HandleAccessRole(new AccessRoleRepository($this->pdo, $this->logger));
+            $handleAccessContext = new HandleAccessContext(new AccessContextRepository($this->pdo, $this->logger));
+
+            $role = $handleAccessRole->getRoleByName('superadmin');
+            if (
+                $role && $handleAccessContext->createAccess(
+                    userId: $result->getId() ?? 0,
+                    roleId: $role->id ?? 0
+                )
+            ) {
+                echo "<br>Создан контекст доступа: superadmin<br>";
+                $this->logger->info('Создан контекст доступа: superadmin');
             } else {
                 echo "<br>Не удалось создать контекст доступа: superadmin<br>";
                 $this->logger->error('Не удалось создать контекст доступа: superadmin');
             }
         } else {
-            $error = $userSuperAdmin->getError()?->getMessage() ?? 'Неизвестная ошибка';
-             echo "<br>" . $error . "<br>";
+            $error = $result->getError()?->getMessage() ?? 'Неизвестная ошибка';
+            echo "<br>{$error}<br>";
             $this->logger->error($error);
         }
+    }
 
+    private function executeSchema(?string $sql, string $label): void
+    {
+        if (!$sql) {
+            echo "Schema for {$label} is missing<br>";
+            $this->logger->warning("Schema for {$label} is missing");
+            return;
+        }
 
-        echo "<br><br>Bootstrapping завершено.<br>";
-        $this->logger->info('Bootstrapping завершено.');
+        $result = $this->repository->executeSql($sql);
+
+        if ($result->isSuccess()) {
+            echo "{$label} table created<br>";
+            $this->logger->info("{$label} table created");
+        } else {
+            $error = $result->getError()?->getMessage() ?? 'Неизвестная ошибка';
+            echo "{$label} — ошибка: {$error}<br>";
+            $this->logger->error("{$label} error: {$error}");
+        }
     }
 }

@@ -46,7 +46,8 @@ class ManageInvLead
             $randomPart = random_int($min, $max);
             $uid = $prefix . $randomPart;
 
-            if ($this->repository->getByUid($uid)->isSuccess()) {
+            // Проверяем, что UID уникален, если не найден, то возвращаем
+            if (!$this->repository->getByUid($uid)->isSuccess()) {
                 return $uid;
             }
         }

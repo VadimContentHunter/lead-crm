@@ -71,6 +71,7 @@ class InvestController
         $result = $this->service->createInvLead($params);
 
         if ($result->isSuccess()) {
+            $uid = $result->getUid();
             $fullName = $result->getFullName() ?? '---';
             $contact = $result->getContact() ?? '---';
             $email = $result->getEmail() ?? '---';
@@ -85,6 +86,7 @@ class InvestController
                     ['type' => 'success', 'message' => 'Лид успешно добавлен'],
                     ['type' => 'info', 'message' => <<<HTML
                             Добавленный Лид:
+                            <br> UID: <b>{$uid}</b>
                             <br> полное имя: <b>{$fullName}</b>
                             <br> контакт: <b>{$contact}</b>
                             <br> email: <b>{$email}</b>

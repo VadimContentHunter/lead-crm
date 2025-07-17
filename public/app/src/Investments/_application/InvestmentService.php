@@ -307,7 +307,7 @@ final class InvestmentService
      * Возвращает данные для формы создания лида.
      *
      * @param array<string,mixed> $params
-     * @param callable<mixed[]>|null $accountManagerFetcher Функция вида (int $id): array|null
+     * @param callable|null $accountManagerFetcher Функция вида (int $id): array|null
      * @param array<string,mixed> $extraData             Данные, которые нужно
      *                                                   добавить/переопределить в
      *                                                   итоговом массиве
@@ -319,10 +319,6 @@ final class InvestmentService
     ): IInvestResult {
         $uid = isset($params['id']) ? (int) $params['id']
                                 : (isset($params['uid']) ? (int) $params['uid'] : 0);
-
-        if (filter_var($uid, FILTER_VALIDATE_INT) === false) {
-            return InvestResult::failure(new \RuntimeException('Неверный идентификатор'));
-        }
 
         // === Новый лид
         if ($uid === 0) {

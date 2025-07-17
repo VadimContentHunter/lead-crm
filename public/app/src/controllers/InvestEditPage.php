@@ -15,13 +15,16 @@ class InvestEditPage
 {
     private TemplateRenderer $renderer;
 
-    private InvestmentService $service;
+    // private InvestmentService $service;
 
+    /**
+     * @param IAppContext $appContext
+     */
     public function __construct(
         private IAppContext $appContext
     ) {
         $this->renderer = $this->appContext->getTemplateRenderer();
-        $this->service = $this->appContext->getInvestmentService();
+        // $this->service = $this->appContext->getInvestmentService();
 
         // $this->renderPage();
     }

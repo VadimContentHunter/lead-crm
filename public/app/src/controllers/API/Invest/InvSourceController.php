@@ -141,9 +141,9 @@ class InvSourceController
         $result = $this->service->deleteSource($params);
 
         if ($result->isSuccess()) {
-            $code = $result?->getCode() ?? '---';
-            $label = $result?->getLabel() ?? '---';
-            $id = $result?->getId() ?? '---';
+            $code = $result->getCode() ?? '---';
+            $label = $result->getLabel() ?? '---';
+            $id = $result->getId() ?? '---';
 
             $info = "<br>id: <b>{$id}</b>";
             $info .= "<br>code: <b>{$code}</b>";

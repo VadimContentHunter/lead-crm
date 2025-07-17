@@ -139,8 +139,8 @@ final class InvestmentService
         $id = isset($data['id']) ? (int) $data['id']
                             : (isset($data['rowId']) ? (int) $data['rowId'] : null);
 
-        $oldData = $this->invSourceRepo->getById($id);
-        $resultDelete = $this->manageInvSource->deleteById($id);
+        $oldData = $this->invSourceRepo->getById($id ?? 0);
+        $resultDelete = $this->manageInvSource->deleteById($id ?? 0);
         if ($resultDelete->isSuccess()) {
             $data = $oldData->getData() instanceof DbInvSourceDto
                         ? InvSourceMapper::fromDbToEntity($oldData->getData())
@@ -148,7 +148,7 @@ final class InvestmentService
             return InvSourceResult::success($data);
         }
 
-        return InvSourceResult::failure($resultDelete->getError());
+        return InvSourceResult::failure($resultDelete->getError() ?? new \RuntimeException("Ошибка при удалении источника"));
     }
 
     // === CRUD: Статусы ===
@@ -161,6 +161,9 @@ final class InvestmentService
         return $this->manageInvStatus->create(InvStatusMapper::fromArrayToInput($data));
     }
 
+    /**
+     * @param array<string,mixed> $data
+     */
     public function updateStatus(array $data): IInvStatusResult
     {
         $data['id'] = $data['id'] ?? $data['data-row-id'] ?? null;
@@ -186,7 +189,7 @@ final class InvestmentService
             return InvStatusResult::success($data);
         }
 
-        return InvStatusResult::failure($resultDelete->getError());
+        return InvStatusResult::failure($resultDelete->getError() ?? new \RuntimeException("Ошибка при удалении статуса"));
     }
 
     public function getStatusTable(): IInvStatusResult

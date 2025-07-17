@@ -15,13 +15,13 @@
 <section class="component-wrapper">
     <h2>Общие сведения лида</h2>
     <div class="edit-lead-form" id="inv-lead-form-1">
-        <input type="text" name="leadId" value="<?= $leadId ?>" hidden>
         <div class="form-messages-container">
             <div class="form-message">
                 <p>Введите данные, что бы создать лида.</p>
             </div>
         </div>
         <form class="form-stretch component">
+            <input type="text" name="lead_uid" value="<?= $leadId ?>" hidden>
             <div class="form-group">
                 <label>Полное имя</label>
                 <input type="text" name="full_name">

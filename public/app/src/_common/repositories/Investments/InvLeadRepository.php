@@ -140,7 +140,7 @@ class InvLeadRepository extends AResultRepository implements IInvLeadRepository
                 return InvLeadResult::failure(new \InvalidArgumentException("Поле 'uid' обязательно для update()"));
             }
 
-            $uid = $data['uid'];
+            $bindings = $data;
             unset($data['uid']);
 
             if (empty($data)) {
@@ -151,11 +151,15 @@ class InvLeadRepository extends AResultRepository implements IInvLeadRepository
                 (new QueryBuilder())
                 ->table($this->getTableName())
                 ->where('uid = :uid')
-                ->bindings(['uid' => $uid])
+                ->bindings($bindings)
                 ->update($data)
-            )->getInt();
+            );
 
-            return InvLeadResult::success($uid);
+            if (!$result->isSuccess()) {
+                return $this->wrapFailure($result->getError() ?? new \RuntimeException("Не удалось обновить"));
+            }
+
+            return InvLeadResult::success($result->getInt());
         } catch (\Throwable $e) {
             return InvLeadResult::failure($e);
         }

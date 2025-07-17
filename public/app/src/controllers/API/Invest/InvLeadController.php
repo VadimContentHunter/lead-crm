@@ -47,6 +47,7 @@ class InvLeadController
             'invest.lead.add' => fn() => $secureCall->createInvLead($this->rpc->getParams()),
             'invest.lead.get.form.create' => fn() => $secureCall->getFormCreateData($this->rpc->getParams()),
             'invest.lead.get.balance' => fn() => $secureCall->getBalance($this->rpc->getParams()),
+            'invest.lead.update' => fn() => $secureCall->updateInvLead($this->rpc->getParams()),
         ];
     }
 
@@ -100,7 +101,52 @@ class InvLeadController
                 'type' => 'success',
                 'table' => $this->service->getInvLeadTable()->getString() ?? '---',
                 'messages' => [
-                    ['type' => 'success', 'message' => 'Источник успешно добавлен'],
+                    ['type' => 'success', 'message' => 'Лид успешно добавлен'],
+                    ['type' => 'info', 'message' => $info]
+                ]
+            ]);
+        } else {
+            $errorMessage = $result->getError()?->getMessage() ?? 'Произошла ошибка';
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Произошла ошибка: ' . $errorMessage]
+            ]);
+        }
+    }
+
+    /**
+     * @param array<string,mixed> $params
+     */
+    public function updateInvLead(array $params): void
+    {
+        $result = $this->service->updateInvLead($params);
+
+        if ($result->isSuccess()) {
+            $uid = $result->getUid();
+            $fullName = $result->getFullName() ?? '---';
+            $contact = $result->getContact() ?? '---';
+            $email = $result->getEmail() ?? '---';
+            $phone = $result->getPhone() ?? '---';
+            $sourceTitle = $result->getSource()->label ?? '---';
+            $statusTitle = $result->getStatus()->label ?? '---';
+            $accountManagerLogin = $result->getAccountManager()->login ?? '---';
+
+            $info = <<<HTML
+                            Добавленный Лид:
+                            <br> UID: <b>{$uid}</b>
+                            <br> полное имя: <b>{$fullName}</b>
+                            <br> контакт: <b>{$contact}</b>
+                            <br> email: <b>{$email}</b>
+                            <br> телефон: <b>{$phone}</b>
+                            <br> источник: <b>{$sourceTitle}</b>
+                            <br> статус: <b>{$statusTitle}</b>
+                            <br> менеджер: <b>{$accountManagerLogin}</b>
+                        HTML;
+
+            $this->rpc->replyData([
+                'type' => 'success',
+                'table' => $this->service->getInvLeadTable()->getString() ?? '---',
+                'messages' => [
+                    ['type' => 'success', 'message' => 'Лид успешно обновлен'],
                     ['type' => 'info', 'message' => $info]
                 ]
             ]);

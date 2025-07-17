@@ -75,6 +75,21 @@ ComponentFunctions.runJsonRpcLoadImmediately({
     }
 });
 
+
+
+ComponentFunctions.attachJsonRpcInputTrigger({
+    triggerSelector: '#inv-lead-form-1 .form-actions .submit',
+    containerSelector: '#inv-lead-form-1',
+    method: 'invest.lead.update',
+    endpoint: endPoint,
+    callbackBeforeSend: () => {
+        overlayMainLoaderOpen();
+    },
+    callbackOnData: (payload) => {
+        overlayMainLoaderClose();
+    }
+});
+
 //
 // === Удаление строки из таблицы по кнопке ===
 //

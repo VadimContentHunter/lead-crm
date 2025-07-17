@@ -83,6 +83,21 @@ final class InvestmentService
     }
 
     /**
+     * @param array<string,mixed> $data
+     */
+    public function updateInvLead(array $data): IInvLeadResult
+    {
+        $data['uid'] = isset($data['uid']) ? (string) $data['uid']
+                                        : (isset($data['lead_uid']) ? (string) $data['lead_uid'] : 0);
+        $resultUid = $this->manageInvLead->updateByUid(InvLeadMapper::fromArrayToInput($data));
+        if ($resultUid->isSuccess()) {
+            return $this->invLeadRepo->getByUid($resultUid->getString() ?? '');
+        }
+
+        return InvLeadResult::failure($resultUid->getError() ?? new \RuntimeException("Ошибка при обновлении лида"));
+    }
+
+    /**
      * @param callable|null $accountManagerFetcher Функция (int $id): string|null
      */
     public function getInvLeadTable(?callable $accountManagerFetcher = null): IInvLeadResult
@@ -413,6 +428,7 @@ final class InvestmentService
         array_unshift($managers, ['value' => '', 'text' => '— Выберите менеджера —', 'selected' => false]);
 
         $data = [
+            'lead_uid' => $lead->uid,
             'full_name' => $lead->fullName,
             'contact' => $lead->contact,
             'phone' => $lead->phone,

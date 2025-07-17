@@ -96,7 +96,7 @@ final class InvestmentService
 
             $managerLabel = '—';
             if (is_callable($accountManagerFetcher) && $lead->accountManagerId !== null) {
-                $managerLabel = $accountManagerFetcher($lead->accountManagerId) ?? '—';
+                $managerLabel = $accountManagerFetcher($lead->accountManagerId);
             }
 
             $sourceLabel = '—';

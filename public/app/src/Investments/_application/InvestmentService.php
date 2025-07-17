@@ -25,6 +25,7 @@ use crm\src\_common\adapters\Investments\SourceValidatorAdapter;
 use crm\src\_common\adapters\Investments\StatusValidatorAdapter;
 use crm\src\Investments\InvBalance\_common\DTOs\DbInvBalanceDto;
 use crm\src\_common\adapters\Investments\InvLeadValidatorAdapter;
+use crm\src\Investments\InvActivity\_common\DTOs\DbInvActivityDto;
 use crm\src\Investments\InvLead\_common\interfaces\IInvLeadResult;
 use crm\src\Investments\InvSource\_common\mappers\InvSourceMapper;
 use crm\src\Investments\InvStatus\_common\mappers\InvStatusMapper;
@@ -37,7 +38,9 @@ use crm\src\services\TableRenderer\typesTransform\TextInputTransform;
 use crm\src\Investments\InvLead\_common\interfaces\IInvLeadRepository;
 use crm\src\Investments\InvSource\_common\interfaces\IInvSourceResult;
 use crm\src\Investments\InvStatus\_common\interfaces\IInvStatusResult;
+use crm\src\Investments\InvActivity\_common\adapters\InvActivityResult;
 use crm\src\Investments\InvBalance\_common\interfaces\IInvBalanceResult;
+use crm\src\Investments\InvActivity\_common\interfaces\IInvActivityResult;
 use crm\src\Investments\InvSource\_common\interfaces\IInvSourceRepository;
 use crm\src\Investments\InvStatus\_common\interfaces\IInvStatusRepository;
 use crm\src\Investments\InvBalance\_common\interfaces\IInvBalanceRepository;
@@ -340,6 +343,78 @@ final class InvestmentService
         }
         return $this->manageInvBalance->create(InvBalanceMapper::fromArrayToInput($data));
     }
+
+    // === CRUD: Активности ===
+
+    /**
+     * @return IInvActivityResult
+     */
+    public function getActivityTable(): IInvActivityResult
+    {
+        $headers = [
+            'id',
+            'activity_hash',
+            'lead_uid',
+            'type',
+            'open_time',
+            'close_time',
+            'pair',
+            'open_price',
+            'close_price',
+            'amount',
+            'direction',
+            'result',
+        ];
+
+        $rows = $this->invActivityRepo->getAll()->mapEach(fn(DbInvActivityDto $a) => [
+            'id' => $a->id,
+            'activity_hash' => $a->activity_hash,
+            'lead_uid' => $a->lead_uid,
+            'type' => $a->type,
+            'open_time' => $a->open_time,
+            'close_time' => $a->close_time ?? '—',
+            'pair' => $a->pair,
+            'open_price' => $a->open_price,
+            'close_price' => $a->close_price ?? '—',
+            'amount' => $a->amount,
+            'direction' => $a->direction,
+            'result' => $a->result ?? '—',
+        ])->getArray();
+
+        $input = new TableRenderInput(
+            header: $headers,
+            rows: $rows,
+            attributes: ['id' => 'inv-activity-table-1', 'data-module' => 'inv-activities'],
+            classes: ['base-table'],
+            hrefButton: '/page/activity-edit',
+            hrefButtonDel: '/',
+            attributesWrapper: ['table-r-id' => 'inv-activity-table-1'],
+            allowedColumns: $headers,
+            renameMap: [
+                'id' => 'ID',
+                'activity_hash' => 'Хеш сделки',
+                'lead_uid' => 'UID лида',
+                'type' => 'Тип',
+                'open_time' => 'Открыта',
+                'close_time' => 'Закрыта',
+                'pair' => 'Пара',
+                'open_price' => 'Цена открытия',
+                'close_price' => 'Цена закрытия',
+                'amount' => 'Объём',
+                'direction' => 'Направление',
+                'result' => 'Результат',
+            ],
+        );
+
+        $transformers = [
+        new TextInputTransform(['pair', 'type', 'direction']),
+        ];
+
+        $tableFacade = new TableFacade(new TypedTableTransformer($transformers), new TableDecorator());
+
+        return InvActivityResult::success($tableFacade->renderFilteredTable($input)->asHtml());
+    }
+
 
     // === Формы ===
 

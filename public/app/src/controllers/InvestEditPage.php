@@ -15,7 +15,7 @@ class InvestEditPage
 {
     private TemplateRenderer $renderer;
 
-    // private InvestmentService $service;
+    private InvestmentService $service;
 
     /**
      * @param IAppContext $appContext
@@ -24,7 +24,7 @@ class InvestEditPage
         private IAppContext $appContext
     ) {
         $this->renderer = $this->appContext->getTemplateRenderer();
-        // $this->service = $this->appContext->getInvestmentService();
+        $this->service = $this->appContext->getInvestmentService();
 
         // $this->renderPage();
     }
@@ -94,6 +94,25 @@ class InvestEditPage
                                         // 'id' => $balanceResult->getId() ?? 0
                                     ]
                                 )),
+                                (new TemplateBundle(
+                                    templatePath: 'containers/average-in-line-component.tpl.php',
+                                    variables: [
+                                        'component' => $this->service->getActivityTable()->getString() ?? '',
+                                        // 'filterPanel' => (new TemplateBundle(
+                                        //     templatePath: 'partials/filtersLead.tpl.php',
+                                        //     variables: [
+                                        //     'sortColumns' => $headers,
+                                        //     'sourcesList' => $sourcesList,
+                                        //     'statusesList' => $statusesList,
+                                        //     'managersList' => $managersList,
+                                        //     'selectedData' => [],
+                                        //     ]
+                                        // )),
+                                        // 'controlPanel' => (new TemplateBundle(
+                                        //     templatePath: 'partials/controlPanelInvest.tpl.php',
+                                        // )),
+                                    ]
+                                ))
                                 // (new TemplateBundle(
                                 //     templatePath: 'components/editLeadDepositForm.tpl.php',
                                 //     variables: [

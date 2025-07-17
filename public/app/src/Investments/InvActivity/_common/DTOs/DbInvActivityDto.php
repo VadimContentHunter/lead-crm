@@ -9,21 +9,21 @@ namespace crm\src\Investments\InvActivity\_common\DTOs;
 class DbInvActivityDto
 {
     /**
-     * @param string      $InvActivity_hash Уникальный хеш сделки
-     * @param string      $lead_uid         UID лида, к которому привязана сделка
-     * @param string      $type             Тип сделки: 'active' или 'closed'
-     * @param string      $open_time        Время открытия сделки (формат: Y-m-d H:i:s)
-     * @param string|null $close_time       Время закрытия сделки (если есть)
-     * @param string      $pair             Торговая пара, например: 'BTC/USDT'
-     * @param float       $open_price       Цена актива при открытии
-     * @param float|null  $close_price      Цена актива при закрытии
-     * @param float       $amount           Объём сделки
-     * @param string      $direction        Направление сделки: 'long' или 'short'
-     * @param float|null  $result           Прибыль или убыток (если сделка закрыта)
-     * @param int|null    $id               Уникальный числовой идентификатор сделки в базе (если есть)
+     * @param string      $activity_hash Уникальный хеш сделки
+     * @param string      $lead_uid      UID лида, к которому привязана сделка
+     * @param string      $type          Тип сделки: 'active' или 'closed'
+     * @param string      $open_time     Время открытия сделки (формат: Y-m-d H:i:s)
+     * @param string|null $close_time    Время закрытия сделки (если есть)
+     * @param string      $pair          Торговая пара, например: 'BTC/USDT'
+     * @param float       $open_price    Цена актива при открытии
+     * @param float|null  $close_price   Цена актива при закрытии
+     * @param float       $amount        Объём сделки
+     * @param string      $direction     Направление сделки: 'long' или 'short'
+     * @param float|null  $result        Прибыль или убыток (если сделка закрыта)
+     * @param int|null    $id            Уникальный числовой идентификатор сделки в базе (если есть)
      */
     public function __construct(
-        public string $InvActivity_hash,
+        public string $activity_hash,
         public string $lead_uid,
         public string $type,
         public string $open_time,

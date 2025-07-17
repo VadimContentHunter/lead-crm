@@ -22,7 +22,7 @@ class InvActivityMapper
     public static function fromDbToEntity(DbInvActivityDto $dto, bool $strictPair = false): InvActivity
     {
         return new InvActivity(
-            InvActivityHash: $dto->InvActivity_hash,
+            InvActivityHash: $dto->activity_hash,
             leadUid: $dto->lead_uid,
             type: DealType::from($dto->type),
             openTime: new DateTimeImmutable($dto->open_time),
@@ -47,7 +47,7 @@ class InvActivityMapper
     {
         return new DbInvActivityDto(
             id: $entity->id,
-            InvActivity_hash: $entity->InvActivityHash,
+            activity_hash: $entity->InvActivityHash,
             lead_uid: $entity->leadUid,
             type: $entity->type->value,
             open_time: $entity->openTime?->format('Y-m-d H:i:s') ?? (new DateTimeImmutable())->format('Y-m-d H:i:s'),
@@ -114,7 +114,7 @@ class InvActivityMapper
 
         return new DbInvActivityDto(
             id: $dto->id,
-            InvActivity_hash: $InvActivityHash,
+            activity_hash: $InvActivityHash,
             lead_uid: $leadUid,
             type: $type,
             open_time: $openTime,
@@ -141,7 +141,7 @@ class InvActivityMapper
 
         return [
             'id' => $dto->id,
-            'InvActivity_hash' => $dto->InvActivity_hash,
+            'activity_hash' => $dto->activity_hash,
             'lead_uid' => $dto->lead_uid,
             'type' => $dto->type,
             'open_time' => $dto->open_time,
@@ -164,7 +164,7 @@ class InvActivityMapper
     public static function fromArrayToDb(array $data): DbInvActivityDto
     {
         return new DbInvActivityDto(
-            InvActivity_hash: $data['InvActivity_hash'],
+            activity_hash: $data['activity_hash'],
             lead_uid: $data['lead_uid'],
             type: $data['type'],
             open_time: $data['open_time'],
@@ -239,7 +239,7 @@ class InvActivityMapper
         }
 
         if ($dto->InvActivityHash !== null) {
-            $fields['InvActivity_hash'] = $dto->InvActivityHash;
+            $fields['activity_hash'] = $dto->InvActivityHash;
         }
 
         if ($dto->leadUid !== null) {

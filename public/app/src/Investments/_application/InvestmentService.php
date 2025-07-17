@@ -25,6 +25,7 @@ use crm\src\Investments\InvLead\_common\interfaces\IInvLeadResult;
 use crm\src\Investments\InvSource\_common\mappers\InvSourceMapper;
 use crm\src\Investments\InvStatus\_common\mappers\InvStatusMapper;
 use crm\src\Investments\InvSource\_common\adapters\InvSourceResult;
+use crm\src\Investments\InvStatus\_common\adapters\InvStatusResult;
 use crm\src\services\TableRenderer\typesTransform\TextInputTransform;
 use crm\src\Investments\InvLead\_common\interfaces\IInvLeadRepository;
 use crm\src\Investments\InvSource\_common\interfaces\IInvSourceResult;
@@ -39,9 +40,7 @@ use crm\src\Investments\InvActivity\_common\interfaces\IInvActivityRepository;
 final class InvestmentService
 {
     private ManageInvLead $manageInvLead;
-
     private ManageInvSource $manageInvSource;
-
     private ManageInvStatus $manageInvStatus;
 
     public function __construct(
@@ -58,6 +57,8 @@ final class InvestmentService
         $this->manageInvStatus = new ManageInvStatus($this->invStatusRepo, new StatusValidatorAdapter());
     }
 
+    // === CRUD: Лиды ===
+
     /**
      * @param array<string, mixed> $data
      */
@@ -71,66 +72,14 @@ final class InvestmentService
         return InvLeadResult::failure($resultUid->getError() ?? new \RuntimeException("Ошибка при создании лида"));
     }
 
+    // === CRUD: Источники ===
+
     /**
      * @param array<string,mixed> $data
      */
     public function createInvSource(array $data): IInvSourceResult
     {
         return $this->manageInvSource->create(InvSourceMapper::fromArrayToInput($data));
-    }
-
-    /**
-     * @param array<string,mixed> $data
-     */
-    public function createInvStatus(array $data): IInvStatusResult
-    {
-        return $this->manageInvStatus->create(InvStatusMapper::fromArrayToInput($data));
-    }
-
-    /**
-     * Возвращает данные для формы создания лида.
-     *
-     * @param array<string,mixed> $params
-     * @param array<string,mixed> $extraData Данные, которые нужно добавить/переопределить в итоговом массиве
-     */
-    public function getFormCreateData(array $params, array $extraData = []): IInvestResult
-    {
-        $id = $params['id'] ?? 0;
-
-        if (filter_var($id, FILTER_VALIDATE_INT) === false) {
-            return InvestResult::failure(new \RuntimeException('Неверный идентификатор'));
-        }
-
-        if ((int)$id === 0) {
-            $statuses = $this->invStatusRepo->getAll()->mapEach(
-                fn($item) => $item instanceof DbInvStatusDto
-                    ? ['value' => $item->code, 'text' => $item->label]
-                    : null
-            )->getArray();
-
-            $sources = $this->invSourceRepo->getAll()->mapEach(
-                fn($item) => $item instanceof DbInvSourceDto
-                ? ['value' => $item->code, 'text' => $item->label]
-                : null
-            )->getArray();
-
-            // Добавляем заглушки с selected => true
-            array_unshift($statuses, ['value' => '', 'text' => '— Выберите статус —', 'selected' => true]);
-            array_unshift($sources,  ['value' => '', 'text' => '— Выберите источник —', 'selected' => true]);
-
-            // Базовые данные
-            $data = [
-                'status_id' => $statuses,
-                'source_id' => $sources,
-            ];
-
-            // Объединение с внешними данными
-            $data = array_merge($data, $extraData);
-
-            return InvestResult::success($data);
-        }
-
-        return InvestResult::success();
     }
 
     public function getSourceTable(): IInvSourceResult
@@ -200,5 +149,116 @@ final class InvestmentService
         }
 
         return InvSourceResult::failure($resultDelete->getError());
+    }
+
+    // === CRUD: Статусы ===
+
+    /**
+     * @param array<string,mixed> $data
+     */
+    public function createInvStatus(array $data): IInvStatusResult
+    {
+        return $this->manageInvStatus->create(InvStatusMapper::fromArrayToInput($data));
+    }
+
+    public function updateStatus(array $data): IInvStatusResult
+    {
+        $data['id'] = $data['id'] ?? $data['data-row-id'] ?? null;
+        $data['code'] = $data['name'] === "code" ? $data['value'] : null;
+        $data['label'] = $data['name'] === "label" ? $data['value'] : null;
+
+        return $this->manageInvStatus->updateById(InvStatusMapper::fromArrayToInput($data));
+    }
+
+    /**
+     * @param array<string,mixed> $data
+     */
+    public function deleteStatus(array $data): IInvStatusResult
+    {
+        $id = $data['id'] ?? $data['rowId'] ?? null;
+        $oldData = $this->invStatusRepo->getById($id);
+        $resultDelete = $this->manageInvStatus->deleteById($id);
+
+        if ($resultDelete->isSuccess()) {
+            $data = $oldData->getData() instanceof DbInvStatusDto
+                ? InvStatusMapper::fromDbToEntity($oldData->getData())
+                : null;
+            return InvStatusResult::success($data);
+        }
+
+        return InvStatusResult::failure($resultDelete->getError());
+    }
+
+    public function getStatusTable(): IInvStatusResult
+    {
+        $headers = $this->invStatusRepo->getColumnNames()->getArray();
+        $rows = $this->invStatusRepo->getAll()->mapEach(fn(DbInvStatusDto $s) => [
+            'id' => $s->id,
+            'code' => $s->code,
+            'label' => $s->label,
+        ])->getArray();
+
+        $input = new TableRenderInput(
+            header: $headers,
+            rows: $rows,
+            attributes: ['id' => 'inv-status-table-1', 'data-module' => 'inv-statuses'],
+            classes: ['base-table'],
+            hrefButton: '/page/status-edit',
+            hrefButtonDel: '/',
+            attributesWrapper: ['table-r-id' => 'inv-status-table-1'],
+            allowedColumns: ['id', 'code', 'label'],
+            renameMap: [],
+        );
+
+        $tableFacade = new TableFacade(new TypedTableTransformer([new TextInputTransform(['code', 'label'])]), new TableDecorator());
+        return InvStatusResult::success($tableFacade->renderFilteredTable($input)->asHtml());
+    }
+
+    // === Формы ===
+
+    /**
+     * Возвращает данные для формы создания лида.
+     *
+     * @param array<string,mixed> $params
+     * @param array<string,mixed> $extraData Данные, которые нужно добавить/переопределить в итоговом массиве
+     */
+    public function getFormCreateData(array $params, array $extraData = []): IInvestResult
+    {
+        $id = $params['id'] ?? 0;
+
+        if (filter_var($id, FILTER_VALIDATE_INT) === false) {
+            return InvestResult::failure(new \RuntimeException('Неверный идентификатор'));
+        }
+
+        if ((int)$id === 0) {
+            $statuses = $this->invStatusRepo->getAll()->mapEach(
+                fn($item) => $item instanceof DbInvStatusDto
+                    ? ['value' => $item->code, 'text' => $item->label]
+                    : null
+            )->getArray();
+
+            $sources = $this->invSourceRepo->getAll()->mapEach(
+                fn($item) => $item instanceof DbInvSourceDto
+                ? ['value' => $item->code, 'text' => $item->label]
+                : null
+            )->getArray();
+
+            // Добавляем заглушки с selected => true
+            array_unshift($statuses, ['value' => '', 'text' => '— Выберите статус —', 'selected' => true]);
+            array_unshift($sources,  ['value' => '', 'text' => '— Выберите источник —', 'selected' => true]);
+
+            // Базовые данные
+            $data = [
+                'status_id' => $statuses,
+                'source_id' => $sources,
+            ];
+
+            // Объединение с внешними данными
+            $data = array_merge($data, $extraData);
+
+            return InvestResult::success($data);
+        }
+
+        return InvestResult::success();
     }
 }

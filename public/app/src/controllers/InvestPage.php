@@ -98,7 +98,12 @@ class InvestPage
             variables: [
                 'classId' => 'inv-status-menu-id',
                 'addPanel' => (new TemplateBundle(templatePath: 'components/invest/addInvStatus.tpl.php')),
-                // 'table' => $this->statusPage->getTableStatusComponent()
+                'table' => (new TemplateBundle(
+                    templatePath: 'containers/average-in-line-component.tpl.php',
+                    variables: [
+                        'component' => $this->service->getStatusTable()->getString() ?? '',
+                    ]
+                ))
             ]
         ));
 

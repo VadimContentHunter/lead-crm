@@ -128,6 +128,10 @@ class InvStatusMapper
     {
         $fields = [];
 
+        if ($dto->id !== null) {
+            $fields['id'] = $dto->id;
+        }
+
         if ($dto->code !== null) {
             $fields['code'] = $dto->code;
         }

@@ -43,6 +43,9 @@ class InvStatusController
 
         $this->methods = [
             'invest.status.add' => fn() => $secureCall->createInvStatus($this->rpc->getParams()),
+            'invest.status.get.table' => fn() => $secureCall->getStatusTable(),
+            'invest.status.edit.cell' => fn() => $secureCall->editStatusCell($this->rpc->getParams()),
+            'invest.status.delete' => fn() => $secureCall->delete($this->rpc->getParams()),
         ];
     }
 
@@ -58,7 +61,7 @@ class InvStatusController
             ($this->methods[$method])();
         } catch (JsonRpcSecurityException $e) {
             $this->rpc->send($e->toJsonRpcError($this->rpc->getId()));
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->rpc->replyError(-32000, $e->getMessage());
         }
     }
@@ -75,9 +78,82 @@ class InvStatusController
 
             $this->rpc->replyData([
                 'type' => 'success',
+                'table' => $this->service->getStatusTable()->getString() ?? '---',
                 'messages' => [
                     ['type' => 'success', 'message' => 'Статус успешно добавлен'],
                     ['type' => 'info', 'message' => "Добавленный статус: <b>{$title}</b>"]
+                ]
+            ]);
+        } else {
+            $errorMessage = $result->getError()?->getMessage() ?? 'Произошла ошибка';
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Произошла ошибка: ' . $errorMessage]
+            ]);
+        }
+    }
+
+    public function getStatusTable(): void
+    {
+        $this->rpc->replyData([
+            'type' => 'success',
+            'table' => $this->service->getStatusTable()->getString() ?? '---',
+        ]);
+    }
+
+    /**
+     * @param array<string,mixed> $params
+     */
+    public function editStatusCell(array $params): void
+    {
+        $result = $this->service->updateStatus($params);
+
+        if ($result->isSuccess()) {
+            $id = $result->getData()['id'] ?? '---';
+            $updatedCode = $result->getData()['code'] ?? null;
+            $updatedLabel = $result->getData()['label'] ?? null;
+
+            $infoData = "<br>id: <b>{$id}</b>";
+            $infoData .= $updatedCode !== null ? "<br>code: <b>{$updatedCode}</b>" : "";
+            $infoData .= $updatedLabel !== null ? "<br>label: <b>{$updatedLabel}</b>" : "";
+
+            $this->rpc->replyData([
+                'type' => 'success',
+                'table' => $this->service->getStatusTable()->getString() ?? '---',
+                'messages' => [
+                    ['type' => 'success', 'message' => 'Статус успешно обновлен'],
+                    ['type' => 'info', 'message' => "Обновленный статус: {$infoData}"]
+                ]
+            ]);
+        } else {
+            $errorMessage = $result->getError()?->getMessage() ?? 'Произошла ошибка';
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Произошла ошибка: ' . $errorMessage]
+            ]);
+        }
+    }
+
+    /**
+     * @param array<string,mixed> $params
+     */
+    public function delete(array $params): void
+    {
+        $result = $this->service->deleteStatus($params);
+
+        if ($result->isSuccess()) {
+            $code = $result?->getCode() ?? '---';
+            $label = $result?->getLabel() ?? '---';
+            $id = $result?->getId() ?? '---';
+
+            $info = "<br>id: <b>{$id}</b>";
+            $info .= "<br>code: <b>{$code}</b>";
+            $info .= "<br>label: <b>{$label}</b>";
+
+            $this->rpc->replyData([
+                'type' => 'success',
+                'table' => $this->service->getStatusTable()->getString() ?? '---',
+                'messages' => [
+                    ['type' => 'success', 'message' => 'Статус успешно удален'],
+                    ['type' => 'info', 'message' => "Удалённый статус: {$info}"]
                 ]
             ]);
         } else {

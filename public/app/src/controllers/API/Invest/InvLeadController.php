@@ -84,11 +84,7 @@ class InvLeadController
             $statusTitle = $result->getStatus()->label ?? '---';
             $accountManagerLogin = $result->getAccountManager()->login ?? '---';
 
-            $this->rpc->replyData([
-                'type' => 'success',
-                'messages' => [
-                    ['type' => 'success', 'message' => 'Лид успешно добавлен'],
-                    ['type' => 'info', 'message' => <<<HTML
+            $info = <<<HTML
                             Добавленный Лид:
                             <br> UID: <b>{$uid}</b>
                             <br> полное имя: <b>{$fullName}</b>
@@ -98,8 +94,14 @@ class InvLeadController
                             <br> источник: <b>{$sourceTitle}</b>
                             <br> статус: <b>{$statusTitle}</b>
                             <br> менеджер: <b>{$accountManagerLogin}</b>
-                        HTML
-                    ]
+                        HTML;
+
+            $this->rpc->replyData([
+                'type' => 'success',
+                'table' => $this->service->getInvLeadTable()->getString() ?? '---',
+                'messages' => [
+                    ['type' => 'success', 'message' => 'Источник успешно добавлен'],
+                    ['type' => 'info', 'message' => $info]
                 ]
             ]);
         } else {

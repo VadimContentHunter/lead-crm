@@ -15,7 +15,7 @@ $leadId = isset($leadId) && is_numeric($leadId) ? (int)$leadId : 0;
                 <?php foreach ($comments as $comment) : ?>
                     <div class="comment-item">
                         <p class="comment-text">
-                            <?= nl2br(htmlspecialchars($comment ?? '')); ?>
+                            <?= $comment ?? ''; ?>
                         </p>
                     </div>
                 <?php endforeach; ?>

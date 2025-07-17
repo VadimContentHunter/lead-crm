@@ -19,13 +19,16 @@ ComponentFunctions.attachJsonRpcInputTrigger({
     },
     callbackOnData: (payload) => {
         console.log(payload);
-        // ComponentFunctions.replaceTable(payload, '[table-r-id="lead-table-1"]');
+        ComponentFunctions.replaceTable(payload, '[table-r-id="inv-lead-table-1"]');
         if (overlayLoader instanceof HTMLElement) {
             overlayLoader.style.display = 'none';
         }
     }
 });
 
+//
+// === Заполнение формы при открытии модального окна ===
+//
 ComponentFunctions.attachJsonRpcLoadTrigger({
     triggerSelector: '#add-inv-lead-btn',
     method: 'invest.lead.get.form.create',
@@ -49,11 +52,11 @@ ComponentFunctions.attachJsonRpcLoadTrigger({
 //
 // function attachDeleteTriggerLead() {
 //     ComponentFunctions.attachDeleteTrigger({
-//         triggerSelector: '[table-r-id="lead-table-1"] .btn-delete.btn-row-table',
+//         triggerSelector: '[table-r-id="inv-lead-table-1"] .btn-delete.btn-row-table',
 //         method: 'lead.delete',
 //         endpoint: endPoint,
 //         callbackOnData: (payload) => {
-//             ComponentFunctions.replaceTable(payload, '[table-r-id="lead-table-1"]');
+//             ComponentFunctions.replaceTable(payload, '[table-r-id="inv-lead-table-1"]');
 //         },
 //         beforeSendCallback: async (trigger, rowId) => {
 //             return await ConfirmDialog.show('Удаление', `Удалить элемент #${rowId}?`, '.overlay-main');
@@ -67,7 +70,7 @@ ComponentFunctions.attachJsonRpcLoadTrigger({
 //
 // function attachInputButtonTriggerLead() {
 //     ComponentFunctions.attachInputButtonTrigger({
-//         containerSelector: '[table-r-id="lead-table-1"]',
+//         containerSelector: '[table-r-id="inv-lead-table-1"]',
 //         buttonSelector: 'td .edit-row-button',
 //         inputSelector: 'input.edit-row-input',
 //         searchRootSelector: 'td',
@@ -82,7 +85,7 @@ ComponentFunctions.attachJsonRpcLoadTrigger({
 //
 // function watchInputValueChangeLead() {
 //     ComponentFunctions.watchInputValueChange({
-//         inputSelector: '[table-r-id="lead-table-1"] input.edit-row-input',
+//         inputSelector: '[table-r-id="inv-lead-table-1"] input.edit-row-input',
 //         onChange: (oldValue, newValue, inputElement) => {
 //             const container = inputElement.closest('td');
 //             const wrapper = container?.querySelector('.cell-actions-wrapper');
@@ -118,9 +121,9 @@ ComponentFunctions.attachJsonRpcLoadTrigger({
 //
 // === Наблюдение за появлением новых элементов в DOM и повторное навешивание обработчиков ===
 //
-// const targetNode = document.querySelector('[table-r-id="lead-table-1"]');
+// const targetNode = document.querySelector('[table-r-id="inv-lead-table-1"]');
 // if (!targetNode) {
-//     console.warn('Container [table-r-id="lead-table-1"] not found');
+//     console.warn('Container [table-r-id="inv-lead-table-1"] not found');
 // } else {
 //     const observer = new MutationObserver((mutationsList) => {
 //         for (const mutation of mutationsList) {

@@ -75,12 +75,27 @@ ComponentFunctions.runJsonRpcLoadImmediately({
     }
 });
 
-
+//
+// === Обновление основной информации для лида (инвестиции) ===
+//
 
 ComponentFunctions.attachJsonRpcInputTrigger({
     triggerSelector: '#inv-lead-form-1 .form-actions .submit',
     containerSelector: '#inv-lead-form-1',
     method: 'invest.lead.update',
+    endpoint: endPoint,
+    callbackBeforeSend: () => {
+        overlayMainLoaderOpen();
+    },
+    callbackOnData: (payload) => {
+        overlayMainLoaderClose();
+    }
+});
+
+ComponentFunctions.attachJsonRpcInputTrigger({
+    triggerSelector: '#inv-balance-form-1 .form-actions .submit',
+    containerSelector: '#inv-balance-form-1',
+    method: 'invest.lead.update.balance',
     endpoint: endPoint,
     callbackBeforeSend: () => {
         overlayMainLoaderOpen();

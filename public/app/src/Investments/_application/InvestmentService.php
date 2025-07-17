@@ -329,8 +329,15 @@ final class InvestmentService
     /**
      * @param array<string,mixed> $data
      */
-    public function createBalance(array $data): IInvBalanceResult
+    public function createOrUpdateInvBalance(array $data): IInvBalanceResult
     {
+        $data['uid'] = isset($data['uid'])  ? (string) $data['uid']
+                                            : (isset($data['lead_uid']) ? (string) $data['lead_uid'] : 0);
+
+        $balanceRes = $this->invBalanceRepo->getByLeadUid($data['uid'])->first();
+        if ($balanceRes->isSuccess()) {
+            return $this->manageInvBalance->updateByLeadUid(InvBalanceMapper::fromArrayToInput($data));
+        }
         return $this->manageInvBalance->create(InvBalanceMapper::fromArrayToInput($data));
     }
 
@@ -449,18 +456,8 @@ final class InvestmentService
         $uid = isset($params['id']) ? (int) $params['id']
             : (isset($params['uid']) ? (int) $params['uid'] : 0);
 
-        $rows = $this->invBalanceRepo->getByLeadUid($uid)->mapEach(
-            function (DbInvBalanceDto $balance) {
-                return [
-                    'current' => $balance->current,
-                    'deposit' => $balance->deposit,
-                    'potential' => $balance->potential,
-                    'active' => $balance->active,
-                ];
-            }
-        );
-
-        if ($rows->isEmpty()) {
+        $balanceRes = $this->invBalanceRepo->getByLeadUid($uid);
+        if ($balanceRes->isEmpty()) {
             return InvBalanceResult::success([
                 'lead_uid' => $uid,
                 'current' => 0.0,
@@ -470,6 +467,16 @@ final class InvestmentService
             ]);
         }
 
-        return InvBalanceResult::success($rows->first()->getArray());
+        if (!$balanceRes->isSuccess()) {
+            return InvBalanceResult::failure($balanceRes->getError() ?? new \RuntimeException("Ошибка при получении баланса"));
+        }
+
+        return InvBalanceResult::success([
+            'lead_uid' => $uid,
+            'current' => $balanceRes->getCurrent(),
+            'deposit' => $balanceRes->getDeposit(),
+            'potential' => $balanceRes->getPotential(),
+            'active' => $balanceRes->getActive(),
+        ]);
     }
 }

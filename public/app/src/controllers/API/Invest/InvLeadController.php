@@ -48,6 +48,7 @@ class InvLeadController
             'invest.lead.get.form.create' => fn() => $secureCall->getFormCreateData($this->rpc->getParams()),
             'invest.lead.get.balance' => fn() => $secureCall->getBalance($this->rpc->getParams()),
             'invest.lead.update' => fn() => $secureCall->updateInvLead($this->rpc->getParams()),
+            'invest.lead.update.balance' => fn() => $secureCall->createOrUpdateInvBalance($this->rpc->getParams()),
         ];
     }
 
@@ -145,6 +146,45 @@ class InvLeadController
             $this->rpc->replyData([
                 'type' => 'success',
                 'table' => $this->service->getInvLeadTable()->getString() ?? '---',
+                'messages' => [
+                    ['type' => 'success', 'message' => 'Лид успешно обновлен'],
+                    ['type' => 'info', 'message' => $info]
+                ]
+            ]);
+        } else {
+            $errorMessage = $result->getError()?->getMessage() ?? 'Произошла ошибка';
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Произошла ошибка: ' . $errorMessage]
+            ]);
+        }
+    }
+
+    /**
+     * @param array<string,mixed> $params
+     */
+    public function createOrUpdateInvBalance(array $params): void
+    {
+        $result = $this->service->createOrUpdateInvBalance($params);
+
+        if ($result->isSuccess()) {
+            $uid = $result->getData()['lead_uid'] ?? '---';
+            $current = $result->getData()['current'] ?? '---';
+            $deposit = $result->getData()['deposit'] ?? '---';
+            $potential = $result->getData()['potential'] ?? '---';
+            $active = $result->getData()['active'] ?? '---';
+
+            $info = <<<HTML
+                            Добавленный баланс:
+                            <br> UID: <b>{$uid}</b>
+                            <br> текущий баланс: <b>{$current}</b>
+                            <br> депозит: <b>{$deposit}</b>
+                            <br> потенциал: <b>{$potential}</b>
+                            <br> активный: <b>{$active}</b>
+                        HTML;
+
+            $this->rpc->replyData([
+                'type' => 'success',
+                // 'table' => $this->service->getInvLeadTable()->getString() ?? '---',
                 'messages' => [
                     ['type' => 'success', 'message' => 'Лид успешно обновлен'],
                     ['type' => 'info', 'message' => $info]

@@ -3,11 +3,12 @@
 namespace crm\src\_common\repositories\Investments;
 
 use crm\src\_common\interfaces\AResultRepository;
-use crm\src\Investments\InvBalance\_mappers\InvBalanceMapper;
 use crm\src\Investments\InvBalance\_common\DTOs\DbInvBalanceDto;
-use crm\src\Investments\InvBalance\_common\interfaces\IInvBalanceRepository;
-use crm\src\Investments\InvBalance\_common\interfaces\IInvBalanceResult;
+use crm\src\Investments\InvBalance\_exceptions\InvBalanceException;
+use crm\src\Investments\InvBalance\_common\mappers\InvBalanceMapper;
 use crm\src\Investments\InvBalance\_common\adapters\InvBalanceResult;
+use crm\src\Investments\InvBalance\_common\interfaces\IInvBalanceResult;
+use crm\src\Investments\InvBalance\_common\interfaces\IInvBalanceRepository;
 
 /**
  * Репозиторий для инвестиционного баланса.
@@ -18,7 +19,7 @@ class InvBalanceRepository extends AResultRepository implements IInvBalanceRepos
 {
     protected function getTableName(): string
     {
-        return 'inv_InvBalances';
+        return 'inv_balances';
     }
 
     /**
@@ -66,11 +67,13 @@ class InvBalanceRepository extends AResultRepository implements IInvBalanceRepos
     public function getByLeadUid(string $leadUid): IInvBalanceResult
     {
         try {
-            $dto = $this->getAllByColumnValues('lead_uid', [$leadUid])
-                        ->first()
-                        ->getData(); // DbInvBalanceDto
+            $dto = $this->getAllByColumnValues('lead_uid', [$leadUid]);
 
-            $entity = InvBalanceMapper::fromDbToEntity($dto);
+            if (!$dto->isSuccess() || $dto->isEmpty()) {
+                return InvBalanceResult::failure($dto->getError() ?? new InvBalanceException("Баланс не найден"));
+            }
+
+            $entity = InvBalanceMapper::fromDbToEntity($dto->first()->getData());
             return InvBalanceResult::success($entity);
         } catch (\Throwable $e) {
             return InvBalanceResult::failure($e);

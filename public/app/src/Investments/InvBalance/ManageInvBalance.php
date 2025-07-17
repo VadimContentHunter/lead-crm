@@ -3,7 +3,7 @@
 namespace crm\src\Investments\InvBalance;
 
 use crm\src\_common\interfaces\IValidation;
-use crm\src\Investments\InvBalance\_mappers\InvBalanceMapper;
+use crm\src\Investments\InvBalance\_common\mappers\InvBalanceMapper;
 use crm\src\Investments\InvBalance\_common\DTOs\InputInvBalanceDto;
 use crm\src\Investments\InvBalance\_exceptions\InvBalanceException;
 use crm\src\Investments\InvBalance\_common\interfaces\IInvBalanceResult;

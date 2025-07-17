@@ -10,7 +10,7 @@
 
 <section class="component-wrapper">
     <h2>Общие сведения Balance</h2>
-    <div class="edit-balance-form" balance-form-id>
+    <div class="edit-balance-form" id="inv-balance-form-1">
         <input type="text" name="leadId" value="<?= $leadId ?>" hidden>
         <div class="form-messages-container">
             <!-- <div class="form-message">

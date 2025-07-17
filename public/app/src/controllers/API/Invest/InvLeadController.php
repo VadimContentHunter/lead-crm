@@ -46,7 +46,7 @@ class InvLeadController
         $this->methods = [
             'invest.lead.add' => fn() => $secureCall->createInvLead($this->rpc->getParams()),
             'invest.lead.get.form.create' => fn() => $secureCall->getFormCreateData($this->rpc->getParams()),
-            // 'invest.source.edit.cell' => fn() => $secureCall->editSourceCell($this->rpc->getParams()),
+            'invest.lead.get.balance' => fn() => $secureCall->getBalance($this->rpc->getParams()),
         ];
     }
 
@@ -134,25 +134,29 @@ class InvLeadController
             return $result;
         };
 
-        $managersLogin = $this->appContext->getUserManagement()->get()->executeAll()
-            ->mapEach(function (User $user) {
-                $userArray = UserMapper::toArray($user);
-                if ($userArray['login'] === null) {
-                    return null;
-                }
-
-                return [
-                    'value' => $userArray['id'],
-                    'text' => $userArray['login'],
-                ];
-            })
-            ->getArray();
-
-        array_unshift($managersLogin, ['value' => '', 'text' => '— Выберите менеджера —', 'selected' => true]);
         $result = $this->service->getFormCreateData(
             $params,
             $accountManagerFunction,
         );
+        if ($result->isSuccess()) {
+            $this->rpc->replyData([
+                'type' => 'success',
+                'data' =>  $result->getData()
+            ]);
+        } else {
+            $errorMessage = $result->getError()?->getMessage() ?? 'Произошла ошибка';
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Произошла ошибка: ' . $errorMessage]
+            ]);
+        }
+    }
+
+     /**
+      * @param array<string,mixed> $params
+      */
+    public function getBalance(array $params): void
+    {
+        $result = $this->service->getBalanceData($params);
         if ($result->isSuccess()) {
             $this->rpc->replyData([
                 'type' => 'success',

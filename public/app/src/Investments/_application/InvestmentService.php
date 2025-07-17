@@ -15,6 +15,7 @@ use crm\src\Investments\InvLead\_entities\SimpleInvLead;
 use crm\src\services\TableRenderer\TypedTableTransformer;
 use crm\src\Investments\InvLead\_common\DTOs\DbInvLeadDto;
 use crm\src\Investments\_application\adapters\InvestResult;
+use crm\src\Investments\InvBalance\_common\mappers\InvBalanceMapper;
 use crm\src\Investments\_application\interfaces\IInvestResult;
 use crm\src\Investments\InvLead\_common\mappers\InvLeadMapper;
 use crm\src\Investments\InvSource\_common\DTOs\DbInvSourceDto;
@@ -22,6 +23,7 @@ use crm\src\Investments\InvStatus\_common\DTOs\DbInvStatusDto;
 use crm\src\Investments\InvLead\_common\adapters\InvLeadResult;
 use crm\src\_common\adapters\Investments\SourceValidatorAdapter;
 use crm\src\_common\adapters\Investments\StatusValidatorAdapter;
+use crm\src\Investments\InvBalance\_common\DTOs\DbInvBalanceDto;
 use crm\src\_common\adapters\Investments\InvLeadValidatorAdapter;
 use crm\src\Investments\InvLead\_common\interfaces\IInvLeadResult;
 use crm\src\Investments\InvSource\_common\mappers\InvSourceMapper;
@@ -32,12 +34,14 @@ use crm\src\services\TableRenderer\typesTransform\TextInputTransform;
 use crm\src\Investments\InvLead\_common\interfaces\IInvLeadRepository;
 use crm\src\Investments\InvSource\_common\interfaces\IInvSourceResult;
 use crm\src\Investments\InvStatus\_common\interfaces\IInvStatusResult;
+use crm\src\Investments\InvBalance\_common\interfaces\IInvBalanceResult;
 use crm\src\Investments\InvSource\_common\interfaces\IInvSourceRepository;
 use crm\src\Investments\InvStatus\_common\interfaces\IInvStatusRepository;
 use crm\src\Investments\InvBalance\_common\interfaces\IInvBalanceRepository;
 use crm\src\Investments\InvComment\_common\interfaces\IInvCommentRepository;
 use crm\src\Investments\InvDeposit\_common\interfaces\IInvDepositRepository;
 use crm\src\Investments\InvActivity\_common\interfaces\IInvActivityRepository;
+use crm\src\Investments\InvBalance\_common\adapters\InvBalanceResult;
 
 final class InvestmentService
 {
@@ -405,5 +409,36 @@ final class InvestmentService
         ];
 
         return InvestResult::success(array_merge($data, $extraData));
+    }
+
+    /**
+     * @param array<string,mixed> $params
+     */
+    public function getBalanceData(array $params): IInvBalanceResult
+    {
+        $uid = isset($params['id']) ? (int) $params['id']
+            : (isset($params['uid']) ? (int) $params['uid'] : 0);
+
+        $rows = $this->invBalanceRepo->getByLeadUid($uid)->mapEach(
+            function (DbInvBalanceDto $balance) {
+                return [
+                    'current' => $balance->current,
+                    'deposit' => $balance->deposit,
+                    'potential' => $balance->potential,
+                    'active' => $balance->active,
+                ];
+            }
+        );
+
+        if ($rows->isEmpty()) {
+            return InvBalanceResult::success([
+                'current' => 0.0,
+                'deposit' => 0.0,
+                'potential' => 0.0,
+                'active' => 0.0,
+            ]);
+        }
+
+        return InvBalanceResult::success($rows->first()->getArray());
     }
 }

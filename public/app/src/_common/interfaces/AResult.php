@@ -62,7 +62,7 @@ abstract class AResult implements IResult
 
     public function isEmpty(): bool
     {
-        return $this->data === null && $this->error === null;
+        return empty($this->data) && empty($this->error);
     }
 
     public function getString(): ?string

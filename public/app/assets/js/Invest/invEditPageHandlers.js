@@ -62,6 +62,19 @@ ComponentFunctions.runJsonRpcLoadImmediately({
     }
 });
 
+ComponentFunctions.runJsonRpcLoadImmediately({
+    method: 'invest.lead.get.balance',
+    endpoint: endPoint,
+    jsonContent: { uid: uid },
+    callbackBeforeSend: () => {
+        overlayMainLoaderOpen();
+    },
+    callbackOnData: (payload) => {
+        ComponentFunctions.fillFormFromData('#inv-balance-form-1 form', payload?.data ?? []);
+        overlayMainLoaderClose();
+    }
+});
+
 //
 // === Удаление строки из таблицы по кнопке ===
 //

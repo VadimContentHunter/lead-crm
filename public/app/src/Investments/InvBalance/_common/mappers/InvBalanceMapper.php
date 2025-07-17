@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\Investments\InvBalance\_mappers;
+namespace crm\src\Investments\InvBalance\_common\mappers;
 
 use crm\src\Investments\InvBalance\_entities\InvBalance;
 use crm\src\Investments\InvBalance\_common\DTOs\DbInvBalanceDto;

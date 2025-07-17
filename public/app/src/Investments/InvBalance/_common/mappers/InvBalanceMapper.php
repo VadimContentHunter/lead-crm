@@ -111,6 +111,22 @@ class InvBalanceMapper
     }
 
     /**
+     * Преобразует массив данных в входной DTO (InputInvBalanceDto).
+     *
+     * @param  array<string, mixed> $data
+     * @return InputInvBalanceDto
+     */
+    public static function fromArrayToInput(array $data): InputInvBalanceDto
+    {
+        return new InputInvBalanceDto(
+            leadUid: isset($data['lead_uid']) ? (string) $data['lead_uid'] : '',
+            deposit: isset($data['deposit']) ? (float) $data['deposit'] : null,
+            potential: isset($data['potential']) ? (float) $data['potential'] : null
+        );
+    }
+
+
+    /**
      * Извлекает только непустые (не null) поля из InputInvBalanceDto в виде массива.
      * Полезно для обновлений, где нужно сохранить только переданные значения.
      *

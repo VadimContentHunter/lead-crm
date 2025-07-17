@@ -11,13 +11,13 @@
 <section class="component-wrapper">
     <h2>Общие сведения Balance</h2>
     <div class="edit-balance-form" id="inv-balance-form-1">
-        <input type="text" name="leadId" value="<?= $leadId ?>" hidden>
         <div class="form-messages-container">
             <!-- <div class="form-message">
                 <p>Введите данные, что бы создать лида.</p>
             </div> -->
         </div>
         <form class="form-stretch component">
+            <input type="text" name="lead_uid" value="<?= $leadId ?>" hidden>
             <div class="form-group">
                 <label>Current</label>
                 <input type="number" name="current" step="0.01" value="<?= $current; ?>">

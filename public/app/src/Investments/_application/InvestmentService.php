@@ -7,6 +7,7 @@ use crm\src\services\TableRenderer\TableFacade;
 use crm\src\Investments\InvSource\ManageInvSource;
 use crm\src\Investments\InvStatus\ManageInvStatus;
 use crm\src\services\TableRenderer\TableDecorator;
+use crm\src\Investments\InvBalance\ManageInvBalance;
 use crm\src\services\TableRenderer\TableRenderInput;
 use crm\src\services\TableRenderer\TableTransformer;
 use crm\src\Investments\InvSource\_entities\InvSource;
@@ -15,7 +16,6 @@ use crm\src\Investments\InvLead\_entities\SimpleInvLead;
 use crm\src\services\TableRenderer\TypedTableTransformer;
 use crm\src\Investments\InvLead\_common\DTOs\DbInvLeadDto;
 use crm\src\Investments\_application\adapters\InvestResult;
-use crm\src\Investments\InvBalance\_common\mappers\InvBalanceMapper;
 use crm\src\Investments\_application\interfaces\IInvestResult;
 use crm\src\Investments\InvLead\_common\mappers\InvLeadMapper;
 use crm\src\Investments\InvSource\_common\DTOs\DbInvSourceDto;
@@ -30,6 +30,9 @@ use crm\src\Investments\InvSource\_common\mappers\InvSourceMapper;
 use crm\src\Investments\InvStatus\_common\mappers\InvStatusMapper;
 use crm\src\Investments\InvSource\_common\adapters\InvSourceResult;
 use crm\src\Investments\InvStatus\_common\adapters\InvStatusResult;
+use crm\src\_common\adapters\Investments\InvBalanceValidatorAdapter;
+use crm\src\Investments\InvBalance\_common\mappers\InvBalanceMapper;
+use crm\src\Investments\InvBalance\_common\adapters\InvBalanceResult;
 use crm\src\services\TableRenderer\typesTransform\TextInputTransform;
 use crm\src\Investments\InvLead\_common\interfaces\IInvLeadRepository;
 use crm\src\Investments\InvSource\_common\interfaces\IInvSourceResult;
@@ -41,13 +44,13 @@ use crm\src\Investments\InvBalance\_common\interfaces\IInvBalanceRepository;
 use crm\src\Investments\InvComment\_common\interfaces\IInvCommentRepository;
 use crm\src\Investments\InvDeposit\_common\interfaces\IInvDepositRepository;
 use crm\src\Investments\InvActivity\_common\interfaces\IInvActivityRepository;
-use crm\src\Investments\InvBalance\_common\adapters\InvBalanceResult;
 
 final class InvestmentService
 {
     private ManageInvLead $manageInvLead;
     private ManageInvSource $manageInvSource;
     private ManageInvStatus $manageInvStatus;
+    private ManageInvBalance $manageInvBalance;
 
     public function __construct(
         private IInvActivityRepository $invActivityRepo,
@@ -61,6 +64,7 @@ final class InvestmentService
         $this->manageInvLead = new ManageInvLead($this->invLeadRepo, new InvLeadValidatorAdapter());
         $this->manageInvSource = new ManageInvSource($this->invSourceRepo, new SourceValidatorAdapter());
         $this->manageInvStatus = new ManageInvStatus($this->invStatusRepo, new StatusValidatorAdapter());
+        $this->manageInvBalance = new ManageInvBalance($this->invBalanceRepo, new InvBalanceValidatorAdapter());
     }
 
     // === CRUD: Лиды ===
@@ -305,6 +309,16 @@ final class InvestmentService
         return InvStatusResult::success($tableFacade->renderFilteredTable($input)->asHtml());
     }
 
+    // === CRUD: Балансы ===
+
+    /**
+     * @param array<string,mixed> $data
+     */
+    public function createBalance(array $data): IInvBalanceResult
+    {
+        return $this->manageInvBalance->create(InvBalanceMapper::fromArrayToInput($data));
+    }
+
     // === Формы ===
 
     /**
@@ -432,6 +446,7 @@ final class InvestmentService
 
         if ($rows->isEmpty()) {
             return InvBalanceResult::success([
+                'lead_uid' => $uid,
                 'current' => 0.0,
                 'deposit' => 0.0,
                 'potential' => 0.0,

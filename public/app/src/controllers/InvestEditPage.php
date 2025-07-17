@@ -84,16 +84,16 @@ class InvestEditPage
                                         // 'address' => $leadResult->getAddress(),
                                     ]
                                 )),
-                                // (new TemplateBundle(
-                                //     templatePath: 'components/editLeadBalanceForm.tpl.php',
-                                //     variables: [
-                                //         'current' => $balanceResult->getCurrent() ?? 0,
-                                //         'drain' => $balanceResult->getDrain() ?? 0,
-                                //         'potential' => $balanceResult->getPotential() ?? 0,
-                                //         'leadId' => $balanceResult->getLeadId() ?? $leadId,
-                                //         'id' => $balanceResult->getId() ?? 0
-                                //     ]
-                                // )),
+                                (new TemplateBundle(
+                                    templatePath: 'components/invest/editInvLeadBalanceForm.tpl.php',
+                                    variables: [
+                                        // 'current' => $balanceResult->getCurrent() ?? 0,
+                                        // 'drain' => $balanceResult->getDrain() ?? 0,
+                                        // 'potential' => $balanceResult->getPotential() ?? 0,
+                                        // 'leadId' => $balanceResult->getLeadId() ?? $leadId,
+                                        // 'id' => $balanceResult->getId() ?? 0
+                                    ]
+                                )),
                                 // (new TemplateBundle(
                                 //     templatePath: 'components/editLeadDepositForm.tpl.php',
                                 //     variables: [

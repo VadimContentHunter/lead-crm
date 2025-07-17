@@ -175,7 +175,7 @@ class CrmSchemaProvider extends ASchemaProvider
                     lead_uid VARCHAR(64) NOT NULL PRIMARY KEY,
                     current DOUBLE(10,2) NOT NULL DEFAULT 0.00,
                     deposit DOUBLE(10,2) NOT NULL DEFAULT 0.00,
-                    potation DOUBLE(10,2) NOT NULL DEFAULT 0.00,
+                    potential DOUBLE(10,2) NOT NULL DEFAULT 0.00,
                     active DOUBLE(10,2) NOT NULL DEFAULT 0.00,
 
                     FOREIGN KEY (lead_uid) REFERENCES inv_leads(uid) ON DELETE CASCADE

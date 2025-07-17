@@ -20,7 +20,7 @@ class InvBalanceMapper
             leadUid: $dto->lead_uid,
             current: $dto->current,
             deposit: $dto->deposit,
-            potation: $dto->potation,
+            potential: $dto->potential,
             active: $dto->active,
         );
     }
@@ -37,7 +37,7 @@ class InvBalanceMapper
             lead_uid: $entity->leadUid,
             current: $entity->current,
             deposit: $entity->deposit,
-            potation: $entity->potation,
+            potential: $entity->potential,
             active: $entity->active,
         );
     }
@@ -53,7 +53,7 @@ class InvBalanceMapper
         return new InvBalance(
             leadUid: $dto->leadUid,
             deposit: $dto->deposit,
-            potation: $dto->potation,
+            potential: $dto->potential,
             current: 0.0,
             active: 0.0,
         );
@@ -70,7 +70,7 @@ class InvBalanceMapper
         return new DbInvBalanceDto(
             lead_uid: $dto->leadUid,
             deposit: $dto->deposit,
-            potation: $dto->potation,
+            potential: $dto->potential,
             current: 0.0,
             active: 0.0,
         );
@@ -88,7 +88,7 @@ class InvBalanceMapper
             'lead_uid' => $dto->lead_uid,
             'current' => $dto->current,
             'deposit' => $dto->deposit,
-            'potation' => $dto->potation,
+            'potential' => $dto->potential,
             'active' => $dto->active,
         ];
     }
@@ -105,7 +105,7 @@ class InvBalanceMapper
             lead_uid: $data['lead_uid'],
             current: (float) ($data['current'] ?? 0.0),
             deposit: (float) ($data['deposit'] ?? 0.0),
-            potation: (float) ($data['potation'] ?? 0.0),
+            potential: (float) ($data['potential'] ?? 0.0),
             active: (float) ($data['active'] ?? 0.0),
         );
     }
@@ -129,8 +129,8 @@ class InvBalanceMapper
             $fields['deposit'] = $dto->deposit;
         }
 
-        if ($dto->potation !== null) {
-            $fields['potation'] = $dto->potation;
+        if ($dto->potential !== null) {
+            $fields['potential'] = $dto->potential;
         }
 
         return $fields;

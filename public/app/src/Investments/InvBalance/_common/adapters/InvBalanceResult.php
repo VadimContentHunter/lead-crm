@@ -29,9 +29,9 @@ class InvBalanceResult extends AResult implements IInvBalanceResult
         return $this->getInvBalance()?->deposit;
     }
 
-    public function getPotation(): ?float
+    public function getPotential(): ?float
     {
-        return $this->getInvBalance()?->potation;
+        return $this->getInvBalance()?->potential;
     }
 
     public function getActive(): ?float

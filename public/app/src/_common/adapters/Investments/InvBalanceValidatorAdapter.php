@@ -28,9 +28,9 @@ class InvBalanceValidatorAdapter extends AValidatorAdapter
             return null;
         });
 
-        $validator->addRule('potation', function ($value) {
+        $validator->addRule('potential', function ($value) {
             if (!is_numeric($value) || $value < 0) {
-                return 'Поле potation должно быть неотрицательным числом';
+                return 'Поле potential должно быть неотрицательным числом';
             }
             return null;
         });

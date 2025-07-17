@@ -10,7 +10,7 @@ class InputInvBalanceDto
     public function __construct(
         public string $leadUid,
         public float $deposit = 0.0,
-        public float $potation = 0.0,
+        public float $potential = 0.0,
     ) {
     }
 }

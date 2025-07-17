@@ -33,7 +33,7 @@ interface IInvBalanceResult extends IResult
     /**
      * @return float|null
      */
-    public function getPotation(): ?float;
+    public function getPotential(): ?float;
 
     /**
      * @return float|null

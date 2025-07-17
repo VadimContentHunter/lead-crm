@@ -11,7 +11,7 @@ class DbInvBalanceDto
         public string $lead_uid,
         public float $current,
         public float $deposit,
-        public float $potation,
+        public float $potential,
         public float $active,
     ) {
     }

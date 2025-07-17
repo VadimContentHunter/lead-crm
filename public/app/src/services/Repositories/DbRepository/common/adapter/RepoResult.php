@@ -67,6 +67,11 @@ class RepoResult implements IRepoResult
         return $this->data === null;
     }
 
+    public function isEmpty(): bool
+    {
+        return empty($this->data) && empty($this->error);
+    }
+
     /**
      * Обрабатывает успешный результат через callback
      *

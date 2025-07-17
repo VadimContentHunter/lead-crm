@@ -5,9 +5,11 @@ namespace crm\src\controllers;
 use Throwable;
 use crm\src\services\AppContext\IAppContext;
 use crm\src\services\TemplateRenderer\HeaderManager;
+use crm\src\components\UserManagement\_entities\User;
 use crm\src\Investments\_application\InvestmentService;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
+use crm\src\components\UserManagement\_common\mappers\UserMapper;
 
 class InvestPage
 {
@@ -26,13 +28,17 @@ class InvestPage
 
     public function renderPage(): void
     {
+        $accountManagerFunction = function (int $userId) {
+            return $this->appContext->getUserManagement()->get()->executeById($userId)->getLogin() ?? '—';
+        };
+
         $this->show(
             components: [
                 'components' => [
                     (new TemplateBundle(
                         templatePath: 'containers/average-in-line-component.tpl.php',
                         variables: [
-                            // 'component' => $this->getRenderTable($leads),
+                            'component' => $this->service->getInvLeadTable($accountManagerFunction)->getString() ?? '',
                             // 'filterPanel' => (new TemplateBundle(
                             //     templatePath: 'partials/filtersLead.tpl.php',
                             //     variables: [

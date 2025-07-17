@@ -181,9 +181,13 @@ abstract class AResultRepository implements IResultRepository
                     ->where('id = :id')
                     ->limit(1)
                     ->select(['id' => $id])
-            )->first()->getObjectOrNullWithMapper($this->getEntityClass(), $this->fromArray());
+            );
 
-            return $this->wrapSuccess($entity);
+            if (!$entity->isSuccess() || $entity->isEmpty()) {
+                return $this->wrapFailure($entity->getError() ?? new \RuntimeException("Не удалось получить"));
+            }
+
+            return $this->wrapSuccess($entity->first()->getObjectOrNullWithMapper($this->getEntityClass(), $this->fromArray()));
         } catch (Throwable $e) {
             return $this->wrapFailure($e);
         }

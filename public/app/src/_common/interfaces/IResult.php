@@ -32,6 +32,8 @@ interface IResult
 
     public function getString(): ?string;
 
+    public function isEmpty(): bool;
+
     /**
      * @return mixed[]
      */

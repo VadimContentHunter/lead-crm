@@ -27,7 +27,7 @@ class TypedTableTransformer implements ITableTransformer
 
         foreach ($rows as $row) {
             $transformedRow = [];
-            $row_id = $row['id'] ?? 0;
+            $row_id = $row['id'] ?? $row['uid'] ?? 0;
 
             foreach ($header as $columnName) {
                 $value = $row[$columnName] ?? null;
@@ -52,7 +52,7 @@ class TypedTableTransformer implements ITableTransformer
         $filteredRows = [];
         foreach ($rows as $row) {
             $filteredRow = [];
-            $row_id = $row['id'] ?? 0;
+            $row_id = $row['id'] ?? $row['uid'] ?? 0;
             foreach ($allowedColumns as $column) {
                 $value = $row[$column] ?? null;
                 $filteredRow[] = $this->transformCell($column, $value, $row_id);

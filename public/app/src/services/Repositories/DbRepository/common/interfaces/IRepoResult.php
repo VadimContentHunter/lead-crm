@@ -22,6 +22,8 @@ interface IRepoResult
 
     public function hasNull(): bool;
 
+    public function isEmpty(): bool;
+
     /**
      * Обработать успешный результат через callback
      *

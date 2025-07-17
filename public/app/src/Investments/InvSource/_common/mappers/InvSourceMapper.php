@@ -12,48 +12,53 @@ use crm\src\Investments\InvSource\_common\DTOs\InvSourceInputDto;
 class InvSourceMapper
 {
     /**
-     * Преобразует DTO из БД в сущность.
+     * Преобразует DTO из БД в сущность источника.
      *
      * @param  DbInvSourceDto $dto
      * @return InvSource
+     *
+     * @throws \InvalidArgumentException Если отсутствует id
      */
     public static function fromDbToEntity(DbInvSourceDto $dto): InvSource
     {
         return new InvSource(
+            id: $dto->id ?? throw new \InvalidArgumentException('id is required'),
             code: $dto->code,
             label: $dto->label
         );
     }
 
     /**
-     * Преобразует сущность в DTO для БД.
+     * Преобразует сущность источника в DTO для БД.
      *
      * @param  InvSource $entity
-     * @param  int|null $id
+     * @param  int|null $id     Явно переданный ID (если
+     *                          нужно переопределить)
      * @return DbInvSourceDto
      */
     public static function fromEntityToDb(InvSource $entity, ?int $id = null): DbInvSourceDto
     {
         return new DbInvSourceDto(
+            id: $id ?? $entity->id,
             code: $entity->code,
-            label: $entity->label,
-            id: $id,
+            label: $entity->label
         );
     }
 
     /**
-     * Преобразует входной DTO в сущность.
+     * Преобразует входной DTO в сущность источника.
      *
      * @param  InvSourceInputDto $dto
      * @return InvSource
      *
-     * @throws \InvalidArgumentException
+     * @throws \InvalidArgumentException Если отсутствует обязательное поле
      */
     public static function fromInputToEntity(InvSourceInputDto $dto): InvSource
     {
         return new InvSource(
+            id: $dto->id ?? 0,
             code: $dto->code ?? throw new \InvalidArgumentException('code is required'),
-            label: $dto->label ?? throw new \InvalidArgumentException('label is required'),
+            label: $dto->label ?? throw new \InvalidArgumentException('label is required')
         );
     }
 
@@ -63,22 +68,22 @@ class InvSourceMapper
      * @param  InvSourceInputDto $dto
      * @return DbInvSourceDto
      *
-     * @throws \InvalidArgumentException
+     * @throws \InvalidArgumentException Если отсутствует обязательное поле
      */
     public static function fromInputToDb(InvSourceInputDto $dto): DbInvSourceDto
     {
         return new DbInvSourceDto(
+            id: $dto->id,
             code: $dto->code ?? throw new \InvalidArgumentException('code is required'),
-            label: $dto->label ?? throw new \InvalidArgumentException('label is required'),
-            id: null
+            label: $dto->label ?? throw new \InvalidArgumentException('label is required')
         );
     }
 
     /**
-     * Преобразует DTO для БД в ассоциативный массив.
+     * Преобразует DTO из БД в ассоциативный массив.
      *
      * @param  DbInvSourceDto $dto
-     * @return array<string,mixed>
+     * @return array<string, mixed>
      */
     public static function fromDbToArray(DbInvSourceDto $dto): array
     {
@@ -90,7 +95,7 @@ class InvSourceMapper
     }
 
     /**
-     * Преобразует массив данных из БД в DTO.
+     * Преобразует ассоциативный массив в DTO из БД.
      *
      * @param  array<string, mixed> $data
      * @return DbInvSourceDto
@@ -98,14 +103,14 @@ class InvSourceMapper
     public static function fromArrayToDb(array $data): DbInvSourceDto
     {
         return new DbInvSourceDto(
-            code: $data['code'],
-            label: $data['label'],
             id: isset($data['id']) ? (int) $data['id'] : null,
+            code: $data['code'],
+            label: $data['label']
         );
     }
 
     /**
-     * Преобразует массив в входной DTO (InvSourceInputDto).
+     * Преобразует массив в входной DTO источника.
      *
      * @param  array<string, mixed> $data
      * @return InvSourceInputDto
@@ -113,18 +118,17 @@ class InvSourceMapper
     public static function fromArrayToInput(array $data): InvSourceInputDto
     {
         return new InvSourceInputDto(
-            code: isset($data['code']) ? (string) $data['code'] : null,
-            label: isset($data['label']) ? (string) $data['label'] : null,
             id: isset($data['id']) ? (int) $data['id'] : null,
+            code: isset($data['code']) ? (string) $data['code'] : null,
+            label: isset($data['label']) ? (string) $data['label'] : null
         );
     }
 
-
     /**
-     * Возвращает только заполненные поля из входного DTO.
+     * Извлекает только непустые (установленные) поля из входного DTO.
      *
      * @param  InvSourceInputDto $dto
-     * @return array<string,mixed>
+     * @return array<string, mixed>
      */
     public static function fromInputExtractFilledFields(InvSourceInputDto $dto): array
     {

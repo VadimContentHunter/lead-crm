@@ -13,6 +13,13 @@ $overlay_items = $overlay_items ?? [];
 <!-- Основная страница -->
 <div class="page-container">
     <section class="overlay-main">
+        <div class="overlay-wrapper">
+            <div class="overlay-loader loader-main" id="overlay-loader-main" style="display: none;">
+                <div class="icon-wrapper-loader">
+                    <i class="fa-solid fa-spinner"></i>
+                </div>
+            </div>
+        </div>
         <?= $overlay_main_content ?>
     </section>
     

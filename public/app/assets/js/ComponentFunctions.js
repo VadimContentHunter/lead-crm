@@ -586,18 +586,18 @@ export const ComponentFunctions = {
     },
 
     /**
- * Назначает обработчик, который выполняет JSON-RPC запрос при клике на кнопку,
- * вызывает переданный коллбек с данными и обрабатывает их через processingPayload.
- *
- * @param {Object} config - Конфигурация запроса
- * @param {string} config.triggerSelector - CSS-селектор кнопки
- * @param {string} config.method - Название метода JSON-RPC
- * @param {string} [config.endpoint='/api'] - Адрес JSON-RPC сервера
- * @param {Object} [config.jsonContent={}] - Данные, отправляемые в теле запроса
- * @param {function(any):void} [config.callbackOnData] - Коллбек, вызываемый при получении данных (всегда вызывается перед обработкой)
- * @param {function(Error):void} [config.callbackOnError] - Коллбек, вызываемый при ошибке (по умолчанию onErrorDefaultFunction)
- * @param {function():void} [config.callbackBeforeSend] - Коллбек, вызываемый сразу после клика, до отправки запроса
- */
+     * Назначает обработчик, который выполняет JSON-RPC запрос при клике на кнопку,
+     * вызывает переданный коллбек с данными и обрабатывает их через processingPayload.
+     *
+     * @param {Object} config - Конфигурация запроса
+     * @param {string} config.triggerSelector - CSS-селектор кнопки
+     * @param {string} config.method - Название метода JSON-RPC
+     * @param {string} [config.endpoint='/api'] - Адрес JSON-RPC сервера
+     * @param {Object} [config.jsonContent={}] - Данные, отправляемые в теле запроса
+     * @param {function(any):void} [config.callbackOnData] - Коллбек, вызываемый при получении данных (всегда вызывается перед обработкой)
+     * @param {function(Error):void} [config.callbackOnError] - Коллбек, вызываемый при ошибке (по умолчанию onErrorDefaultFunction)
+     * @param {function():void} [config.callbackBeforeSend] - Коллбек, вызываемый сразу после клика, до отправки запроса
+     */
     attachJsonRpcLoadTrigger({
         triggerSelector,
         method,
@@ -639,6 +639,52 @@ export const ComponentFunctions = {
             transport.send(jsonContent);
         });
     },
+
+    /**
+     * Немедленно выполняет JSON-RPC запрос, аналогично attachJsonRpcLoadTrigger,
+     * но без триггера и клика — всё запускается сразу.
+     *
+     * @param {Object} config - Конфигурация запроса
+     * @param {string} config.method - Название метода JSON-RPC
+     * @param {string} [config.endpoint='/api'] - Адрес JSON-RPC сервера
+     * @param {Object} [config.jsonContent={}] - Данные, отправляемые в теле запроса
+     * @param {function(any):void} [config.callbackOnData] - Коллбек, вызываемый при получении данных
+     * @param {function(Error):void} [config.callbackOnError] - Коллбек, вызываемый при ошибке
+     * @param {function():void} [config.callbackBeforeSend] - Коллбек, вызываемый до отправки запроса
+     */
+    runJsonRpcLoadImmediately({
+        method,
+        endpoint = '/api',
+        jsonContent = {},
+        callbackOnData = null,
+        callbackOnError = onErrorDefaultFunction,
+        callbackBeforeSend = null,
+    }) {
+        const transport = new JsonRpcTransport(method, {
+            endpoint,
+            onContentUpdate: () => { },
+            onData: (payload) => {
+                if (typeof callbackOnData === 'function') {
+                    callbackOnData(payload);
+                }
+                processingPayload(payload);
+            },
+            onError: (error) => {
+                if (typeof callbackOnError === 'function') {
+                    callbackOnError(error);
+                } else {
+                    onErrorDefaultFunction(error);
+                }
+            }
+        });
+
+        if (typeof callbackBeforeSend === 'function') {
+            callbackBeforeSend();
+        }
+
+        transport.send(jsonContent);
+    },
+
 
 
     /**

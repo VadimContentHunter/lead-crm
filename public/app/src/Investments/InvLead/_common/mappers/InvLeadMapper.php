@@ -3,9 +3,11 @@
 namespace crm\src\Investments\InvLead\_common\mappers;
 
 use DateTimeImmutable;
+use crm\src\Investments\InvSource\_entities\InvSource;
+use crm\src\Investments\InvStatus\_entities\InvStatus;
+use crm\src\Investments\InvLead\_entities\SimpleInvLead;
 use crm\src\Investments\InvLead\_common\DTOs\DbInvLeadDto;
 use crm\src\Investments\InvLead\_common\DTOs\InvLeadInputDto;
-use crm\src\Investments\InvLead\_entities\SimpleInvLead;
 use crm\src\Investments\InvLead\_common\DTOs\InvAccountManagerDto;
 
 /**
@@ -32,8 +34,8 @@ class InvLeadMapper
                 ? new InvAccountManagerDto($dto->accountManagerId, '') // login неизвестен
                 : null,
             visible: $dto->visible,
-            source: null,
-            status: null
+            source: $dto->sourceId !== null ? new InvSource($dto->sourceId, '', '') : null,
+            status: $dto->statusId !== null ? new InvStatus($dto->statusId, '', '') : null
         );
     }
 

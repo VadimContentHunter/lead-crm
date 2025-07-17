@@ -9,6 +9,7 @@ use crm\src\controllers\LoginPage;
 use crm\src\controllers\InvestPage;
 use crm\src\controllers\LogoutPage;
 use crm\src\controllers\HomeController;
+use crm\src\controllers\InvestEditPage;
 use crm\src\controllers\TestController;
 use crm\src\controllers\AccessDeniedPage;
 use crm\src\controllers\API\ApiController;
@@ -140,13 +141,6 @@ function loadRoutes(PDO $pdo, IAppContext $appContext, LoggerInterface $logger =
         // PAGES-LEAD
 
         new Route(
-            pattern: '^/page/lead-all/?$',
-            className: LeadPage::class,
-            methodName: 'showAllLeadPage',
-            extraData: [$appContext]
-        ),
-
-        new Route(
             pattern: '^/page/lead-edit/(\d+)/?$',
             className: LeadPage::class,
             methodName: 'showEditLeadPage',
@@ -154,6 +148,13 @@ function loadRoutes(PDO $pdo, IAppContext $appContext, LoggerInterface $logger =
         ),
 
         // PAGES-OTHER
+
+        new Route(
+            pattern: '^/invest/lead-edit/(\d+)/?$',
+            className: InvestEditPage::class,
+            methodName: 'renderPage',
+            extraData: [$appContext]
+        ),
 
         new Route(
             pattern: '^/invest/?$',

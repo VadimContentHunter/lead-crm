@@ -129,7 +129,7 @@ final class InvestmentService
             rows: $rows,
             attributes: ['id' => 'inv-lead-table-1', 'data-module' => 'inv-leads'],
             classes: ['base-table'],
-            hrefButton: '/page/lead-edit',
+            hrefButton: '/invest/lead-edit',
             hrefButtonDel: '/',
             attributesWrapper: ['table-r-id' => 'inv-lead-table-1'],
             allowedColumns: $headers,
@@ -307,17 +307,31 @@ final class InvestmentService
      * Возвращает данные для формы создания лида.
      *
      * @param array<string,mixed> $params
-     * @param array<string,mixed> $extraData Данные, которые нужно добавить/переопределить в итоговом массиве
+     * @param callable<mixed[]>|null $accountManagerFetcher Функция вида (int $id): array|null
+     * @param array<string,mixed> $extraData             Данные, которые нужно
+     *                                                   добавить/переопределить в
+     *                                                   итоговом массиве
      */
-    public function getFormCreateData(array $params, array $extraData = []): IInvestResult
-    {
-        $id = $params['id'] ?? 0;
+    public function getFormCreateData(
+        array $params,
+        ?callable $accountManagerFetcher = null,
+        array $extraData = [],
+    ): IInvestResult {
+        $uid = isset($params['id']) ? (int) $params['id']
+                                : (isset($params['uid']) ? (int) $params['uid'] : 0);
 
-        if (filter_var($id, FILTER_VALIDATE_INT) === false) {
+        if (filter_var($uid, FILTER_VALIDATE_INT) === false) {
             return InvestResult::failure(new \RuntimeException('Неверный идентификатор'));
         }
 
-        if ((int)$id === 0) {
+        // === Новый лид
+        if ($uid === 0) {
+            // accountManager как массив по колбэку
+            $managers = null;
+            if ($accountManagerFetcher) {
+                $managers = $accountManagerFetcher(0);
+            }
+
             $statuses = $this->invStatusRepo->getAll()->mapEach(
                 fn($item) => $item instanceof DbInvStatusDto
                     ? ['value' => $item->id, 'text' => $item->label]
@@ -330,22 +344,70 @@ final class InvestmentService
                 : null
             )->getArray();
 
-            // Добавляем заглушки с selected => true
             array_unshift($statuses, ['value' => '', 'text' => '— Выберите статус —', 'selected' => true]);
             array_unshift($sources,  ['value' => '', 'text' => '— Выберите источник —', 'selected' => true]);
+            array_unshift($managers, ['value' => '', 'text' => '— Выберите менеджера —', 'selected' => true]);
 
-            // Базовые данные
             $data = [
                 'status_id' => $statuses,
                 'source_id' => $sources,
+                'account_manager_id' => $managers
             ];
 
-            // Объединение с внешними данными
-            $data = array_merge($data, $extraData);
-
-            return InvestResult::success($data);
+            return InvestResult::success(array_merge($data, $extraData));
         }
 
-        return InvestResult::success();
+        // === Существующий лид
+        $lead = $this->invLeadRepo->getById($uid)->getData();
+        if (!($lead instanceof DbInvLeadDto) && !($lead instanceof SimpleInvLead)) {
+            return InvestResult::failure(new \RuntimeException('Неверный идентификатор'));
+        }
+
+        if ($lead instanceof DbInvLeadDto) {
+            $lead = InvLeadMapper::fromDbToEntity($lead);
+        }
+
+
+        $statuses = $this->invStatusRepo->getAll()->mapEach(
+            function (DbInvStatusDto $status) use ($lead) {
+                return [
+                    'value' => $status->id,
+                    'text' => $status->label,
+                    'selected' => $status->id === $lead->status?->id
+                ];
+            }
+        )->getArray();
+
+        $sources = $this->invSourceRepo->getAll()->mapEach(
+            function (DbInvSourceDto $source) use ($lead) {
+                return [
+                    'value' => $source->id,
+                    'text' => $source->label,
+                    'selected' => $source->id === $lead->source?->id
+                ];
+            }
+        )->getArray();
+
+        // accountManager как массив по колбэку
+        $managers = null;
+        if ($accountManagerFetcher && $lead->accountManager?->id) {
+            $managers = $accountManagerFetcher($lead->accountManager->id);
+        }
+
+        array_unshift($statuses, ['value' => '', 'text' => '— Выберите статус —', 'selected' => false]);
+        array_unshift($sources,  ['value' => '', 'text' => '— Выберите источник —', 'selected' => false]);
+        array_unshift($managers, ['value' => '', 'text' => '— Выберите менеджера —', 'selected' => false]);
+
+        $data = [
+            'full_name' => $lead->fullName,
+            'contact' => $lead->contact,
+            'phone' => $lead->phone,
+            'email' => $lead->email,
+            'account_manager_id' => $managers ?? $lead->accountManager?->id ?? '',
+            'status_id' => $statuses,
+            'source_id' => $sources,
+        ];
+
+        return InvestResult::success(array_merge($data, $extraData));
     }
 }

@@ -117,6 +117,23 @@ class InvLeadController
      */
     public function getFormCreateData(array $params): void
     {
+        $accountManagerFunction = function (int $userId) {
+            // return $this->appContext->getUserManagement()->get()->executeById($userId)->getLogin() ?? '—';
+
+            $result = $this->appContext->getUserManagement()->get()->executeAll()->mapEach(
+                function (array|User $user) use ($userId) {
+                    $userArray = is_array($user) ? $user : UserMapper::toArray($user);
+                    return [
+                        'value' => $userArray['id'],
+                        'text' => $userArray['login'],
+                        'selected' => $userArray['id'] === $userId,
+                    ];
+                }
+            )->getArray();
+            // array_unshift($result, ['value' => '', 'text' => '— Выберите менеджера —', 'selected' => true]);
+            return $result;
+        };
+
         $managersLogin = $this->appContext->getUserManagement()->get()->executeAll()
             ->mapEach(function (User $user) {
                 $userArray = UserMapper::toArray($user);
@@ -134,9 +151,7 @@ class InvLeadController
         array_unshift($managersLogin, ['value' => '', 'text' => '— Выберите менеджера —', 'selected' => true]);
         $result = $this->service->getFormCreateData(
             $params,
-            [
-                'account_manager_id' => $managersLogin
-            ]
+            $accountManagerFunction,
         );
         if ($result->isSuccess()) {
             $this->rpc->replyData([

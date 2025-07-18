@@ -237,9 +237,28 @@ class InvLeadController
         }
     }
 
-     /**
-      * @param array<string,mixed> $params
-      */
+    /**
+     * @param array < string,mixed > $params
+     */
+    public function getFormActivityData(array $params): void
+    {
+        $result = $this->service->getBalanceData($params);
+        if ($result->isSuccess()) {
+            $this->rpc->replyData([
+                'type' => 'success',
+                'data' =>  $result->getData()
+            ]);
+        } else {
+            $errorMessage = $result->getError()?->getMessage() ?? 'Произошла ошибка';
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Произошла ошибка: ' . $errorMessage]
+            ]);
+        }
+    }
+
+    /**
+     * @param array<string,mixed> $params
+     */
     public function getBalance(array $params): void
     {
         $result = $this->service->getBalanceData($params);
@@ -255,6 +274,7 @@ class InvLeadController
             ]);
         }
     }
+
 
     /**
      * @param array<string,mixed> $params

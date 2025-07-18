@@ -48,6 +48,7 @@ class ManageInvSource
                 );
             }
 
+            $dto->id = $result->getInt() ?? 0;
             $entity = InvSourceMapper::fromDbToEntity($dto);
             return InvSourceResult::success($entity);
         } catch (\Throwable $e) {

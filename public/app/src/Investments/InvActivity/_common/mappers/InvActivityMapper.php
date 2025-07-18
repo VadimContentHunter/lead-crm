@@ -1,6 +1,6 @@
 <?php
 
-namespace crm\src\Investments\InvActivity\_mappers;
+namespace crm\src\Investments\InvActivity\_common\mappers;
 
 use DateTimeImmutable;
 use crm\src\Investments\InvActivity\_entities\DealType;
@@ -176,6 +176,30 @@ class InvActivityMapper
             direction: $data['direction'],
             result: isset($data['result']) ? (float) $data['result'] : null,
             id: isset($data['id']) ? (int) $data['id'] : null,
+        );
+    }
+
+    /**
+     * Преобразует массив в входной DTO (InvActivityInputDto).
+     *
+     * @param  array<string, mixed> $data
+     * @return InvActivityInputDto
+     */
+    public static function fromArrayToInput(array $data): InvActivityInputDto
+    {
+        return new InvActivityInputDto(
+            id: isset($data['id']) ? (int) $data['id'] : null,
+            InvActivityHash: isset($data['activity_hash']) ? (string) $data['activity_hash'] : null,
+            leadUid: isset($data['lead_uid']) ? (string) $data['lead_uid'] : null,
+            type: isset($data['type']) ? (string) $data['type'] : null,
+            openTime: isset($data['open_time']) ? (string) $data['open_time'] : null,
+            closeTime: isset($data['close_time']) ? (string) $data['close_time'] : null,
+            pair: isset($data['pair']) ? (string) $data['pair'] : null,
+            openPrice: isset($data['open_price']) ? (float) $data['open_price'] : null,
+            closePrice: isset($data['close_price']) ? (float) $data['close_price'] : null,
+            amount: isset($data['amount']) ? (float) $data['amount'] : null,
+            direction: isset($data['direction']) ? (string) $data['direction'] : null,
+            result: isset($data['result']) ? (float) $data['result'] : null
         );
     }
 

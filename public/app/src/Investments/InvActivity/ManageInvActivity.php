@@ -3,7 +3,7 @@
 namespace crm\src\Investments\InvActivity;
 
 use crm\src\_common\interfaces\IValidation;
-use crm\src\Investments\InvActivity\_mappers\InvActivityMapper;
+use crm\src\Investments\InvActivity\_common\mappers\InvActivityMapper;
 use crm\src\Investments\InvActivity\_common\DTOs\InvActivityInputDto;
 use crm\src\Investments\InvActivity\_common\DTOs\DbInvActivityDto;
 use crm\src\Investments\InvActivity\_common\adapters\InvActivityResult;

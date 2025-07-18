@@ -9,11 +9,10 @@ use crm\src\Investments\InvStatus\ManageInvStatus;
 use crm\src\services\TableRenderer\TableDecorator;
 use crm\src\Investments\InvBalance\ManageInvBalance;
 use crm\src\services\TableRenderer\TableRenderInput;
-use crm\src\services\TableRenderer\TableTransformer;
-use crm\src\Investments\InvSource\_entities\InvSource;
-use crm\src\Investments\InvStatus\_entities\InvStatus;
+use crm\src\Investments\InvActivity\ManageInvActivity;
 use crm\src\Investments\InvLead\_entities\SimpleInvLead;
 use crm\src\services\TableRenderer\TypedTableTransformer;
+use crm\src\Investments\InvActivity\_entities\InvActivity;
 use crm\src\Investments\InvLead\_common\DTOs\DbInvLeadDto;
 use crm\src\Investments\_application\adapters\InvestResult;
 use crm\src\Investments\_application\interfaces\IInvestResult;
@@ -23,7 +22,6 @@ use crm\src\Investments\InvStatus\_common\DTOs\DbInvStatusDto;
 use crm\src\Investments\InvLead\_common\adapters\InvLeadResult;
 use crm\src\_common\adapters\Investments\SourceValidatorAdapter;
 use crm\src\_common\adapters\Investments\StatusValidatorAdapter;
-use crm\src\Investments\InvBalance\_common\DTOs\DbInvBalanceDto;
 use crm\src\_common\adapters\Investments\InvLeadValidatorAdapter;
 use crm\src\Investments\InvActivity\_common\DTOs\DbInvActivityDto;
 use crm\src\Investments\InvLead\_common\interfaces\IInvLeadResult;
@@ -33,8 +31,10 @@ use crm\src\Investments\InvSource\_common\adapters\InvSourceResult;
 use crm\src\Investments\InvStatus\_common\adapters\InvStatusResult;
 use crm\src\_common\adapters\Investments\InvBalanceValidatorAdapter;
 use crm\src\Investments\InvBalance\_common\mappers\InvBalanceMapper;
+use crm\src\_common\adapters\Investments\InvActivityValidatorAdapter;
 use crm\src\Investments\InvBalance\_common\adapters\InvBalanceResult;
 use crm\src\services\TableRenderer\typesTransform\TextInputTransform;
+use crm\src\Investments\InvActivity\_common\mappers\InvActivityMapper;
 use crm\src\Investments\InvLead\_common\interfaces\IInvLeadRepository;
 use crm\src\Investments\InvSource\_common\interfaces\IInvSourceResult;
 use crm\src\Investments\InvStatus\_common\interfaces\IInvStatusResult;
@@ -47,6 +47,7 @@ use crm\src\Investments\InvBalance\_common\interfaces\IInvBalanceRepository;
 use crm\src\Investments\InvComment\_common\interfaces\IInvCommentRepository;
 use crm\src\Investments\InvDeposit\_common\interfaces\IInvDepositRepository;
 use crm\src\Investments\InvActivity\_common\interfaces\IInvActivityRepository;
+use crm\src\Investments\InvLead\_entities\InvLead;
 
 final class InvestmentService
 {
@@ -54,6 +55,7 @@ final class InvestmentService
     private ManageInvSource $manageInvSource;
     private ManageInvStatus $manageInvStatus;
     private ManageInvBalance $manageInvBalance;
+    private ManageInvActivity $manageInvActivity;
 
     public function __construct(
         private IInvActivityRepository $invActivityRepo,
@@ -68,6 +70,7 @@ final class InvestmentService
         $this->manageInvSource = new ManageInvSource($this->invSourceRepo, new SourceValidatorAdapter());
         $this->manageInvStatus = new ManageInvStatus($this->invStatusRepo, new StatusValidatorAdapter());
         $this->manageInvBalance = new ManageInvBalance($this->invBalanceRepo, new InvBalanceValidatorAdapter());
+        $this->manageInvActivity = new ManageInvActivity($this->invActivityRepo, new InvActivityValidatorAdapter());
     }
 
     // === CRUD: Лиды ===
@@ -98,6 +101,11 @@ final class InvestmentService
         }
 
         return InvLeadResult::failure($resultUid->getError() ?? new \RuntimeException("Ошибка при обновлении лида"));
+    }
+
+    public function getAllLead(): IInvLeadResult
+    {
+        return $this->invLeadRepo->getAll()->mapEach([InvLeadMapper::class, 'fromDbToEntity']);
     }
 
     /**
@@ -394,20 +402,20 @@ final class InvestmentService
                 'id' => 'ID',
                 'activity_hash' => 'Хеш сделки',
                 'lead_uid' => 'UID лида',
-                'type' => 'Тип',
-                'open_time' => 'Открыта',
-                'close_time' => 'Закрыта',
+                'type' => 'Тип', // Открыта/закрыта
+                'open_time' => 'Время открытия',
+                'close_time' => 'Время закрытия',
                 'pair' => 'Пара',
                 'open_price' => 'Цена открытия',
                 'close_price' => 'Цена закрытия',
                 'amount' => 'Объём',
-                'direction' => 'Направление',
+                'direction' => 'Направление', // long/short
                 'result' => 'Результат',
             ],
         );
 
         $transformers = [
-        new TextInputTransform(['pair', 'type', 'direction']),
+            new TextInputTransform(['pair', 'type', 'direction']),
         ];
 
         $tableFacade = new TableFacade(new TypedTableTransformer($transformers), new TableDecorator());
@@ -415,6 +423,18 @@ final class InvestmentService
         return InvActivityResult::success($tableFacade->renderFilteredTable($input)->asHtml());
     }
 
+    /**
+     * @param array<string,mixed> $data
+     */
+    public function createActivity(array $data): IInvActivityResult
+    {
+        $dbDtoResult = $this->manageInvActivity->create(InvActivityMapper::fromArrayToInput($data));
+        if ($dbDtoResult->isSuccess()) {
+            return $dbDtoResult;
+        }
+
+        return InvActivityResult::failure($dbDtoResult->getError() ?? new \RuntimeException("Ошибка при создании активности"));
+    }
 
     // === Формы ===
 

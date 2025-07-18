@@ -39,39 +39,39 @@ function onClickOutside(element, callback, excludeElements = []) {
 
 
 document.addEventListener('DOMContentLoaded', function () {
-    // const notificationContainer = document.querySelector('.notification-container');
-    // const overlayMain = document.querySelector('.overlay-main');
-    // const overlayLoader = document.querySelector('#overlay-loader');
+    const notificationContainer = document.querySelector('.notification-container');
+    const overlayMain = document.querySelector('.overlay-main');
+    const overlayLoader = document.querySelector('#overlay-loader');
     
-    // const toggleScroll = (shouldHide) => {
-    //     const contentContainerElement = document.querySelector('.content-container');
-    //     if (contentContainerElement instanceof HTMLElement) {
-    //         contentContainerElement.style.overflow = shouldHide ? 'hidden' : '';
-    //     }
-    // };
+    const toggleScroll = (shouldHide) => {
+        const contentContainerElement = document.querySelector('.content-container');
+        if (contentContainerElement instanceof HTMLElement) {
+            contentContainerElement.style.overflow = shouldHide ? 'hidden' : '';
+        }
+    };
 
-    // const buttonSource = document.querySelector('#inv-sources-btn');
-    // bindButtonToContainer(buttonSource, '.overlay-content', function (container) {
-    //     if (container instanceof HTMLElement) {
-    //         container.style = 'display: flex;';
-    //         toggleScroll(true);
+    const buttonAddActivity = document.querySelector('#add-inv-activity-btn');
+    bindButtonToContainer(buttonAddActivity, '.overlay-content', function (container) {
+        if (container instanceof HTMLElement) {
+            container.style = 'display: flex;';
+            toggleScroll(true);
 
-    //         const rightSidebar = container.querySelector('.right-sidebar.inv-source-menu-id');
-    //         if (rightSidebar instanceof HTMLElement) {
-    //             rightSidebar.style = 'display: flex;';
+            const rightSidebar = container.querySelector('.right-sidebar.add-activity-menu-id');
+            if (rightSidebar instanceof HTMLElement) {
+                rightSidebar.style = 'display: flex;';
 
-    //             // Добавляем обработчик с задержкой, чтобы клик по кнопке не сработал
-    //             const removeListener = onClickOutside(rightSidebar, () => {
-    //                 rightSidebar.style.display = 'none';
-    //                 container.style.display = 'none';
-    //                 toggleScroll(false);
+                // Добавляем обработчик с задержкой, чтобы клик по кнопке не сработал
+                const removeListener = onClickOutside(rightSidebar, () => {
+                    rightSidebar.style.display = 'none';
+                    container.style.display = 'none';
+                    toggleScroll(false);
 
-    //                 removeListener();
-    //             }, [buttonSource, notificationContainer, overlayMain, overlayLoader]);
+                    removeListener();
+                }, [buttonAddActivity, notificationContainer, overlayMain, overlayLoader]);
 
-    //         }
-    //     }
-    // });
+            }
+        }
+    });
 
 
     // const buttonStatus = document.querySelector('#inv-statuses-btn');

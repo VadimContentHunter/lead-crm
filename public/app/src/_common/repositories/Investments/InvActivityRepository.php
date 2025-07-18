@@ -4,7 +4,7 @@ namespace crm\src\_common\repositories\Investments;
 
 use crm\src\_common\interfaces\AResultRepository;
 use crm\src\services\Repositories\QueryBuilder\QueryBuilder;
-use crm\src\Investments\InvActivity\_mappers\InvActivityMapper;
+use crm\src\Investments\InvActivity\_common\mappers\InvActivityMapper;
 use crm\src\Investments\InvActivity\_common\DTOs\DbInvActivityDto;
 use crm\src\Investments\InvActivity\_common\InvActivityCollection;
 use crm\src\Investments\InvActivity\_common\adapters\InvActivityResult;

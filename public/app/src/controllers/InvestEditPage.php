@@ -4,10 +4,14 @@ namespace crm\src\controllers;
 
 use Throwable;
 use crm\src\services\AppContext\IAppContext;
+use crm\src\Investments\InvLead\_entities\InvLead;
 use crm\src\services\TemplateRenderer\HeaderManager;
 use crm\src\components\UserManagement\_entities\User;
 use crm\src\Investments\_application\InvestmentService;
+use crm\src\Investments\InvActivity\_entities\DealType;
 use crm\src\services\TemplateRenderer\TemplateRenderer;
+use crm\src\Investments\InvLead\_entities\SimpleInvLead;
+use crm\src\Investments\InvActivity\_entities\DealDirection;
 use crm\src\services\TemplateRenderer\_common\TemplateBundle;
 use crm\src\components\UserManagement\_common\mappers\UserMapper;
 
@@ -173,21 +177,70 @@ class InvestEditPage
         //     return $comment->comment;
         // })->getArray();
 
-        // $commentsSideBar = (new TemplateBundle(
-        //     templatePath: 'containers/wrapperSideBar.tpl.php',
-        //     variables: [
-        //         'classId' => 'history-menu-id',
-        //         'addPanel' => (new TemplateBundle(
-        //             templatePath: 'components/editLeadComentsForm.tpl.php',
-        //             variables: [
-        //                 'comments' => $commentsResult,
-        //                 'leadId' => $leadId,
-        //             ]
-        //         )),
-        //     ]
-        // ));
+        $commentsSideBar = (new TemplateBundle(
+            templatePath: 'containers/wrapperSideBar.tpl.php',
+            variables: [
+                'classId' => 'history-menu-id',
+                'addPanel' => (new TemplateBundle(
+                    templatePath: 'components/editLeadComentsForm.tpl.php',
+                    variables: [
+                        // 'comments' => $commentsResult,
+                        // 'leadId' => $leadId,
+                    ]
+                )),
+            ]
+        ));
 
-        // return [$commentsSideBar];
-        return [];
+        $leads = [];
+        $resLeads = $this->service->getAllLead();
+        if ($resLeads->isSuccess()) {
+            $leads = $this->service->getAllLead()->mapEach(function (SimpleInvLead $invLead) {
+                return [
+                    'id' => $invLead->uid,
+                    'title' => $invLead->contact . ' :: ' . $invLead->fullName,
+                ];
+            })->getArray();
+        }
+
+
+        $types = [
+            [
+                'id' => DealType::ACTIVE->value,
+                'title' => "Открытый",
+            ],
+            [
+                'id' => DealType::CLOSED->value,
+                'title' => 'Закрытый',
+            ],
+        ];
+
+        $directions = [
+            [
+                'id' => DealDirection::LONG->value,
+                'title' => "Long",
+            ],
+            [
+                'id' => DealDirection::SHORT->value,
+                'title' => 'Short',
+            ],
+        ];
+
+        $addActivitySideBar = (new TemplateBundle(
+            templatePath: 'containers/wrapperSideBar.tpl.php',
+            variables: [
+                'classId' => 'add-activity-menu-id',
+                'addPanel' => (new TemplateBundle(
+                    templatePath: 'components/invest/addInvActivity.tpl.php',
+                    variables: [
+                        'leads' => $leads ?? [],
+                        'types' => $types ?? [],
+                        'directions' => $directions ?? [],
+                    ]
+                )),
+            ]
+        ));
+
+        return [$commentsSideBar, $addActivitySideBar];
+        // return [];
     }
 }

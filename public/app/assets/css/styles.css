@@ -289,7 +289,7 @@ table.base-table tbody tr:not(:first-child):hover {
 .notify {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 16px;
   border-radius: var(--border-radius-base);
   font-size: var(--font-size-base);

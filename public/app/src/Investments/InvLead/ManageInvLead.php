@@ -64,10 +64,10 @@ class ManageInvLead
         return $lead;
     }
 
-    public function buildLeadResponse(DbInvLeadDto|int $lead): InvLeadResult
+    public function buildLeadResponse(DbInvLeadDto|int|string $lead): InvLeadResult
     {
         $leadUid = $lead instanceof DbInvLeadDto ? $lead->uid : $lead;
-        $dtoRes = $this->repository->getByUid($leadUid);
+        $dtoRes = $this->repository->getByUid((string)$leadUid);
         if (!$dtoRes->isSuccess()) {
             return InvLeadResult::failure(
                 $dtoRes->getError() ?? new InvLeadException("Сохранение лида прошло успешно, но Ошибка при получении лида.")
@@ -160,7 +160,7 @@ class ManageInvLead
                 );
             }
 
-            return $this->buildLeadResponse($input->uid);
+            return $this->buildLeadResponse((string)$input->uid);
         } catch (\Throwable $e) {
             return InvLeadResult::failure($e);
         }
@@ -194,7 +194,7 @@ class ManageInvLead
                 );
             }
 
-            return $this->buildLeadResponse($input->uid);
+            return $this->buildLeadResponse((string)$input->uid);
         } catch (\Throwable $e) {
             return InvLeadResult::failure($e);
         }

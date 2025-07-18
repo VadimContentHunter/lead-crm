@@ -296,7 +296,7 @@ final class InvestmentService
         $data['uid'] = isset($data['uid'])  ? (string) $data['uid']
                                             : (isset($data['lead_uid']) ? (string) $data['lead_uid'] : 0);
 
-        $balanceRes = $this->invBalanceRepo->getByLeadUid($data['uid'])->first();
+        $balanceRes = $this->invBalanceRepo->getByLeadUid((string)$data['uid'])->first();
         if ($balanceRes->isSuccess()) {
             return $this->manageInvBalance->updateByLeadUid(InvBalanceMapper::fromArrayToInput($data));
         }
@@ -387,6 +387,9 @@ final class InvestmentService
         return InvActivityResult::failure($dbDtoResult->getError() ?? new \RuntimeException("Ошибка при создании активности"));
     }
 
+    /**
+     * @param array<string,mixed> $params
+     */
     public function getActivityData(array $params): IInvActivityResult
     {
         // $uid = isset($params['id']) ? (int) $params['id']
@@ -434,7 +437,7 @@ final class InvestmentService
         $uid = isset($params['id']) ? (int) $params['id']
             : (isset($params['uid']) ? (int) $params['uid'] : 0);
 
-        $balanceRes = $this->invBalanceRepo->getByLeadUid($uid);
+        $balanceRes = $this->invBalanceRepo->getByLeadUid((string)$uid);
         if ($balanceRes->isEmpty()) {
             return InvBalanceResult::success([
                 'lead_uid' => $uid,

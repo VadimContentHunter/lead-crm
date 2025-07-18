@@ -11,11 +11,9 @@ class InvLeadArrayNormalizer
     /**
      * Нормализует значение по списку возможных ключей.
      *
-     * @template T
-     * @param    array<string, mixed> $data
-     * @param    array<int, string> $keys
-     * @param    callable|null $cast Функция преобразования (например: fn($v) => (int) $v)
-     * @return   T|null
+     * @param array<string,mixed> $data
+     * @param array<int,string> $keys
+     * @param callable|null $cast Функция преобразования (например: fn($v) => (int) $v)
      */
     public static function normalizeField(array $data, array $keys, ?callable $cast = null): mixed
     {
@@ -32,7 +30,7 @@ class InvLeadArrayNormalizer
      * Нормализует значение по имени поля, используя match.
      *
      * @param  string $field
-     * @param  array<string, mixed> $data
+     * @param  array<string,mixed> $data
      * @return mixed
      */
     public static function normalizeByFieldName(string $field, array $data): mixed

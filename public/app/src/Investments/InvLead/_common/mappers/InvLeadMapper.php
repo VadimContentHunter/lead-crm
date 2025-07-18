@@ -90,10 +90,6 @@ class InvLeadMapper
 
     /**
      * Преобразует входной DTO в DTO для базы данных.
-     *
-     * @param  InvLeadInputDto $dto
-     * @param  string $uid
-     * @return DbInvLeadDto
      */
     public static function fromInputToDb(InvLeadInputDto $dto, ?string $createdAt = null): DbInvLeadDto
     {

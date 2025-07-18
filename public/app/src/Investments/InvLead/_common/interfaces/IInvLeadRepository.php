@@ -35,4 +35,11 @@ interface IInvLeadRepository extends IResultRepository
      * @return IInvLeadResult
      */
     public function getAllByAccountManagerId(int $managerId): IInvLeadResult;
+
+    /**
+     * Получает все сущности.
+     *
+     * @return IInvLeadResult
+     */
+    public function getAll(): IInvLeadResult;
 }

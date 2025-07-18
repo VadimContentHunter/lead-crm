@@ -130,7 +130,7 @@ final class RenderInvLeadForm
             'contact' => $lead->contact,
             'phone' => $lead->phone,
             'email' => $lead->email,
-            'account_manager_id' => $formattedManagers ?? $lead->accountManager?->id ?? '',
+            'account_manager_id' => $formattedManagers,
             'status_id' => $statuses,
             'source_id' => $sources,
         ];

@@ -156,7 +156,7 @@ class InvLeadRepository extends AResultRepository implements IInvLeadRepository
             );
 
             if (!$result->isSuccess()) {
-                return $this->wrapFailure($result->getError() ?? new \RuntimeException("Не удалось обновить"));
+                return InvLeadResult::failure($result->getError() ?? new \RuntimeException("Не удалось обновить"));
             }
 
             return InvLeadResult::success($result->getInt());

@@ -120,8 +120,8 @@ class InvBalanceMapper
     {
         return new InputInvBalanceDto(
             leadUid: isset($data['lead_uid']) ? (string) $data['lead_uid'] : '',
-            deposit: isset($data['deposit']) ? (float) $data['deposit'] : null,
-            potential: isset($data['potential']) ? (float) $data['potential'] : null
+            deposit: isset($data['deposit']) ? (float) $data['deposit'] : 0.0,
+            potential: isset($data['potential']) ? (float) $data['potential'] : 0.0
         );
     }
 

@@ -93,13 +93,12 @@ class InvLeadMapper
      *
      * @param  InvLeadInputDto $dto
      * @param  string $uid
-     * @param  string|null $createdAt
      * @return DbInvLeadDto
      */
-    public static function fromInputToDb(InvLeadInputDto $dto, string $uid, ?string $createdAt = null): DbInvLeadDto
+    public static function fromInputToDb(InvLeadInputDto $dto, ?string $createdAt = null): DbInvLeadDto
     {
         return new DbInvLeadDto(
-            uid: $uid,
+            uid: $dto->uid ?? throw new \InvalidArgumentException('uid is required'),
             createdAt: $createdAt ?? (new DateTimeImmutable())->format('Y-m-d H:i:s'),
             contact: $dto->contact ?? '',
             phone: $dto->phone ?? '',
@@ -143,16 +142,16 @@ class InvLeadMapper
     public static function fromArrayToDb(array $data): DbInvLeadDto
     {
         return new DbInvLeadDto(
-            uid: (string) $data['uid'],
-            createdAt: (string) $data['created_at'],
-            contact: (string) ($data['contact'] ?? ''),
-            phone: (string) ($data['phone'] ?? ''),
-            email: (string) ($data['email'] ?? ''),
-            fullName: (string) ($data['full_name'] ?? ''),
-            accountManagerId: isset($data['account_manager_id']) ? (int) $data['account_manager_id'] : null,
-            visible: (bool) ($data['visible'] ?? true),
-            sourceId: isset($data['source_id']) ? (int) $data['source_id'] : null,
-            statusId: isset($data['status_id']) ? (int) $data['status_id'] : null,
+            uid: InvLeadArrayNormalizer::normalizeByFieldName('uid', $data) ?? throw new \InvalidArgumentException('uid is required'),
+            createdAt: (string) ($data['created_at'] ?? (new DateTimeImmutable())->format('Y-m-d H:i:s')),
+            contact: InvLeadArrayNormalizer::normalizeByFieldName('contact', $data) ?? '',
+            phone: InvLeadArrayNormalizer::normalizeByFieldName('phone', $data) ?? '',
+            email: InvLeadArrayNormalizer::normalizeByFieldName('email', $data) ?? '',
+            fullName: InvLeadArrayNormalizer::normalizeByFieldName('full_name', $data) ?? '',
+            accountManagerId: InvLeadArrayNormalizer::normalizeByFieldName('account_manager_id', $data),
+            visible: InvLeadArrayNormalizer::normalizeByFieldName('visible', $data) ?? true,
+            sourceId: InvLeadArrayNormalizer::normalizeByFieldName('source_id', $data),
+            statusId: InvLeadArrayNormalizer::normalizeByFieldName('status_id', $data),
         );
     }
 
@@ -165,15 +164,15 @@ class InvLeadMapper
     public static function fromArrayToInput(array $data): InvLeadInputDto
     {
         return new InvLeadInputDto(
-            uid: isset($data['uid']) ? (string) $data['uid'] : null,
-            contact: isset($data['contact']) ? (string) $data['contact'] : null,
-            phone: isset($data['phone']) ? (string) $data['phone'] : null,
-            email: isset($data['email']) ? (string) $data['email'] : null,
-            fullName: isset($data['full_name']) ? (string) $data['full_name'] : null,
-            accountManagerId: isset($data['account_manager_id']) ? (int) $data['account_manager_id'] : null,
-            visible: isset($data['visible']) ? (bool) $data['visible'] : null,
-            sourceId: isset($data['source_id']) ? (int) $data['source_id'] : null,
-            statusId: isset($data['status_id']) ? (int) $data['status_id'] : null,
+            uid: InvLeadArrayNormalizer::normalizeByFieldName('uid', $data),
+            contact: InvLeadArrayNormalizer::normalizeByFieldName('contact', $data),
+            phone: InvLeadArrayNormalizer::normalizeByFieldName('phone', $data),
+            email: InvLeadArrayNormalizer::normalizeByFieldName('email', $data),
+            fullName: InvLeadArrayNormalizer::normalizeByFieldName('full_name', $data),
+            accountManagerId: InvLeadArrayNormalizer::normalizeByFieldName('account_manager_id', $data),
+            visible: InvLeadArrayNormalizer::normalizeByFieldName('visible', $data),
+            sourceId: InvLeadArrayNormalizer::normalizeByFieldName('source_id', $data),
+            statusId: InvLeadArrayNormalizer::normalizeByFieldName('status_id', $data),
         );
     }
 

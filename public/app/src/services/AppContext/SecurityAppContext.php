@@ -271,6 +271,11 @@ class SecurityAppContext implements IAppContext, ISecurity
             invSourceRepo: new InvSourceRepository($this->pdo, $this->logger),
             invStatusRepo: new InvStatusRepository($this->pdo, $this->logger),
             invLeadRepo: new InvLeadRepository($this->pdo, $this->logger),
+            invAccountManagerRepo: new SecureUserRepository(
+                new UserRepository($this->pdo, $this->logger),
+                $this->accessGranter,
+                $this->thisAccessContext
+            ),
         );
     }
 

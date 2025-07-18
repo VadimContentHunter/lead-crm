@@ -8,11 +8,12 @@ use crm\src\services\Repositories\QueryBuilder\QueryBuilder;
 use crm\src\components\UserManagement\_common\DTOs\UserFilterDto;
 use crm\src\components\UserManagement\_common\mappers\UserMapper;
 use crm\src\components\UserManagement\_common\interfaces\IUserRepository;
+use crm\src\Investments\InvLead\_common\interfaces\IInvAccountManagerRepository;
 
 /**
  * @extends ARepository<User>
  */
-class UserRepository extends ARepository implements IUserRepository
+class UserRepository extends ARepository implements IUserRepository, IInvAccountManagerRepository
 {
     protected function getTableName(): string
     {

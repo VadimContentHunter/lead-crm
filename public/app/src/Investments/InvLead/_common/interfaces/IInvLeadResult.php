@@ -6,6 +6,7 @@ use crm\src\_common\interfaces\IResult;
 use crm\src\Investments\InvSource\_entities\InvSource;
 use crm\src\Investments\InvStatus\_entities\InvStatus;
 use crm\src\Investments\InvLead\_entities\SimpleInvLead;
+use crm\src\Investments\InvLead\_common\DTOs\DbInvLeadDto;
 use crm\src\Investments\InvLead\_common\DTOs\InvAccountManagerDto;
 
 /**
@@ -17,6 +18,8 @@ interface IInvLeadResult extends IResult
      * @return SimpleInvLead|null
      */
     public function getInvLead(): ?SimpleInvLead;
+
+    public function getDtoLead(): ?DbInvLeadDto;
 
     /**
      * @return string|null

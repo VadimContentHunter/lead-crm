@@ -5,11 +5,13 @@ namespace crm\src\Investments\_application;
 use crm\src\Investments\InvLead\ManageInvLead;
 use crm\src\services\TableRenderer\TableFacade;
 use crm\src\Investments\InvLead\_entities\InvLead;
+use crm\src\Investments\InvLead\RenderInvLeadForm;
 use crm\src\Investments\InvSource\ManageInvSource;
 use crm\src\Investments\InvStatus\ManageInvStatus;
 use crm\src\services\TableRenderer\TableDecorator;
 use crm\src\Investments\InvBalance\ManageInvBalance;
 use crm\src\services\TableRenderer\TableRenderInput;
+use crm\src\Investments\InvLead\InvLeadTableRenderer;
 use crm\src\Investments\InvActivity\ManageInvActivity;
 use crm\src\Investments\InvActivity\_entities\DealType;
 use crm\src\Investments\InvLead\_entities\SimpleInvLead;
@@ -50,6 +52,8 @@ use crm\src\Investments\InvBalance\_common\interfaces\IInvBalanceRepository;
 use crm\src\Investments\InvComment\_common\interfaces\IInvCommentRepository;
 use crm\src\Investments\InvDeposit\_common\interfaces\IInvDepositRepository;
 use crm\src\Investments\InvActivity\_common\interfaces\IInvActivityRepository;
+use crm\src\Investments\InvLead\_common\DTOs\InvAccountManagerDto;
+use crm\src\Investments\InvLead\_common\interfaces\IInvAccountManagerRepository;
 
 final class InvestmentService
 {
@@ -66,9 +70,16 @@ final class InvestmentService
         private IInvDepositRepository $invDepositRepo,
         private IInvLeadRepository $invLeadRepo,
         private IInvSourceRepository $invSourceRepo,
-        private IInvStatusRepository $invStatusRepo
+        private IInvStatusRepository $invStatusRepo,
+        private IInvAccountManagerRepository $invAccountManagerRepo
     ) {
-        $this->manageInvLead = new ManageInvLead($this->invLeadRepo, new InvLeadValidatorAdapter());
+        $this->manageInvLead = new ManageInvLead(
+            repository: $this->invLeadRepo,
+            invSourceRepo: $this->invSourceRepo,
+            invStatusRepo: $this->invStatusRepo,
+            accountManagerRepo: $this->invAccountManagerRepo,
+            validator: new InvLeadValidatorAdapter()
+        );
         $this->manageInvSource = new ManageInvSource($this->invSourceRepo, new SourceValidatorAdapter());
         $this->manageInvStatus = new ManageInvStatus($this->invStatusRepo, new StatusValidatorAdapter());
         $this->manageInvBalance = new ManageInvBalance($this->invBalanceRepo, new InvBalanceValidatorAdapter());
@@ -82,12 +93,7 @@ final class InvestmentService
      */
     public function createInvLead(array $data): IInvLeadResult
     {
-        $resultUid = $this->manageInvLead->create(InvLeadMapper::fromArrayToInput($data));
-        if ($resultUid->isSuccess()) {
-            return $this->invLeadRepo->getByUid($resultUid->getString() ?? '');
-        }
-
-        return InvLeadResult::failure($resultUid->getError() ?? new \RuntimeException("Ошибка при создании лида"));
+        return $this->manageInvLead->createLeadWithReturn(InvLeadMapper::fromArrayToInput($data));
     }
 
     /**
@@ -95,14 +101,7 @@ final class InvestmentService
      */
     public function updateInvLead(array $data): IInvLeadResult
     {
-        $data['uid'] = isset($data['uid']) ? (string) $data['uid']
-                                        : (isset($data['lead_uid']) ? (string) $data['lead_uid'] : 0);
-        $resultUid = $this->manageInvLead->updateByUid(InvLeadMapper::fromArrayToInput($data));
-        if ($resultUid->isSuccess()) {
-            return $this->invLeadRepo->getByUid($resultUid->getString() ?? '');
-        }
-
-        return InvLeadResult::failure($resultUid->getError() ?? new \RuntimeException("Ошибка при обновлении лида"));
+        return $this->manageInvLead->updateByUid(InvLeadMapper::fromArrayToInput($data));
     }
 
     public function getAllLead(): IInvLeadResult
@@ -110,85 +109,35 @@ final class InvestmentService
         return $this->invLeadRepo->getAll()->mapEach([InvLeadMapper::class, 'fromDbToEntity']);
     }
 
-    /**
-     * @param callable|null $accountManagerFetcher Функция (int $id): string|null
-     */
-    public function getInvLeadTable(?callable $accountManagerFetcher = null): IInvLeadResult
+    public function getInvLeadTable(): IInvLeadResult
     {
-        $headers = [
-            'uid',
-            'created_at',
-            'contact',
-            'phone',
-            'email',
-            'full_name',
-            'account_manager',
-            'source',
-            'status',
-        ];
+        $invLeadTableRenderer = new InvLeadTableRenderer(
+            $this->invLeadRepo,
+            $this->invSourceRepo,
+            $this->invStatusRepo,
+            $this->invAccountManagerRepo
+        );
+        return $invLeadTableRenderer->getBaseTable();
+    }
 
-        // Получаем лиды и превращаем в массив
-        $rows = $this->invLeadRepo->getAll()->mapEach(function (DbInvLeadDto $lead) use ($accountManagerFetcher) {
-
-            $managerLabel = '—';
-            if (is_callable($accountManagerFetcher) && $lead->accountManagerId !== null) {
-                $managerLabel = $accountManagerFetcher($lead->accountManagerId);
-            }
-
-            $sourceLabel = '—';
-            $sourceResult = $this->invSourceRepo->getById($lead->sourceId ?? 0);
-            if ($sourceResult->isSuccess() && $sourceResult instanceof IInvSourceResult) {
-                $sourceLabel = $sourceResult->getData()?->label; //DbInvSourceDto
-            }
-
-            $statusLabel = '—';
-            $statusResult = $this->invStatusRepo->getById($lead->statusId ?? 0);
-            if ($statusResult->isSuccess() && $statusResult instanceof IInvStatusResult) {
-                $statusLabel = $statusResult->getData()?->label; //DbInvStatusDto
-            }
-
-            return [
-                'uid' => $lead->uid,
-                'created_at' => $lead->createdAt ?? '—',
-                'contact' => $lead->contact,
-                'phone' => $lead->phone,
-                'email' => $lead->email,
-                'full_name' => $lead->fullName,
-                'account_manager' => $managerLabel ?? '—',
-                'source' => $sourceLabel ?? '—',
-                'status' => $statusLabel ?? '—',
-            ];
-        })->getArray();
-
-        $input = new TableRenderInput(
-            header: $headers,
-            rows: $rows,
-            attributes: ['id' => 'inv-lead-table-1', 'data-module' => 'inv-leads'],
-            classes: ['base-table'],
-            hrefButton: '/invest/lead-edit',
-            hrefButtonDel: '/',
-            attributesWrapper: ['table-r-id' => 'inv-lead-table-1'],
-            allowedColumns: $headers,
-            renameMap: [
-                'uid' => 'UID',
-                'created_at' => 'Создан',
-                'contact' => 'Контакт',
-                'phone' => 'Телефон',
-                'email' => 'Email',
-                'full_name' => 'Полное имя',
-                'account_manager' => 'Менеджер',
-                'source' => 'Источник',
-                'status' => 'Статус',
-            ],
+    /**
+     * Возвращает данные для формы создания лида.
+     *
+     * @param array<string,mixed> $params
+     * @param array<string,mixed> $extraData Данные, которые нужно добавить/переопределить в итоговом массиве
+     */
+    public function getFormCreateData(
+        array $params,
+        array $extraData = [],
+    ): IInvestResult {
+        $renderInvLeadForm = new RenderInvLeadForm(
+            invLeadRepo: $this->invLeadRepo,
+            invStatusRepo: $this->invStatusRepo,
+            invSourceRepo: $this->invSourceRepo,
+            accountManagerRepo: $this->invAccountManagerRepo
         );
 
-        $transformers = [
-            new TextInputTransform(['contact', 'phone', 'email', 'full_name']),
-        ];
-
-        $tableFacade = new TableFacade(new TypedTableTransformer($transformers), new TableDecorator());
-
-        return InvLeadResult::success($tableFacade->renderFilteredTable($input)->asHtml());
+        return $renderInvLeadForm->getFormCreateData($params, $extraData);
     }
 
 
@@ -475,113 +424,6 @@ final class InvestmentService
             'type' => $types,
             'direction' => $directions,
         ]);
-    }
-
-    // === Формы ===
-
-    /**
-     * Возвращает данные для формы создания лида.
-     *
-     * @param array<string,mixed> $params
-     * @param callable|null $accountManagerFetcher Функция вида (int $id): array|null
-     * @param array<string,mixed> $extraData             Данные, которые нужно
-     *                                                   добавить/переопределить в
-     *                                                   итоговом массиве
-     */
-    public function getFormCreateData(
-        array $params,
-        ?callable $accountManagerFetcher = null,
-        array $extraData = [],
-    ): IInvestResult {
-        $uid = isset($params['id']) ? (int) $params['id']
-                                : (isset($params['uid']) ? (int) $params['uid'] : 0);
-
-        // === Новый лид
-        if ($uid === 0) {
-            // accountManager как массив по колбэку
-            $managers = null;
-            if ($accountManagerFetcher) {
-                $managers = $accountManagerFetcher(0);
-            }
-
-            $statuses = $this->invStatusRepo->getAll()->mapEach(
-                fn($item) => $item instanceof DbInvStatusDto
-                    ? ['value' => $item->id, 'text' => $item->label]
-                    : null
-            )->getArray();
-
-            $sources = $this->invSourceRepo->getAll()->mapEach(
-                fn($item) => $item instanceof DbInvSourceDto
-                ? ['value' => $item->id, 'text' => $item->label]
-                : null
-            )->getArray();
-
-            array_unshift($statuses, ['value' => '', 'text' => '— Выберите статус —', 'selected' => true]);
-            array_unshift($sources,  ['value' => '', 'text' => '— Выберите источник —', 'selected' => true]);
-            array_unshift($managers, ['value' => '', 'text' => '— Выберите менеджера —', 'selected' => true]);
-
-            $data = [
-                'status_id' => $statuses,
-                'source_id' => $sources,
-                'account_manager_id' => $managers
-            ];
-
-            return InvestResult::success(array_merge($data, $extraData));
-        }
-
-        // === Существующий лид
-        $lead = $this->invLeadRepo->getById($uid)->getData();
-        if (!($lead instanceof DbInvLeadDto) && !($lead instanceof SimpleInvLead)) {
-            return InvestResult::failure(new \RuntimeException('Неверный идентификатор'));
-        }
-
-        if ($lead instanceof DbInvLeadDto) {
-            $lead = InvLeadMapper::fromDbToEntity($lead);
-        }
-
-
-        $statuses = $this->invStatusRepo->getAll()->mapEach(
-            function (DbInvStatusDto $status) use ($lead) {
-                return [
-                    'value' => $status->id,
-                    'text' => $status->label,
-                    'selected' => $status->id === $lead->status?->id
-                ];
-            }
-        )->getArray();
-
-        $sources = $this->invSourceRepo->getAll()->mapEach(
-            function (DbInvSourceDto $source) use ($lead) {
-                return [
-                    'value' => $source->id,
-                    'text' => $source->label,
-                    'selected' => $source->id === $lead->source?->id
-                ];
-            }
-        )->getArray();
-
-        // accountManager как массив по колбэку
-        $managers = null;
-        if ($accountManagerFetcher && $lead->accountManager?->id) {
-            $managers = $accountManagerFetcher($lead->accountManager->id);
-        }
-
-        array_unshift($statuses, ['value' => '', 'text' => '— Выберите статус —', 'selected' => false]);
-        array_unshift($sources,  ['value' => '', 'text' => '— Выберите источник —', 'selected' => false]);
-        array_unshift($managers, ['value' => '', 'text' => '— Выберите менеджера —', 'selected' => false]);
-
-        $data = [
-            'lead_uid' => $lead->uid,
-            'full_name' => $lead->fullName,
-            'contact' => $lead->contact,
-            'phone' => $lead->phone,
-            'email' => $lead->email,
-            'account_manager_id' => $managers ?? $lead->accountManager?->id ?? '',
-            'status_id' => $statuses,
-            'source_id' => $sources,
-        ];
-
-        return InvestResult::success(array_merge($data, $extraData));
     }
 
     /**

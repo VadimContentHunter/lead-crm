@@ -3,12 +3,24 @@
 namespace crm\src\Investments\InvLead;
 
 use crm\src\_common\interfaces\IValidation;
+use crm\src\Investments\InvLead\_entities\InvLead;
+use crm\src\Investments\InvStatus\_entities\InvStatus;
+use crm\src\Investments\InvLead\_entities\SimpleInvLead;
+use crm\src\Investments\InvLead\_common\DTOs\DbInvLeadDto;
 use crm\src\Investments\InvLead\_common\DTOs\InvLeadInputDto;
 use crm\src\Investments\InvLead\_exceptions\InvLeadException;
 use crm\src\Investments\InvLead\_common\mappers\InvLeadMapper;
 use crm\src\Investments\InvLead\_common\adapters\InvLeadResult;
+use crm\src\Investments\InvLead\_common\DTOs\InvAccountManagerDto;
 use crm\src\Investments\InvLead\_common\interfaces\IInvLeadResult;
+use crm\src\Investments\InvSource\_common\mappers\InvSourceMapper;
+use crm\src\Investments\InvStatus\_common\mappers\InvStatusMapper;
 use crm\src\Investments\InvLead\_common\interfaces\IInvLeadRepository;
+use crm\src\Investments\InvSource\_common\interfaces\IInvSourceResult;
+use crm\src\Investments\InvStatus\_common\interfaces\IInvStatusResult;
+use crm\src\Investments\InvSource\_common\interfaces\IInvSourceRepository;
+use crm\src\Investments\InvStatus\_common\interfaces\IInvStatusRepository;
+use crm\src\Investments\InvLead\_common\interfaces\IInvAccountManagerRepository;
 
 /**
  * Сервис управления инвестиционными лидами.
@@ -16,9 +28,65 @@ use crm\src\Investments\InvLead\_common\interfaces\IInvLeadRepository;
 class ManageInvLead
 {
     public function __construct(
+        private IInvSourceRepository $invSourceRepo,
+        private IInvStatusRepository $invStatusRepo,
         private IInvLeadRepository $repository,
+        private IInvAccountManagerRepository $accountManagerRepo,
         private IValidation $validator,
     ) {
+    }
+
+    public function hydrateLead(SimpleInvLead $lead): SimpleInvLead
+    {
+        $source = $this->invSourceRepo->getById($lead->source?->id ?? 0);
+        $status = $this->invStatusRepo->getById($lead->status?->id ?? 0);
+        $accountManager = $this->accountManagerRepo->getById($lead->accountManager?->id ?? 0);
+
+        $lead->source = null;
+        $lead->status = null;
+        $lead->accountManager = null;
+
+        if ($source instanceof IInvSourceResult && $source->isSuccess()) {
+            $lead->source = InvSourceMapper::fromDbToEntity($source->getData()); //$source->getData();
+        }
+
+        if ($status instanceof IInvStatusResult && $status->isSuccess()) {
+            $lead->status = InvStatusMapper::fromDbToEntity($status->getData()); //$status->getInvStatus();
+        }
+
+        if ($accountManager !== null && isset($accountManager->login) && isset($accountManager->id)) {
+            $lead->accountManager = new InvAccountManagerDto(
+                id: $accountManager->id,
+                login: $accountManager->login
+            ); //$accountManager->getInvStatus();
+        }
+
+        return $lead;
+    }
+
+    public function buildLeadResponse(DbInvLeadDto|int $lead): InvLeadResult
+    {
+        $leadUid = $lead instanceof DbInvLeadDto ? $lead->uid : $lead;
+        $dtoRes = $this->repository->getByUid($leadUid);
+        if (!$dtoRes->isSuccess()) {
+            return InvLeadResult::failure(
+                $dtoRes->getError() ?? new InvLeadException("Сохранение лида прошло успешно, но Ошибка при получении лида.")
+            );
+        }
+
+        if ($dtoRes->getDtoLead() !== null) {
+            return InvLeadResult::success($this->hydrateLead(
+                InvLeadMapper::fromDbToEntity($dtoRes->getDtoLead())
+            ));
+        }
+
+        if ($dtoRes->getInvLead() !== null) {
+            return InvLeadResult::success($this->hydrateLead(
+                $dtoRes->getInvLead()
+            ));
+        }
+
+        return InvLeadResult::failure(new InvLeadException("Сохранение лида прошло успешно, но Ошибка при получении лида."));
     }
 
     /**
@@ -65,9 +133,9 @@ class ManageInvLead
 
 
     /**
-     * Создание нового лида.
+     * Создание инвестиционного лида с возращением существующего лида.
      */
-    public function create(InvLeadInputDto $input): IInvLeadResult
+    public function createLeadWithReturn(InvLeadInputDto $input): IInvLeadResult
     {
         try {
             $input->uid = $this->generateUniqueUid();
@@ -83,7 +151,7 @@ class ManageInvLead
                 );
             }
 
-            $dto = InvLeadMapper::fromInputToDb($input, $input->uid);
+            $dto = InvLeadMapper::fromInputToDb($input);
             $result = $this->repository->save($dto);
 
             if (!$result->isSuccess()) {
@@ -92,7 +160,7 @@ class ManageInvLead
                 );
             }
 
-            return InvLeadResult::success($input->uid);
+            return $this->buildLeadResponse($input->uid);
         } catch (\Throwable $e) {
             return InvLeadResult::failure($e);
         }
@@ -126,7 +194,7 @@ class ManageInvLead
                 );
             }
 
-            return InvLeadResult::success($input->uid);
+            return $this->buildLeadResponse($input->uid);
         } catch (\Throwable $e) {
             return InvLeadResult::failure($e);
         }

@@ -8,12 +8,13 @@ use crm\src\components\Security\_entities\AccessContext;
 use crm\src\components\UserManagement\_common\DTOs\UserFilterDto;
 use crm\src\components\Security\_common\interfaces\IAccessGranter;
 use crm\src\components\UserManagement\_common\interfaces\IUserRepository;
+use crm\src\Investments\InvLead\_common\interfaces\IInvAccountManagerRepository;
 use crm\src\components\LeadManagement\_common\interfaces\ILeadAccountManagerRepository;
 
 /**
  * Secure обёртка над UserRepository с проверкой доступа.
  */
-class SecureUserRepository implements IUserRepository
+class SecureUserRepository implements IUserRepository, IInvAccountManagerRepository
 {
     private SecureWrapper $secure;
 

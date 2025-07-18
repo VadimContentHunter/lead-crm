@@ -28,17 +28,13 @@ class InvestPage
 
     public function renderPage(): void
     {
-        $accountManagerFunction = function (int $userId) {
-            return $this->appContext->getUserManagement()->get()->executeById($userId)->getLogin() ?? '—';
-        };
-
         $this->show(
             components: [
                 'components' => [
                     (new TemplateBundle(
                         templatePath: 'containers/average-in-line-component.tpl.php',
                         variables: [
-                            'component' => $this->service->getInvLeadTable($accountManagerFunction)->getString() ?? '',
+                            'component' => $this->service->getInvLeadTable()->getString() ?? '',
                             // 'filterPanel' => (new TemplateBundle(
                             //     templatePath: 'partials/filtersLead.tpl.php',
                             //     variables: [

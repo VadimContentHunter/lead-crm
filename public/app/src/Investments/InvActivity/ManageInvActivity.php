@@ -56,6 +56,7 @@ class ManageInvActivity
              * @var DbInvActivityDto $saved
              */
             $saved = $dto;
+            $saved->id = $result->getInt() ?? 0;
             $entity = InvActivityMapper::fromDbToEntity($saved);
 
             return InvActivityResult::success($entity);

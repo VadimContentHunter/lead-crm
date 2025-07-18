@@ -45,4 +45,14 @@ interface IInvActivityResult extends IResult
      * @return int|null
      */
     public function getId(): ?int;
+
+    /**
+     * @return string|null
+     */
+    public function getPair(): ?string;
+
+    /**
+     * @return string|null
+     */
+    public function getType(): ?string;
 }

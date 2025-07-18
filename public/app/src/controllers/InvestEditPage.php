@@ -192,38 +192,38 @@ class InvestEditPage
         ));
 
         $leads = [];
-        $resLeads = $this->service->getAllLead();
-        if ($resLeads->isSuccess()) {
-            $leads = $this->service->getAllLead()->mapEach(function (SimpleInvLead $invLead) {
-                return [
-                    'id' => $invLead->uid,
-                    'title' => $invLead->contact . ' :: ' . $invLead->fullName,
-                ];
-            })->getArray();
-        }
+        // $resLeads = $this->service->getAllLead();
+        // if ($resLeads->isSuccess()) {
+        //     $leads = $this->service->getAllLead()->mapEach(function (SimpleInvLead $invLead) {
+        //         return [
+        //             'id' => $invLead->uid,
+        //             'title' => $invLead->contact . ' :: ' . $invLead->fullName,
+        //         ];
+        //     })->getArray();
+        // }
 
 
-        $types = [
-            [
-                'id' => DealType::ACTIVE->value,
-                'title' => "Открытый",
-            ],
-            [
-                'id' => DealType::CLOSED->value,
-                'title' => 'Закрытый',
-            ],
-        ];
+        // $types = [
+        //     [
+        //         'id' => DealType::ACTIVE->value,
+        //         'title' => "Открытый",
+        //     ],
+        //     [
+        //         'id' => DealType::CLOSED->value,
+        //         'title' => 'Закрытый',
+        //     ],
+        // ];
 
-        $directions = [
-            [
-                'id' => DealDirection::LONG->value,
-                'title' => "Long",
-            ],
-            [
-                'id' => DealDirection::SHORT->value,
-                'title' => 'Short',
-            ],
-        ];
+        // $directions = [
+        //     [
+        //         'id' => DealDirection::LONG->value,
+        //         'title' => "Long",
+        //     ],
+        //     [
+        //         'id' => DealDirection::SHORT->value,
+        //         'title' => 'Short',
+        //     ],
+        // ];
 
         $addActivitySideBar = (new TemplateBundle(
             templatePath: 'containers/wrapperSideBar.tpl.php',

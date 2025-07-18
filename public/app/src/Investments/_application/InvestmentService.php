@@ -4,17 +4,20 @@ namespace crm\src\Investments\_application;
 
 use crm\src\Investments\InvLead\ManageInvLead;
 use crm\src\services\TableRenderer\TableFacade;
+use crm\src\Investments\InvLead\_entities\InvLead;
 use crm\src\Investments\InvSource\ManageInvSource;
 use crm\src\Investments\InvStatus\ManageInvStatus;
 use crm\src\services\TableRenderer\TableDecorator;
 use crm\src\Investments\InvBalance\ManageInvBalance;
 use crm\src\services\TableRenderer\TableRenderInput;
 use crm\src\Investments\InvActivity\ManageInvActivity;
+use crm\src\Investments\InvActivity\_entities\DealType;
 use crm\src\Investments\InvLead\_entities\SimpleInvLead;
 use crm\src\services\TableRenderer\TypedTableTransformer;
 use crm\src\Investments\InvActivity\_entities\InvActivity;
 use crm\src\Investments\InvLead\_common\DTOs\DbInvLeadDto;
 use crm\src\Investments\_application\adapters\InvestResult;
+use crm\src\Investments\InvActivity\_entities\DealDirection;
 use crm\src\Investments\_application\interfaces\IInvestResult;
 use crm\src\Investments\InvLead\_common\mappers\InvLeadMapper;
 use crm\src\Investments\InvSource\_common\DTOs\DbInvSourceDto;
@@ -47,7 +50,6 @@ use crm\src\Investments\InvBalance\_common\interfaces\IInvBalanceRepository;
 use crm\src\Investments\InvComment\_common\interfaces\IInvCommentRepository;
 use crm\src\Investments\InvDeposit\_common\interfaces\IInvDepositRepository;
 use crm\src\Investments\InvActivity\_common\interfaces\IInvActivityRepository;
-use crm\src\Investments\InvLead\_entities\InvLead;
 
 final class InvestmentService
 {
@@ -434,6 +436,45 @@ final class InvestmentService
         }
 
         return InvActivityResult::failure($dbDtoResult->getError() ?? new \RuntimeException("Ошибка при создании активности"));
+    }
+
+    public function getActivityData(array $params): IInvActivityResult
+    {
+        // $uid = isset($params['id']) ? (int) $params['id']
+        //                         : (isset($params['uid']) ? (int) $params['uid'] : 0);
+
+        $leads = $this->invLeadRepo->getAll()->mapEach(function (DbInvLeadDto $invLead) {
+            return [
+                'value' => $invLead->uid,
+                'text' => $invLead->contact . ' :: ' . $invLead->fullName,
+            ];
+        })->getArray();
+        $types = [
+            [
+                'value' => DealType::ACTIVE->value,
+                'text' => "Открытый",
+            ],
+            [
+                'value' => DealType::CLOSED->value,
+                'text' => 'Закрытый',
+            ],
+        ];
+
+        $directions = [
+            [
+                'value' => DealDirection::LONG->value,
+                'text' => "Long",
+            ],
+            [
+                'value' => DealDirection::SHORT->value,
+                'text' => 'Short',
+            ],
+        ];
+        return InvActivityResult::success([
+            'lead_uid' => $leads,
+            'type' => $types,
+            'direction' => $directions,
+        ]);
     }
 
     // === Формы ===

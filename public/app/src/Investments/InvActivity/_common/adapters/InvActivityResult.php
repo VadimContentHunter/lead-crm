@@ -46,4 +46,20 @@ class InvActivityResult extends AResult implements IInvActivityResult
             ? $this->data
             : new InvActivityCollection([]);
     }
+
+    /**
+     * @return string|null
+     */
+    public function getPair(): ?string
+    {
+        return $this->getInvActivity()?->pair;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getType(): ?string
+    {
+        return $this->getInvActivity()?->type->value;
+    }
 }

@@ -1,7 +1,9 @@
 import { ComponentFunctions } from '/assets/js/ComponentFunctions.js';
 import { ConfirmDialog } from '/assets/js/ConfirmDialog.js';
 
-const endPoint = '/api/invest/leads';
+const endPointInvLeads = '/api/invest/leads';
+const endPointInvActivities = '/api/invest/activities';
+const overlaySideBarLoader = document.querySelector('#overlay-loader');
 
 
 const overlayMainLoaderOpen = () => {
@@ -23,26 +25,26 @@ const overlayMainLoaderClose = () => {
 };
 
 //
-// === Добавление строки в таблицу по кнопке в форме ===
+// === Добавление Активности ===
 //
-// ComponentFunctions.attachJsonRpcInputTrigger({
-//     triggerSelector: '#add-inv-lead-form .form-actions .form-button.submit',
-//     containerSelector: '#add-inv-lead-form',
-//     method: 'invest.lead.add',
-//     endpoint: endPoint,
-//     callbackBeforeSend: () => {
-//         if (overlayLoader instanceof HTMLElement) {
-//             overlayLoader.style.display = '';
-//         }
-//     },
-//     callbackOnData: (payload) => {
-//         console.log(payload);
-//         ComponentFunctions.replaceTable(payload, '[table-r-id="inv-lead-table-1"]');
-//         if (overlayLoader instanceof HTMLElement) {
-//             overlayLoader.style.display = 'none';
-//         }
-//     }
-// });
+ComponentFunctions.attachJsonRpcInputTrigger({
+    triggerSelector: '#add-inv-activity-form .form-actions .form-button.submit',
+    containerSelector: '#add-inv-activity-form',
+    method: 'active.add',
+    endpoint: endPointInvActivities,
+    callbackBeforeSend: () => {
+        if (overlaySideBarLoader instanceof HTMLElement) {
+            overlaySideBarLoader.style.display = '';
+        }
+    },
+    callbackOnData: (payload) => {
+        // console.log(payload);
+        ComponentFunctions.replaceTable(payload, '[table-r-id="inv-activity-table-1"]');
+        if (overlaySideBarLoader instanceof HTMLElement) {
+            overlaySideBarLoader.style.display = 'none';
+        }
+    }
+});
 
 //
 // === Заполняет форму при загрузки страницы ===
@@ -51,7 +53,7 @@ const overlayMainLoaderClose = () => {
 const uid = window.location.pathname.split('/').pop();
 ComponentFunctions.runJsonRpcLoadImmediately({
     method: 'invest.lead.get.form.create',
-    endpoint: endPoint,
+    endpoint: endPointInvLeads,
     jsonContent: { uid: uid },
     callbackBeforeSend: () => {
         overlayMainLoaderOpen();
@@ -64,7 +66,7 @@ ComponentFunctions.runJsonRpcLoadImmediately({
 
 ComponentFunctions.runJsonRpcLoadImmediately({
     method: 'invest.lead.get.balance',
-    endpoint: endPoint,
+    endpoint: endPointInvLeads,
     jsonContent: { uid: uid },
     callbackBeforeSend: () => {
         overlayMainLoaderOpen();
@@ -76,6 +78,27 @@ ComponentFunctions.runJsonRpcLoadImmediately({
 });
 
 //
+// === Заполнение формы при открытии модального окна ===
+//
+ComponentFunctions.attachJsonRpcLoadTrigger({
+    triggerSelector: '#add-inv-activity-btn',
+    method: 'active.get.form',
+    endpoint: endPointInvActivities,
+    jsonContent: { uid: uid },
+    callbackBeforeSend: () => {
+        if (overlaySideBarLoader instanceof HTMLElement) {
+            overlaySideBarLoader.style.display = '';
+        }
+    },
+    callbackOnData: (payload) => {
+        ComponentFunctions.fillFormFromData('#add-inv-activity-form form', payload?.data ?? []);
+        if (overlaySideBarLoader instanceof HTMLElement) {
+            overlaySideBarLoader.style.display = 'none';
+        }
+    }
+});
+
+//
 // === Обновление основной информации для лида (инвестиции) ===
 //
 
@@ -83,7 +106,7 @@ ComponentFunctions.attachJsonRpcInputTrigger({
     triggerSelector: '#inv-lead-form-1 .form-actions .submit',
     containerSelector: '#inv-lead-form-1',
     method: 'invest.lead.update',
-    endpoint: endPoint,
+    endpoint: endPointInvLeads,
     callbackBeforeSend: () => {
         overlayMainLoaderOpen();
     },
@@ -96,7 +119,7 @@ ComponentFunctions.attachJsonRpcInputTrigger({
     triggerSelector: '#inv-balance-form-1 .form-actions .submit',
     containerSelector: '#inv-balance-form-1',
     method: 'invest.lead.update.balance',
-    endpoint: endPoint,
+    endpoint: endPointInvLeads,
     callbackBeforeSend: () => {
         overlayMainLoaderOpen();
     },
@@ -112,7 +135,7 @@ ComponentFunctions.attachJsonRpcInputTrigger({
 //     ComponentFunctions.attachDeleteTrigger({
 //         triggerSelector: '[table-r-id="inv-lead-table-1"] .btn-delete.btn-row-table',
 //         method: 'lead.delete',
-//         endpoint: endPoint,
+//         endPointInvLeads: endPointInvLeads,
 //         callbackOnData: (payload) => {
 //             ComponentFunctions.replaceTable(payload, '[table-r-id="inv-lead-table-1"]');
 //         },
@@ -134,7 +157,7 @@ ComponentFunctions.attachJsonRpcInputTrigger({
 //         searchRootSelector: 'td',
 //         attributes: ['value', 'data-row-id'],
 //         method: 'lead.edit.cell',
-//         endpoint: endPoint,
+//         endPointInvLeads: endPointInvLeads,
 //     });
 // }
 

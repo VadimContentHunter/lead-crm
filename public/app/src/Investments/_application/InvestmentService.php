@@ -3,6 +3,7 @@
 namespace crm\src\Investments\_application;
 
 use crm\src\Investments\InvLead\ManageInvLead;
+use crm\src\Investments\InvSource\DeleteSource;
 use crm\src\services\TableRenderer\TableFacade;
 use crm\src\Investments\InvLead\_entities\InvLead;
 use crm\src\Investments\InvLead\RenderInvLeadForm;
@@ -15,6 +16,7 @@ use crm\src\Investments\InvLead\InvLeadTableRenderer;
 use crm\src\Investments\InvActivity\ManageInvActivity;
 use crm\src\Investments\InvActivity\_entities\DealType;
 use crm\src\Investments\InvLead\_entities\SimpleInvLead;
+use crm\src\Investments\InvSource\InvSourceTableRenderer;
 use crm\src\services\TableRenderer\TypedTableTransformer;
 use crm\src\Investments\InvActivity\_entities\InvActivity;
 use crm\src\Investments\InvLead\_common\DTOs\DbInvLeadDto;
@@ -29,6 +31,7 @@ use crm\src\_common\adapters\Investments\SourceValidatorAdapter;
 use crm\src\_common\adapters\Investments\StatusValidatorAdapter;
 use crm\src\_common\adapters\Investments\InvLeadValidatorAdapter;
 use crm\src\Investments\InvActivity\_common\DTOs\DbInvActivityDto;
+use crm\src\Investments\InvLead\_common\DTOs\InvAccountManagerDto;
 use crm\src\Investments\InvLead\_common\interfaces\IInvLeadResult;
 use crm\src\Investments\InvSource\_common\mappers\InvSourceMapper;
 use crm\src\Investments\InvStatus\_common\mappers\InvStatusMapper;
@@ -52,7 +55,6 @@ use crm\src\Investments\InvBalance\_common\interfaces\IInvBalanceRepository;
 use crm\src\Investments\InvComment\_common\interfaces\IInvCommentRepository;
 use crm\src\Investments\InvDeposit\_common\interfaces\IInvDepositRepository;
 use crm\src\Investments\InvActivity\_common\interfaces\IInvActivityRepository;
-use crm\src\Investments\InvLead\_common\DTOs\InvAccountManagerDto;
 use crm\src\Investments\InvLead\_common\interfaces\IInvAccountManagerRepository;
 
 final class InvestmentService
@@ -153,38 +155,7 @@ final class InvestmentService
 
     public function getSourceTable(): IInvSourceResult
     {
-        $headers = $this->invSourceRepo->getColumnNames()->getArray();
-        $rows = $this->invSourceRepo->getAll()->mapEach(function (DbInvSourceDto $source) {
-            return [
-                'id' => $source->id,
-                'code' => $source->code,
-                'label' => $source->label,
-            ];
-        })->getArray();
-
-        $input = new TableRenderInput(
-            header: $headers,
-            rows: $rows,
-            attributes: ['id' => 'inv-source-table-1', 'data-module' => 'inv-sources'],
-            classes: ['base-table'],
-            hrefButton: '/page/source-edit',
-            hrefButtonDel: '/',
-            attributesWrapper: [
-                'table-r-id' => 'inv-source-table-1'
-            ],
-            allowedColumns: [
-                'id',
-                'code',
-                'label',
-            ],
-            renameMap: [],
-        );
-
-        $typeTransformers = [
-            new TextInputTransform(['code', 'label']),
-        ];
-        $tableFacade = new TableFacade(new TypedTableTransformer($typeTransformers),  new TableDecorator());
-        return InvSourceResult::success($tableFacade->renderFilteredTable($input)->asHtml());
+        return (new InvSourceTableRenderer($this->invSourceRepo))->getBaseTable();
     }
 
     /**
@@ -192,11 +163,6 @@ final class InvestmentService
      */
     public function updateSource(array $data): IInvSourceResult
     {
-        $data['id'] = isset($data['id']) ? (int) $data['id']
-                        : (isset($data['data-row-id']) ? (int) $data['data-row-id'] : null);
-        $data['code'] = $data['name'] === "code" ? $data['value'] : null;
-        $data['label'] = $data['name'] === "label" ? $data['value'] : null;
-
         return $this->manageInvSource->updateById(InvSourceMapper::fromArrayToInput($data));
     }
 
@@ -205,19 +171,7 @@ final class InvestmentService
      */
     public function deleteSource(array $data): IInvSourceResult
     {
-        $id = isset($data['id']) ? (int) $data['id']
-                            : (isset($data['rowId']) ? (int) $data['rowId'] : null);
-
-        $oldData = $this->invSourceRepo->getById($id ?? 0);
-        $resultDelete = $this->manageInvSource->deleteById($id ?? 0);
-        if ($resultDelete->isSuccess()) {
-            $data = $oldData->getData() instanceof DbInvSourceDto
-                        ? InvSourceMapper::fromDbToEntity($oldData->getData())
-                        : null;
-            return InvSourceResult::success($data);
-        }
-
-        return InvSourceResult::failure($resultDelete->getError() ?? new \RuntimeException("Ошибка при удалении источника"));
+        return (new DeleteSource($this->invSourceRepo))->deleteSource($data);
     }
 
     // === CRUD: Статусы ===

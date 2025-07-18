@@ -2,6 +2,7 @@
 
 namespace crm\src\_common\repositories\Investments;
 
+use Throwable;
 use crm\src\_common\interfaces\AResultRepository;
 use crm\src\Investments\InvLead\_common\DTOs\DbInvLeadDto;
 use crm\src\services\Repositories\QueryBuilder\QueryBuilder;
@@ -178,6 +179,26 @@ class InvLeadRepository extends AResultRepository implements IInvLeadRepository
 
             return InvLeadResult::success($list);
         } catch (\Throwable $e) {
+            return InvLeadResult::failure($e);
+        }
+    }
+
+    /**
+     * Получает все сущности.
+     *
+     * @return IInvLeadResult
+     */
+    public function getAll(): IInvLeadResult
+    {
+        try {
+            $result = $this->repository->executeQuery(
+                (new QueryBuilder())
+                    ->table($this->getTableName())
+                    ->select()
+            )->getValidMappedList($this->fromArray());
+
+            return InvLeadResult::success($result);
+        } catch (Throwable $e) {
             return InvLeadResult::failure($e);
         }
     }

@@ -103,9 +103,11 @@ class InvSourceMapper
     public static function fromArrayToDb(array $data): DbInvSourceDto
     {
         return new DbInvSourceDto(
-            id: isset($data['id']) ? (int) $data['id'] : null,
-            code: $data['code'],
-            label: $data['label']
+            id: InvSourceArrayNormalizer::normalizeByFieldName('id', $data),
+            code: InvSourceArrayNormalizer::normalizeByFieldName('code', $data)
+                    ?? throw new \InvalidArgumentException('code is required'),
+            label: InvSourceArrayNormalizer::normalizeByFieldName('label', $data)
+                    ?? throw new \InvalidArgumentException('label is required')
         );
     }
 
@@ -118,9 +120,9 @@ class InvSourceMapper
     public static function fromArrayToInput(array $data): InvSourceInputDto
     {
         return new InvSourceInputDto(
-            id: isset($data['id']) ? (int) $data['id'] : null,
-            code: isset($data['code']) ? (string) $data['code'] : null,
-            label: isset($data['label']) ? (string) $data['label'] : null
+            id: InvSourceArrayNormalizer::normalizeByFieldName('id', $data),
+            code: InvSourceArrayNormalizer::normalizeByFieldName('code', $data),
+            label: InvSourceArrayNormalizer::normalizeByFieldName('label', $data),
         );
     }
 

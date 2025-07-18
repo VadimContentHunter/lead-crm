@@ -6,6 +6,10 @@ use crm\src\Investments\_application\interfaces\AArrayNormalizer;
 
 class InvSourceArrayNormalizer extends AArrayNormalizer
 {
+    /**
+     * @param  array<string,mixed> $raw
+     * @return array<string,mixed>
+     */
     public static function normalize(array $raw): array
     {
         return [
@@ -18,10 +22,8 @@ class InvSourceArrayNormalizer extends AArrayNormalizer
     /**
      * Проверяет, соответствует ли поле name указанному ключу, и возвращает value, если да.
      *
-     * @param  array<string, mixed> $data
-     * @param  string $expectedField
-     * @param  callable|null $cast
-     * @return mixed|null
+     * @param array<string,mixed> $data
+     * @param callable|null $cast
      */
     public static function normalizeFromNameValuePair(array $data, string $expectedField, ?callable $cast = null): mixed
     {
@@ -32,7 +34,9 @@ class InvSourceArrayNormalizer extends AArrayNormalizer
         return null;
     }
 
-
+    /**
+     * @param array<string,mixed> $data
+     */
     public static function normalizeByFieldName(string $field, array $data): mixed
     {
         return match ($field) {

@@ -9,6 +9,9 @@ use crm\src\Investments\_application\interfaces\AArrayNormalizer;
  */
 class InvLeadArrayNormalizer extends AArrayNormalizer
 {
+    /**
+     * @param array<string,mixed> $data
+     */
     public static function normalizeByFieldName(string $field, array $data): mixed
     {
         return match ($field) {
@@ -25,6 +28,10 @@ class InvLeadArrayNormalizer extends AArrayNormalizer
         };
     }
 
+    /**
+     * @param array<string,mixed> $data
+     * @param string[] $keys
+     */
     public static function normalizeUid(array $data, array $keys = ['uid', 'lead_uid']): ?string
     {
         return self::normalizeField($data, $keys, fn($v) => (string) $v);

@@ -4,6 +4,7 @@ namespace crm\src\Investments\_application;
 
 use crm\src\Investments\InvLead\ManageInvLead;
 use crm\src\Investments\InvSource\DeleteSource;
+use crm\src\Investments\InvStatus\DeleteStatus;
 use crm\src\services\TableRenderer\TableFacade;
 use crm\src\Investments\InvLead\_entities\InvLead;
 use crm\src\Investments\InvLead\RenderInvLeadForm;
@@ -17,6 +18,7 @@ use crm\src\Investments\InvActivity\ManageInvActivity;
 use crm\src\Investments\InvActivity\_entities\DealType;
 use crm\src\Investments\InvLead\_entities\SimpleInvLead;
 use crm\src\Investments\InvSource\InvSourceTableRenderer;
+use crm\src\Investments\InvStatus\InvStatusTableRenderer;
 use crm\src\services\TableRenderer\TypedTableTransformer;
 use crm\src\Investments\InvActivity\_entities\InvActivity;
 use crm\src\Investments\InvLead\_common\DTOs\DbInvLeadDto;
@@ -131,7 +133,7 @@ final class InvestmentService
     public function getFormCreateData(
         array $params,
         array $extraData = [],
-    ): IInvestResult {
+    ): IInvLeadResult {
         $renderInvLeadForm = new RenderInvLeadForm(
             invLeadRepo: $this->invLeadRepo,
             invStatusRepo: $this->invStatusRepo,
@@ -189,10 +191,6 @@ final class InvestmentService
      */
     public function updateStatus(array $data): IInvStatusResult
     {
-        $data['id'] = $data['id'] ?? $data['data-row-id'] ?? null;
-        $data['code'] = $data['name'] === "code" ? $data['value'] : null;
-        $data['label'] = $data['name'] === "label" ? $data['value'] : null;
-
         return $this->manageInvStatus->updateById(InvStatusMapper::fromArrayToInput($data));
     }
 
@@ -201,43 +199,12 @@ final class InvestmentService
      */
     public function deleteStatus(array $data): IInvStatusResult
     {
-        $id = $data['id'] ?? $data['rowId'] ?? null;
-        $oldData = $this->invStatusRepo->getById($id);
-        $resultDelete = $this->manageInvStatus->deleteById($id);
-
-        if ($resultDelete->isSuccess()) {
-            $data = $oldData->getData() instanceof DbInvStatusDto
-                ? InvStatusMapper::fromDbToEntity($oldData->getData())
-                : null;
-            return InvStatusResult::success($data);
-        }
-
-        return InvStatusResult::failure($resultDelete->getError() ?? new \RuntimeException("Ошибка при удалении статуса"));
+        return (new DeleteStatus($this->invStatusRepo))->deleteStatus($data);
     }
 
     public function getStatusTable(): IInvStatusResult
     {
-        $headers = $this->invStatusRepo->getColumnNames()->getArray();
-        $rows = $this->invStatusRepo->getAll()->mapEach(fn(DbInvStatusDto $s) => [
-            'id' => $s->id,
-            'code' => $s->code,
-            'label' => $s->label,
-        ])->getArray();
-
-        $input = new TableRenderInput(
-            header: $headers,
-            rows: $rows,
-            attributes: ['id' => 'inv-status-table-1', 'data-module' => 'inv-statuses'],
-            classes: ['base-table'],
-            hrefButton: '/page/status-edit',
-            hrefButtonDel: '/',
-            attributesWrapper: ['table-r-id' => 'inv-status-table-1'],
-            allowedColumns: ['id', 'code', 'label'],
-            renameMap: [],
-        );
-
-        $tableFacade = new TableFacade(new TypedTableTransformer([new TextInputTransform(['code', 'label'])]), new TableDecorator());
-        return InvStatusResult::success($tableFacade->renderFilteredTable($input)->asHtml());
+        return (new InvStatusTableRenderer($this->invStatusRepo))->getBaseTable();
     }
 
     // === CRUD: Балансы ===

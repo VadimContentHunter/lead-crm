@@ -20,21 +20,6 @@ class InvSourceArrayNormalizer extends AArrayNormalizer
     }
 
     /**
-     * Проверяет, соответствует ли поле name указанному ключу, и возвращает value, если да.
-     *
-     * @param array<string,mixed> $data
-     * @param callable|null $cast
-     */
-    public static function normalizeFromNameValuePair(array $data, string $expectedField, ?callable $cast = null): mixed
-    {
-        if (isset($data['name'], $data['value']) && $data['name'] === $expectedField) {
-            return $cast ? $cast($data['value']) : $data['value'];
-        }
-
-        return null;
-    }
-
-    /**
      * @param array<string,mixed> $data
      */
     public static function normalizeByFieldName(string $field, array $data): mixed

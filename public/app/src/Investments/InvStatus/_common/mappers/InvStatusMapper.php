@@ -96,9 +96,9 @@ class InvStatusMapper
     public static function fromArrayToDb(array $data): DbInvStatusDto
     {
         return new DbInvStatusDto(
-            id: isset($data['id']) ? (int) $data['id'] : null,
-            code: $data['code'],
-            label: $data['label'],
+            id: InvStatusArrayNormalizer::normalizeByFieldName('id', $data),
+            code: InvStatusArrayNormalizer::normalizeByFieldName('code', $data) ?? throw new \InvalidArgumentException('code is required'),
+            label: InvStatusArrayNormalizer::normalizeByFieldName('label', $data) ?? throw new \InvalidArgumentException('label is required'),
         );
     }
 
@@ -111,11 +111,12 @@ class InvStatusMapper
     public static function fromArrayToInput(array $data): InvStatusInputDto
     {
         return new InvStatusInputDto(
-            code: isset($data['code']) ? (string) $data['code'] : null,
-            label: isset($data['label']) ? (string) $data['label'] : null,
-            id: isset($data['id']) ? (int) $data['id'] : null
+            code: InvStatusArrayNormalizer::normalizeByFieldName('code', $data),
+            label: InvStatusArrayNormalizer::normalizeByFieldName('label', $data),
+            id: InvStatusArrayNormalizer::normalizeByFieldName('id', $data),
         );
     }
+
 
 
     /**

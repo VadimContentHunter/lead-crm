@@ -4,11 +4,11 @@ namespace crm\src\Investments\InvLead;
 
 use crm\src\Investments\InvLead\_entities\SimpleInvLead;
 use crm\src\Investments\InvLead\_common\DTOs\DbInvLeadDto;
-use crm\src\Investments\_application\adapters\InvestResult;
-use crm\src\Investments\_application\interfaces\IInvestResult;
 use crm\src\Investments\InvLead\_common\mappers\InvLeadMapper;
 use crm\src\Investments\InvSource\_common\DTOs\DbInvSourceDto;
 use crm\src\Investments\InvStatus\_common\DTOs\DbInvStatusDto;
+use crm\src\Investments\InvLead\_common\adapters\InvLeadResult;
+use crm\src\Investments\InvLead\_common\interfaces\IInvLeadResult;
 use crm\src\Investments\InvLead\_common\interfaces\IInvLeadRepository;
 use crm\src\Investments\InvSource\_common\interfaces\IInvSourceRepository;
 use crm\src\Investments\InvStatus\_common\interfaces\IInvStatusRepository;
@@ -38,7 +38,7 @@ final class RenderInvLeadForm
     public function getFormCreateData(
         array $params,
         array $extraData = [],
-    ): IInvestResult {
+    ): IInvLeadResult {
         $uid = isset($params['id']) ? (int) $params['id']
                                 : (isset($params['uid']) ? (int) $params['uid'] : 0);
 
@@ -77,13 +77,13 @@ final class RenderInvLeadForm
                 'account_manager_id' => $formattedManagers
             ];
 
-            return InvestResult::success(array_merge($data, $extraData));
+            return InvLeadResult::success(array_merge($data, $extraData));
         }
 
         // === Существующий лид
         $lead = $this->invLeadRepo->getById($uid)->getData();
         if (!($lead instanceof DbInvLeadDto) && !($lead instanceof SimpleInvLead)) {
-            return InvestResult::failure(new \RuntimeException('Неверный идентификатор'));
+            return InvLeadResult::failure(new \RuntimeException('Неверный идентификатор'));
         }
 
         if ($lead instanceof DbInvLeadDto) {
@@ -135,6 +135,6 @@ final class RenderInvLeadForm
             'source_id' => $sources,
         ];
 
-        return InvestResult::success(array_merge($data, $extraData));
+        return InvLeadResult::success(array_merge($data, $extraData));
     }
 }

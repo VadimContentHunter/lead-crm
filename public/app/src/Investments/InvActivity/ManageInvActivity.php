@@ -39,9 +39,12 @@ final class ManageInvActivity
         return $this->update->handle($input);
     }
 
+    /**
+     * @param array<string,mixed> $data
+     */
     public function deleteById(array $data): IInvActivityResult
     {
-        return $this->delete->handle(InvActivityMapper::fromArrayToInput($data)->id);
+        return $this->delete->handle(InvActivityMapper::fromArrayToInput($data)->id ?? 0);
     }
 
     public function closeDeal(InvActivity $activity, ?DateTimeImmutable $closeTime = null, ?float $closePrice = null): IInvActivityResult

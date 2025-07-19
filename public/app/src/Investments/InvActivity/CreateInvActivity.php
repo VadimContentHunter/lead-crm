@@ -34,7 +34,7 @@ final class CreateInvActivity
             $input->InvActivityHash = InvActivityMapper::generateActivityHash($input);
 
             $this->prepareClosedStateIfNeeded($input);
-            $this->failIfDuplicateHash($input->InvActivityHash);
+            $this->failIfDuplicateHash($input->InvActivityHash ?? '');
 
             $dto = InvActivityMapper::fromInputToDb($input);
             $result = $this->repository->save($dto);
@@ -55,7 +55,7 @@ final class CreateInvActivity
 
     private function prepareClosedStateIfNeeded(InvActivityInputDto $input): void
     {
-        if (!DealType::equals($input->type, DealType::CLOSED)) {
+        if (!DealType::equals($input->type ?? '', DealType::CLOSED)) {
             return;
         }
 

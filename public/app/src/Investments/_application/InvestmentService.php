@@ -119,11 +119,11 @@ final class InvestmentService
     /**
      * Возвращает данные для формы создания лида.
      *
-     * @param array<string,mixed> $params
+     * @param array<string,mixed> $data
      * @param array<string,mixed> $extraData Данные, которые нужно добавить/переопределить в итоговом массиве
      */
     public function getFormCreateData(
-        array $params,
+        array $data,
         array $extraData = [],
     ): IInvLeadResult {
         $renderInvLeadForm = new RenderInvLeadForm(
@@ -133,7 +133,7 @@ final class InvestmentService
             accountManagerRepo: $this->invAccountManagerRepo
         );
 
-        return $renderInvLeadForm->getFormCreateData($params, $extraData);
+        return $renderInvLeadForm->getFormCreateData($data, $extraData);
     }
 
 
@@ -210,7 +210,7 @@ final class InvestmentService
     }
 
      /**
-      * @param array<string,mixed> $params
+      * @param array<string,mixed> $data
       */
     public function getBalanceData(array $data): IInvBalanceResult
     {
@@ -236,7 +236,7 @@ final class InvestmentService
     }
 
     /**
-     * @param array<string,mixed> $params
+     * @param array<string,mixed> $data
      */
     public function getActivityData(array $data): IInvActivityResult
     {

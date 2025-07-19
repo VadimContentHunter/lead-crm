@@ -22,11 +22,6 @@ final class CloseInvActivity
 
     /**
      * Закрывает сделку, фиксируя цену, время и результат.
-     *
-     * @param  InvActivity $invActivity
-     * @param  DateTimeImmutable|null $closeTime
-     * @param  float|null $closePrice
-     * @return IInvActivityResult
      */
     public function handle(InvActivity $activity, ?DateTimeImmutable $closeTime = null, ?float $closePrice = null): IInvActivityResult
     {

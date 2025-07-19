@@ -5,53 +5,35 @@ namespace crm\src\Investments\_application;
 use crm\src\Investments\InvLead\ManageInvLead;
 use crm\src\Investments\InvSource\DeleteSource;
 use crm\src\Investments\InvStatus\DeleteStatus;
-use crm\src\services\TableRenderer\TableFacade;
-use crm\src\Investments\InvLead\_entities\InvLead;
 use crm\src\Investments\InvLead\RenderInvLeadForm;
 use crm\src\Investments\InvSource\ManageInvSource;
 use crm\src\Investments\InvStatus\ManageInvStatus;
-use crm\src\services\TableRenderer\TableDecorator;
 use crm\src\Investments\InvBalance\ManageInvBalance;
-use crm\src\services\TableRenderer\TableRenderInput;
+use crm\src\Investments\InvActivity\CloseInvActivity;
 use crm\src\Investments\InvLead\InvLeadTableRenderer;
+use crm\src\Investments\InvActivity\CreateInvActivity;
+use crm\src\Investments\InvActivity\DeleteInvActivity;
 use crm\src\Investments\InvActivity\ManageInvActivity;
-use crm\src\Investments\InvActivity\_entities\DealType;
+use crm\src\Investments\InvActivity\UpdateInvActivity;
+use crm\src\Investments\InvActivity\CalculatePnlService;
 use crm\src\Investments\InvBalance\RenderInvBalanceForm;
-use crm\src\Investments\InvLead\_entities\SimpleInvLead;
 use crm\src\Investments\InvSource\InvSourceTableRenderer;
 use crm\src\Investments\InvStatus\InvStatusTableRenderer;
-use crm\src\services\TableRenderer\TypedTableTransformer;
-use crm\src\Investments\InvActivity\_entities\InvActivity;
 use crm\src\Investments\InvActivity\RenderInvActivityForm;
-use crm\src\Investments\InvLead\_common\DTOs\DbInvLeadDto;
-use crm\src\Investments\_application\adapters\InvestResult;
-use crm\src\Investments\InvActivity\_entities\DealDirection;
 use crm\src\Investments\InvActivity\InvActivityTableRenderer;
-use crm\src\Investments\_application\interfaces\IInvestResult;
 use crm\src\Investments\InvLead\_common\mappers\InvLeadMapper;
-use crm\src\Investments\InvSource\_common\DTOs\DbInvSourceDto;
-use crm\src\Investments\InvStatus\_common\DTOs\DbInvStatusDto;
-use crm\src\Investments\InvLead\_common\adapters\InvLeadResult;
 use crm\src\_common\adapters\Investments\SourceValidatorAdapter;
 use crm\src\_common\adapters\Investments\StatusValidatorAdapter;
 use crm\src\_common\adapters\Investments\InvLeadValidatorAdapter;
-use crm\src\Investments\InvActivity\_common\DTOs\DbInvActivityDto;
-use crm\src\Investments\InvLead\_common\DTOs\InvAccountManagerDto;
 use crm\src\Investments\InvLead\_common\interfaces\IInvLeadResult;
 use crm\src\Investments\InvSource\_common\mappers\InvSourceMapper;
 use crm\src\Investments\InvStatus\_common\mappers\InvStatusMapper;
-use crm\src\Investments\InvSource\_common\adapters\InvSourceResult;
-use crm\src\Investments\InvStatus\_common\adapters\InvStatusResult;
 use crm\src\_common\adapters\Investments\InvBalanceValidatorAdapter;
-use crm\src\Investments\InvBalance\_common\mappers\InvBalanceMapper;
 use crm\src\_common\adapters\Investments\InvActivityValidatorAdapter;
-use crm\src\Investments\InvBalance\_common\adapters\InvBalanceResult;
-use crm\src\services\TableRenderer\typesTransform\TextInputTransform;
 use crm\src\Investments\InvActivity\_common\mappers\InvActivityMapper;
 use crm\src\Investments\InvLead\_common\interfaces\IInvLeadRepository;
 use crm\src\Investments\InvSource\_common\interfaces\IInvSourceResult;
 use crm\src\Investments\InvStatus\_common\interfaces\IInvStatusResult;
-use crm\src\Investments\InvActivity\_common\adapters\InvActivityResult;
 use crm\src\Investments\InvBalance\_common\interfaces\IInvBalanceResult;
 use crm\src\Investments\InvActivity\_common\interfaces\IInvActivityResult;
 use crm\src\Investments\InvSource\_common\interfaces\IInvSourceRepository;
@@ -90,7 +72,14 @@ final class InvestmentService
         $this->manageInvSource = new ManageInvSource($this->invSourceRepo, new SourceValidatorAdapter());
         $this->manageInvStatus = new ManageInvStatus($this->invStatusRepo, new StatusValidatorAdapter());
         $this->manageInvBalance = new ManageInvBalance($this->invBalanceRepo, new InvBalanceValidatorAdapter());
-        $this->manageInvActivity = new ManageInvActivity($this->invActivityRepo, new InvActivityValidatorAdapter());
+        $this->manageInvActivity = new ManageInvActivity(
+            create: new CreateInvActivity($this->invActivityRepo, new InvActivityValidatorAdapter(), new CalculatePnlService()),
+            update: new UpdateInvActivity($this->invActivityRepo, new InvActivityValidatorAdapter()),
+            delete: new DeleteInvActivity($this->invActivityRepo),
+            close: new CloseInvActivity($this->invActivityRepo, new CalculatePnlService()),
+            repository: $this->invActivityRepo,
+            invLeadRepo: $this->invLeadRepo
+        );
     }
 
     // === CRUD: Лиды ===
@@ -235,7 +224,7 @@ final class InvestmentService
      */
     public function getActivityTable(): IInvActivityResult
     {
-        return (new InvActivityTableRenderer($this->invActivityRepo))->getBaseTable();
+        return $this->manageInvActivity->getActivityTable();
     }
 
     /**
@@ -243,7 +232,7 @@ final class InvestmentService
      */
     public function createActivity(array $data): IInvActivityResult
     {
-        return $this->manageInvActivity->create(InvActivityMapper::fromArrayToInput($data));
+        return $this->manageInvActivity->create($data);
     }
 
     /**
@@ -251,6 +240,6 @@ final class InvestmentService
      */
     public function getActivityData(array $params): IInvActivityResult
     {
-        return (new RenderInvActivityForm($this->invLeadRepo))->getFormCreateData($params);
+        return  $this->manageInvActivity->getActivityData($params);
     }
 }

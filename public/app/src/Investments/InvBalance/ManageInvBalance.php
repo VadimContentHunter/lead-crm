@@ -50,12 +50,26 @@ class ManageInvBalance
                 );
             }
 
-            $entity = InvBalanceMapper::fromDbToEntity($dto);
+            $thisBalance = $this->repository->getByLeadUid($input->leadUid);
+            if (!$thisBalance->isSuccess()) {
+                return InvBalanceResult::failure(
+                    $thisBalance->getError() ?? new InvBalanceException("Баланс создан, но не удалось получить его данные")
+                );
+            }
 
-            return InvBalanceResult::success($entity);
+            return InvBalanceResult::success($thisBalance->getData());
         } catch (\Throwable $e) {
             return InvBalanceResult::failure($e);
         }
+    }
+
+    public function createOrUpdateInvBalance(array $data): IInvBalanceResult
+    {
+        $balanceRes = $this->repository->getByLeadUid(InvBalanceMapper::fromArrayToInput($data)->leadUid)->first();
+        if ($balanceRes->isSuccess()) {
+            return $this->updateByLeadUid(InvBalanceMapper::fromArrayToInput($data));
+        }
+        return $this->create(InvBalanceMapper::fromArrayToInput($data));
     }
 
     /**
@@ -87,7 +101,14 @@ class ManageInvBalance
                 );
             }
 
-            return InvBalanceResult::success($updateData);
+            $thisBalance = $this->repository->getByLeadUid($input->leadUid);
+            if (!$thisBalance->isSuccess()) {
+                return InvBalanceResult::failure(
+                    $thisBalance->getError() ?? new InvBalanceException("Баланс обновлен, но не удалось получить его данные")
+                );
+            }
+
+            return InvBalanceResult::success($thisBalance->getData());
         } catch (\Throwable $e) {
             return InvBalanceResult::failure($e);
         }

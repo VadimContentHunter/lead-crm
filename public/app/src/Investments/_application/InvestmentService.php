@@ -16,6 +16,7 @@ use crm\src\services\TableRenderer\TableRenderInput;
 use crm\src\Investments\InvLead\InvLeadTableRenderer;
 use crm\src\Investments\InvActivity\ManageInvActivity;
 use crm\src\Investments\InvActivity\_entities\DealType;
+use crm\src\Investments\InvBalance\RenderInvBalanceForm;
 use crm\src\Investments\InvLead\_entities\SimpleInvLead;
 use crm\src\Investments\InvSource\InvSourceTableRenderer;
 use crm\src\Investments\InvStatus\InvStatusTableRenderer;
@@ -214,14 +215,15 @@ final class InvestmentService
      */
     public function createOrUpdateInvBalance(array $data): IInvBalanceResult
     {
-        $data['uid'] = isset($data['uid'])  ? (string) $data['uid']
-                                            : (isset($data['lead_uid']) ? (string) $data['lead_uid'] : 0);
+        return $this->manageInvBalance->createOrUpdateInvBalance($data);
+    }
 
-        $balanceRes = $this->invBalanceRepo->getByLeadUid((string)$data['uid'])->first();
-        if ($balanceRes->isSuccess()) {
-            return $this->manageInvBalance->updateByLeadUid(InvBalanceMapper::fromArrayToInput($data));
-        }
-        return $this->manageInvBalance->create(InvBalanceMapper::fromArrayToInput($data));
+     /**
+      * @param array<string,mixed> $params
+      */
+    public function getBalanceData(array $params): IInvBalanceResult
+    {
+        return (new RenderInvBalanceForm($this->invBalanceRepo))->getBalanceFormData($params);
     }
 
     // === CRUD: Активности ===
@@ -347,38 +349,6 @@ final class InvestmentService
             'lead_uid' => $leads,
             'type' => $types,
             'direction' => $directions,
-        ]);
-    }
-
-    /**
-     * @param array<string,mixed> $params
-     */
-    public function getBalanceData(array $params): IInvBalanceResult
-    {
-        $uid = isset($params['id']) ? (int) $params['id']
-            : (isset($params['uid']) ? (int) $params['uid'] : 0);
-
-        $balanceRes = $this->invBalanceRepo->getByLeadUid((string)$uid);
-        if ($balanceRes->isEmpty()) {
-            return InvBalanceResult::success([
-                'lead_uid' => $uid,
-                'current' => 0.0,
-                'deposit' => 0.0,
-                'potential' => 0.0,
-                'active' => 0.0,
-            ]);
-        }
-
-        if (!$balanceRes->isSuccess()) {
-            return InvBalanceResult::failure($balanceRes->getError() ?? new \RuntimeException("Ошибка при получении баланса"));
-        }
-
-        return InvBalanceResult::success([
-            'lead_uid' => $uid,
-            'current' => $balanceRes->getCurrent(),
-            'deposit' => $balanceRes->getDeposit(),
-            'potential' => $balanceRes->getPotential(),
-            'active' => $balanceRes->getActive(),
         ]);
     }
 }

@@ -3,6 +3,7 @@ import { ConfirmDialog } from '/assets/js/ConfirmDialog.js';
 
 const endPointInvLeads = '/api/invest/leads';
 const endPointInvActivities = '/api/invest/activities';
+const endPointInvBalances = '/api/invest/balances';
 const overlaySideBarLoader = document.querySelector('#overlay-loader');
 
 
@@ -65,8 +66,8 @@ ComponentFunctions.runJsonRpcLoadImmediately({
 });
 
 ComponentFunctions.runJsonRpcLoadImmediately({
-    method: 'invest.lead.get.balance',
-    endpoint: endPointInvLeads,
+    method: 'invest.balance.get',
+    endpoint: endPointInvBalances,
     jsonContent: { uid: uid },
     callbackBeforeSend: () => {
         overlayMainLoaderOpen();
@@ -118,12 +119,13 @@ ComponentFunctions.attachJsonRpcInputTrigger({
 ComponentFunctions.attachJsonRpcInputTrigger({
     triggerSelector: '#inv-balance-form-1 .form-actions .submit',
     containerSelector: '#inv-balance-form-1',
-    method: 'invest.lead.update.balance',
-    endpoint: endPointInvLeads,
+    method: 'invest.balance.update',
+    endpoint: endPointInvBalances,
     callbackBeforeSend: () => {
         overlayMainLoaderOpen();
     },
     callbackOnData: (payload) => {
+        ComponentFunctions.fillFormFromData('#inv-balance-form-1 form', payload?.data ?? []);
         overlayMainLoaderClose();
     }
 });

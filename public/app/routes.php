@@ -27,6 +27,7 @@ use crm\src\services\RouteHandler\entities\Route;
 use crm\src\controllers\API\Invest\InvLeadController;
 use crm\src\controllers\API\Invest\InvSourceController;
 use crm\src\controllers\API\Invest\InvStatusController;
+use crm\src\controllers\API\Invest\InvBalanceController;
 use crm\src\controllers\API\Invest\InvActivityController;
 
 /**
@@ -46,6 +47,12 @@ function loadRoutes(PDO $pdo, IAppContext $appContext, LoggerInterface $logger =
         new Route(
             pattern: '^/api/?$',
             className: ApiController::class,
+            extraData: [$appContext]
+        ),
+
+        new Route(
+            pattern: '^/api/invest/balances/?$',
+            className: InvBalanceController::class,
             extraData: [$appContext]
         ),
 

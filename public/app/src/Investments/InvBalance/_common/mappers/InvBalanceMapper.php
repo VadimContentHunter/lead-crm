@@ -102,11 +102,11 @@ class InvBalanceMapper
     public static function fromArrayToDb(array $data): DbInvBalanceDto
     {
         return new DbInvBalanceDto(
-            lead_uid: $data['lead_uid'],
-            current: (float) ($data['current'] ?? 0.0),
-            deposit: (float) ($data['deposit'] ?? 0.0),
-            potential: (float) ($data['potential'] ?? 0.0),
-            active: (float) ($data['active'] ?? 0.0),
+            lead_uid: InvBalanceArrayNormalizer::normalizeByFieldName('lead_uid', $data),
+            current: InvBalanceArrayNormalizer::normalizeByFieldName('current', $data) ?? 0.0,
+            deposit: InvBalanceArrayNormalizer::normalizeByFieldName('deposit', $data) ?? 0.0,
+            potential: InvBalanceArrayNormalizer::normalizeByFieldName('potential', $data) ?? 0.0,
+            active: InvBalanceArrayNormalizer::normalizeByFieldName('active', $data) ?? 0.0,
         );
     }
 
@@ -119,9 +119,9 @@ class InvBalanceMapper
     public static function fromArrayToInput(array $data): InputInvBalanceDto
     {
         return new InputInvBalanceDto(
-            leadUid: isset($data['lead_uid']) ? (string) $data['lead_uid'] : '',
-            deposit: isset($data['deposit']) ? (float) $data['deposit'] : 0.0,
-            potential: isset($data['potential']) ? (float) $data['potential'] : 0.0
+            leadUid: InvBalanceArrayNormalizer::normalizeByFieldName('lead_uid', $data) ?? '',
+            deposit: InvBalanceArrayNormalizer::normalizeByFieldName('deposit', $data) ?? 0.0,
+            potential: InvBalanceArrayNormalizer::normalizeByFieldName('potential', $data) ?? 0.0,
         );
     }
 

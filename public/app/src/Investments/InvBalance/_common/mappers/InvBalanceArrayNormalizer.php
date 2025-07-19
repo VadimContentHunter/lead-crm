@@ -9,6 +9,9 @@ use crm\src\Investments\_application\interfaces\AArrayNormalizer;
  */
 class InvBalanceArrayNormalizer extends AArrayNormalizer
 {
+    /**
+     * @param array<string,mixed> $data
+     */
     public static function normalizeByFieldName(string $field, array $data): mixed
     {
         return match ($field) {

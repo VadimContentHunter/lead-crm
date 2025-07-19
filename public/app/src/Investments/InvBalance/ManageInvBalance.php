@@ -63,6 +63,11 @@ class ManageInvBalance
         }
     }
 
+    /**
+     * Создание или обновление баланса.
+     *
+     * @param array<string,mixed> $data
+     */
     public function createOrUpdateInvBalance(array $data): IInvBalanceResult
     {
         $balanceRes = $this->repository->getByLeadUid(InvBalanceMapper::fromArrayToInput($data)->leadUid)->first();

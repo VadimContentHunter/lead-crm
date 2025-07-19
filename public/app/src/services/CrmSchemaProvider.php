@@ -216,11 +216,11 @@ class CrmSchemaProvider extends ASchemaProvider
                     open_time DATETIME NOT NULL,
                     close_time DATETIME NULL,
                     pair VARCHAR(32) NOT NULL DEFAULT '',
-                    open_price DOUBLE(10, 2) NOT NULL,
-                    close_price DOUBLE(10, 2) NULL,
-                    amount DOUBLE(10, 2) NOT NULL,
+                    open_price DECIMAL(12, 2) NOT NULL,
+                    close_price DECIMAL(12, 2) NULL,
+                    amount DECIMAL(12, 2) NOT NULL,
                     direction ENUM('long', 'short') NOT NULL,
-                    result DOUBLE(10, 2) NULL,
+                    result DECIMAL(12, 2) NULL,
 
                     INDEX idx_lead_uid (lead_uid),
                     FOREIGN KEY (lead_uid) REFERENCES inv_leads(uid) ON DELETE CASCADE

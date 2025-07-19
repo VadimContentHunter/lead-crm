@@ -71,7 +71,7 @@ class InvActivityMapper
     public static function fromInputToEntity(InvActivityInputDto $dto, bool $strictPair = false): InvActivity
     {
         return new InvActivity(
-            InvActivityHash: $dto->InvActivityHash ?? uniqid('act_', true),
+            InvActivityHash: $dto->InvActivityHash ?? throw new \InvalidArgumentException('InvActivityHash is required'),
             leadUid: $dto->leadUid ?? throw new \InvalidArgumentException('leadUid is required'),
             type: $dto->type ? DealType::from($dto->type) : DealType::ACTIVE,
             openTime: $dto->openTime ? new DateTimeImmutable($dto->openTime) : new DateTimeImmutable(),
@@ -307,5 +307,105 @@ class InvActivityMapper
         }
 
         return $fields;
+    }
+
+    /**
+     * Извлекает только непустые (не null) поля из DbInvActivityDto в виде массива.
+     * Используется для обновлений в базе данных.
+     *
+     * @param  DbInvActivityDto $dto
+     * @param  bool $strictPair Использовать строгую проверку пары
+     * @return array<string, mixed>
+     */
+    public static function fromDbExtractFilledFields(DbInvActivityDto $dto, bool $strictPair = false): array
+    {
+        $fields = [];
+
+        if ($dto->id !== null) {
+            $fields['id'] = $dto->id;
+        }
+
+        if ($dto->activity_hash !== null) {
+            $fields['activity_hash'] = $dto->activity_hash;
+        }
+
+        if ($dto->lead_uid !== null) {
+            $fields['lead_uid'] = $dto->lead_uid;
+        }
+
+        if ($dto->type !== null) {
+            $fields['type'] = $dto->type;
+        }
+
+        if ($dto->open_time !== null) {
+            $fields['open_time'] = (new DateTimeImmutable($dto->open_time))->format('Y-m-d H:i:s');
+        }
+
+        if ($dto->close_time !== null) {
+            $fields['close_time'] = (new DateTimeImmutable($dto->close_time))->format('Y-m-d H:i:s');
+        }
+
+        if ($dto->pair !== null) {
+            $fields['pair'] = $strictPair ? self::strictPair($dto->pair) : self::normalizePair($dto->pair);
+        }
+
+        if ($dto->open_price !== null) {
+            $fields['open_price'] = $dto->open_price;
+        }
+
+        if ($dto->close_price !== null) {
+            $fields['close_price'] = $dto->close_price;
+        }
+
+        if ($dto->amount !== null) {
+            $fields['amount'] = $dto->amount;
+        }
+
+        if ($dto->direction !== null) {
+            $fields['direction'] = $dto->direction;
+        }
+
+        if ($dto->result !== null) {
+            $fields['result'] = $dto->result;
+        }
+
+        return $fields;
+    }
+
+
+    /**
+     * Генерирует уникальный хеш сделки на основе ключевых полей.
+     *
+     * @param  InvActivityInputDto $dto
+     * @return string
+     */
+    public static function generateActivityHash(InvActivityInputDto $dto): string
+    {
+        $leadUid = mb_strtolower(trim((string) $dto->leadUid));
+        if ($leadUid === '') {
+            throw new \InvalidArgumentException('leadUid обязателен для генерации хеша.');
+        }
+
+        $pair = $dto->pair ? self::normalizePair($dto->pair) : '';
+        // $openTime = trim((string) $dto->openTime);
+        $amount = $dto->amount !== null ? number_format($dto->amount, 8, '.', '') : '';
+        $direction = $dto->direction ? mb_strtolower(trim($dto->direction)) : '';
+        $openPrice = $dto->openPrice !== null ? number_format($dto->openPrice, 8, '.', '') : '';
+        $type = $dto->type ? mb_strtolower(trim($dto->type)) : '';
+
+        // Только значимые поля для идентификации сделки
+        $fields = array_filter([
+            $leadUid,
+            // $openTime,
+            $pair,
+            $amount,
+            $direction,
+            $openPrice,
+            $type
+        ], fn($val) => $val !== '');
+
+        $concatenated = implode('|', $fields);
+
+        return hash('sha256', $concatenated);
     }
 }

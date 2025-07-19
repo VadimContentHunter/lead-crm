@@ -22,9 +22,11 @@ use crm\src\Investments\InvSource\InvSourceTableRenderer;
 use crm\src\Investments\InvStatus\InvStatusTableRenderer;
 use crm\src\services\TableRenderer\TypedTableTransformer;
 use crm\src\Investments\InvActivity\_entities\InvActivity;
+use crm\src\Investments\InvActivity\RenderInvActivityForm;
 use crm\src\Investments\InvLead\_common\DTOs\DbInvLeadDto;
 use crm\src\Investments\_application\adapters\InvestResult;
 use crm\src\Investments\InvActivity\_entities\DealDirection;
+use crm\src\Investments\InvActivity\InvActivityTableRenderer;
 use crm\src\Investments\_application\interfaces\IInvestResult;
 use crm\src\Investments\InvLead\_common\mappers\InvLeadMapper;
 use crm\src\Investments\InvSource\_common\DTOs\DbInvSourceDto;
@@ -233,68 +235,7 @@ final class InvestmentService
      */
     public function getActivityTable(): IInvActivityResult
     {
-        $headers = [
-            'id',
-            'activity_hash',
-            'lead_uid',
-            'type',
-            'open_time',
-            'close_time',
-            'pair',
-            'open_price',
-            'close_price',
-            'amount',
-            'direction',
-            'result',
-        ];
-
-        $rows = $this->invActivityRepo->getAll()->mapEach(fn(DbInvActivityDto $a) => [
-            'id' => $a->id,
-            'activity_hash' => $a->activity_hash,
-            'lead_uid' => $a->lead_uid,
-            'type' => $a->type,
-            'open_time' => $a->open_time,
-            'close_time' => $a->close_time ?? '—',
-            'pair' => $a->pair,
-            'open_price' => $a->open_price,
-            'close_price' => $a->close_price ?? '—',
-            'amount' => $a->amount,
-            'direction' => $a->direction,
-            'result' => $a->result ?? '—',
-        ])->getArray();
-
-        $input = new TableRenderInput(
-            header: $headers,
-            rows: $rows,
-            attributes: ['id' => 'inv-activity-table-1', 'data-module' => 'inv-activities'],
-            classes: ['base-table'],
-            hrefButton: '/page/activity-edit',
-            hrefButtonDel: '/',
-            attributesWrapper: ['table-r-id' => 'inv-activity-table-1'],
-            allowedColumns: $headers,
-            renameMap: [
-                'id' => 'ID',
-                'activity_hash' => 'Хеш сделки',
-                'lead_uid' => 'UID лида',
-                'type' => 'Тип', // Открыта/закрыта
-                'open_time' => 'Время открытия',
-                'close_time' => 'Время закрытия',
-                'pair' => 'Пара',
-                'open_price' => 'Цена открытия',
-                'close_price' => 'Цена закрытия',
-                'amount' => 'Объём',
-                'direction' => 'Направление', // long/short
-                'result' => 'Результат',
-            ],
-        );
-
-        $transformers = [
-            new TextInputTransform(['pair', 'type', 'direction']),
-        ];
-
-        $tableFacade = new TableFacade(new TypedTableTransformer($transformers), new TableDecorator());
-
-        return InvActivityResult::success($tableFacade->renderFilteredTable($input)->asHtml());
+        return (new InvActivityTableRenderer($this->invActivityRepo))->getBaseTable();
     }
 
     /**
@@ -302,12 +243,7 @@ final class InvestmentService
      */
     public function createActivity(array $data): IInvActivityResult
     {
-        $dbDtoResult = $this->manageInvActivity->create(InvActivityMapper::fromArrayToInput($data));
-        if ($dbDtoResult->isSuccess()) {
-            return $dbDtoResult;
-        }
-
-        return InvActivityResult::failure($dbDtoResult->getError() ?? new \RuntimeException("Ошибка при создании активности"));
+        return $this->manageInvActivity->create(InvActivityMapper::fromArrayToInput($data));
     }
 
     /**
@@ -315,40 +251,6 @@ final class InvestmentService
      */
     public function getActivityData(array $params): IInvActivityResult
     {
-        // $uid = isset($params['id']) ? (int) $params['id']
-        //                         : (isset($params['uid']) ? (int) $params['uid'] : 0);
-
-        $leads = $this->invLeadRepo->getAll()->mapEach(function (DbInvLeadDto $invLead) {
-            return [
-                'value' => $invLead->uid,
-                'text' => $invLead->contact . ' :: ' . $invLead->fullName,
-            ];
-        })->getArray();
-        $types = [
-            [
-                'value' => DealType::ACTIVE->value,
-                'text' => "Открытый",
-            ],
-            [
-                'value' => DealType::CLOSED->value,
-                'text' => 'Закрытый',
-            ],
-        ];
-
-        $directions = [
-            [
-                'value' => DealDirection::LONG->value,
-                'text' => "Long",
-            ],
-            [
-                'value' => DealDirection::SHORT->value,
-                'text' => 'Short',
-            ],
-        ];
-        return InvActivityResult::success([
-            'lead_uid' => $leads,
-            'type' => $types,
-            'direction' => $directions,
-        ]);
+        return (new RenderInvActivityForm($this->invLeadRepo))->getFormCreateData($params);
     }
 }

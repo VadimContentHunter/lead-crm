@@ -69,8 +69,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Результат сделки</label>
-                    <input type="number" name="result">
+                    <label>Цена при открытии</label>
+                    <input type="number" name="open_price">
+                </div>
+
+                <div class="form-group">
+                    <label>Цена при закрытии (если есть)</label>
+                    <input type="number" name="close_price">
                 </div>
 
                 <div class="form-actions">

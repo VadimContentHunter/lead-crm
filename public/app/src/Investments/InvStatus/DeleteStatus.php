@@ -19,9 +19,7 @@ class DeleteStatus
      */
     public function deleteStatus(array $data): IInvStatusResult
     {
-        $id = isset($data['id']) ? (int) $data['id']
-                            : (isset($data['rowId']) ? (int) $data['rowId'] : null);
-
+        $id = InvStatusMapper::fromArrayToInput($data)->id;
         $oldData = $this->invStatusRepo->getById($id ?? 0);
         $resultDelete = $this->invStatusRepo->deleteById($id ?? 0);
         if ($resultDelete->isSuccess()) {

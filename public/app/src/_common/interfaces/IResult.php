@@ -46,6 +46,13 @@ interface IResult
     public function first(): static;
 
     /**
+     * Возвращает количество элементов, если данные являются массивом.
+     *
+     * @return int
+     */
+    public function count(): int;
+
+    /**
      * Применить callable (например, маппер) к текущим данным и вернуть результат.
      *
      * @param  callable $mapper

@@ -70,6 +70,16 @@ abstract class AResult implements IResult
         return is_string($this->data) ? $this->data : null;
     }
 
+    /**
+     * Возвращает количество элементов, если данные являются массивом.
+     *
+     * @return int
+     */
+    public function count(): int
+    {
+        return is_array($this->data) ? count($this->data) : 0;
+    }
+
     public function hasNull(): bool
     {
         return $this->data === null;

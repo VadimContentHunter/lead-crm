@@ -45,6 +45,9 @@ table.base-table {
                 position: relative;
                 padding: 10px 16px;
                 border-bottom: 1px solid var(--color-divider);
+                max-width: 200px;
+                overflow: hidden;
+                text-overflow: ellipsis;
                 white-space: nowrap;
                 vertical-align: middle;
 

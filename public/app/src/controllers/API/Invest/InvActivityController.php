@@ -93,7 +93,7 @@ class InvActivityController
 
             $this->rpc->replyData([
                 'type' => 'success',
-                'table' => $this->service->getInvLeadTable()->getString() ?? '---',
+                'table' => $this->service->getActivityTable()->getString() ?? '---',
                 'messages' => [
                     ['type' => 'success', 'message' => 'Лид успешно добавлен'],
                     ['type' => 'info', 'message' => $info]

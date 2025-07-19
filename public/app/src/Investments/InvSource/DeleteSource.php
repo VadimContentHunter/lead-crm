@@ -19,9 +19,7 @@ class DeleteSource
      */
     public function deleteSource(array $data): IInvSourceResult
     {
-        $id = isset($data['id']) ? (int) $data['id']
-                            : (isset($data['rowId']) ? (int) $data['rowId'] : null);
-
+        $id = InvSourceMapper::fromArrayToInput($data)->id;
         $oldData = $this->invSourceRepo->getById($id ?? 0);
         $resultDelete = $this->invSourceRepo->deleteById($id ?? 0);
         if ($resultDelete->isSuccess()) {

@@ -6,12 +6,19 @@ use Throwable;
 use crm\src\Investments\InvActivity\_entities\InvActivity;
 use crm\src\Investments\InvActivity\_common\InvActivityCollection;
 use crm\src\_common\interfaces\AResult;
+use crm\src\Investments\InvActivity\_common\DTOs\DbInvActivityDto;
+use crm\src\Investments\InvActivity\_common\DTOs\InvActivityInputDto;
 use crm\src\Investments\InvActivity\_common\interfaces\IInvActivityResult;
+use crm\src\Investments\InvActivity\_common\mappers\InvActivityMapper;
 
 class InvActivityResult extends AResult implements IInvActivityResult
 {
     public function getInvActivity(): ?InvActivity
     {
+        if ($this->data instanceof DbInvActivityDto) {
+            return InvActivityMapper::fromDbToEntity($this->data);
+        }
+
         return $this->data instanceof InvActivity ? $this->data : null;
     }
 
@@ -61,5 +68,13 @@ class InvActivityResult extends AResult implements IInvActivityResult
     public function getType(): ?string
     {
         return $this->getInvActivity()?->type->value;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDirection(): ?string
+    {
+        return $this->getInvActivity()?->direction->value;
     }
 }

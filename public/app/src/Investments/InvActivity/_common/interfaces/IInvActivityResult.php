@@ -55,4 +55,9 @@ interface IInvActivityResult extends IResult
      * @return string|null
      */
     public function getType(): ?string;
+
+    /**
+     * @return string|null
+     */
+    public function getDirection(): ?string;
 }

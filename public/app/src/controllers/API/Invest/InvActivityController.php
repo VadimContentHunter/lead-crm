@@ -46,6 +46,7 @@ class InvActivityController
         $this->methods = [
             'active.get.form' => fn() => $secureCall->getFormActivityData($this->rpc->getParams()),
             'active.add' => fn() => $secureCall->createInvActivity($this->rpc->getParams()),
+            'active.delete' => fn() => $secureCall->delete($this->rpc->getParams()),
         ];
     }
 
@@ -117,6 +118,48 @@ class InvActivityController
             $this->rpc->replyData([
                 'type' => 'success',
                 'data' =>  $result->getData()
+            ]);
+        } else {
+            $errorMessage = $result->getError()?->getMessage() ?? 'Произошла ошибка';
+            $this->rpc->replyData([
+                ['type' => 'error', 'message' => 'Произошла ошибка: ' . $errorMessage]
+            ]);
+        }
+    }
+
+    /**
+     * @param array<string,mixed> $params
+     */
+    public function delete(array $params): void
+    {
+        $result = $this->service->deleteActivity($params);
+        if ($result->isSuccess()) {
+            $hash = $result->getHash() ?? '---';
+            $uid = $result->getLeadUid() ?? '---';
+            $type = $result->getType() ?? '---';
+            $pair = $result->getPair() ?? '---';
+            $amount = $result->getAmount() ?? '---';
+            $direction = $result->getDirection() ?? '---';
+            $result = $result->getResult() ?? '---';
+
+            $info = <<<HTML
+                Удалённая сделка:
+                <br> UID: <b>{$uid}</b>
+                <br> hash: <b>{$hash}</b>
+                <br> пара: <b>{$pair}</b>
+                <br> сумма: <b>{$amount}</b>
+                <br> направление: <b>{$direction}</b>
+                <br> результат: <b>{$result}</b>
+                <br> тип: <b>{$type}</b>
+            HTML;
+
+            $this->rpc->replyData([
+                'type' => 'success',
+                'table' => $this->service->getActivityTable()->getString() ?? '---',
+                'messages' => [
+                    ['type' => 'success', 'message' => 'Сделка успешно удалена'],
+                    ['type' => 'info', 'message' => $info]
+                ]
             ]);
         } else {
             $errorMessage = $result->getError()?->getMessage() ?? 'Произошла ошибка';

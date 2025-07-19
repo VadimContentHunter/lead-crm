@@ -164,18 +164,18 @@ class InvActivityMapper
     public static function fromArrayToDb(array $data): DbInvActivityDto
     {
         return new DbInvActivityDto(
-            activity_hash: $data['activity_hash'],
-            lead_uid: $data['lead_uid'],
-            type: $data['type'],
-            open_time: $data['open_time'],
-            close_time: $data['close_time'] ?? null,
-            pair: $data['pair'],
-            open_price: (float) $data['open_price'],
-            close_price: isset($data['close_price']) ? (float) $data['close_price'] : null,
-            amount: (float) $data['amount'],
-            direction: $data['direction'],
-            result: isset($data['result']) ? (float) $data['result'] : null,
-            id: isset($data['id']) ? (int) $data['id'] : null,
+            id: InvActivityArrayNormalizer::normalizeByFieldName('id', $data),
+            activity_hash: InvActivityArrayNormalizer::normalizeByFieldName('activity_hash', $data) ?? uniqid('act_', true),
+            lead_uid: InvActivityArrayNormalizer::normalizeByFieldName('lead_uid', $data) ?? throw new \InvalidArgumentException('lead_uid is required'),
+            type: InvActivityArrayNormalizer::normalizeByFieldName('type', $data) ?? DealType::ACTIVE->value,
+            open_time: InvActivityArrayNormalizer::normalizeByFieldName('open_time', $data) ?? (new DateTimeImmutable())->format('Y-m-d H:i:s'),
+            close_time: InvActivityArrayNormalizer::normalizeByFieldName('close_time', $data),
+            pair: InvActivityArrayNormalizer::normalizeByFieldName('pair', $data) ?? '',
+            open_price: InvActivityArrayNormalizer::normalizeByFieldName('open_price', $data) ?? 0.0,
+            close_price: InvActivityArrayNormalizer::normalizeByFieldName('close_price', $data),
+            amount: InvActivityArrayNormalizer::normalizeByFieldName('amount', $data) ?? 0.0,
+            direction: InvActivityArrayNormalizer::normalizeByFieldName('direction', $data) ?? DealDirection::LONG->value,
+            result: InvActivityArrayNormalizer::normalizeByFieldName('result', $data),
         );
     }
 
@@ -188,18 +188,18 @@ class InvActivityMapper
     public static function fromArrayToInput(array $data): InvActivityInputDto
     {
         return new InvActivityInputDto(
-            id: isset($data['id']) ? (int) $data['id'] : null,
-            InvActivityHash: isset($data['activity_hash']) ? (string) $data['activity_hash'] : null,
-            leadUid: isset($data['lead_uid']) ? (string) $data['lead_uid'] : null,
-            type: isset($data['type']) ? (string) $data['type'] : null,
-            openTime: isset($data['open_time']) ? (string) $data['open_time'] : null,
-            closeTime: isset($data['close_time']) ? (string) $data['close_time'] : null,
-            pair: isset($data['pair']) ? (string) $data['pair'] : null,
-            openPrice: isset($data['open_price']) ? (float) $data['open_price'] : null,
-            closePrice: isset($data['close_price']) ? (float) $data['close_price'] : null,
-            amount: isset($data['amount']) ? (float) $data['amount'] : null,
-            direction: isset($data['direction']) ? (string) $data['direction'] : null,
-            result: isset($data['result']) ? (float) $data['result'] : null
+            id: InvActivityArrayNormalizer::normalizeByFieldName('id', $data),
+            InvActivityHash: InvActivityArrayNormalizer::normalizeByFieldName('activity_hash', $data),
+            leadUid: InvActivityArrayNormalizer::normalizeByFieldName('lead_uid', $data),
+            type: InvActivityArrayNormalizer::normalizeByFieldName('type', $data),
+            openTime: InvActivityArrayNormalizer::normalizeByFieldName('open_time', $data),
+            closeTime: InvActivityArrayNormalizer::normalizeByFieldName('close_time', $data),
+            pair: InvActivityArrayNormalizer::normalizeByFieldName('pair', $data),
+            openPrice: InvActivityArrayNormalizer::normalizeByFieldName('open_price', $data),
+            closePrice: InvActivityArrayNormalizer::normalizeByFieldName('close_price', $data),
+            amount: InvActivityArrayNormalizer::normalizeByFieldName('amount', $data),
+            direction: InvActivityArrayNormalizer::normalizeByFieldName('direction', $data),
+            result: InvActivityArrayNormalizer::normalizeByFieldName('result', $data),
         );
     }
 

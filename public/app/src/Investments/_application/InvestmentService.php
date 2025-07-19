@@ -212,9 +212,9 @@ final class InvestmentService
      /**
       * @param array<string,mixed> $params
       */
-    public function getBalanceData(array $params): IInvBalanceResult
+    public function getBalanceData(array $data): IInvBalanceResult
     {
-        return (new RenderInvBalanceForm($this->invBalanceRepo))->getBalanceFormData($params);
+        return (new RenderInvBalanceForm($this->invBalanceRepo))->getBalanceFormData($data);
     }
 
     // === CRUD: Активности ===
@@ -238,8 +238,16 @@ final class InvestmentService
     /**
      * @param array<string,mixed> $params
      */
-    public function getActivityData(array $params): IInvActivityResult
+    public function getActivityData(array $data): IInvActivityResult
     {
-        return  $this->manageInvActivity->getActivityData($params);
+        return $this->manageInvActivity->getActivityData($data);
+    }
+
+    /**
+     * @param array<string,mixed> $data
+     */
+    public function deleteActivity(array $data): IInvActivityResult
+    {
+        return $this->manageInvActivity->deleteById($data);
     }
 }

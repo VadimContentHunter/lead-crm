@@ -133,19 +133,26 @@ ComponentFunctions.attachJsonRpcInputTrigger({
 //
 // === Удаление строки из таблицы по кнопке ===
 //
-// function attachDeleteTriggerLead() {
-//     ComponentFunctions.attachDeleteTrigger({
-//         triggerSelector: '[table-r-id="inv-lead-table-1"] .btn-delete.btn-row-table',
-//         method: 'lead.delete',
-//         endPointInvLeads: endPointInvLeads,
-//         callbackOnData: (payload) => {
-//             ComponentFunctions.replaceTable(payload, '[table-r-id="inv-lead-table-1"]');
-//         },
-//         beforeSendCallback: async (trigger, rowId) => {
-//             return await ConfirmDialog.show('Удаление', `Удалить элемент #${rowId}?`, '.overlay-main');
-//         },
-//     });
-// }
+function attachDeleteTriggerActivity() {
+    ComponentFunctions.attachDeleteTrigger({
+        triggerSelector: '[table-r-id="inv-activity-table-1"] .btn-delete.btn-row-table',
+        method: 'active.delete',
+        endpoint: endPointInvActivities,
+        callbackOnData: (payload) => {
+            ComponentFunctions.replaceTable(payload, '[table-r-id="inv-activity-table-1"]');
+            overlayMainLoaderClose();
+        },
+        callbackOnError: (error) => {
+            overlayMainLoaderClose();
+        },
+        beforeValidateCallback: async (trigger, rowId) => {
+            return await ConfirmDialog.show('Удаление', `Удалить элемент #${rowId}?`, '.overlay-main');
+        },
+        beforeSendCallback: (trigger, rowId) => {
+            overlayMainLoaderOpen();
+        },
+    });
+}
 
 
 //
@@ -197,30 +204,30 @@ ComponentFunctions.attachJsonRpcInputTrigger({
 //
 // === Инициализация обработчиков для уже существующих элементов таблицы ===
 //
-// attachDeleteTriggerLead();
+attachDeleteTriggerActivity();
 // attachInputButtonTriggerLead();
 // watchInputValueChangeLead();
 
 //
 // === Наблюдение за появлением новых элементов в DOM и повторное навешивание обработчиков ===
 //
-// const targetNode = document.querySelector('[table-r-id="inv-lead-table-1"]');
-// if (!targetNode) {
-//     console.warn('Container [table-r-id="inv-lead-table-1"] not found');
-// } else {
-//     const observer = new MutationObserver((mutationsList) => {
-//         for (const mutation of mutationsList) {
-//             if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-//                 attachDeleteTriggerLead();
-//                 attachInputButtonTriggerLead();
-//                 watchInputValueChangeLead();
-//                 break; // один раз достаточно
-//             }
-//         }
-//     });
+const targetNode = document.querySelector('[table-r-id="inv-activity-table-1"]');
+if (!targetNode) {
+    console.warn('Container [table-r-id="inv-activity-table-1"] not found');
+} else {
+    const observer = new MutationObserver((mutationsList) => {
+        for (const mutation of mutationsList) {
+            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                attachDeleteTriggerActivity();
+                attachInputButtonTriggerLead();
+                watchInputValueChangeLead();
+                break; // один раз достаточно
+            }
+        }
+    });
 
-//     observer.observe(targetNode, {
-//         childList: true,
-//         subtree: true
-//     });
-// }
+    observer.observe(targetNode, {
+        childList: true,
+        subtree: true
+    });
+}
